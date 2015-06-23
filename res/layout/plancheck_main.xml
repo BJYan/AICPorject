@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+  
+     <TextView
+         android:id="@+id/link_statusView1"
+         android:layout_width="wrap_content"
+         android:layout_height="0dp"
+         />
+      <android.support.v4.view.ViewPager 
+          android:id="@+id/viewPager1" 
+          android:layout_below="@+id/link_statusView1" 
+          android:layout_width="fill_parent" 
+          android:layout_height="fill_parent" /> 
+          
+ <RelativeLayout 
+     android:layout_width="fill_parent" 
+     android:layout_height="wrap_content" 
+     android:id="@+id/relativelayout1" 
+     android:layout_alignParentBottom="true" 
+     android:layout_marginBottom="0dp" 
+     android:layout_below="@+id/viewPager1">
+   <RadioGroup 
+       android:id="@+id/radioGroup1" 
+       android:layout_width="fill_parent" 
+       android:layout_height="wrap_content" 
+       android:orientation="horizontal">
+  <RadioButton 
+      android:id="@+id/radio_bt" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1" 
+      android:background="@drawable/bt_selector" 
+      android:button="@null" 
+      android:checked="true" /> 
+  <RadioButton 
+      android:id="@+id/radio_check" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1" 
+      android:background="@drawable/check_selector" 
+      android:button="@null" /> 
+  <RadioButton 
+      android:id="@+id/radio_search" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1" 
+      android:background="@drawable/search_selector" 
+      android:button="@null" /> 
+  <RadioButton 
+      android:id="@+id/radio_notification" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1" 
+      android:background="@drawable/notification_selector" 
+      android:button="@null" /> 
+  <RadioButton 
+      android:id="@+id/radio_downup" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1" 
+      android:background="@drawable/downup_selector" 
+      android:button="@null" /> 
+  </RadioGroup>
+  </RelativeLayout>
+
+
+        
+
+</RelativeLayout>

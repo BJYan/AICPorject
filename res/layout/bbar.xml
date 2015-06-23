@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="0.01" android:background="#000000">
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" android:id="@+id/group">
+
+        <RadioButton
+            android:id="@+id/btnA"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:button="@drawable/bt_selector" />
+
+        <RadioButton
+            android:id="@+id/btnB"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:button="@drawable/check_selector" />
+
+        <RadioButton
+            android:id="@+id/btnC"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:button="@drawable/search_selector" />
+
+        <RadioButton
+            android:id="@+id/btnD"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:button="@drawable/notification_selector" />
+
+        <RadioButton
+            android:id="@+id/btnE"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:button="@drawable/downup_selector" />
+    </RadioGroup>
+
+</LinearLayout>

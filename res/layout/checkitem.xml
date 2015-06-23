@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">"
+         <TextView
+        android:id="@+id/index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+         <TextView
+            android:id="@+id/pathname"
+            android:layout_toRightOf="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="TextView" 
+            android:layout_alignBaseline="@+id/index"
+            android:textSize="20sp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="50dp"/>
+          <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow" 
+        android:layout_alignBaseline="@+id/index"
+        android:layout_alignTop="@+id/index"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"/>
+    </LinearLayout>
+    <!-- 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <TextView
+        android:id="@+id/index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+         <TextView
+            android:id="@+id/pathname"
+            android:layout_toRightOf="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="TextView" 
+            android:layout_alignBaseline="@+id/index"
+            android:textSize="10sp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="50dp"/>
+          <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow" 
+        android:layout_alignBaseline="@+id/index"
+        android:layout_alignTop="@+id/index"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"/>
+    </RelativeLayout>
+     -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+<TextView
+            android:id="@+id/deadtime"            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="TextView" 
+             android:textSize="10sp"
+             android:textColor="#27beda"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="50dp"
+            />
+<TextView
+            android:id="@+id/status"
+            android:layout_toRightOf="@+id/deadtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="TextView" 
+            android:layout_alignBaseline="@+id/deadtime"
+            android:textSize="10sp"
+             android:textColor="#27beda"/>
+<TextView
+            android:id="@+id/progress"
+            android:layout_toRightOf="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="TextView" 
+            android:layout_alignBaseline="@+id/deadtime"
+            android:layout_marginRight="30dp"
+            android:textSize="10sp"
+             android:textColor="#27beda"/>
+
+       
+
+    </RelativeLayout>
+
+    
+
+</LinearLayout>

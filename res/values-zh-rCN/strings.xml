@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">测试</string>
+    <string name="action_settings">设置</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="user_name">用户名:</string>
+    <string name="user_pswd">密码:</string>
+    <string name="login">登录</string>
+    <string name="login_title">用户 登录</string>
+    
+     <string name="link">连接</string>
+    <string name="unlink">未连接</string>
+    <string name="sensor_name">传感器名</string>
+    <string name="sensor_status">状态</string>
+    <string name="charge">充电</string>
+    <string name="shock">振动</string>
+    <string name="temperature">温度</string>
+    <string name="revolution_speed">转速</string>
+    
+    
+    <string name="plancheck_name">计划巡检</string>
+    <string name="tem_check">临时任务</string>
+    <string name="checked">已巡检</string>
+    <string name="uncheck">未巡检</string>
+    
+    <string name="bluetooth_string">蓝牙</string>
+    <string name="check_string">巡检</string>
+    <string name="search_string">查询</string>
+    <string name="notice_string">通知</string>
+    <string name="data_string">数据</string>
+</resources>

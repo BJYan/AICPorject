@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <!--  first line-->
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/title_navigate" 
+            
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="30dp"/>
+        <TextView
+            android:id="@+id/planname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="计划巡检" 
+            android:layout_alignTop="@+id/imageView1"
+            android:layout_alignBaseline="@+id/imageView1"          
+            android:textSize="20sp"
+            />
+        
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+
+            android:id="@+id/red_line1"
+            android:background="@drawable/red_line"
+            android:orientation="horizontal"
+            android:layout_below="@+id/imageView1"
+            >
+        </LinearLayout>
+ <!--  seceond line-->
+         <TextView
+            android:id="@+id/station_text_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="route name"
+            android:layout_alignLeft="@+id/imageView1"
+            android:layout_below="@+id/red_line1"
+            />
+         
+   <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+
+            android:id="@+id/red_line2"
+            android:background="@drawable/red_line"
+            android:orientation="horizontal"
+            android:layout_below="@+id/station_text_name"
+            />
+<!--  third line-->
+    <ListView 
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/red_line2"
+        android:layout_weight="1"
+       />
+</RelativeLayout>

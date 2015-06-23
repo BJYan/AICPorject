@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <!--  first line-->
+
+       
+        <com.aic.aicdetactor.view.SwitchView
+            android:id="@+id/link_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="100dp"
+            android:textOn="计划巡检"
+            android:textOff="临时任务"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:textSize="20sp"/>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:id="@+id/red_line1"
+            android:background="@drawable/red_line"
+            android:orientation="horizontal"
+            android:layout_below="@+id/link_switch">
+        </LinearLayout>
+ <!--  seceond line-->
+    <ListView 
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/red_line1"
+       
+       />
+
+        
+
+</RelativeLayout>

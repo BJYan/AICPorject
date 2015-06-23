@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AICDetactor</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="user_name">name:</string>
+    <string name="user_pswd">password:</string>
+    <string name="login">SIGN IN</string>
+    <string name="login_title">User Login</string>
+    
+     <string name="link">Link</string>
+    <string name="unlink">Unlink</string>
+    <string name="sensor_name">Sensor Name</string>
+    <string name="sensor_status">Status</string>
+    <string name="charge">Charge</string>
+    <string name="shock">Shock</string>
+    <string name="temperature">Temperature</string>
+    <string name="revolution_speed">Revolution speed</string>
+    
+    
+    <string name="plancheck_name">Plan check</string>
+    <string name="tem_check">Temporary check</string>
+    <string name="checked">Checked</string>
+    <string name="uncheck">Uncheck</string>
+
+</resources>
