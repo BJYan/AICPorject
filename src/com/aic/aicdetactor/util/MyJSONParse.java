@@ -379,16 +379,17 @@ public class MyJSONParse {
 	 * input: index is itemDef index from left to right ,start from 0,that is
 	 * combox widget index input:object is deviceItem intent is to get itemDef
 	 */	
-	public List<Object> getPartItemListByItemDef(Object object, int index)
+	public List<Object> getPartItemListByItemDef(Object partItemobject, int index)
 			throws JSONException {
 		List<Object> list = new ArrayList<Object>();
 
-		if (object == null) {
+		if (partItemobject == null) {
 			Log.e(TAG, " getPartItemListByItemDef input param object is null");
 			return null;
 		}
-		JSONArray array = ((JSONObject) object).getJSONArray(PARTITEM);
-
+		Log.e(TAG, " getPartItemListByItemDef ,"+partItemobject.toString());
+		JSONArray array = ((JSONObject) partItemobject).getJSONArray(PARTITEM);
+		Log.e(TAG, " getPartItemListByItemDef array size is "+array.length()); 
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject subObject = (JSONObject) array.get(i);
 			String substr = getPartItemName(subObject);
@@ -404,8 +405,9 @@ public class MyJSONParse {
 		}
 		return list;
 	}
-
+	
 	// input params must be DeviceItem sub
+	//入参：JSON 节点的DeviceItem 下一目录节点
 	public List<Object> getPartList(Object DeviceItemobject) {
 		if (DeviceItemobject == null)
 			return null;
@@ -425,24 +427,24 @@ public class MyJSONParse {
 
 	// input params must be partItem sub
 	public String getPartItemName(Object partItemobject) {
-		Log.d(TAG, "getPartItemName 0");
+		//Log.d(TAG, "getPartItemName 0");
 		if (partItemobject == null) {
 			Log.d(TAG, "getPartItemName " + " object is null");
 			return null;
 		}
 		String name = null;
-		Log.d(TAG, "getPartItemName 1");
+		//Log.d(TAG, "getPartItemName 1");
 		try {
 			JSONObject newObject = (JSONObject) partItemobject;
 
-			Log.d(TAG, "getPartItemName 3");
+			//Log.d(TAG, "getPartItemName 3");
 			name = newObject.getString(PARTITEMDATA);
-			Log.d(TAG, "getPartItemName 4");
+			//Log.d(TAG, "getPartItemName 4");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG,e.toString());;
 		}
-		Log.d(TAG, "getPartItemName 5");
+		Log.d(TAG, "getPartItemName name is "+name);
 		return name;
 	}
 

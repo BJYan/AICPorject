@@ -50,6 +50,13 @@ public class myApplication extends Application
     	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
      return 	json.getPartList(object);
     }
+    
+    public Object getPartItemObject(int stationIndex,int deviceIndex) throws JSONException {
+    	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
+    	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
+     return 	object;
+    }
+    
     public List<String>getDeviceItemDefList(Object deviceItemObject) throws JSONException{
     	 return 	json.getDeviceItemDefList(deviceItemObject);
     }
@@ -66,8 +73,8 @@ public class myApplication extends Application
     public String getPartItemSubStr(String partItemDataStr,int index){
     	return json.getPartItemSubStr(partItemDataStr,index);
     }
-    public List<Object> getPartItemListByItemDef(Object object ,int index) throws JSONException{
-    	return json.getPartItemListByItemDef(object,index);
+    public List<Object> getPartItemListByItemDef(Object partItemobject ,int index) throws JSONException{
+    	return json.getPartItemListByItemDef(partItemobject,index);
     }
     public String getRoutName() throws JSONException{
     	return json.getRoutName();
