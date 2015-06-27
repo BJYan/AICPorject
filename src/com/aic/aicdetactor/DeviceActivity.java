@@ -28,6 +28,7 @@ public class DeviceActivity extends Activity {
 	String TAG = "luotest";
 	 public String mPath = "/sdcard/down.txt";
 	 String  rotename = null;
+	 String rootName = null;
      MyJSONParse json = new MyJSONParse();
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -57,6 +58,7 @@ public class DeviceActivity extends Activity {
 		planNameTextView.setText(oneCatalog);
 		Log.d(TAG, "oneCatalog is "+oneCatalog +"rotename is "+rotename);
 		TextView RouteNameTextView  =(TextView)findViewById(R.id.station_text_name);
+		rootName = intent.getExtras().getString("routeName");
 		RouteNameTextView.setText(indexStr + "        " +rotename);
 		
 		Log.d(TAG,"ONcREATE index is " +mStationIndex);
@@ -94,6 +96,7 @@ public class DeviceActivity extends Activity {
 				intent.putExtra("stationIndex", mStationIndex);
 				intent.putExtra("deviceIndex", arg2);
 				intent.putExtra("oneCatalog", "计划巡检");
+				intent.putExtra("rootName", rootName);
 				intent.putExtra("checkName", map.get("device_name"));
 				intent.setClass(getApplicationContext(),
 						DeviceItemActivity.class);

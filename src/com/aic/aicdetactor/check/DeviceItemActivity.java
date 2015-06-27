@@ -64,12 +64,13 @@ public class DeviceItemActivity extends Activity {
 		String oneCatalog = intent.getExtras().getString("oneCatalog");
 		String rotename = intent.getExtras().getString("checkName");
 		String roteNmaeStr = intent.getExtras().getString("rotename");
+		String  rootName = intent.getExtras().getString("rootName");
 
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		RouteNameTextView.setText(rotename);
+		RouteNameTextView.setText(rootName+":"+rotename);
 
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(roteNmaeStr);

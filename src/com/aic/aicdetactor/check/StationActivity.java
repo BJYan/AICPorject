@@ -48,7 +48,7 @@ public class StationActivity extends Activity {
      ListView mListView;
      boolean isUseWivewPager =false;
 	String TAG = "luotest";
-	
+	String  routeName = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -75,9 +75,9 @@ public class StationActivity extends Activity {
 			int deviceIndex = intent.getExtras().getInt("deviceIndex");
 			
 			String  oneCatalog = intent.getExtras().getString("oneCatalog");
-			String  routeName = intent.getExtras().getString("routeName");
 			String  route_ItemIndex = intent.getExtras().getString("itemIndex");
-			
+			routeName = intent.getExtras().getString("routeName");
+
 			TextView planNameTextView  =(TextView)findViewById(R.id.planname);
 			planNameTextView.setText(oneCatalog);
 			
@@ -173,6 +173,7 @@ public class StationActivity extends Activity {
 					intent.putExtra("oneCatalog", "计划巡检");
 					intent.putExtra("checkName",
 							(String) mapItem.get("pathname"));
+					intent.putExtra("routeName", routeName);
 					intent.putExtra("index", (String) mapItem.get("index"));
 					intent.setClass(getApplicationContext(),
 							DeviceActivity.class);
