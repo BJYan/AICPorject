@@ -15,8 +15,7 @@
             android:src="@drawable/title_navigate" 
             
             android:layout_alignParentTop="true"
-            android:layout_marginTop="100dp"
-            android:layout_alignParentLeft="true"
+             android:layout_alignParentLeft="true"
             android:layout_marginLeft="30dp"/>
         <TextView
             android:id="@+id/planname"
