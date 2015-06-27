@@ -22,6 +22,8 @@
             android:layout_height="wrap_content"           
             android:text="TextView" 
              android:textSize="20sp"
+             android:layout_marginLeft="55dip"
+            android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
              />
           <ImageView
@@ -30,7 +32,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/arrow" 
          android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"/>
+        android:layout_marginRight="10dp"/>
     </RelativeLayout>
     <!-- 
     <RelativeLayout
@@ -74,7 +76,7 @@
              android:textColor="#27beda"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="55dp"
             />
 <TextView
             android:id="@+id/status"
@@ -82,6 +84,8 @@
             android:layout_height="wrap_content"           
             android:text="TextView" 
             android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="60dip"
              android:textSize="10sp"
              android:textColor="#27beda"/>
 <TextView
@@ -90,7 +94,7 @@
             android:layout_height="wrap_content"           
             android:text="TextView" 
             android:layout_alignParentRight="true"
-             android:layout_marginRight="30dp"
+             android:layout_marginRight="10dp"
             android:textSize="10sp"
              android:textColor="#27beda"/>
 
