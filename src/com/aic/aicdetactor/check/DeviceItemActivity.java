@@ -1,6 +1,8 @@
 package com.aic.aicdetactor.check;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +16,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -36,8 +43,10 @@ public class DeviceItemActivity extends Activity {
 	Object partItemObject;
 	List<Map<String, Object>> mMapList;
 	public final int SPINNER_SELECTCHANGED =0;
-	// public String mPath = "/sdcard/down.txt";
-	// MyJSONParse json = new MyJSONParse();
+	SimpleAdapter mListViewAdapter = null;
+	List<Map<String, Object>> mPartItemRevertMapList = null;
+	//是否需要反向排序来巡检
+    boolean isReverseDetection = false;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -75,6 +84,17 @@ public class DeviceItemActivity extends Activity {
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(roteNmaeStr);
 
+		ImageView imageView = (ImageView)findViewById(R.id.imageView1);
+		imageView.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				Log.d(TAG,"imageView.setOnClickListener");
+				// TODO Auto-generated method stub
+				finish();
+			}
+			
+		});
 		Log.d(TAG, "ONcREATE stationIndex is " + stationIndex + "deviceIndex"
 				+ deviceIndex);
 		mListView = (ListView) findViewById(R.id.listView);
@@ -100,12 +120,12 @@ public class DeviceItemActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		SimpleAdapter adapter = new SimpleAdapter(this, mMapList,
+		mListViewAdapter = new SimpleAdapter(this, mMapList,
 				R.layout.checkitem, new String[] { "index", "device_name",
 						"deadline", "status", "progress" }, new int[] {
 						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
 						R.id.progress });
-		mListView.setAdapter(adapter);
+		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -152,6 +172,16 @@ public class DeviceItemActivity extends Activity {
              
             }    
         });    
+        CheckBox checkbox = (CheckBox)findViewById(R.id.checkBox1);
+        checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				// TODO Auto-generated method stub				
+				isReverseDetection = arg1;
+				
+				//如果为true ，需要对listView里的Item数据进行反向排列并显示
+			}});
 
 	}
 
@@ -216,5 +246,8 @@ public class DeviceItemActivity extends Activity {
 			map.put("progress", ""+(i+1)+"/"+""+(partItemSelectedList.size()));
 			mMapList.add(map);
 		}
+	   if(partItemSelectedList.size()>0){
+		   mListViewAdapter.notifyDataSetChanged();
+	   }
    }
 }

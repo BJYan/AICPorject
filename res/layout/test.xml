@@ -70,7 +70,15 @@
              <Spinner
                  android:id="@+id/spinner1"
                  android:layout_width="wrap_content"
-                 android:layout_height="wrap_content" />
+                 android:layout_height="wrap_content" 
+                 android:layout_gravity="top"/>
+
+             <CheckBox
+                 android:id="@+id/checkBox1"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/check_order"
+                 android:layout_gravity="right" />
 
          </LinearLayout>
     <LinearLayout

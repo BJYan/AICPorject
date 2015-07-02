@@ -111,7 +111,7 @@ public class DeviceActivity extends Activity {
 			public void onClick(View arg0) {
 				Log.d(TAG,"imageView.setOnClickListener");
 				// TODO Auto-generated method stub
-				DeviceActivity.this.onDestroy();
+				finish();
 			}
 			
 		});

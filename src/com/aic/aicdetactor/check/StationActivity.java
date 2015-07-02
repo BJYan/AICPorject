@@ -26,8 +26,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
@@ -83,6 +85,17 @@ public class StationActivity extends Activity {
 			
 			TextView RouteNameTextView  =(TextView)findViewById(R.id.station_text_name);
 			RouteNameTextView.setText(routeName);
+			ImageView imageView = (ImageView)findViewById(R.id.imageView1);
+			imageView.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View arg0) {
+					Log.d(TAG,"imageView.setOnClickListener");
+					// TODO Auto-generated method stub
+					finish();
+				}
+				
+			});
 		// json.initData(mPath);
 //		mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup1);
 //		mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {

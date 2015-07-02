@@ -23,5 +23,6 @@
     <string name="tem_check">Temporary check</string>
     <string name="checked">Checked</string>
     <string name="uncheck">Uncheck</string>
+    <string name="no_bt_device">Can not support bluetooth</string>
 
 </resources>

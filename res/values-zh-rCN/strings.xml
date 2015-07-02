@@ -29,4 +29,6 @@
     <string name="search_string">查询</string>
     <string name="notice_string">通知</string>
     <string name="data_string">数据</string>
+    <string name="check_order">反向巡检</string>
+    <string name="no_bt_device">终端不支持蓝牙</string>
 </resources>
