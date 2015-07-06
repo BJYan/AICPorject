@@ -14,6 +14,7 @@ import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
+import com.aic.aicdetactor.util.CommonDef;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -175,11 +176,11 @@ public class RouteActivity extends Activity {
 									+ " pathname is "
 									+ (String) mapItem.get("pathname"));
 					Intent intent = new Intent();
-					intent.putExtra("routeIndex", arg2);
-					intent.putExtra("oneCatalog", "计划巡检");
-					intent.putExtra("routeName",
+					intent.putExtra(CommonDef.ROUTE_INDEX, arg2);
+					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.ROUTENAME,
 							(String) mapItem.get("routeName"));
-					intent.putExtra("itemIndex", (String) mapItem.get("index"));
+					intent.putExtra(CommonDef.LISTITEM_INDEX, (String) mapItem.get("index"));
 					intent.setClass(getApplicationContext(),
 							StationActivity.class);
 					startActivity(intent);

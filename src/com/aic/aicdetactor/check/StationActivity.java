@@ -9,12 +9,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.aic.aicdetactor.BtActivity;
-import com.aic.aicdetactor.DeviceActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
+import com.aic.aicdetactor.util.CommonDef;
+import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -73,12 +74,12 @@ public class StationActivity extends Activity {
 			
 			
 			Intent intent =getIntent();
-			int routeIndex = intent.getExtras().getInt("routeIndex");
-			int deviceIndex = intent.getExtras().getInt("deviceIndex");
+			int routeIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
+			int deviceIndex = intent.getExtras().getInt(CommonDef.DEVICE_INDEX);
 			
-			String  oneCatalog = intent.getExtras().getString("oneCatalog");
-			String  route_ItemIndex = intent.getExtras().getString("itemIndex");
-			routeName = intent.getExtras().getString("routeName");
+			String  oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
+			String  route_ItemIndex = intent.getExtras().getString(CommonDef.LISTITEM_INDEX);
+			routeName = intent.getExtras().getString(CommonDef.ROUTENAME);
 
 			TextView planNameTextView  =(TextView)findViewById(R.id.planname);
 			planNameTextView.setText(oneCatalog);
@@ -182,12 +183,12 @@ public class StationActivity extends Activity {
 									+ " pathname is "
 									+ (String) mapItem.get("pathname"));
 					Intent intent = new Intent();
-					intent.putExtra("stationIndex", arg2);
-					intent.putExtra("oneCatalog", "计划巡检");
-					intent.putExtra("checkName",
+					intent.putExtra(CommonDef.STATION_INDEX , arg2);
+					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.CHECKNAME,
 							(String) mapItem.get("pathname"));
-					intent.putExtra("routeName", routeName);
-					intent.putExtra("index", (String) mapItem.get("index"));
+					intent.putExtra(CommonDef.ROUTENAME, routeName);
+					intent.putExtra(CommonDef.LISTITEM_INDEX, (String) mapItem.get("index"));
 					intent.setClass(getApplicationContext(),
 							DeviceActivity.class);
 					startActivity(intent);
@@ -207,18 +208,17 @@ public class StationActivity extends Activity {
 					e.printStackTrace();
 				}
 				Log.d(TAG, " idtest myid is " + myid);
-
+				
 				// test getpartitemsub,TEST pass
 				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
 				for (int n = 0; n < 10; n++) {
 
-					Log.d(TAG,
-							"teststr is "
-									+ ((myApplication) getApplication())
-											.getPartItemSubStr(teststr, n));
+					String str = ((myApplication) getApplication())
+							.getPartItemSubStr(teststr, n);
+					Log.d(TAG,"teststr is "	+ str);
 				}
-				
-				
+				float f1 = SystemUtil.ByteArrayToFloat("42700000".getBytes());
+				Log.d(TAG,"teststr is "	+ f1);
 				///
 				
 			}

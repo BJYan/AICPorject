@@ -35,7 +35,7 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".DeviceActivity"
+            android:name="com.aic.aicdetactor.check.DeviceActivity"
             android:label="@string/app_name" >
         </activity>
         <activity

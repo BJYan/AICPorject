@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -31,22 +32,30 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.myApplication;
+import com.aic.aicdetactor.util.CommonDef;
 
 public class DeviceItemActivity extends Activity {
 
-	ListView mListView = null;
+	private ListView mListView = null;
 	String TAG = "luotest";
-	Spinner mSpinner = null;
+	private Spinner mSpinner = null;
 	private List<String> spinnerList = new ArrayList<String>();
 	private ArrayAdapter<String> spinnerAdapter;
-	int mLastSpinnerIndex = 0;
-	Object partItemObject;
-	List<Map<String, Object>> mMapList;
+	private int mLastSpinnerIndex = 0;
+	private Object partItemObject;
+	private List<Map<String, Object>> mMapList;
 	public final int SPINNER_SELECTCHANGED =0;
-	SimpleAdapter mListViewAdapter = null;
-	List<Map<String, Object>> mPartItemRevertMapList = null;
+	private SimpleAdapter mListViewAdapter = null;
+	private List<Map<String, Object>> mPartItemRevertMapList = null;
+	private List<Object> mPartItemSelectedList=null;
+	private CheckBox mCheckbox = null;
+	private int mCurrentStationIndex =0;
+	private int mCurrentDeviceIndex = 0;
 	//是否需要反向排序来巡检
-    boolean isReverseDetection = false;
+	private boolean isReverseDetection = false;
+	//点击listItem后 ListView 视图消失，显示具体测试点界面
+	private boolean bListViewVisible = true;
+	private boolean bSpinnerVisible = true;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -64,22 +73,22 @@ public class DeviceItemActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.test);
+		setContentView(R.layout.deviceitem_activity_ex);
 
 		Intent intent = getIntent();
-		int stationIndex = intent.getExtras().getInt("stationIndex");
-		int deviceIndex = intent.getExtras().getInt("deviceIndex");
+		mCurrentStationIndex = intent.getExtras().getInt(CommonDef.STATION_INDEX);
+		mCurrentDeviceIndex = intent.getExtras().getInt(CommonDef.DEVICE_INDEX);
 
-		String oneCatalog = intent.getExtras().getString("oneCatalog");
-		String rotename = intent.getExtras().getString("checkName");
-		String roteNmaeStr = intent.getExtras().getString("rotename");
-		String  rootName = intent.getExtras().getString("rootName");
+		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
+		String rotename = intent.getExtras().getString(CommonDef.CHECKNAME);
+		String roteNmaeStr = intent.getExtras().getString(CommonDef.ROUTENAME);
+		//String  rootName = intent.getExtras().getString(CommonDef.ROOTNAME);
 
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		RouteNameTextView.setText(rootName+":"+rotename);
+		RouteNameTextView.setText(rotename);
 
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(roteNmaeStr);
@@ -95,41 +104,23 @@ public class DeviceItemActivity extends Activity {
 			}
 			
 		});
-		Log.d(TAG, "ONcREATE stationIndex is " + stationIndex + "deviceIndex"
-				+ deviceIndex);
+		Log.d(TAG, "ONcREATE stationIndex is " + mCurrentStationIndex + "deviceIndex"
+				+ mCurrentDeviceIndex);
 		mListView = (ListView) findViewById(R.id.listView);
 		mMapList = new ArrayList<Map<String, Object>>();
-		try {
-
-			partItemObject = ((myApplication) getApplication())
-					.getPartItemObject(stationIndex, deviceIndex);
-			Log.d(TAG, "partItemDataList IS " + partItemObject.toString()
-					);
-			List<Object> partItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,0);
-			for (int i = 0; i < partItemSelectedList.size(); i++) {
-				Map<String, Object> map = new HashMap<String, Object>();				
-				map.put("device_name", ((myApplication) getApplication())
-						.getPartItemName(partItemSelectedList.get(i)));
-
-				map.put("deadline", "2015-06-20 10:00");
-				map.put("status", "已检查");
-				map.put("progress", ""+(i+1)+"/"+""+(partItemSelectedList.size()));
-				mMapList.add(map);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		
+		InitDataNeeded(0,false);
 		mListViewAdapter = new SimpleAdapter(this, mMapList,
-				R.layout.checkitem, new String[] { "index", "device_name",
-						"deadline", "status", "progress" }, new int[] {
-						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
-						R.id.progress });
+				R.layout.checkunit, new String[] { "index", "unit_name","value",
+						"deadline"  }, new int[] {
+						R.id.index, R.id.pathname,R.id.checkvalue, R.id.deadtime});
 		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
+				bListViewVisible = false;
+				needVisible();
 				// TODO Auto-generated method stub
 				// HashMap<String,String>
 				// map=(HashMap<String,String>)mListView.getItemAtPosition(arg2);
@@ -142,13 +133,19 @@ public class DeviceItemActivity extends Activity {
 				// startActivity(intent);
 			}
 		});
+		mSpinner = (Spinner) findViewById(R.id.spinner1);
 		try {
 			spinnerList = ((myApplication) getApplication()).getDeviceItemDefList(partItemObject);
+			if(spinnerList.size()<=1){
+				bSpinnerVisible= false;
+				mSpinner.setVisibility(Spinner.GONE);
+			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mSpinner = (Spinner) findViewById(R.id.spinner1);
+		if(bSpinnerVisible){
+		
 		spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,spinnerList);    
         //第三步：为适配器设置下拉列表下拉时的菜单样式。    
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
@@ -171,9 +168,10 @@ public class DeviceItemActivity extends Activity {
                 // TODO Auto-generated method stub    
              
             }    
-        });    
-        CheckBox checkbox = (CheckBox)findViewById(R.id.checkBox1);
-        checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+        });   
+		}
+        mCheckbox = (CheckBox)findViewById(R.id.checkBox1);
+        mCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
@@ -210,6 +208,19 @@ public class DeviceItemActivity extends Activity {
 	}
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			if(!bListViewVisible){
+				bListViewVisible = !bListViewVisible;
+				needVisible();
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
@@ -219,35 +230,64 @@ public class DeviceItemActivity extends Activity {
 		
         public void handleMessage(Message msg) {   
              switch (msg.what) {   
-                  case SPINNER_SELECTCHANGED:   
-				try {
-					resetListViewData(msg.arg1);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+                  case SPINNER_SELECTCHANGED:			
+					//resetListViewData(msg.arg1);
+					InitDataNeeded(msg.arg1,true);			
                        break;   
              }   
              super.handleMessage(msg);   
         }   
    };  
-   public void resetListViewData(int index ) throws JSONException{
-	   List<Object> partItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,index);
-	   Log.d(TAG, "resetListViewData partItemSelectedList SIZE is "+partItemSelectedList.size()+"," +partItemSelectedList.toString());
-	   mMapList.clear();
-	  // mListView.removeAllViews();
-	   for (int i = 0; i < partItemSelectedList.size(); i++) {
-			Map<String, Object> map = new HashMap<String, Object>();				
-			map.put("device_name", ((myApplication) getApplication())
-					.getPartItemName(partItemSelectedList.get(i)));
+   
+   /**
+    * 
+    * @param itemIndex :spinner widget index
+    * @param updateAdapter:是否要重新裝載adapter data
+    */
+   void InitDataNeeded(int itemIndex,boolean updateAdapter){
+	   try {
+		   if(partItemObject == null){
+			partItemObject = ((myApplication) getApplication())
+					.getPartItemObject(mCurrentStationIndex,mCurrentDeviceIndex);
+			Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
+			}
+			mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
+			
+			if(updateAdapter){
+				 mMapList.clear();
+			}
+			for (int i = 0; i < mPartItemSelectedList.size(); i++) {
+				Map<String, Object> map = new HashMap<String, Object>();				
+				map.put("unit_name", ((myApplication) getApplication())
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_UNIT_NAME));
 
-			map.put("deadline", "2015-06-20 10:00");
-			map.put("status", "已检查");
-			map.put("progress", ""+(i+1)+"/"+""+(partItemSelectedList.size()));
-			mMapList.add(map);
+
+				//已检查项的检查数值怎么保存？并显示出来
+				map.put("deadline", "2015-06-20 10:00");				
+				mMapList.add(map);
+			}
+			if(updateAdapter){
+				 if(mPartItemSelectedList.size()>0){
+					   mListViewAdapter.notifyDataSetChanged();
+				   }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	   if(partItemSelectedList.size()>0){
-		   mListViewAdapter.notifyDataSetChanged();
+   }   
+   
+   private void needVisible(){
+	   if(bListViewVisible){
+		   mListView.setVisibility(ListView.VISIBLE);
+		   if(bSpinnerVisible){
+		   mSpinner.setVisibility(Spinner.VISIBLE);
+		   }
+		   mCheckbox.setVisibility(CheckBox.VISIBLE);
+		   
+	   }else{
+		   mListView.setVisibility(ListView.GONE);
+		   mSpinner.setVisibility(Spinner.GONE);
+		   mCheckbox.setVisibility(CheckBox.GONE);
 	   }
-   }
+   } 
 }

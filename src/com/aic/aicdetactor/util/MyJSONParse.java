@@ -375,6 +375,30 @@ public class MyJSONParse {
 
 	}
 
+	// input params must be partItem sub
+		public String getPartItemCheckUnitName(Object partItemobject,int index) {
+			//Log.d(TAG, "getPartItemName 0");
+			if (partItemobject == null) {
+				Log.d(TAG, "getPartItemCheckUnitName " + " object is null");
+				return null;
+			}
+			String name = null;
+			//Log.d(TAG, "getPartItemName 1");
+			try {
+				JSONObject newObject = (JSONObject) partItemobject;
+
+				//Log.d(TAG, "getPartItemName 3");
+				name = newObject.getString(PARTITEMDATA);
+				name = getPartItemSubStr(name,index);
+				//Log.d(TAG, "getPartItemName 4");
+
+			} catch (Exception e) {
+				Log.e(TAG,e.toString());;
+			}
+			Log.d(TAG, "getPartItemCheckUnitName name is "+name);
+			return name;
+		}	
+	
 	/*
 	 * input: index is itemDef index from left to right ,start from 0,that is
 	 * combox widget index input:object is deviceItem intent is to get itemDef

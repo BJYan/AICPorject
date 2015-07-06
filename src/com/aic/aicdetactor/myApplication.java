@@ -13,6 +13,28 @@ public class myApplication extends Application
 {
     private static final String VALUE = "aicdetector";
     
+    //checkItemData 以*隔开的数据编号
+    //轮次
+    public  final int PARTITEM_TURN_NAME =0;
+    //部件名
+    public  final int PARTITEM_UNIT_NAME =1;
+    //巡检项目名
+    public  final int PARTITEM_CHECKPOINT_NAME =2;
+    //巡检数据种类
+    public  final int PARTITEM_DATA_TYPE_NAME =3;
+  //测量单位
+    public  final int PARTITEM_MEASUREMENT_UNIT_NAME =4;
+    //状态标识
+    public  final int PARTITEM_STATE_MARK_NAME =5;
+    //上限数值
+    public  final int PARTITEM_MAX_VALUE_NAME =6;
+    //中限数值
+    public  final int PARTITEM_MIDDLE_VALUE_NAME =7;
+    //下限数值
+    public  final int PARTITEM_MIN_VALUE_NAME =8;
+    //额外信息
+    public  final int PARTITEM_ADDITIONAL_INFO_NAME =9;
+    
     private String value;
     public String mPath = "/sdcard/down.txt";
     MyJSONParse json = new MyJSONParse();
@@ -65,6 +87,9 @@ public class myApplication extends Application
     }
     public String getPartItemName(Object object) {
     	return json.getPartItemName(object);
+    }
+    public String getPartItemCheckUnitName(Object object,int index) {
+    	return json.getPartItemCheckUnitName(object,index);
     }
     
     public int getStationItemIndexByID(String strIdCode) throws JSONException {

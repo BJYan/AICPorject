@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical" >    
 
     <!--  first line-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp" >
+   
 
         <ImageView
             android:id="@+id/imageView1"
@@ -14,46 +18,39 @@
             android:layout_height="wrap_content"
             android:src="@drawable/title_navigate" 
             
-            android:layout_alignParentTop="true"
-             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="30dp"/>
+            />
         <TextView
             android:id="@+id/planname"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="计划巡检" 
-            android:layout_alignTop="@+id/imageView1"
-            android:layout_alignBaseline="@+id/imageView1"          
-            android:textSize="20sp"
+            android:layout_height="wrap_content"            
+            android:text="计划巡检"             
             />
-    <!--  seceond line-->     
+         </LinearLayout>
+    <!--  seceond line--> 
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >    
         <ImageView
             android:id="@+id/routearrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/catalog_arrow" 
-            android:layout_below="@+id/imageView1" 
-            android:layout_marginLeft="60dp"/>
+            />
         <TextView
             android:id="@+id/secondcatalogname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="设备名" 
-            android:layout_alignTop="@+id/routearrow"
-            android:layout_alignBaseline="@+id/routearrow"          
-            android:textSize="20sp"
+            
+            android:text="设备名"            
             />
-        
+        </LinearLayout>
 
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="1dp"            
             android:id="@+id/red_line1"
-            android:background="@drawable/red_line"
-            android:orientation="horizontal"
-            android:layout_below="@+id/routearrow"
+            android:background="@drawable/red_line" 
+            android:orientation="horizontal"              
             />
  <!--  third line-->
          <TextView
@@ -61,8 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="route name"
-            android:layout_alignLeft="@+id/imageView1"
-            android:layout_below="@+id/red_line1"
+            
             />
          <LinearLayout
             android:layout_width="fill_parent"
@@ -83,6 +79,7 @@
                  android:layout_height="wrap_content"
                  android:text="@string/check_order"
                  android:layout_gravity="right" />
+
          </LinearLayout>
     <LinearLayout
             android:layout_width="fill_parent"
@@ -90,16 +87,18 @@
             android:id="@+id/red_line2"
             android:background="@drawable/red_line"
             android:orientation="horizontal"
-            android:layout_below="@+id/station_text_name"
+            
             />
     <ListView 
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/red_line2"
-        android:layout_weight="1"
+        android:layout_weight="0.75"           
        />
-
+"
     
 
-</RelativeLayout>
+
+    
+</LinearLayout>
