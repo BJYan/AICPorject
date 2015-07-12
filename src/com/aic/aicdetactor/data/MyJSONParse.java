@@ -1,6 +1,12 @@
-package com.aic.aicdetactor.util;
+package com.aic.aicdetactor.data;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -16,17 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.database.DBHelper;
+import com.aic.aicdetactor.database.RouteDao;
+
 public class MyJSONParse {
 	String TAG = "luotest";
-	private Object mStationInfo_Root_Object = null;
-	private Object mWorkerInfo_Root_Object = null;
-	private Object mTurnInfo_Root_Object = null;
-	private Object mPlanName_Root_Object = null;
-
-	private List<Object> mStationList = null;
-	private List<Object> mWorkerList = null;
-	private List<Object> mTurnList = null;
-
 	public static String STATIONINFO = "StationInfo";
 	public static String WORKERINFO = "WorkerInfor";
 	public static String TRUNINFO = "TurnInfo";
@@ -41,15 +42,111 @@ public class MyJSONParse {
 	public static String PLANNAME = "PlanName";
 	public static String ITEMDEF = "ItemDef";
 	public static int ITEMDEF_INDEX = 5;
+	private RouteDao mRouteDao = null;
+	private Context mContext = null;
+	private SharedPreferences mSharedPreferences = null;
+	private int mCurrentRouteIndex =0;//当前或最近的路线索引
+	private int mCurrentStationIndex =0;//当前或最近的站点索引
+	private int mCurrentDeviceIndex=0;//当前或最近的设备索引
+	private int mCurrentPartItemIndex =0;//当前或最近的巡检项索引
+	private int mIsReverseChecking = 0;//是否反向巡检
+	private String mCurrentFileName = null;//当前巡检的文件名即guid
+	private String mSavePath = null;//检查路线数据存储的路径
+	private List<RouteInfo> mRouteInfoList = null;
 	// partitemData split key word
 	public static String PARTITEMDATA_SPLIT_KEYWORD = "\\*";
 
+	private Cursor mCursor = null;
 	public MyJSONParse() {
 
 	}
 
+	/**
+	 * 主要存储一些索引信息，其他数据需要进入数据库里进行查询及修改
+	 * @param cv
+	 */
+	public void SaveCheckStatus(ContentValues cv ){			
+		
+		// 实例化SharedPreferences对象（第一步）
+		if(mSharedPreferences ==null){
+			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+		}
+		// 实例化SharedPreferences.Editor对象（第二步）
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		// 用putString的方法保存数据
+		editor.putLong(CommonDef.ROUTE_INDEX, cv.getAsLong(CommonDef.ROUTE_INDEX));
+		editor.putLong(CommonDef.STATION_INDEX, cv.getAsLong(CommonDef.STATION_INDEX));
+		editor.putLong(CommonDef.DEVICE_INDEX, cv.getAsLong(CommonDef.DEVICE_INDEX));
+		editor.putLong(CommonDef.PARTITEM_INDEX, cv.getAsLong(CommonDef.PARTITEM_INDEX));
+		editor.putLong(CommonDef.ISREVERSECHECKING, cv.getAsLong(CommonDef.ISREVERSECHECKING));
+		editor.putString(CommonDef.GUID, cv.getAsString(CommonDef.GUID));
+		editor.putString(CommonDef.PATH_DIRECTOR, cv.getAsString(CommonDef.PATH_DIRECTOR));
+		// 提交当前数据
+		editor.commit();
+	}
+	
+	/**本想法是通过SharedPreferences来存储正在巡检的路线的相关索引等信息，例如刚在巡检到哪一具体项了。
+	 * 
+	 * 
+	 * @param context
+	 */
+	public int InitData(Context context){
+		mContext = context;
+		if(mRouteDao== null){
+		mRouteDao = new RouteDao(mContext);}
+		
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+		// 实例化SharedPreferences.Editor对象（第二步）
+		
+		//获取当前巡检的索引信息
+		mCurrentRouteIndex = (int) mSharedPreferences.getLong(CommonDef.ROUTE_INDEX,0);
+		mCurrentStationIndex = (int) mSharedPreferences.getLong(CommonDef.STATION_INDEX,0);
+		mCurrentDeviceIndex = (int) mSharedPreferences.getLong(CommonDef.DEVICE_INDEX,0);
+		mCurrentPartItemIndex = (int) mSharedPreferences.getLong(CommonDef.PARTITEM_INDEX,0);
+		mIsReverseChecking = (int) mSharedPreferences.getLong(CommonDef.ISREVERSECHECKING,0);
+		mCurrentFileName = mSharedPreferences.getString(CommonDef.GUID,null);
+		mSavePath = mSharedPreferences.getString(CommonDef.PATH_DIRECTOR,null);		
+		
+		//再查数据库中是否有完成的巡检路线，加载到mRouteInfoList中
+		mRouteInfoList = mRouteDao.getNoCheckFinishRouteInfo();
+		
+		for(int index =0;index <mRouteInfoList.size();index++){
+			String path = mRouteInfoList.get(index).getFileName();
+			//从此开始关联各个RouteInfo相关项
+			initData(index,path);
+		}
+		
+		return getRouteCount();
+	}
+	
+	/*
+	 * 插入新的巡检计划，返回数值是未完成的巡检计划数量,并刷新mRouteInfoList
+	 */
+	public int insertNewRouteInfo(String fileName,String path,Context context){
+		if(fileName == null || path == null){
+			return 0;
+		}
+		if(mContext == null){
+			mContext = context;
+		}
+		if(mRouteDao== null){
+			mRouteDao = new RouteDao(mContext);}
+		mRouteDao.insertNewRouteInfo(fileName, path);
+		return 1;
+	}
+	/**
+	 * 返回未完成的巡检路线的个数，便于UI界面显示
+	 * @return
+	 */
+	public int getRouteCount(){
+		int count =0;
+		if(mRouteInfoList!=null){
+			count = mRouteInfoList.size();
+		}
+		return count;
+	}
 	// first init
-	public void initData(String path) {
+	private void initData(int routeIndex,String path) {
 		String data = openFile(path);
 		if (data != null) {
 			Log.d("luotest", "data is not null");
@@ -61,13 +158,13 @@ public class MyJSONParse {
 					String index = jsonObject.getString("Index");
 					Log.d("luotest", "name = " + index);
 					if (index.equals("7")) {
-						mPlanName_Root_Object = jsonObject;
+						mRouteInfoList.get(routeIndex).mPlanName_Root_Object = jsonObject;
 					} else if (index.equals("1")) {
-						mTurnInfo_Root_Object = jsonObject;
+						mRouteInfoList.get(routeIndex).mTurnInfo_Root_Object = jsonObject;
 					} else if (index.equals("2")) {
-						mWorkerInfo_Root_Object = jsonObject;
+						mRouteInfoList.get(routeIndex).mWorkerInfo_Root_Object = jsonObject;
 					} else if (index.equals("4")) {
-						mStationInfo_Root_Object = jsonObject;
+						mRouteInfoList.get(routeIndex).mStationInfo_Root_Object = jsonObject;
 					}
 				}
 			} catch (Exception e) {
@@ -113,7 +210,7 @@ public class MyJSONParse {
 	}
 
 	public int getRoutePartItemCount(int routeIndex) throws JSONException {
-		List<Object> list = getStationList();
+		List<Object> list = getStationList(routeIndex);
 		int count = 0;
 		for (int i = 0; i < list.size(); i++) {
 			JSONObject object = (JSONObject) list.get(i);
@@ -132,41 +229,41 @@ public class MyJSONParse {
 		return count;
 	}
 
-	public String getRoutName() throws JSONException {
+	public String getRoutName(int routeIndex) throws JSONException {
 		String name = null;
-		if (mPlanName_Root_Object == null) {
+		if (mRouteInfoList.get(routeIndex).mPlanName_Root_Object == null) {
 			Log.e(TAG, "getRoutName mPlanName_Root_Object is null");
 			return null;
 		}
-		JSONObject object = (JSONObject) mPlanName_Root_Object;
+		JSONObject object = (JSONObject) mRouteInfoList.get(routeIndex).mPlanName_Root_Object;
 		name = object.getString(PLANNAME);
 		return name;
 	}
 
-	public List<Object> getStationList() throws JSONException {
-		if (mStationInfo_Root_Object == null)
+	public List<Object> getStationList(int routeIndex) throws JSONException {
+		if (mRouteInfoList.get(routeIndex).mStationInfo_Root_Object == null)
 			return null;
 
-		if (mStationList != null)
-			return mStationList;
+		if (mRouteInfoList.get(routeIndex).mStationList != null)
+			return mRouteInfoList.get(routeIndex).mStationList;
 
-		mStationList = new ArrayList<Object>();
+		mRouteInfoList.get(routeIndex).mStationList = new ArrayList<Object>();
 		try {
-			JSONObject object = (JSONObject) mStationInfo_Root_Object;
+			JSONObject object = (JSONObject) mRouteInfoList.get(routeIndex).mStationInfo_Root_Object;
 
 			JSONArray array = object.getJSONArray(STATIONINFO);
 
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject subObject = array.getJSONObject(i);
 				Log.d(TAG, "I =" + i + subObject.getString(STATIONNAME));
-				mStationList.add(subObject);
+				mRouteInfoList.get(routeIndex).mStationList.add(subObject);
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		// mStationList = list;
-		return mStationList;
+		return mRouteInfoList.get(routeIndex).mStationList;
 	}
 
 	public String getStationItemName(Object stationItemobject)
@@ -219,11 +316,11 @@ public class MyJSONParse {
 	}
 
 	// input params must be StationItemIndex
-	public List<Object> getDeviceItem(int stationIndex) throws JSONException {
+	public List<Object> getDeviceItem(int routeIndex,int stationIndex) throws JSONException {
 
 		List<Object> list = new ArrayList<Object>();
 		try {
-			JSONObject object2 = (JSONObject) getStationItem(stationIndex);
+			JSONObject object2 = (JSONObject) getStationItem(routeIndex,stationIndex);
 			;
 
 			JSONArray array = object2.getJSONArray(STATIONITEM);
@@ -323,7 +420,7 @@ public class MyJSONParse {
 		return name;
 	}
 
-	public int getStationItemIndexByID(String strIdCode) throws JSONException {
+	public int getStationItemIndexByID(int routeIndex,String strIdCode) throws JSONException {
 		if (strIdCode == null) {
 			Log.d(TAG, "getStationItemIndexByID strIdCode is null");
 			return -1;
@@ -332,8 +429,8 @@ public class MyJSONParse {
 		JSONObject object = null;
 
 		List<Object> list = null;
-		for (int i = 0; i < mStationList.size(); i++) {
-			object = (JSONObject) mStationList.get(i);
+		for (int i = 0; i < mRouteInfoList.get(routeIndex).mStationList.size(); i++) {
+			object = (JSONObject) mRouteInfoList.get(routeIndex).mStationList.get(i);
 			list = getIDInfo(object);
 			Log.d(TAG, "getStationItemIndexByID i = " + i + ",object is "
 					+ object.toString());
@@ -472,55 +569,55 @@ public class MyJSONParse {
 		return name;
 	}
 
-	public List<Object> getWorkerInfoItem() throws JSONException {
-		if (mWorkerInfo_Root_Object == null)
+	public List<Object> getWorkerInfoItem(int routeIndex) throws JSONException {
+		if (mRouteInfoList.get(routeIndex).mWorkerInfo_Root_Object == null)
 			return null;
-		if (mWorkerList != null)
-			return mWorkerList;
-		mWorkerList = new ArrayList<Object>();
+		if (mRouteInfoList.get(routeIndex).mWorkerList != null)
+			return mRouteInfoList.get(routeIndex).mWorkerList;
+		mRouteInfoList.get(routeIndex).mWorkerList = new ArrayList<Object>();
 		try {
-			JSONObject object = (JSONObject) mWorkerInfo_Root_Object;
+			JSONObject object = (JSONObject) mRouteInfoList.get(routeIndex).mWorkerInfo_Root_Object;
 
 			JSONArray array = object.getJSONArray("WorkerInfo");
 
 			for (int i = 0; i < array.length(); i++) {
 
-				mWorkerList.add(array.getJSONObject(i));
+				mRouteInfoList.get(routeIndex).mWorkerList.add(array.getJSONObject(i));
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return mWorkerList;
+		return mRouteInfoList.get(routeIndex).mWorkerList;
 	}
 
-	public List<Object> getTurnInfoItem() throws JSONException {
-		if (mTurnInfo_Root_Object == null)
+	public List<Object> getTurnInfoItem(int routeIndex) throws JSONException {
+		if (mRouteInfoList.get(routeIndex).mTurnInfo_Root_Object == null)
 			return null;
 
-		if (mTurnList != null)
-			return mTurnList;
+		if (mRouteInfoList.get(routeIndex).mTurnList != null)
+			return mRouteInfoList.get(routeIndex).mTurnList;
 
-		mTurnList = new ArrayList<Object>();
+		mRouteInfoList.get(routeIndex).mTurnList = new ArrayList<Object>();
 		try {
-			JSONObject object = (JSONObject) mTurnInfo_Root_Object;
+			JSONObject object = (JSONObject) mRouteInfoList.get(routeIndex).mTurnInfo_Root_Object;
 
 			JSONArray array = object.getJSONArray("TurnInfo");
 
 			for (int i = 0; i < array.length(); i++) {
 
-				mTurnList.add(array.getJSONObject(i));
+				mRouteInfoList.get(routeIndex).mTurnList.add(array.getJSONObject(i));
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return mTurnList;
+		return mRouteInfoList.get(routeIndex).mTurnList;
 	}
 
-	public Object getStationItem(int index) {
+	public Object getStationItem(int routeIndex,int index) {
 		Log.d(TAG, "getStationItem");
-		return mStationList.get(index);
+		return mRouteInfoList.get(routeIndex).mStationList.get(index);
 
 	}	
 

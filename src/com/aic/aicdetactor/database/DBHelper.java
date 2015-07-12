@@ -7,10 +7,26 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-	 private final static String DB_NAME ="test.db";//数据库名
-	 private final static int VERSION = 1;//版本号
+	 private final static String DB_NAME ="aicdatabase.db";//数据库名
+	 private final static int VERSION = 2;//版本号
 	 
 	  
+	// public static String ID="_id";
+	 public static String GUID="guid";
+	 public static String JXNAME="jxName";
+	 public static String PATH="filePath";//文件的全路径
+	 public static String DOWNTIME="downTime";
+	 public static String ISBEIGINCHECKED="isBeiginChecked";
+	 public static String ISCHECKED="isChecked";
+	 public static String ISUPLOADED="isuploaded";
+	 public static String LASTCHECKTIME="lastcheckTime";
+	 public static String WORKERNAME="workerName";
+	 public static String FIRSTCHECKTIME="firstcheckTime";
+	 public static String LASTCHECKSTATION="lastCheckStation";
+	 public static String LASTCHECKDEVICE_INDEX="lastCheckDeviceIndex";
+	 public static String LASTCHECKPARTITEM_INDEX="lastCheckPartItemIndex";
+	 public static String ISREVERSE_CHECK="isReverseCheck";
+	 
 
 	 //自带的构造方法
 	 public DBHelper(Context context, String name, CursorFactory factory,
@@ -30,21 +46,22 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	 //当数据库创建的时候调用
 	 public void onCreate(SQLiteDatabase db) {
-	  String jxchecksql = "create table jxcheck(" +
-	      "id integer primary key autoincrement, "
+		 // "_id integer INTEGER PRIMARY KEY , "
+	  String jxchecksql = "create table IF NOT EXISTS jxcheck(" 	     
 	      + "guid varchar(64),"
 	      + "jxName varchar(128)," 
-	      + "path varchar(128),"
+	      + "filePath varchar(128),"
 	      + "downTime varchar(24),"
-	      + "isChecked varchar(2),"
-	      + "isuploaded varchar(2),"
+	      + "isBeiginChecked BOOLEAN,"
+	      + "isChecked BOOLEAN,"
+	      + "isuploaded BOOLEAN,"
 	      + "lastcheckTime varchar(24),"
 	      + "workerName varchar(128),"
 	      + "firstcheckTime varchar(24),"
 	      + "lastCheckStation varchar(8),"
 	      + "lastCheckDeviceIndex varchar(8),"
 	      + "lastCheckPartItemIndex varchar(8),"
-	      + "isReverseCheck varchar(4))";
+	      + "isReverseCheck BOOLEAN)";
 
 	  db.execSQL(jxchecksql);
 	  
@@ -52,7 +69,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	 //版本更新时调用
 	 public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	  String sql  = "update jxcheck ....";//自己的Update操作
+	  String sql  = "DROP TABLE IF EXISTS jxcheck";//自己的Update操作
 	  
 	 // db.execSQL("DROP TABLE IF EXISTS titles");  
 	  db.execSQL(sql);

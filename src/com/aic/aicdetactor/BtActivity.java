@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.aic.aicdetactor.util.MyJSONParse;
 
 
+
+
+import com.aic.aicdetactor.data.MyJSONParse;
+import com.aic.aicdetactor.view.QuiteToast;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -29,8 +33,7 @@ public class BtActivity extends Activity {
 	Switch mSwitch = null;
 	BluetoothAdapter mBTAdapter = null;
 	TextView mBTStatusTextView = null;
-	 public String mPath = "/sdcard/down.txt";
-     MyJSONParse json = new MyJSONParse();
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -49,15 +52,7 @@ public class BtActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bt_activity);
 		mListView = (ListView)findViewById(R.id.listView);
-		try{
-			json.initData(mPath);
-			List<Object> stationItemList = json.getStationList();
-			
-			for(int i = 0;i<stationItemList.size();i++){
-				
-			}
-		}catch(Exception e){e.printStackTrace();}
-		
+//		
 		
 		
 		
@@ -151,6 +146,5 @@ public class BtActivity extends Activity {
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-	}
-
+	}	
 }

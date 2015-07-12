@@ -15,9 +15,9 @@ import com.aic.aicdetactor.R;
  *  
  * @Title:  
  * @Description: 实现TODO 
- * @Copyright:Copyright (c) 2011 
- * @Company:易程科技股份有限公司 
- * @Date:2012-8-17 
+ * @Copyright:
+ * @Company:
+ * @Date:
  * @author  longgangbai 
  * @version 1.0 
  */  

@@ -5,9 +5,13 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.aic.aicdetactor.util.MyJSONParse;
+
+
+
+import com.aic.aicdetactor.data.MyJSONParse;
 
 import android.app.Application;
+import android.content.Context;
 
 public class myApplication extends Application
 {
@@ -35,19 +39,23 @@ public class myApplication extends Application
     //额外信息
     public  final int PARTITEM_ADDITIONAL_INFO_NAME =9;
     
-    private String value;
-    public String mPath = "/sdcard/down.txt";
+   // private String value;
+   // public String mPath = "/sdcard/down.txt";
     MyJSONParse json = new MyJSONParse();
     @Override
     public void onCreate()
     {
-        super.onCreate();
-      
-        json.initData(mPath);
-        
+        super.onCreate(); 
     }
-    public List<Object> getStationList() throws JSONException {
-     return	json.getStationList();
+    public int InitData(){
+    	return json.InitData(this.getApplicationContext());
+    }
+    public int insertNewRouteInfo(String fileName,String path,Context context){
+    	json.insertNewRouteInfo(fileName, path,context);
+    	return 1;
+    }
+    public List<Object> getStationList(int routeIndex) throws JSONException {
+     return	json.getStationList(routeIndex);
     }
     public int getRoutePartItemCount(int routeIndex) throws JSONException{
     	 return	json.getRoutePartItemCount(routeIndex);
@@ -58,8 +66,8 @@ public class myApplication extends Application
     public List<Object> getDeviceList(Object object) throws JSONException {
     	return json.getDeviceList(object);
     }
-    public List<Object> getDeviceItemList(int stationIndex) throws JSONException {
-    	return json.getDeviceItem(stationIndex);
+    public List<Object> getDeviceItemList(int routeIndex,int stationIndex) throws JSONException {
+    	return json.getDeviceItem(routeIndex,stationIndex);
     }
     public int getDevicePartItemCount(Object deviceItemObject) throws JSONException {
     	return json.getDevicePartItemCount(deviceItemObject);
@@ -67,14 +75,14 @@ public class myApplication extends Application
     public int getStationPartItemCount(Object staionItemObject) throws JSONException {
     	return json.getStationPartItemCount(staionItemObject);
     }
-    public List<Object> getPartItemDataList(int stationIndex,int deviceIndex) throws JSONException {
-    	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
+    public List<Object> getPartItemDataList(int routeIndex,int stationIndex,int deviceIndex) throws JSONException {
+    	List<Object> deviceItemList = json.getDeviceItem(routeIndex,stationIndex);
     	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
      return 	json.getPartList(object);
     }
     
-    public Object getPartItemObject(int stationIndex,int deviceIndex) throws JSONException {
-    	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
+    public Object getPartItemObject(int routeIndex,int stationIndex,int deviceIndex) throws JSONException {
+    	List<Object> deviceItemList = json.getDeviceItem(routeIndex,stationIndex);
     	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
      return 	object;
     }
@@ -92,8 +100,8 @@ public class myApplication extends Application
     	return json.getPartItemCheckUnitName(object,index);
     }
     
-    public int getStationItemIndexByID(String strIdCode) throws JSONException {
-    	return json.getStationItemIndexByID(strIdCode);
+    public int getStationItemIndexByID(int routeIndex,String strIdCode) throws JSONException {
+    	return json.getStationItemIndexByID(routeIndex,strIdCode);
     }
     public String getPartItemSubStr(String partItemDataStr,int index){
     	return json.getPartItemSubStr(partItemDataStr,index);
@@ -101,7 +109,7 @@ public class myApplication extends Application
     public List<Object> getPartItemListByItemDef(Object partItemobject ,int index) throws JSONException{
     	return json.getPartItemListByItemDef(partItemobject,index);
     }
-    public String getRoutName() throws JSONException{
-    	return json.getRoutName();
+    public String getRoutName(int routeIndex) throws JSONException{
+    	return json.getRoutName(routeIndex);
     }
 }

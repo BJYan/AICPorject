@@ -14,18 +14,27 @@ import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
-import com.aic.aicdetactor.util.CommonDef;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.view.QuiteToast;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -66,6 +75,9 @@ public class RouteActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		if (isUseWivewPager) {
 			setContentView(R.layout.plancheck_main);
 		} else {
@@ -112,81 +124,9 @@ public class RouteActivity extends Activity {
 			initViewPager();
 		} else {
 			mListView = (ListView) findViewById(R.id.listView);
-			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-			try {
-
-				List<Object> routeList = ((myApplication) getApplication())
-						.getStationList();
-
-//				for (int i = 0; i < routeList.size(); i++) {
-//					Map<String, String> map = new HashMap<String, String>();
-//					map.put("pathname", ((myApplication) getApplication())
-//							.getStationItemName(routeList.get(i)));
-//					map.put("deadline", "2015-06-20 10:00");
-//					map.put("status", "已检查");
-//					map.put("progress", "2/6");
-//					String index = "" + i + 1;
-//					map.put("index", index);
-//
-//					list.add(map);
-//					
-					
-					Map<String, String> map = new HashMap<String, String>();
-					map.put("routeName", ((myApplication) getApplication())
-							.getRoutName());
-					map.put("deadline", "2015-06-20 10:00");
-					map.put("status", "已检查");
-					map.put("progress", "2/"+ ((myApplication) getApplication())
-							.getRoutePartItemCount(0));
-//					map.put("progress", "2/");
-					String index = ""+ 1;
-					map.put("index", index);
-
-					list.add(map);
-					
-					
-					
-					//List<Object> stationList = ((myApplication) getApplication()).getDeviceItem(stationItemList.get(i));
-				//	for(int h=0 ;h<stationList.size();h++){
-					//	JSONObject jsonObject= (JSONObject) stationList.get(h);
-//					List<Object> partitemDataList =((myApplication) getApplication()).getPartItemDataList(i, 0);
-//						((myApplication) getApplication()).getPartItemListByItemDef();
-					//}
-					
-			//	} 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			SimpleAdapter adapter = new SimpleAdapter(this, list,
-					R.layout.checkitem, new String[] { "index", "routeName",
-							"deadline", "status", "progress" }, new int[] {
-							R.id.index, R.id.pathname, R.id.deadtime,
-							R.id.status, R.id.progress });
-			mListView.setAdapter(adapter);
-			mListView.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					// TODO Auto-generated method stub
-					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-							.getItemAtPosition(arg2));
-					Log.d(TAG,
-							"MAPITEM is " + mapItem.toString()
-									+ " pathname is "
-									+ (String) mapItem.get("pathname"));
-					Intent intent = new Intent();
-					intent.putExtra(CommonDef.ROUTE_INDEX, arg2);
-					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-					intent.putExtra(CommonDef.ROUTENAME,
-							(String) mapItem.get("routeName"));
-					intent.putExtra(CommonDef.LISTITEM_INDEX, (String) mapItem.get("index"));
-					intent.setClass(getApplicationContext(),
-							StationActivity.class);
-					startActivity(intent);
-				}
-			});
-
+			//
+			//init();
+			iniDataThread.start();
 			if (isTestInterface) {
 				// //test idinfo ,test pass
 				int myid = 100;
@@ -194,7 +134,7 @@ public class RouteActivity extends Activity {
 				teststr = "AIC8D7D1E09C";
 				try {
 					myid = ((myApplication) getApplication())
-							.getStationItemIndexByID(teststr);
+							.getStationItemIndexByID(0,teststr);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -521,4 +461,105 @@ public class RouteActivity extends Activity {
 			getMenuInflater().inflate(R.menu.main, menu);
 			return true;
 		}
+		
+		void init(){
+//			String name = SystemUtil.createGUID();
+//			name = "down.txt";
+//			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down.txt",this);
+//			name = "down1.txt";
+//			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
+			
+			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+			int iRouteCount = ((myApplication) getApplication()).InitData();
+			for(int i =0;i<iRouteCount;i++){
+			try {				
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("routeName", ((myApplication) getApplication())
+							.getRoutName(i));
+					map.put("deadline", "2015-06-20 10:00");
+					map.put("status", "已检查");
+					map.put("progress", "0/"+ ((myApplication) getApplication())
+							.getRoutePartItemCount(i));
+//					map.put("progress", "2/");
+					String index = ""+(i+ 1);
+					map.put("index", index);
+
+					list.add(map);
+					
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+
+			SimpleAdapter adapter = new SimpleAdapter(this, list,
+					R.layout.checkitem, new String[] { "index", "routeName",
+							"deadline", "status", "progress" }, new int[] {
+							R.id.index, R.id.pathname, R.id.deadtime,
+							R.id.status, R.id.progress });
+			mListView.setAdapter(adapter);
+			mListView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
+							.getItemAtPosition(arg2));
+					Log.d(TAG,
+							"MAPITEM is " + mapItem.toString()
+									+ " pathname is "
+									+ (String) mapItem.get("pathname"));
+					Intent intent = new Intent();
+					intent.putExtra(CommonDef.ROUTE_INDEX, arg2);
+					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.ROUTENAME,
+							(String) mapItem.get("routeName"));
+					intent.putExtra(CommonDef.LISTITEM_INDEX, (String) mapItem.get("index"));
+					intent.setClass(getApplicationContext(),
+							StationActivity.class);
+					startActivity(intent);
+				}
+			});
+			
+		}
+	private	Handler InitDataHandler = new Handler()
+	    {
+			public final  int INIT_DATA = 0;
+	        @Override
+	        public void handleMessage(Message msg) {
+	            // TODO Auto-generated method stub
+	          //  super.handleMessage(msg);
+	            //InitDataHandler.post(update_thread);
+	        	switch(msg.what){
+	        	case INIT_DATA:
+	        		init();
+	        		break;
+	        	}
+	           
+	        }       
+	    };
+	    
+	    private Thread iniDataThread = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Message msg = new Message();
+				msg.what = 0;
+				InitDataHandler.sendMessage(msg);
+			}
+	    	
+	    });
+	    private long mExitTime =0;
+	    @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			mExitTime = System.currentTimeMillis();
+			QuiteToast.showTips(getApplicationContext(), mExitTime,RouteActivity.this);
+
+			return true;
+		}
+		return false;
+	}
+	   
+	   
 }

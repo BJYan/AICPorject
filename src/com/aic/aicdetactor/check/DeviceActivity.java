@@ -9,8 +9,9 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
-import com.aic.aicdetactor.util.CommonDef;
-import com.aic.aicdetactor.util.MyJSONParse;
+
+
+import com.aic.aicdetactor.comm.CommonDef;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -28,11 +31,12 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class DeviceActivity extends Activity {
 	int mStationIndex = 0;
+	int mRouteIndex = 0;
 	ListView mListView = null;
 	String TAG = "luotest";
 	
-	String rotename = null;
-	String rootName = null;
+	String mCheckNameStr = null;
+	String mRouteNameStr = null;
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -51,19 +55,23 @@ public class DeviceActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.device_activity);
 		Log.d("test", "startDevideActivity");
 		Intent intent = getIntent();
+		mRouteIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
 		mStationIndex = intent.getExtras().getInt(CommonDef.STATION_INDEX);
 		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
-		rotename = intent.getExtras().getString(CommonDef.CHECKNAME);
+		mCheckNameStr = intent.getExtras().getString(CommonDef.CHECKNAME);
 		String indexStr = intent.getExtras().getString(CommonDef.LISTITEM_INDEX);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
-		Log.d(TAG, "oneCatalog is " + oneCatalog + "rotename is " + rotename);
+		Log.d(TAG, "oneCatalog is " + oneCatalog + "mCheckNameStr is " + mCheckNameStr);
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		rootName = intent.getExtras().getString(CommonDef.ROUTENAME);
-		RouteNameTextView.setText(indexStr + "        " + rotename);
+		mRouteNameStr = intent.getExtras().getString(CommonDef.ROUTENAME);
+		RouteNameTextView.setText(mRouteNameStr);
 
 		Log.d(TAG, "ONcREATE index is " + mStationIndex);
 		mListView = (ListView) findViewById(R.id.listView);
@@ -71,10 +79,11 @@ public class DeviceActivity extends Activity {
 		try {
 
 			List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mStationIndex);
+					.getDeviceItemList(mRouteIndex,mStationIndex);
 
 			for (int i = 0; i < deviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
+				map.put("index",""+(mStationIndex+1) );
 				map.put("device_name", ((myApplication) getApplication())
 						.getDeviceItemName(deviceItemList.get(i)));
 				((myApplication) getApplication())
@@ -106,11 +115,12 @@ public class DeviceActivity extends Activity {
 				HashMap<String, String> map = (HashMap<String, String>) mListView
 						.getItemAtPosition(arg2);
 				Intent intent = new Intent();
-				intent.putExtra(CommonDef.ROUTENAME, rotename);
+				intent.putExtra(CommonDef.ROUTENAME, mRouteNameStr);
+				intent.putExtra(CommonDef.ROUTE_INDEX, mRouteIndex);
 				intent.putExtra(CommonDef.STATION_INDEX, mStationIndex);
 				intent.putExtra(CommonDef.DEVICE_INDEX, arg2);
 				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-				intent.putExtra(CommonDef.ROOTNAME, rootName);
+				intent.putExtra(CommonDef.ROOTNAME, mRouteNameStr);
 				intent.putExtra(CommonDef.CHECKNAME, map.get("device_name"));
 				intent.setClass(getApplicationContext(),
 						DeviceItemActivity.class);

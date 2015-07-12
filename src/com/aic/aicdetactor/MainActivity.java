@@ -1,12 +1,16 @@
 package com.aic.aicdetactor;
 
 import com.aic.aicdetactor.check.RouteActivity;
+import com.aic.aicdetactor.view.QuiteToast;
 
 import android.app.ActivityGroup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -32,6 +36,9 @@ public class MainActivity extends ActivityGroup {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.activity_main);
 		findViews();
 		setListeners();
@@ -135,5 +142,6 @@ public class MainActivity extends ActivityGroup {
 		}
 
 	};
+	 
 }
 

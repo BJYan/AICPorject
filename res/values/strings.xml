@@ -24,5 +24,22 @@
     <string name="checked">Checked</string>
     <string name="uncheck">Uncheck</string>
     <string name="no_bt_device">Can not support bluetooth</string>
-
+    <string name="shureQuiteApp">Back agin will quite AIC app</string>
+   
+<string name="position">位置</string>
+    <string name="direction">方向</string>
+    <string name="next_item">下一点</string>
+    <string name="measurement">测量</string>
+    <string name="measurement_countdown">测量倒计时</string>
+    <string name="motor_type">电机型号</string>
+    
+    <string name="motor_power">电机功率</string>
+    <string name="rated_speed">额定转速</string>
+    <string name="rated_voltage">额定电压</string>
+    <string name="rated_current">额定电流</string>
+    <string name="rated_power">额定功率</string>
+    <string name="edite">编辑</string>
+    <string name="x">X:</string>
+    <string name="y">Y:</string>
+    <string name="z">Z:</string>
 </resources>

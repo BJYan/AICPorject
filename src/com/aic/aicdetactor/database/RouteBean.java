@@ -61,4 +61,8 @@ public class RouteBean {
 	 * 最近巡检项是否反向巡检
 	 */
 	public boolean mIsReverseChecking = false;
+	/*
+	 * 是否已开始巡检
+	 */
+	public boolean mIsBeiginCheck=false;
 }

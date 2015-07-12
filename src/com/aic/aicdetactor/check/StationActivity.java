@@ -14,7 +14,7 @@ import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
-import com.aic.aicdetactor.util.CommonDef;
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
@@ -28,6 +28,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
@@ -48,6 +50,7 @@ public class StationActivity extends Activity {
      boolean isStationClicked = false;
      boolean isTestInterface = true;
 	//
+     int mRouteIndex =0;
      ListView mListView;
      boolean isUseWivewPager =false;
 	String TAG = "luotest";
@@ -68,13 +71,15 @@ public class StationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 			setContentView(R.layout.station_activity);
 			
 			
 			
 			Intent intent =getIntent();
-			int routeIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
+			mRouteIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
 			int deviceIndex = intent.getExtras().getInt(CommonDef.DEVICE_INDEX);
 			
 			String  oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
@@ -85,7 +90,7 @@ public class StationActivity extends Activity {
 			planNameTextView.setText(oneCatalog);
 			
 			TextView RouteNameTextView  =(TextView)findViewById(R.id.station_text_name);
-			RouteNameTextView.setText(routeName);
+			RouteNameTextView.setText(""+(mRouteIndex +1)+ "		"+routeName);
 			ImageView imageView = (ImageView)findViewById(R.id.imageView1);
 			imageView.setOnClickListener(new OnClickListener(){
 
@@ -139,7 +144,7 @@ public class StationActivity extends Activity {
 			try {
 
 				List<Object> stationItemList = ((myApplication) getApplication())
-						.getStationList();
+						.getStationList(mRouteIndex);
 
 				for (int i = 0; i < stationItemList.size(); i++) {
 					Map<String, String> map = new HashMap<String, String>();
@@ -149,8 +154,8 @@ public class StationActivity extends Activity {
 					map.put("status", "已检查");
 					map.put("progress", "2/"+((myApplication) getApplication())
 							.getStationPartItemCount(stationItemList.get(i)));
-					String index = "" + (i + 1);
-					map.put("index", index);
+					//String index = "" + (i + 1);
+					//map.put("index", index);
 
 					list.add(map);
 					//List<Object> stationList = ((myApplication) getApplication()).getDeviceItem(stationItemList.get(i));
@@ -183,12 +188,13 @@ public class StationActivity extends Activity {
 									+ " pathname is "
 									+ (String) mapItem.get("pathname"));
 					Intent intent = new Intent();
+					intent.putExtra(CommonDef.ROUTE_INDEX , mRouteIndex);
 					intent.putExtra(CommonDef.STATION_INDEX , arg2);
 					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
 					intent.putExtra(CommonDef.CHECKNAME,
 							(String) mapItem.get("pathname"));
 					intent.putExtra(CommonDef.ROUTENAME, routeName);
-					intent.putExtra(CommonDef.LISTITEM_INDEX, (String) mapItem.get("index"));
+					intent.putExtra(CommonDef.LISTITEM_INDEX, arg2);
 					intent.setClass(getApplicationContext(),
 							DeviceActivity.class);
 					startActivity(intent);
@@ -202,7 +208,7 @@ public class StationActivity extends Activity {
 				teststr = "AIC8D7D1E09C";
 				try {
 					myid = ((myApplication) getApplication())
-							.getStationItemIndexByID(teststr);
+							.getStationItemIndexByID(0,teststr);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
