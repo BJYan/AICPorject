@@ -463,11 +463,11 @@ public class RouteActivity extends Activity {
 		}
 		
 		void init(){
-//			String name = SystemUtil.createGUID();
-//			name = "down.txt";
-//			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down.txt",this);
-//			name = "down1.txt";
-//			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
+			String name = SystemUtil.createGUID();
+			name = "down.txt";
+			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down.txt",this);
+			name = "down1.txt";
+			//((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
 			
 			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 			int iRouteCount = ((myApplication) getApplication()).InitData();
