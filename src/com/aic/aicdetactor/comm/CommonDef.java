@@ -102,4 +102,58 @@ public static final int PICTURE = 9;
 //振动矢量波形
 //Vibration vector wave
 public static final int VIBRATION_VECTOR_WAVE =10;
+/**
+ * 
+ * @author Administrator
+ *
+ */
+
+public  class route_info{
+	public static final String NAME = "Route_Name";
+	public static final String INDEX = "Route_Index";
+	public static final String LISTVIEW_ITEM_INDEX = "Route_ListView_ItemIndex";
+	public static final String DEADLINE = "Route_DeadLine";
+	public static final String STATUS = "Route_Check_Status";
+	public static final String PROGRESS = "Route_Progress";
+	
+	
+}
+public  class station_info{
+	public static final String NAME = "Station_Name";
+	public static final String INDEX = "Station_Index";
+	public static final String LISTVIEW_ITEM_INDEX = "Station_ListView_Item";
+	public static final String DEADLINE = "Station_DeadLine";
+	public static final String STATUS = "Station_Check_Status";
+	public static final String PROGRESS = "Station_Progress";
+	
+	
+}
+
+public class device_info{
+	public static final String NAME = "Device_Name";
+	public static final String INDEX = "Device_Index";
+	public static final String LISTVIEW_ITEM_INDEX = "Device_ListView_Item";
+	public static final String DEADLINE = "Device_DeadLine";
+	public static final String STATUS = "Device_Check_Status";
+	public static final String PROGRESS = "Device_Progress";
+}
+public class check_unit_info{
+	public static final String NAME = "CheckUnit_Name";
+	public static final String INDEX = "CheckUnit_Index";
+	public static final String LISTVIEW_ITEM_INDEX = "CheckUnit_ListView_Item";
+	public static final String DEADLINE = "CheckUnit_DeadLine";
+	public static final String STATUS = "CheckUnit_Check_Status";
+	public static final String PROGRESS = "CheckUnit_Progress";
+}
+public class check_item_info{
+	public static final String NAME = "CheckItem_Name";
+	public static final String UNIT_NAME = "CheckUnit_Name";
+	public static final String DATA_TYPE = "CheckItem_Type";
+	public static final String VALUE ="CheckItem_Value";
+	public static final String INDEX = "CheckItem_Index";
+	public static final String LISTVIEW_ITEM_INDEX = "CheckItem_ListView_Item";
+	public static final String DEADLINE = "CheckItem_DeadLine";
+	public static final String STATUS = "CheckItem_Check_Status";
+	public static final String PROGRESS = "CheckItem_Progress";
+}
 }

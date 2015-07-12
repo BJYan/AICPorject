@@ -10,6 +10,8 @@ import java.util.Map;
 import org.json.JSONException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +35,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.myApplication;
@@ -44,6 +47,8 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	String TAG = "luotest";
 	private Spinner mSpinner = null;
 	private TextView mItemDefTextView = null;//当只有一项时才显示
+	private String mCheckItemNameStr = null;//检查项名
+	private String mCheckUnitNameStr = null;//检查部件名称
 	private List<String> spinnerList = new ArrayList<String>();
 	private ArrayAdapter<String> spinnerAdapter;
 	private int mLastSpinnerIndex = 0;
@@ -57,6 +62,7 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private int mRouteIndex =0;
 	private int mCurrentStationIndex =0;
 	private int mCurrentDeviceIndex = 0;
+	private int mCurrentCheckIndex =0;
 	//是否需要反向排序来巡检
 	private boolean isReverseDetection = false;
 	//点击listItem后 ListView 视图消失，显示具体测试点界面
@@ -64,6 +70,9 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private boolean bSpinnerVisible = true;
 	private LinearLayout mUnitcheck_Vibrate = null;
 	private int mCheckUnit_DataType = 0;
+	private Button mButton_Direction = null;
+	private Button mButton_Next = null;
+	private Button mButton_Measurement = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -86,20 +95,20 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.deviceitem_activity_ex);
 
 		Intent intent = getIntent();
-		mRouteIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
-		mCurrentStationIndex = intent.getExtras().getInt(CommonDef.STATION_INDEX);
-		mCurrentDeviceIndex = intent.getExtras().getInt(CommonDef.DEVICE_INDEX);
+		mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
+		mCurrentStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
+		mCurrentDeviceIndex = intent.getExtras().getInt(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
 
 		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
-		String deviceNameStr = intent.getExtras().getString(CommonDef.CHECKNAME);
-		String routeNameStr = intent.getExtras().getString(CommonDef.ROUTENAME);
-		//String  rootName = intent.getExtras().getString(CommonDef.ROOTNAME);
+		String deviceNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
+		String routeNameStr = intent.getExtras().getString(CommonDef.route_info.NAME);
+		String  stationName = intent.getExtras().getString(CommonDef.station_info.NAME);
 Log.d(TAG,"routeName is "+ routeNameStr);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		RouteNameTextView.setText(""+(mCurrentDeviceIndex+1) +"			"+deviceNameStr);
+		RouteNameTextView.setText(""+(mCurrentDeviceIndex+1) +">>"+stationName+">>"+deviceNameStr);
 
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(routeNameStr);
@@ -124,8 +133,8 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		
 		InitDataNeeded(0,false);
 		mListViewAdapter = new SimpleAdapter(this, mMapList,
-				R.layout.checkunit, new String[] { "index", "unit_name","value",
-						"deadline"  }, new int[] {
+				R.layout.checkunit, new String[] { CommonDef.check_item_info.INDEX, CommonDef.check_item_info.UNIT_NAME,CommonDef.check_item_info.VALUE,
+				CommonDef.check_item_info.DEADLINE ,CommonDef.check_item_info.NAME }, new int[] {
 						R.id.index, R.id.pathname,R.id.checkvalue, R.id.deadtime});
 		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -150,23 +159,30 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 =“00000010” 表示振动矢量波形
 
 				 */
+				mCurrentCheckIndex = arg2;
 				// TODO Auto-generated method stub
 				 HashMap<String,String>
-				 map = (HashMap<String,String>)mListView.getItemAtPosition(arg2);
-				 mCheckUnit_DataType = Integer.parseInt(map.get("data_type"));
+				 map = (HashMap<String,String>)mListView.getItemAtPosition(mCurrentCheckIndex);
+				 mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
+				 mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+				 mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
 				 Log.d(TAG,"partitemdata data type =" +mCheckUnit_DataType);
 				 needVisible();
-//				 Intent intent = new Intent();
-//				 intent.putExtra("stationIndex", arg2);
-//				 intent.putExtra("title", "计划巡检");
-//				 intent.putExtra("checkName", map.get("data_type"));
-				// intent.setClass(getApplicationContext(),
-				// DeviceItemActivity.class);
-				// startActivity(intent);
 			}
 		});
 //		TextView mButtion_Position = (Button)findViewById(R.id.position);
 //		mButtion_Position.setOnClickListener(this);
+		
+		mButton_Direction = (Button)findViewById(R.id.direction);
+		mButton_Direction.setOnClickListener(this);
+		
+		mButton_Next = (Button)findViewById(R.id.next);
+		mButton_Next.setOnClickListener(this);
+		
+		mButton_Measurement = (Button)findViewById(R.id.measurement);
+		mButton_Measurement.setOnClickListener(this);
+		
+		
 		mSpinner = (Spinner) findViewById(R.id.spinner1);
 		mItemDefTextView = (TextView)findViewById(R.id.status);
 		try {
@@ -220,29 +236,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 
 	}
 
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
+	
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -257,12 +251,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		return super.onKeyDown(keyCode, event);
 	}
 
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-
+	
 	Handler myHandler = new Handler() {  
 		
         public void handleMessage(Message msg) {   
@@ -295,14 +284,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			}
 			for (int i = 0; i < mPartItemSelectedList.size(); i++) {
 				Map<String, Object> map = new HashMap<String, Object>();				
-				map.put("unit_name", ((myApplication) getApplication())
+				map.put(CommonDef.check_item_info.UNIT_NAME, ((myApplication) getApplication())
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_UNIT_NAME));
-				map.put("data_type", ((myApplication) getApplication())
+				//checkname
+				map.put(CommonDef.check_item_info.NAME, ((myApplication) getApplication())
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_CHECKPOINT_NAME));
+				map.put(CommonDef.check_item_info.DATA_TYPE, ((myApplication) getApplication())
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_DATA_TYPE_NAME));
 
 
 				//已检查项的检查数值怎么保存？并显示出来
-				map.put("deadline", "2015-06-20 10:00");				
+				map.put(CommonDef.check_item_info.DEADLINE, "2015-06-20 10:00");				
 				mMapList.add(map);
 			}
 			if(updateAdapter){
@@ -321,11 +313,13 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	   switch(mCheckUnit_DataType){
 	   case CommonDef.ACCELERATION:
 	   case  CommonDef.SPEED:
-		   mUnitcheck_Vibrate.setVisibility(View.VISIBLE);
+		  // 需要方向
+		   mButton_Direction.setVisibility(View.VISIBLE);
 		   break;
 	   case CommonDef.TEMPERATURE:
 	   case CommonDef.ROTATIONAL_SPEED:
-		   mUnitcheck_Vibrate.setVisibility(View.GONE);
+		  //方向按鈕隱藏
+		   mButton_Direction.setVisibility(View.GONE);
 		   break;
 		   default:
 			   break;
@@ -336,6 +330,9 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   mListView.setVisibility(ListView.VISIBLE);
 		   if(bSpinnerVisible){
 		   mSpinner.setVisibility(Spinner.VISIBLE);
+		   mItemDefTextView.setVisibility(View.GONE);
+		   }else{			
+			   mItemDefTextView.setText(spinnerList.get(0));
 		   }
 		   mCheckbox.setVisibility(CheckBox.VISIBLE);
 		   mUnitcheck_Vibrate.setVisibility(View.GONE);
@@ -344,14 +341,68 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   mListView.setVisibility(ListView.GONE);
 		   mSpinner.setVisibility(Spinner.GONE);
 		   mCheckbox.setVisibility(CheckBox.GONE);
+		   mItemDefTextView.setVisibility(View.VISIBLE);
+		   if(mCheckUnitNameStr == null ){
+			   if(mCheckItemNameStr!=null){
+				   mItemDefTextView.setText(getString(R.string.checkitem_name) + mCheckItemNameStr ); 
+			   }else{
+				   mItemDefTextView.setText(getString(R.string.checkitem_name) );
+			   }
+		   }
+		   if(mCheckUnitNameStr != null && mCheckItemNameStr!=null){
+		   mItemDefTextView.setText(getString(R.string.checkitem_name) + mCheckUnitNameStr +":"+mCheckItemNameStr );
+		   }
+		   Log.d(TAG,"deviceItemActivity needVisible() mCheckUnitNameStr is " +mCheckUnitNameStr +",mCheckItemNameStr is "+mCheckItemNameStr);
+		   
 	   }
    }
-
+   
+   /**
+    * 点击下一项时触发的VIEW变化，显示当前测试项的下一项，
+    * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
+    */
+	private void nextCheckItem() {
+		
+		if (mCurrentCheckIndex == (mListView.getCount() - 1)) {
+			// last item,and save current device checkItem data
+Toast.makeText(getApplicationContext(), getString(R.string.save_device_checkdata), Toast.LENGTH_SHORT).show();
+		} else {
+			mCurrentCheckIndex++;
+			HashMap<String, String> map = (HashMap<String, String>) mListView
+					.getItemAtPosition(mCurrentCheckIndex);
+			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
+			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+			
+			needVisible();
+		}
+		Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
+	}
+   String[] direction_item={"X-Y","X-Z","Y-Z"};
 @Override
 public void onClick(View arg0) {
 	// TODO Auto-generated method stub
 	switch(arg0.getId()){
 	case R.id.position:
+		break;
+	case R.id.next:
+		nextCheckItem();
+		break;		
+	case R.id.measurement:
+		break;
+	case R.id.direction:
+		 new AlertDialog.Builder(DeviceItemActivity.this)
+         .setTitle(getString(R.string.direction_select))
+         .setItems(direction_item, new DialogInterface.OnClickListener() {
+             public void onClick(DialogInterface dialog, int which) {
+            	 mButton_Direction.setText(direction_item[which]);
+            	 //获取选择的项,X-Y,X-Z,Y-Z
+             Toast info =Toast.makeText(DeviceItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
+                 info.setMargin(0.0f, 0.3f);
+                 info.show();
+             }
+         }).create().show();
 		break;
 		
 	}

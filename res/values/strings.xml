@@ -42,4 +42,7 @@
     <string name="x">X:</string>
     <string name="y">Y:</string>
     <string name="z">Z:</string>
+    <string name="direction_select">方向选择</string>
+    <string name="checkitem_name">巡检项：</string>
+     <string name="save_device_checkdata">正在保存设备项巡检结果</string>
 </resources>

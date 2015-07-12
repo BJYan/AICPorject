@@ -61,11 +61,7 @@ public class StationActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	@Override
-	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		super.onBackPressed();
-	}
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +75,12 @@ public class StationActivity extends Activity {
 			
 			
 			Intent intent =getIntent();
-			mRouteIndex = intent.getExtras().getInt(CommonDef.ROUTE_INDEX);
-			int deviceIndex = intent.getExtras().getInt(CommonDef.DEVICE_INDEX);
+			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
 			
-			String  oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
-			String  route_ItemIndex = intent.getExtras().getString(CommonDef.LISTITEM_INDEX);
-			routeName = intent.getExtras().getString(CommonDef.ROUTENAME);
-
+			String  oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);		
+			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
 			TextView planNameTextView  =(TextView)findViewById(R.id.planname);
-			planNameTextView.setText(oneCatalog);
-			
+			planNameTextView.setText(oneCatalog);			
 			TextView RouteNameTextView  =(TextView)findViewById(R.id.station_text_name);
 			RouteNameTextView.setText(""+(mRouteIndex +1)+ "		"+routeName);
 			ImageView imageView = (ImageView)findViewById(R.id.imageView1);
@@ -102,42 +94,7 @@ public class StationActivity extends Activity {
 				}
 				
 			});
-		// json.initData(mPath);
-//		mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup1);
-//		mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-//
-//			@Override
-//			public void onCheckedChanged(RadioGroup arg0, int arg1) {
-//				// TODO Auto-generated method stub
-//				Intent intent = new Intent();
-//				switch (arg1) {
-//				case R.id.radio_bt:
-//
-//					intent.setClass(getApplicationContext(), BtActivity.class);
-//					startActivity(intent);
-//					Toast.makeText(getApplicationContext(), "BT",
-//							Toast.LENGTH_LONG).show();
-//					break;
-//				case R.id.radio_check:
-//
-//					intent.setClass(getApplicationContext(),
-//							StationActivity.class);
-//					startActivity(intent);
-//					Toast.makeText(getApplicationContext(), "check",
-//							Toast.LENGTH_LONG).show();
-//					break;
-//				case R.id.radio_search:
-//					Toast.makeText(getApplicationContext(), "search",
-//							Toast.LENGTH_LONG).show();
-//					break;
-//				case R.id.radio_downup:
-//					Toast.makeText(getApplicationContext(), "downup",
-//							Toast.LENGTH_LONG).show();
-//					break;
-//
-//				}
-//			}
-//		});
+
 		
 			mListView = (ListView) findViewById(R.id.listView);
 			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
@@ -148,31 +105,24 @@ public class StationActivity extends Activity {
 
 				for (int i = 0; i < stationItemList.size(); i++) {
 					Map<String, String> map = new HashMap<String, String>();
-					map.put("pathname", ((myApplication) getApplication())
+					map.put(CommonDef.station_info.NAME, ((myApplication) getApplication())
 							.getStationItemName(stationItemList.get(i)));
-					map.put("deadline", "2015-06-20 10:00");
-					map.put("status", "已检查");
-					map.put("progress", "2/"+((myApplication) getApplication())
+					map.put(CommonDef.station_info.DEADLINE, "2015-06-20 10:00");
+					map.put(CommonDef.station_info.STATUS, "已检查");
+					map.put(CommonDef.station_info.PROGRESS, "2/"+((myApplication) getApplication())
 							.getStationPartItemCount(stationItemList.get(i)));
 					//String index = "" + (i + 1);
 					//map.put("index", index);
 
 					list.add(map);
-					//List<Object> stationList = ((myApplication) getApplication()).getDeviceItem(stationItemList.get(i));
-				//	for(int h=0 ;h<stationList.size();h++){
-					//	JSONObject jsonObject= (JSONObject) stationList.get(h);
-//					List<Object> partitemDataList =((myApplication) getApplication()).getPartItemDataList(i, 0);
-//						((myApplication) getApplication()).getPartItemListByItemDef();
-					//}
-					
 				} 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 			SimpleAdapter adapter = new SimpleAdapter(this, list,
-					R.layout.checkitem, new String[] { "index", "pathname",
-							"deadline", "status", "progress" }, new int[] {
+					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
+					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
 							R.id.index, R.id.pathname, R.id.deadtime,
 							R.id.status, R.id.progress });
 			mListView.setAdapter(adapter);
@@ -184,17 +134,15 @@ public class StationActivity extends Activity {
 					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
 							.getItemAtPosition(arg2));
 					Log.d(TAG,
-							"MAPITEM is " + mapItem.toString()
-									+ " pathname is "
-									+ (String) mapItem.get("pathname"));
+							"stationActivit StationName is "
+									+ (String) mapItem.get(CommonDef.station_info.NAME));
 					Intent intent = new Intent();
-					intent.putExtra(CommonDef.ROUTE_INDEX , mRouteIndex);
-					intent.putExtra(CommonDef.STATION_INDEX , arg2);
+					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX , mRouteIndex);
+					intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, arg2);
 					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-					intent.putExtra(CommonDef.CHECKNAME,
-							(String) mapItem.get("pathname"));
-					intent.putExtra(CommonDef.ROUTENAME, routeName);
-					intent.putExtra(CommonDef.LISTITEM_INDEX, arg2);
+					intent.putExtra(CommonDef.station_info.NAME,
+							(String) mapItem.get(CommonDef.station_info.NAME));
+					intent.putExtra(CommonDef.route_info.NAME, routeName);					
 					intent.setClass(getApplicationContext(),
 							DeviceActivity.class);
 					startActivity(intent);
@@ -228,310 +176,5 @@ public class StationActivity extends Activity {
 				///
 				
 			}
-		}
-
-	
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-	public void initViewPager(){
-		mViewPager = (ViewPager)findViewById(R.id.viewPager1);
-		LayoutInflater layoutinflater = getLayoutInflater();
-		mList_Views = new ArrayList<View>();
-		
-		
-		View checkview = layoutinflater.inflate(R.layout.route_activity, null);
-		mList_Views.add(checkview);
-		View checkitemview = layoutinflater.inflate(R.layout.device_activity, null);
-		mList_Views.add(checkitemview);
-		
-		mViewPager.setAdapter(new myViewPagerAdapter(mList_Views));
-		mViewPager.setOnPageChangeListener(new myOnPageChangeListener());
-		mViewPager.setCurrentItem(0);
-		
-	}
-
-	 public  class myOnPageChangeListener implements OnPageChangeListener{
-
-		@Override
-		public void onPageScrollStateChanged(int arg0) {
-			// TODO Auto-generated method stub
-			Log.d(TAG, "ONpAGERsCROLLsTATEcHANGED "+arg0);
-		}
-
-		@Override
-		public void onPageScrolled(int arg0, float arg1, int arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onPageSelected(int arg0) {
-			// TODO Auto-generated method stub
-			
-			switch(arg0){
-			case 0:
-				//if(!mRadioGroup.isEnabled())mRadioGroup.setEnabled(true);
-				break;
-			case 5:
- {
-				if (isStationClicked) {
-					ListView mListView = null;
-					mListView = (ListView) mList_Views.get(arg0).findViewById(
-							R.id.listView);
-					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-					//
-					// json.initData(mPath);
-//					try {
-//						Object stationItemobject = json
-//								.getStationItem(mStationIndex);
-//						List<Object> stationItemList = json
-//								.getDeviceItem(stationItemobject);
-//						Log.d(TAG, "instantiateItem I=8989");
-//						for (int i = 0; i < stationItemList.size(); i++) {
-//							Map<String, Object> map = new HashMap<String, Object>();
-//							map.put("index", i + 1);
-//
-//							Log.d(TAG, "instantiateItem I=" + i);
-//							map.put("pathname", json
-//									.getDeviceItemName(stationItemList.get(i)));
-//							map.put("deadtime", "20150610 12:00");
-//							map.put("status", "已检查");
-//							map.put("progress", "2/10");
-//							list.add(map);
-//						}
-//						for (int i = 0; i < 10; i++) {
-//							Map<String, Object> map = new HashMap<String, Object>();
-//							map.put("index", i + 1);
-//
-//							Log.d(TAG, "instantiateItem I=" + i);
-//							map.put("pathname", "testabc");
-//							map.put("deadtime", "20150610 12:00");
-//							map.put("status", "已检查");
-//							map.put("progress", "2/10");
-//							list.add(map);
-//						}
-//
-//						SimpleAdapter adapter = new SimpleAdapter(
-//								PlanCheckActivity.this, list,
-//								R.layout.checkitem, new String[] { "index",
-//										"pathname", "deadtime", "status",
-//										"progress" }, new int[] { R.id.index,
-//										R.id.pathname, R.id.deadtime,
-//										R.id.status, R.id.progress });
-//						mListView.setAdapter(adapter);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//						Log.d(TAG, "instantiateItem I=8989 " + e.toString());
-//					}
-				}
-			}
-				//mRadioGroup.setVisibility(View.GONE);
-				break;
-			
-			}
-		}
-		 
-	 }
-	  public class myViewPagerAdapter extends PagerAdapter{
-		  public List<View> listViews;
-		  @Override
-		public void destroyItem(View container, int position, Object object) {
-			// TODO Auto-generated method stub
-			//super.destroyItem(container, position, object);
-			  ((ViewPager)container).removeView(listViews.get(position));
-		}
-
-		@Override
-		public Object instantiateItem(View container, int position) {
-			// TODO Auto-generated method stub
-			// return super.instantiateItem(container, position);
-			ListView mListView = null;
-			Log.d(TAG,"in instantiateItem " +position);
-			switch (position) {
-			case 0: {
-//				mListView = (ListView) listViews.get(position).findViewById(
-//						R.id.listView);
-//				final List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-//				try {
-//
-//					List<Object> stationItemList = json.getStationItem();
-//
-//					for (int i = 0; i < stationItemList.size(); i++) {
-//						Map<String, Object> map = new HashMap<String, Object>();
-//						map.put("check_name",
-//								json.getStationItemName(stationItemList.get(i)));
-//						map.put("value", "test");
-//						list.add(map);
-//					}
-//					
-//					////////////////
-//					Object stationItemobject = json
-//							.getStationItem(0);
-//					List<Object> stationItemLists = json
-//							.getDeviceItem(stationItemobject);
-//					Log.d(TAG,"instantiateItem I=8989");
-//					for (int i = 0; i < stationItemLists.size(); i++) {
-//						Map<String, Object> map = new HashMap<String, Object>();
-//						map.put("value",i+1);
-//						
-//						Log.d(TAG,"instantiateItem I="+i);
-//						map.put("check_name",
-//								json.getDeviceItemName(stationItemLists.get(i)));
-//						
-//						list.add(map);
-//					}
-//					//////////////
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//
-//				
-//				
-//				
-//				
-//					
-//
-//
-//					
-//				
-//			
-//			
-//			SimpleAdapter adapter = new SimpleAdapter(
-//					PlanCheckActivity.this, list, R.layout.two_text_item,
-//					new String[] { "check_name", "value" }, new int[] {
-//							R.id.checkitem_name, R.id.value });
-//			
-//				mListView.setAdapter(adapter);
-//				mListView
-//						.setOnItemClickListener(new ListView.OnItemClickListener() {
-//
-//							@Override
-//							public void onItemClick(AdapterView<?> arg0,
-//									View arg1, int arg2, long arg3) {
-//								isStationClicked = true;
-//								// TODO Auto-generated method stub
-//								Map<String, Object> maps = new HashMap<String, Object>();
-//								maps = list.get(arg2);
-//								mStationNameStr = (String) maps
-//										.get("check_nme");
-//								mStationIndex = arg2;
-//								mViewPager.setCurrentItem(1);
-//							}
-//						});
-//
-			}
-				break;
-			case 1:// checkitem
-			{
-			
-				
-//				Log.d(TAG,"IN pager 1");
-//				TextView name = (TextView) listViews.get(position)
-//						.findViewById(R.id.planname);
-//				name.setText("test");
-//				mListView = (ListView) listViews.get(position).findViewById(
-//						R.id.listView);
-//				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-//				//
-//				// json.initData(mPath);
-//				try {
-//					Object stationItemobject = json
-//							.getStationItem(mStationIndex);
-//					List<Object> stationItemList = json
-//							.getDeviceItem(stationItemobject);
-//					Log.d(TAG,"instantiateItem I=8989");
-//					for (int i = 0; i < stationItemList.size(); i++) {
-//						Map<String, Object> map = new HashMap<String, Object>();
-//						map.put("index",i+1);
-//						
-//						Log.d(TAG,"instantiateItem I="+i);
-//						map.put("pathname",
-//								json.getDeviceItemName(stationItemList.get(i)));
-//						map.put("deadtime", "20150610 12:00");
-//						map.put("status", "已检查");
-//						map.put("progress", "2/10");
-//						list.add(map);
-//					}
-//
-////					for (int i = 0; i < 5; i++) {
-////						Map<String, Object> map = new HashMap<String, Object>();
-////						map.put("index",i+1);
-////						
-////						Log.d(TAG,"instantiateItem I="+i);
-////						map.put("pathname",
-////								"abc_test");
-////						map.put("deadtime", "20150610 12:00");
-////						map.put("status", "已检查");
-////						map.put("progress", "2/10");
-////						list.add(map);
-////					}
-//					
-//					SimpleAdapter adapter = new SimpleAdapter(
-//							PlanCheckActivity.this, list,
-//							R.layout.checkitem, new String[] {
-//									"index", "pathname","deadtime","status","progress" }, new int[] {
-//									R.id.index, R.id.pathname,R.id.deadtime,R.id.status,R.id.progress });
-//					mListView.setAdapter(adapter);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					Log.d(TAG,"instantiateItem I=8989 "+e.toString());
-//				}
-			}
-				break;
-
-			}
-			((ViewPager) container).addView(listViews.get(position), 0);
-			return listViews.get(position);
-		}
-		
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return listViews.size();
-		}
-
-		public myViewPagerAdapter(List<View> listView){
-			this.listViews = listView;
-		}
-		@Override
-		public boolean isViewFromObject(View arg0, Object arg1) {
-			// TODO Auto-generated method stub
-			return (arg0== arg1);
-		}
-		  
-	  }
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			// Inflate the menu; this adds items to the action bar if it is present.
-			getMenuInflater().inflate(R.menu.main, menu);
-			return true;
 		}
 }
