@@ -5,19 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-import com.aic.aicdetactor.data.MyJSONParse;
-import com.aic.aicdetactor.view.QuiteToast;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.widget.ArrayAdapter;
+import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
@@ -26,6 +23,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.util.MyJSONParse;
+
 public class BtActivity extends Activity {
 
 	ListView mListView =null;
@@ -33,7 +32,13 @@ public class BtActivity extends Activity {
 	Switch mSwitch = null;
 	BluetoothAdapter mBTAdapter = null;
 	TextView mBTStatusTextView = null;
-
+	 public String mPath = "/sdcard/down.txt";
+     MyJSONParse json = new MyJSONParse();
+    
+     private static String DISCOVERY_STARTED = "android.bluetooth.adapter.action.DISCOVERY_STARTED";
+     private static String DISCOVERY_FINISHED = "android.bluetooth.adapter.action.DISCOVERY_FINISHED";
+      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    private int count = 0;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -51,34 +56,49 @@ public class BtActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bt_activity);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(DISCOVERY_STARTED);
+		filter.addAction(DISCOVERY_FINISHED);
+		registerReceiver(bluetoothReceiver, filter);
+		
+		IntentFilter mFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		this.registerReceiver(mReceiver, mFilter);
+		
 		mListView = (ListView)findViewById(R.id.listView);
-//		
+		try{
+			json.initData(mPath);
+			List<Object> stationItemList = json.getStationList();
+			
+			for(int i = 0;i<stationItemList.size();i++){
+				
+			}
+		}catch(Exception e){e.printStackTrace();}
 		
 		
 		
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("check_name", getString(R.string.sensor_name));
-        map.put("value", "test");
-        list.add(map);
+		
+//		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("check_name", getString(R.string.sensor_name));
+//        map.put("value", "test");
+//        list.add(map);
+//        
+//        map = new HashMap<String, Object>();
+//        map.put("check_name", getString(R.string.shock));
+//        map.put("value", "test");
+//        list.add(map);
+//        
+//        map = new HashMap<String, Object>();
+//        map.put("check_name", getString(R.string.temperature));
+//        map.put("value", "test");
+//        list.add(map);
+//        
+//        map = new HashMap<String, Object>();
+//        map.put("check_name", getString(R.string.revolution_speed));
+//        map.put("value", "test");
+//        list.add(map);
         
-        map = new HashMap<String, Object>();
-        map.put("check_name", getString(R.string.shock));
-        map.put("value", "test");
-        list.add(map);
-        
-        map = new HashMap<String, Object>();
-        map.put("check_name", getString(R.string.temperature));
-        map.put("value", "test");
-        list.add(map);
-        
-        map = new HashMap<String, Object>();
-        map.put("check_name", getString(R.string.revolution_speed));
-        map.put("value", "test");
-        list.add(map);
-        
-		SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.two_text_item, new String[] { "check_name",  "value" }, new int[] { R.id.checkitem_name, R.id.value });
-		mListView.setAdapter(adapter);
+
 		
 		
 		
@@ -90,11 +110,12 @@ public class BtActivity extends Activity {
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 				// TODO Auto-generated method stub
 				if(arg1){
-					//鐩存帴鎵撳紑钃濈墮
+					//直接打开蓝牙
 					mBTAdapter.enable();
+					mBTAdapter.startDiscovery();
 					mBTStatusTextView.setText(getString(R.string.link));
 				}else{
-					//鍏抽棴钃濈墮
+					//关闭蓝牙
 					mBTAdapter.disable();
 					mBTStatusTextView.setText(getString(R.string.unlink));
 				}
@@ -107,6 +128,7 @@ public class BtActivity extends Activity {
 			finish();
 		}
 		if(mBTAdapter.enable()){
+			mBTAdapter.startDiscovery();
 			mSwitch.setChecked(true);
 			mBTStatusTextView.setText(getString(R.string.link));
 		}else{
@@ -117,6 +139,48 @@ public class BtActivity extends Activity {
 		
 		
 	}
+	
+	
+	private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			SimpleAdapter adapter = new SimpleAdapter(BtActivity.this, list, R.layout.two_text_item, new String[] { "check_name",  "value" }, new int[] { R.id.checkitem_name, R.id.value });
+			mListView.setAdapter(adapter);
+			mListView.setVisibility(View.VISIBLE);
+		}
+		
+	};
+	
+	
+	private BroadcastReceiver mReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+
+			// 查找到设备action
+			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+				// 得到蓝牙设备
+				BluetoothDevice device = intent
+						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				// 如果是已配对的则略过，已得到显示，其余的在添加到列表中进行显示
+				Map<String, Object> map = new HashMap<String, Object>();
+ 				map.put("check_name", device.getName());
+				map.put("value", device.getAddress());
+				list.add(map); 
+				// 搜索完成action
+				count++;
+				Log.d("test", "count = " + count);
+			}
+		}
+		
+	};
+	
+	
+	
+	
 
 	@Override
 	protected void onDestroy() {
@@ -146,5 +210,6 @@ public class BtActivity extends Activity {
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-	}	
+	}
+
 }
