@@ -23,8 +23,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aic.aicdetactor.util.MyJSONParse;
-
 public class BtActivity extends Activity {
 
 	ListView mListView =null;
@@ -32,9 +30,7 @@ public class BtActivity extends Activity {
 	Switch mSwitch = null;
 	BluetoothAdapter mBTAdapter = null;
 	TextView mBTStatusTextView = null;
-	 public String mPath = "/sdcard/down.txt";
-     MyJSONParse json = new MyJSONParse();
-    
+
      private static String DISCOVERY_STARTED = "android.bluetooth.adapter.action.DISCOVERY_STARTED";
      private static String DISCOVERY_FINISHED = "android.bluetooth.adapter.action.DISCOVERY_FINISHED";
       List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -65,43 +61,7 @@ public class BtActivity extends Activity {
 		this.registerReceiver(mReceiver, mFilter);
 		
 		mListView = (ListView)findViewById(R.id.listView);
-		try{
-			json.initData(mPath);
-			List<Object> stationItemList = json.getStationList();
-			
-			for(int i = 0;i<stationItemList.size();i++){
-				
-			}
-		}catch(Exception e){e.printStackTrace();}
-		
-		
-		
-		
-//		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("check_name", getString(R.string.sensor_name));
-//        map.put("value", "test");
-//        list.add(map);
-//        
-//        map = new HashMap<String, Object>();
-//        map.put("check_name", getString(R.string.shock));
-//        map.put("value", "test");
-//        list.add(map);
-//        
-//        map = new HashMap<String, Object>();
-//        map.put("check_name", getString(R.string.temperature));
-//        map.put("value", "test");
-//        list.add(map);
-//        
-//        map = new HashMap<String, Object>();
-//        map.put("check_name", getString(R.string.revolution_speed));
-//        map.put("value", "test");
-//        list.add(map);
-        
 
-		
-		
-		
 		
 		mSwitch = (Switch)findViewById(R.id.link_switch);
 		mSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -110,12 +70,12 @@ public class BtActivity extends Activity {
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 				// TODO Auto-generated method stub
 				if(arg1){
-					//Ö±½Ó´ò¿ªÀ¶ÑÀ
+					//ç›´æ¥æ‰“å¼€è“ç‰™
 					mBTAdapter.enable();
 					mBTAdapter.startDiscovery();
 					mBTStatusTextView.setText(getString(R.string.link));
 				}else{
-					//¹Ø±ÕÀ¶ÑÀ
+					//å…³é—­è“ç‰™
 					mBTAdapter.disable();
 					mBTStatusTextView.setText(getString(R.string.unlink));
 				}
@@ -140,7 +100,6 @@ public class BtActivity extends Activity {
 		
 	}
 	
-	
 	private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver(){
 
 		@Override
@@ -160,56 +119,21 @@ public class BtActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 
-			// ²éÕÒµ½Éè±¸action
+			// æŸ¥æ‰¾åˆ°è®¾å¤‡action
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-				// µÃµ½À¶ÑÀÉè±¸
+				// å¾—åˆ°è“ç‰™è®¾å¤‡
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// Èç¹ûÊÇÒÑÅä¶ÔµÄÔòÂÔ¹ı£¬ÒÑµÃµ½ÏÔÊ¾£¬ÆäÓàµÄÔÚÌí¼Óµ½ÁĞ±íÖĞ½øĞĞÏÔÊ¾
+				// å¦‚æœæ˜¯å·²é…å¯¹çš„åˆ™ç•¥è¿‡ï¼Œå·²å¾—åˆ°æ˜¾ç¤ºï¼Œå…¶ä½™çš„åœ¨æ·»åŠ åˆ°åˆ—è¡¨ä¸­è¿›è¡Œæ˜¾ç¤º
 				Map<String, Object> map = new HashMap<String, Object>();
  				map.put("check_name", device.getName());
 				map.put("value", device.getAddress());
 				list.add(map); 
-				// ËÑË÷Íê³Éaction
+				// æœç´¢å®Œæˆaction
 				count++;
 				Log.d("test", "count = " + count);
 			}
 		}
 		
 	};
-	
-	
-	
-	
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-
 }
