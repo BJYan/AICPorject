@@ -74,11 +74,11 @@ public class MyJSONParse {
 		// 实例化SharedPreferences.Editor对象（第二步）
 		SharedPreferences.Editor editor = mSharedPreferences.edit();
 		// 用putString的方法保存数据
-		editor.putLong(CommonDef.ROUTE_INDEX, cv.getAsLong(CommonDef.ROUTE_INDEX));
-		editor.putLong(CommonDef.STATION_INDEX, cv.getAsLong(CommonDef.STATION_INDEX));
-		editor.putLong(CommonDef.DEVICE_INDEX, cv.getAsLong(CommonDef.DEVICE_INDEX));
-		editor.putLong(CommonDef.PARTITEM_INDEX, cv.getAsLong(CommonDef.PARTITEM_INDEX));
-		editor.putLong(CommonDef.ISREVERSECHECKING, cv.getAsLong(CommonDef.ISREVERSECHECKING));
+		editor.putLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX));
+		editor.putLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX));
+		editor.putLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX));
+		editor.putLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX));
+		editor.putLong(CommonDef.check_item_info.IS_REVERSE_CHECKING, cv.getAsLong(CommonDef.check_item_info.IS_REVERSE_CHECKING));
 		editor.putString(CommonDef.GUID, cv.getAsString(CommonDef.GUID));
 		editor.putString(CommonDef.PATH_DIRECTOR, cv.getAsString(CommonDef.PATH_DIRECTOR));
 		// 提交当前数据
@@ -99,11 +99,11 @@ public class MyJSONParse {
 		// 实例化SharedPreferences.Editor对象（第二步）
 		
 		//获取当前巡检的索引信息
-		mCurrentRouteIndex = (int) mSharedPreferences.getLong(CommonDef.ROUTE_INDEX,0);
-		mCurrentStationIndex = (int) mSharedPreferences.getLong(CommonDef.STATION_INDEX,0);
-		mCurrentDeviceIndex = (int) mSharedPreferences.getLong(CommonDef.DEVICE_INDEX,0);
-		mCurrentPartItemIndex = (int) mSharedPreferences.getLong(CommonDef.PARTITEM_INDEX,0);
-		mIsReverseChecking = (int) mSharedPreferences.getLong(CommonDef.ISREVERSECHECKING,0);
+		mCurrentRouteIndex = (int) mSharedPreferences.getLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX,0);
+		mCurrentStationIndex = (int) mSharedPreferences.getLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX,0);
+		mCurrentDeviceIndex = (int) mSharedPreferences.getLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX,0);
+		mCurrentPartItemIndex = (int) mSharedPreferences.getLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX,0);
+		mIsReverseChecking = (int) mSharedPreferences.getLong(CommonDef.check_item_info.IS_REVERSE_CHECKING,0);
 		mCurrentFileName = mSharedPreferences.getString(CommonDef.GUID,null);
 		mSavePath = mSharedPreferences.getString(CommonDef.PATH_DIRECTOR,null);		
 		

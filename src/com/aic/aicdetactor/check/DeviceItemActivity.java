@@ -11,8 +11,11 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -32,6 +36,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -73,6 +78,14 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private Button mButton_Direction = null;
 	private Button mButton_Next = null;
 	private Button mButton_Measurement = null;
+	private Button mButtion_Position = null;
+	private LinearLayout LinearLayout_y = null;
+	private LinearLayout LinearLayout_z = null;
+	private TextView mTextViewX = null;
+	private TextView mTextViewY = null;
+	private TextView mTextViewZ = null;
+	//设置颜色级别
+	private RadioButton mRadioButton = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -170,8 +183,19 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				 needVisible();
 			}
 		});
-//		TextView mButtion_Position = (Button)findViewById(R.id.position);
-//		mButtion_Position.setOnClickListener(this);
+		mButtion_Position = (Button)findViewById(R.id.position);
+		mButtion_Position.setOnClickListener(this);
+		mButtion_Position.setOnKeyListener(new Button.OnKeyListener(){
+
+			@Override
+			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
+				// TODO Auto-generated method stub
+				Toast.makeText(getApplicationContext(), " " +arg1+","+ arg2.getKeyCode(),
+						0).show();
+				return false;
+			}
+			
+		});
 		
 		mButton_Direction = (Button)findViewById(R.id.direction);
 		mButton_Direction.setOnClickListener(this);
@@ -233,7 +257,15 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				
 				//如果为true ，需要对listView里的Item数据进行反向排列并显示
 			}});
+        
+        LinearLayout_y = (LinearLayout)findViewById(R.id.y);
+        LinearLayout_z = (LinearLayout)findViewById(R.id.z);
 
+        
+        mTextViewX = (TextView)findViewById(R.id.x_value);
+        mTextViewY = (TextView)findViewById(R.id.y_value);
+        mTextViewZ = (TextView)findViewById(R.id.z_value);
+        mRadioButton = (RadioButton)findViewById(R.id.radioButton2);
 	}
 
 	
@@ -314,16 +346,21 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	   case CommonDef.ACCELERATION:
 	   case  CommonDef.SPEED:
 		  // 需要方向
+		   LinearLayout_y.setVisibility(View.VISIBLE);
+		   LinearLayout_z.setVisibility(View.VISIBLE);
 		   mButton_Direction.setVisibility(View.VISIBLE);
 		   break;
 	   case CommonDef.TEMPERATURE:
 	   case CommonDef.ROTATIONAL_SPEED:
 		  //方向按鈕隱藏
 		   mButton_Direction.setVisibility(View.GONE);
+		   LinearLayout_y.setVisibility(View.GONE);
+		   LinearLayout_z.setVisibility(View.GONE);
 		   break;
 		   default:
 			   break;
 	   }
+	   genRandomXYZ_temperation();
    }
    private void needVisible(){
 	   if(bListViewVisible){
@@ -342,6 +379,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   mSpinner.setVisibility(Spinner.GONE);
 		   mCheckbox.setVisibility(CheckBox.GONE);
 		   mItemDefTextView.setVisibility(View.VISIBLE);
+		   checkUnit_ViewControl();
 		   if(mCheckUnitNameStr == null ){
 			   if(mCheckItemNameStr!=null){
 				   mItemDefTextView.setText(getString(R.string.checkitem_name) + mCheckItemNameStr ); 
@@ -365,7 +403,48 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		
 		if (mCurrentCheckIndex == (mListView.getCount() - 1)) {
 			// last item,and save current device checkItem data
-Toast.makeText(getApplicationContext(), getString(R.string.save_device_checkdata), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.save_device_checkdata),
+					Toast.LENGTH_SHORT).show();
+			//准备返回到Listview界面中。
+//			AlertDialog.Builder builder = new Builder(DeviceItemActivity.this);
+//			  builder.setMessage("确认退出吗？");  
+//			  builder.setTitle("提示");  
+//			  builder.setPositiveButton("确认", new OnClickListener() {   
+////			   @Override
+////			   public void onClick(DialogInterface dialog, int which) {
+////			    dialog.dismiss();  
+////			    bListViewVisible = true;// 返回到Listview界面中。
+////				needVisible();
+////			   // Main.this.finish();
+////			   }
+//
+//			@Override
+//			public void onClick(View arg0) {
+//				// TODO Auto-generated method stub
+//				((DialogInterface) arg0).dismiss();  
+//				    bListViewVisible = true;// 返回到Listview界面中。
+//					needVisible();
+//			}
+//			});  
+//			  builder.setNegativeButton("取消", new OnClickListener() {  
+////			   @Override
+////			   public void onClick(DialogInterface dialog, int which) {
+////			    dialog.dismiss();
+////			   }
+//
+//			@Override
+//			public void onClick(View arg0) {
+//				// TODO Auto-generated method stub
+//				((DialogInterface) arg0).dismiss();
+//			}
+//			  });  
+//			  builder.create().show();
+			  
+			
+			
+			//继续巡检下一个DeviceItem中的PartItemData
+			
 		} else {
 			mCurrentCheckIndex++;
 			HashMap<String, String> map = (HashMap<String, String>) mListView
@@ -379,32 +458,89 @@ Toast.makeText(getApplicationContext(), getString(R.string.save_device_checkdata
 		}
 		Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
 	}
-   String[] direction_item={"X-Y","X-Z","Y-Z"};
-@Override
-public void onClick(View arg0) {
-	// TODO Auto-generated method stub
-	switch(arg0.getId()){
-	case R.id.position:
-		break;
-	case R.id.next:
-		nextCheckItem();
-		break;		
-	case R.id.measurement:
-		break;
-	case R.id.direction:
-		 new AlertDialog.Builder(DeviceItemActivity.this)
-         .setTitle(getString(R.string.direction_select))
-         .setItems(direction_item, new DialogInterface.OnClickListener() {
-             public void onClick(DialogInterface dialog, int which) {
-            	 mButton_Direction.setText(direction_item[which]);
-            	 //获取选择的项,X-Y,X-Z,Y-Z
-             Toast info =Toast.makeText(DeviceItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
-                 info.setMargin(0.0f, 0.3f);
-                 info.show();
-             }
-         }).create().show();
-		break;
-		
+	
+
+	
+	
+     @Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+			Toast.makeText(getApplicationContext(), "点了Enter", 0).show();
+		} else {
+//			Toast.makeText(getApplicationContext(), "点了" + event.getKeyCode(),
+//					0).show();
+			// A-Z,0-9,Enter,Delete有效，输入中文的时候，点击键盘，无效
+		}
+		return super.dispatchKeyEvent(event);
 	}
-} 
+
+   String[] direction_item={"X-Y","X-Z","Y-Z"};
+    @Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch(arg0.getId()){
+		case R.id.position:
+		{
+			//需要新建立一个数字按键的VIEW
+			InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);  
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);  
+			imm.showSoftInput(mButtion_Position, InputMethodManager.SHOW_IMPLICIT); 
+		}
+			break;
+		case R.id.next:
+			nextCheckItem();
+			break;		
+		case R.id.measurement:
+			break;
+		case R.id.direction:
+			 new AlertDialog.Builder(DeviceItemActivity.this)
+	         .setTitle(getString(R.string.direction_select))
+	         .setItems(direction_item, new DialogInterface.OnClickListener() {
+	             public void onClick(DialogInterface dialog, int which) {
+	            	 mButton_Direction.setText(direction_item[which]);
+	            	 //获取选择的项,X-Y,X-Z,Y-Z
+	             Toast info =Toast.makeText(DeviceItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
+	                 info.setMargin(0.0f, 0.3f);
+	                 info.show();
+	             }
+	         }).create().show();
+			break;
+			
+		}
+	}
+	
+    //临时生成随机的三维坐标数据及温度数据。
+    void genRandomXYZ_temperation(){
+    	int max_xyz=360;
+    	float max_temperation=300;
+    	float MAX_TEMP = 200;
+    	float MID_TEMP = 80;
+    	float LOW_TEMP = 0;
+    	int x = (int) (Math.random()*max_xyz);
+    	int y = (int) (Math.random()*max_xyz);
+    	int z = (int) (Math.random()*max_xyz);
+    	float temp = (int) (Math.random()*max_temperation);
+    	
+    	mTextViewY.setText(String.valueOf(y));
+    	mTextViewZ.setText(String.valueOf(z));
+    	if(LinearLayout_y.getVisibility() == View.VISIBLE){
+    	mTextViewX.setText(getString(R.string.x)+String.valueOf(x));
+    	}else{
+    	mTextViewX.setText(String.valueOf(temp)+"°C");
+    	}
+    	
+    	
+    	if((temp < MAX_TEMP) && (temp>=MID_TEMP) ){
+    		mRadioButton.setBackgroundColor(Color.YELLOW);
+    		
+    	}else if((temp >= LOW_TEMP) && (temp<MID_TEMP)){
+    		mRadioButton.setBackgroundColor(Color.BLACK);
+    	}else if(temp <LOW_TEMP){
+    		mRadioButton.setBackgroundColor(Color.GRAY);
+    	}else if(temp>=MAX_TEMP){
+    		mRadioButton.setBackgroundColor(Color.RED);
+    	}
+    }
+
 }

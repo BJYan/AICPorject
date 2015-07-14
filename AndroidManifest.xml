@@ -60,6 +60,12 @@
             android:name=".NotificationActivity"
             android:label="@string/app_name" >
         </activity>
+        <service android:name="com.aic.aicdetactor.service.DataService"> 
+        <intent-filter> 
+                <action android:name="com.demo.SERVICE_DEMO" /> 
+                <category android:name="android.intent.category.default" /> 
+        </intent-filter> 
+</service>
     </application>
 
 </manifest>

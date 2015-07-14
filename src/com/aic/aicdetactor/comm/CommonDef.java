@@ -9,55 +9,55 @@ public static String TAG = "luotest";
 	/*
 	 * 站点索引
 	 */	
-public static String STATION_INDEX ="stationIndex";
-/*
- * 巡检计划名
- */
-public static String PLANNAME="planName";
-
-/* 巡检路线名 */
-public static String ROUTENAME="routeName";
-/*
- * 站点名
- */
-public static String STATIONNAME="stationName";
-/*
- * 设备名
- */
-public static String DEVICENAME ="deviceName";
-/*
- * 设备索引
- */
-public static String DEVICE_INDEX = "deviceIndex";
-/*
- * ListView Item Index
- */
-public static String LISTITEM_INDEX = "listIndex";
-/*
- * 检查项名
- */
-public static String CHECKNAME = "checkName";
+//public static String STATION_INDEX ="stationIndex";
+///*
+// * 巡检计划名
+// */
+//public static String PLANNAME="planName";
+//
+///* 巡检路线名 */
+//public static String ROUTENAME="routeName";
+///*
+// * 站点名
+// */
+//public static String STATIONNAME="stationName";
+///*
+// * 设备名
+// */
+//public static String DEVICENAME ="deviceName";
+///*
+// * 设备索引
+// */
+//public static String DEVICE_INDEX = "deviceIndex";
+///*
+// * ListView Item Index
+// */
+//public static String LISTITEM_INDEX = "listIndex";
+///*
+// * 检查项名
+// */
+//public static String CHECKNAME = "checkName";
 /*
  * 计划巡检 或临时巡检的标签
  */
 public static String ONE_CATALOG="oneCatalog";
-/*
- * root note name
- */
-public static String ROOTNAME= "rootName";
-/*
- * root Index
- */
-public static String ROUTE_INDEX = "routeIndex";
-/*
- * partItemIndex
- */
-public static String PARTITEM_INDEX = "partItemIndex";
-
-/*
- * 是否反向巡检
- */
-public static String ISREVERSECHECKING = "isReverseChecking";
+///*
+// * root note name
+// */
+//public static String ROOTNAME= "rootName";
+///*
+// * root Index
+// */
+//public static String ROUTE_INDEX = "routeIndex";
+///*
+// * partItemIndex
+// */
+//public static String PARTITEM_INDEX = "partItemIndex";
+//
+///*
+// * 是否反向巡检
+// */
+//public static String ISREVERSECHECKING = "isReverseChecking";
 
 /*
 /*GUID 用于route文件的存储文件名字
@@ -107,7 +107,13 @@ public static final int VIBRATION_VECTOR_WAVE =10;
  * @author Administrator
  *
  */
+public class turn_info{
+	public static final String JSON_INDEX = "1";
+}
 
+public class worker_info{
+	public static final String JSON_INDEX = "2";
+}
 public  class route_info{
 	public static final String NAME = "Route_Name";
 	public static final String INDEX = "Route_Index";
@@ -115,6 +121,7 @@ public  class route_info{
 	public static final String DEADLINE = "Route_DeadLine";
 	public static final String STATUS = "Route_Check_Status";
 	public static final String PROGRESS = "Route_Progress";
+	public static final String JSON_INDEX = "7";
 	
 	
 }
@@ -125,7 +132,7 @@ public  class station_info{
 	public static final String DEADLINE = "Station_DeadLine";
 	public static final String STATUS = "Station_Check_Status";
 	public static final String PROGRESS = "Station_Progress";
-	
+	public static final String JSON_INDEX = "4";
 	
 }
 
@@ -155,5 +162,6 @@ public class check_item_info{
 	public static final String DEADLINE = "CheckItem_DeadLine";
 	public static final String STATUS = "CheckItem_Check_Status";
 	public static final String PROGRESS = "CheckItem_Progress";
+	public static final String IS_REVERSE_CHECKING ="is_reverse_checking";
 }
 }
