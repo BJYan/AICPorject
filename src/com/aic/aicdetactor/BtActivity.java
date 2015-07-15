@@ -13,10 +13,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
@@ -31,10 +35,11 @@ public class BtActivity extends Activity {
 	BluetoothAdapter mBTAdapter = null;
 	TextView mBTStatusTextView = null;
 
-     private static String DISCOVERY_STARTED = "android.bluetooth.adapter.action.DISCOVERY_STARTED";
-     private static String DISCOVERY_FINISHED = "android.bluetooth.adapter.action.DISCOVERY_FINISHED";
-      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+     BaseSimpleAdapter adapter;
     private int count = 0;
+    
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -52,17 +57,17 @@ public class BtActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bt_activity);
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(DISCOVERY_STARTED);
-		filter.addAction(DISCOVERY_FINISHED);
-		registerReceiver(bluetoothReceiver, filter);
-		
+
+ 		
 		IntentFilter mFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		this.registerReceiver(mReceiver, mFilter);
 		
 		mListView = (ListView)findViewById(R.id.listView);
-
 		
+		adapter = new BaseSimpleAdapter(BtActivity.this);
+		adapter.setList(list);
+		
+		mListView.setAdapter(adapter);
 		mSwitch = (Switch)findViewById(R.id.link_switch);
 		mSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
@@ -100,20 +105,8 @@ public class BtActivity extends Activity {
 		
 	}
 	
-	private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver(){
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			SimpleAdapter adapter = new SimpleAdapter(BtActivity.this, list, R.layout.two_text_item, new String[] { "check_name",  "value" }, new int[] { R.id.checkitem_name, R.id.value });
-			mListView.setAdapter(adapter);
-			mListView.setVisibility(View.VISIBLE);
-		}
-		
-	};
-	
-	
-	private BroadcastReceiver mReceiver = new BroadcastReceiver(){
+ 
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -129,6 +122,9 @@ public class BtActivity extends Activity {
  				map.put("check_name", device.getName());
 				map.put("value", device.getAddress());
 				list.add(map); 
+				adapter.setList(list);
+				adapter.notifyDataSetChanged();
+				mListView.setVisibility(View.VISIBLE);
 				// 搜索完成action
 				count++;
 				Log.d("test", "count = " + count);
@@ -136,4 +132,46 @@ public class BtActivity extends Activity {
 		}
 		
 	};
+	
+}
+
+class BaseSimpleAdapter extends BaseAdapter{
+
+	List<Map<String,Object>> list;
+	Context mContext;
+	BaseSimpleAdapter(Context context){
+		mContext = context;
+	}
+	
+	
+	public void setList(List<Map<String,Object>> dataList){
+		list = dataList;
+	}
+	
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return list.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		// TODO Auto-generated method stub
+		return list.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		convertView = (View)LayoutInflater.from(mContext).inflate(R.layout.two_text_item, null);
+		((TextView)convertView.findViewById(R.id.checkitem_name)).setText(list.get(position).get("check_name").toString());;
+		((TextView)convertView.findViewById(R.id.value)).setText(list.get(position).get("value").toString());;
+			return convertView;
+	}
+	
 }
