@@ -53,4 +53,14 @@
     <string name="checkitem_name">巡检项：</string>
     <string name="save_device_checkdata">正在保存设备项巡检结果</string>
     <string name="warning">警告：</string>
+    <string name="extra">临检</string>
+     <string name="camera">拍照</string>
+         <string name="soundrecord">录音</string>
+          <string name="textrecord">记录</string>
+    <string name="prepoint">上一点</string>
+    <string name="notendtips">还有没完成的巡检项，请查看！</string>
+    <string name="sound_start">开始</string>
+    <string name="sound_pause">暂停</string>
+    <string name="sound_save">保存</string>
+    <string name="sound_play">回放</string>
 </resources>

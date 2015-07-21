@@ -10,11 +10,12 @@ import org.json.JSONObject;
 
 import com.aic.aicdetactor.BtActivity;
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.myApplication;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.service.DataService;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.QuiteToast;
 
@@ -142,16 +143,21 @@ public class RouteActivity extends Activity {
 		}
 		
 		void init(){
+			Log.d(TAG,"in init() start "+SystemUtil.getSystemTime());
 			String name = SystemUtil.createGUID();
 			name = "down.txt";
 			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down.txt",this);
 			name = "down1.txt";
-			//((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
-			
+			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
+//			startService(new Intent(RouteActivity.this,  
+//					DataService.class));  
+			Log.d(TAG,"in init() 1 start "+SystemUtil.getSystemTime());
 			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 			int iRouteCount = ((myApplication) getApplication()).InitData();
+			Log.d(TAG,"in init() 2 start "+SystemUtil.getSystemTime());
 			for(int i =0;i<iRouteCount;i++){
-			try {				
+			try {	
+				Log.d(TAG,"in init() for start i="+i+","+SystemUtil.getSystemTime());
 					Map<String, String> map = new HashMap<String, String>();
 					map.put(CommonDef.route_info.NAME, ((myApplication) getApplication())
 							.getRoutName(i));
@@ -164,6 +170,7 @@ public class RouteActivity extends Activity {
 					map.put(CommonDef.route_info.INDEX, index);
 
 					list.add(map);
+					Log.d(TAG,"in init() for end i="+i+","+SystemUtil.getSystemTime());
 					
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -175,7 +182,9 @@ public class RouteActivity extends Activity {
 					CommonDef.route_info.DEADLINE, CommonDef.route_info.STATUS, CommonDef.route_info.PROGRESS }, new int[] {
 							R.id.index, R.id.pathname, R.id.deadtime,
 							R.id.status, R.id.progress });
+			Log.d(TAG,"in init() setAdapter"+SystemUtil.getSystemTime());
 			mListView.setAdapter(adapter);
+			Log.d(TAG,"in init() after setAdapter"+SystemUtil.getSystemTime());
 			mListView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,

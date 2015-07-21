@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 
 
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 
 import android.app.Activity;
@@ -82,8 +82,11 @@ public class DeviceActivity extends Activity {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		try {
 
+			/**
+			 * 返回的DeviceItem 下的数组list,每项包含 DeviceName ,ItemDef,QueryNumber及PartItem
+			 */
 			List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mRouteIndex,mStationIndex);
+					.getDeviceItemList(mStationIndex);
 
 			int itemindex = mStationIndex;
 			for (int i = 0; i < deviceItemList.size(); i++) {

@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.data;
 
+import java.io.File;
 import java.util.List;
 
 public class RouteInfo {
@@ -16,6 +17,7 @@ public class RouteInfo {
 	public Object mPlanName_Root_Object = null;
 	public String mFileName= null;//巡检文件的全路径
 	
+	public File mFile = null;
 
 
 	public List<Object> mStationList = null;

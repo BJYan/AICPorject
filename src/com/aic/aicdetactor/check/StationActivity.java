@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import com.aic.aicdetactor.BtActivity;
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.myApplication;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;

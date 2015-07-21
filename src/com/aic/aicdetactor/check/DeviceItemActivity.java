@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,9 +43,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.BtActivity;
+import com.aic.aicdetactor.MainActivity;
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.myApplication;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.media.MediaMainActivity;
+import com.aic.aicdetactor.util.SystemUtil;
 
 public class DeviceItemActivity extends Activity implements OnClickListener {
 
@@ -57,7 +62,8 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private List<String> spinnerList = new ArrayList<String>();
 	private ArrayAdapter<String> spinnerAdapter;
 	private int mLastSpinnerIndex = 0;
-	private Object partItemObject;
+	private Object partItemObject = null;
+	private Object mCurrentDeviceObject = null;
 	private List<Map<String, Object>> mMapList;
 	public final int SPINNER_SELECTCHANGED =0;
 	private SimpleAdapter mListViewAdapter = null;
@@ -79,11 +85,14 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private Button mButton_Next = null;
 	private Button mButton_Measurement = null;
 	private Button mButtion_Position = null;
+	private Button mButtion_Media = null;
 	private LinearLayout LinearLayout_y = null;
 	private LinearLayout LinearLayout_z = null;
 	private TextView mTextViewX = null;
 	private TextView mTextViewY = null;
 	private TextView mTextViewZ = null;
+	private int iCheckedCount =0;
+	private boolean bHasFinishChecked = false;
 	//设置颜色级别
 	private RadioButton mRadioButton = null;
 	@Override
@@ -121,7 +130,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		planNameTextView.setText(oneCatalog);
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		RouteNameTextView.setText(""+(mCurrentDeviceIndex+1) +">>"+stationName+">>"+deviceNameStr);
+		RouteNameTextView.setText(""+(mCurrentDeviceIndex+1) +" >>"+routeNameStr+">>"+stationName+">>"+deviceNameStr);
 
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(routeNameStr);
@@ -205,8 +214,8 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		
 		mButton_Measurement = (Button)findViewById(R.id.measurement);
 		mButton_Measurement.setOnClickListener(this);
-		
-		
+	//	mButtion_Media =(Button)findViewById(R.id.media);
+	//	mButtion_Media.setOnClickListener(this);
 		mSpinner = (Spinner) findViewById(R.id.spinner1);
 		mItemDefTextView = (TextView)findViewById(R.id.status);
 		try {
@@ -256,6 +265,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				isReverseDetection = arg1;
 				
 				//如果为true ，需要对listView里的Item数据进行反向排列并显示
+				List<Map<String, Object>> OutList = new ArrayList<Map<String, Object>>();
+				for(int n =0;n< mMapList.size();n++){
+					OutList.add(mMapList.get(n));
+				}
+				//mMapList.clear();
+				mMapList = SystemUtil.reverseListData(OutList);
+				
+				for(int i =0;i< mMapList.size();i++){
+					Log.d(TAG, "ListReverse " + i +","+mMapList.get(i).toString());
+				}
+				mListViewAdapter.notifyDataSetChanged();
 			}});
         
         LinearLayout_y = (LinearLayout)findViewById(R.id.y);
@@ -273,13 +293,27 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(!bListViewVisible){
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			if (!bListViewVisible) {
 				bListViewVisible = !bListViewVisible;
 				needVisible();
 				return true;
 			}
+			break;
+		case KeyEvent.KEYCODE_VOLUME_UP: {
+			if(!bListViewVisible){
+			Intent intent = new Intent();
+			intent.setClass(DeviceItemActivity.this, MediaMainActivity.class);
+			startActivity(intent);
+			return true;
+			}
 		}
+
+		default:
+			break;
+		}
+
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -306,9 +340,16 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	   try {
 		   if(partItemObject == null){
 			partItemObject = ((myApplication) getApplication())
-					.getPartItemObject(mRouteIndex,mCurrentStationIndex,mCurrentDeviceIndex);
+					.getPartItemObject(mCurrentStationIndex,mCurrentDeviceIndex);
 			Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
 			}
+		   
+		   List<Object> deviceItemList = ((myApplication) getApplication())
+					.getDeviceItemList(mCurrentStationIndex);
+		   
+		   mCurrentDeviceObject = deviceItemList.get(mCurrentDeviceIndex);
+		   
+		   Log.d(TAG, "mCurrentDeviceObject IS " + mCurrentDeviceObject.toString());
 			mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
 			
 			if(updateAdapter){
@@ -357,6 +398,8 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   LinearLayout_y.setVisibility(View.GONE);
 		   LinearLayout_z.setVisibility(View.GONE);
 		   break;
+	   case CommonDef.RECORD:
+		   break;
 		   default:
 			   break;
 	   }
@@ -400,12 +443,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
     */
 	private void nextCheckItem() {
-		
-		if (mCurrentCheckIndex == (mListView.getCount() - 1)) {
+		iCheckedCount++;
+		if (iCheckedCount == (mListView.getCount() - 1)) {
 			// last item,and save current device checkItem data
+			
+			Object obj=((myApplication) getApplication()).addIsChecked(mCurrentDeviceObject,true);
+			Log.d(TAG, "nextCheckItem() obj is "+obj.toString());
 			Toast.makeText(getApplicationContext(),
 					getString(R.string.save_device_checkdata),
 					Toast.LENGTH_SHORT).show();
+			bHasFinishChecked = true;
+			finish();
 			//准备返回到Listview界面中。
 //			AlertDialog.Builder builder = new Builder(DeviceItemActivity.this);
 //			  builder.setMessage("确认退出吗？");  
@@ -445,7 +493,13 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			
 			//继续巡检下一个DeviceItem中的PartItemData
 			
-		} else {
+		} else if((mCurrentCheckIndex < (mListView.getCount() - 1))){
+			//先保存当前测试项的数据
+			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+			Log.d(TAG, "Test json is 0,"+json);
+			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+			Log.d(TAG, "Test json is 1,"+json);
+			//
 			mCurrentCheckIndex++;
 			HashMap<String, String> map = (HashMap<String, String>) mListView
 					.getItemAtPosition(mCurrentCheckIndex);
@@ -453,8 +507,15 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
-			
+			bHasFinishChecked = false;
 			needVisible();
+		}else if((mCurrentCheckIndex == (mListView.getCount() - 1))&& (iCheckedCount !=(mListView.getCount() - 1))){
+			
+			bHasFinishChecked = false;
+			mButton_Next.setText(getString(R.string.prepoint));
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.notendtips),
+					Toast.LENGTH_LONG).show();
 		}
 		Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
 	}
@@ -505,8 +566,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	                 info.show();
 	             }
 	         }).create().show();
-			break;
-			
+			break;	
 		}
 	}
 	
@@ -542,5 +602,6 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     		mRadioButton.setBackgroundColor(Color.RED);
     	}
     }
+    
 
 }

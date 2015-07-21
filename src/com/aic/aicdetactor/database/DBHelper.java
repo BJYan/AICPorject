@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 2;//版本号
+	 private final static int VERSION = 4;//版本号
 	 
 	  
 	// public static String ID="_id";
@@ -28,6 +28,28 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static String ISREVERSE_CHECK="isReverseCheck";
 	 
 
+	 public static String MEDIA_PATH_NAME = "filePath";
+	 public static String TABLE_NAME_AUDIO = "audio";
+	 public class Media_audio{
+		 public static final String Name = "Name";
+		 public static final String filePath = "filePath";
+		 public static final String duration = "duration";		 
+		 public static final String addTime = "addTime";
+	 }
+	 public static String TABLE_NAME_TEXTRECORD = "text";
+	 public class Media_textRecord{		
+		 public static final String Name = "Name";
+		 public static final String filePath = "filePath";
+		 public static final String content = "content";		 
+		 public static final String addTime = "addTime";
+	 }
+	 public static String TABLE_NAME_PICTRUE = "pictrue";
+	 public class Media_pic{
+		 public static final String Name = "Name";
+		 public static final String filePath = "filePath";			 
+		 public static final String addTime = "addTime";
+	 }
+	 
 	 //自带的构造方法
 	 public DBHelper(Context context, String name, CursorFactory factory,
 	   int version) {
@@ -45,33 +67,54 @@ public class DBHelper extends SQLiteOpenHelper {
 	 }
 
 	 //当数据库创建的时候调用
-	 public void onCreate(SQLiteDatabase db) {
-		 // "_id integer INTEGER PRIMARY KEY , "
-	  String jxchecksql = "create table IF NOT EXISTS jxcheck(" 	     
-	      + "guid varchar(64),"
-	      + "jxName varchar(128)," 
-	      + "filePath varchar(128),"
-	      + "downTime varchar(24),"
-	      + "isBeiginChecked BOOLEAN,"
-	      + "isChecked BOOLEAN,"
-	      + "isuploaded BOOLEAN,"
-	      + "lastcheckTime varchar(24),"
-	      + "workerName varchar(128),"
-	      + "firstcheckTime varchar(24),"
-	      + "lastCheckStation varchar(8),"
-	      + "lastCheckDeviceIndex varchar(8),"
-	      + "lastCheckPartItemIndex varchar(8),"
-	      + "isReverseCheck BOOLEAN)";
+	public void onCreate(SQLiteDatabase db) {
+		// "_id integer INTEGER PRIMARY KEY , "
+		String jxchecksql = "create table IF NOT EXISTS jxcheck("
+				+ "guid varchar(64)," + "jxName varchar(128),"
+				+ "filePath varchar(128)," + "downTime varchar(24),"
+				+ "isBeiginChecked BOOLEAN," + "isChecked BOOLEAN,"
+				+ "isuploaded BOOLEAN," + "lastcheckTime varchar(24),"
+				+ "workerName varchar(128)," + "firstcheckTime varchar(24),"
+				+ "lastCheckStation varchar(8),"
+				+ "lastCheckDeviceIndex varchar(8),"
+				+ "lastCheckPartItemIndex varchar(8),"
+				+ "isReverseCheck BOOLEAN)";
 
-	  db.execSQL(jxchecksql);
-	  
-	 }
+		db.execSQL(jxchecksql);
+
+		String pictruesql = "create table IF NOT EXISTS " + TABLE_NAME_PICTRUE
+				+ "(" + "Name varchar(256)," + "filePath varchar(256),"
+				+ "addTime varchar(24)" + ")";
+
+		db.execSQL(pictruesql);
+
+		String audiosql = "create table IF NOT EXISTS " + TABLE_NAME_AUDIO
+				+ "("+ "Name varchar(256)," + "filePath varchar(256),"
+				+ "duration varchar(32)," + "addTime varchar(24)" + ")";
+
+		db.execSQL(audiosql);
+
+		String textRecordsql = "create table IF NOT EXISTS "
+				+ TABLE_NAME_TEXTRECORD + "(" + "Name varchar(256),"
+				+ "filePath varchar(256)," + "content varchar,"
+				+ "addTime varchar(24)"+")";
+
+		db.execSQL(textRecordsql);
+
+	}
 
 	 //版本更新时调用
 	 public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	  String sql  = "DROP TABLE IF EXISTS jxcheck";//自己的Update操作
+	  String sql  = "DROP TABLE IF EXISTS jxcheck";
+	  db.execSQL(sql);
 	  
-	 // db.execSQL("DROP TABLE IF EXISTS titles");  
+	  sql  = "DROP TABLE IF EXISTS "+TABLE_NAME_PICTRUE;
+	  db.execSQL(sql);
+	  
+	  sql  = "DROP TABLE IF EXISTS "+TABLE_NAME_AUDIO;
+	  db.execSQL(sql);
+	  
+	  sql  = "DROP TABLE IF EXISTS "+TABLE_NAME_TEXTRECORD;
 	  db.execSQL(sql);
 	 }
 

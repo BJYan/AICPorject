@@ -102,5 +102,6 @@
         android:layout_below="@+id/red_line2"
         android:layout_weight="0.75"           
        />
+    
     <include layout="@layout/unitcheck_vibrate" />
 </LinearLayout>
