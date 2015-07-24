@@ -12,6 +12,8 @@ import com.aic.aicdetactor.R.layout;
 
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
+
 
 import android.app.Activity;
 import android.content.Intent;
@@ -88,21 +90,24 @@ public class DeviceActivity extends Activity {
 			List<Object> deviceItemList = ((myApplication) getApplication())
 					.getDeviceItemList(mStationIndex);
 
+			CheckStatus status = null;
 			int itemindex = mStationIndex;
 			for (int i = 0; i < deviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
+				status = ((myApplication) getApplication())
+						.getDevicePartItemCount(deviceItemList
+								.get(i));
+				status.setContext(getApplicationContext());
 				map.put(CommonDef.device_info.INDEX,""+(itemindex+1) );
 				map.put(CommonDef.device_info.NAME, ((myApplication) getApplication())
 						.getDeviceItemName(deviceItemList.get(i)));
 				((myApplication) getApplication())
 						.getDeviceItemDefList(deviceItemList.get(i));
-				map.put(CommonDef.device_info.DEADLINE, "2015-06-20 10:00");
-				map.put(CommonDef.device_info.STATUS, "已检查");
+				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
+				map.put(CommonDef.device_info.STATUS, status.getStatus());
+			
 				map.put(CommonDef.device_info.PROGRESS,
-						"2/"
-								+ ((myApplication) getApplication())
-										.getDevicePartItemCount(deviceItemList
-												.get(i)));
+						status.mCheckedCount+"/"+status.mSum);
 				list.add(map);
 				itemindex++;
 			}

@@ -2,6 +2,7 @@ package com.aic.aicdetactor.media;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.DeviceItemActivity;
+import com.aic.aicdetactor.check.TempPlanActivity;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -26,7 +27,7 @@ public class MediaMainActivity extends Activity implements OnClickListener{
 	private Button mButton_SoundRecord = null;
 	private Button mButton_TextRecord = null;
 	private static final int RESULT_CODE = 1; 
-	private Uri imageFilePath; 
+	private Uri imageFilePath= null; 
 	private ImageView imageView;  
 	
 	@Override
@@ -44,6 +45,23 @@ public class MediaMainActivity extends Activity implements OnClickListener{
 		mButton_TextRecord = (Button) findViewById(R.id.record);
 		mButton_TextRecord.setOnClickListener(this);
 		imageView = (ImageView) findViewById(R.id.imageView1);
+		imageView.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				if(imageFilePath != null){
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				//Uri mUri = Uri.parse("file://" + picFile.getPath());Android3.0以后最好不要通过该方法，存在一些小Bug
+				intent.setDataAndType(imageFilePath, "image/*");
+				startActivity(intent);
+				}
+			}
+			
+		});
+		
+		
+		
 	}
 
 	 @Override  
@@ -151,6 +169,9 @@ public class MediaMainActivity extends Activity implements OnClickListener{
 		}
 			break;
 		case R.id.record:
+			Intent intent = new Intent();
+			intent.setClass(MediaMainActivity.this, TempPlanActivity.class);
+			startActivity(intent);
 			break;
 		}
 	}

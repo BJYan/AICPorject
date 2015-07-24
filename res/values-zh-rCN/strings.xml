@@ -23,6 +23,7 @@
     <string name="tem_check">临时任务</string>
     <string name="checked">已巡检</string>
     <string name="uncheck">未巡检</string>
+    <string name="checking">巡检中</string>
     
     <string name="bluetooth_string">蓝牙</string>
     <string name="check_string">巡检</string>
@@ -37,7 +38,7 @@
     <string name="direction">方向</string>
     <string name="next_item">下一点</string>
     <string name="measurement">测量</string>
-    <string name="measurement_countdown">测量倒计时</string>
+    <string name="measurement_countdown">测量倒计时:%1$d秒</string>
     <string name="motor_type">电机型号</string>
     
     <string name="motor_power">电机功率</string>
@@ -63,4 +64,8 @@
     <string name="sound_pause">暂停</string>
     <string name="sound_save">保存</string>
     <string name="sound_play">回放</string>
+    <string name="tmp_title">"主        题："</string>
+    <string name="tmp_datatype">数据类型：</string>
+    <string name="tmp_content">"内        容："</string>
+    <string name="save">保存</string>
 </resources>

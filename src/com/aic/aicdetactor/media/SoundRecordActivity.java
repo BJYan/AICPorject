@@ -99,6 +99,8 @@ public class SoundRecordActivity extends Activity implements OnClickListener{
 								.getColumnIndex(DBHelper.MEDIA_PATH_NAME));
 						mCursor.close();
 						mCursor = null;
+					}else{
+						mButton_Start.setEnabled(true);
 					}
 				}
 				player(mFilePath);

@@ -69,7 +69,44 @@ public class CommonDef {
 	 */
 	public static String PATH_DIRECTOR = "datapathDirector";
 
+	//checkItemData 以*隔开的数据编号
+	public class partItemData_Index{
+    //轮次
+    public  final static int PARTITEM_TURN_NAME =0;
+    //部件名
+    public  final static int PARTITEM_UNIT_NAME =1;
+    //巡检项目名
+    public  final static int PARTITEM_CHECKPOINT_NAME =2;
+    //巡检数据种类
+    public  final static int PARTITEM_DATA_TYPE_NAME =3;
+  //测量单位
+    public  final static int PARTITEM_MEASUREMENT_UNIT_NAME =4;
+    //状态标识
+    public  final static int PARTITEM_STATE_MARK_NAME =5;
+    
+    //上限数值
+    public  final static int PARTITEM_MAX_VALUE_NAME =6;
+    
+    //中限数值
+    public  final static int PARTITEM_MIDDLE_VALUE_NAME =7;
+    
+    //下限数值
+    public  final static int PARTITEM_MIN_VALUE_NAME =8;
+    
+    //额外信息
+    //测量结果值、用户录入或选择的字符串、照片或振动波形文件名
+    public  final static int PARTITEM_ADDITIONAL_INFO_NAME =9;    
+  
+    //巡检时间
+    public  final static int PARTITEM_CHECKED_TIME =10;
+    //巡检最终结果，正常还是异常
+    public  final int PARTITEM_LAST_RESULT =11;
+    
+	}
+    
 	// 以下是巡检项的数据种类
+	public class checkUnit_Type{
+	
 	/**
 	 * =”00000002” 表示测量温度 =“00000003”
 	 * 表示记录项，用户即可从上位机事先编好的多个选项里选择一项，也可编辑一些新的信息，项与项之间用
@@ -102,12 +139,13 @@ public class CommonDef {
 	// 振动矢量波形
 	// Vibration vector wave
 	public static final int VIBRATION_VECTOR_WAVE = 10;
-
+	}
 	/**
 	 * 
 	 * @author Administrator
 	 *
 	 */
+	
 	public class turn_info {
 		public static final String JSON_INDEX = "1";
 	}
@@ -163,10 +201,13 @@ public class CommonDef {
 		public static final String VALUE = "CheckItem_Value";
 		public static final String INDEX = "CheckItem_Index";
 		public static final String LISTVIEW_ITEM_INDEX = "CheckItem_ListView_Item";
-		public static final String DEADLINE = "CheckItem_DeadLine";
+		
 		public static final String STATUS = "CheckItem_Check_Status";
 		public static final String PROGRESS = "CheckItem_Progress";
 		public static final String IS_REVERSE_CHECKING = "is_reverse_checking";
+		public static final String DEADLINE = "CheckItem_DeadLine";
+		public static final String ISCHECKED = "IsChecked";
+		public static final String CHECKED_RESULT = "Value";
 	}
 	
 	public static final int  FILE_TYPE_PICTRUE  =0;

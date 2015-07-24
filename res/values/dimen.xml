@@ -4,4 +4,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 <dimen name="toright">20dp</dimen>
+<dimen name="two_button_width">105dp</dimen>
+<dimen name="three_button_width">75dp</dimen>
+<dimen name="left_text_width">40dp</dimen>
+
+
 </resources>

@@ -31,17 +31,7 @@ public class  SystemUtil {
 		Log.d(TAG, "createGUID create a new GUID is  " + str);
 		return str;
 	}
-	//有问题的的
-	public static float ByteArrayToFloat(byte[] bytes) {		
-		int i = ((((bytes[0] & 0xff) << 8 | (bytes[1] & 0xff)) << 8) | (bytes[2] & 0xff)) << 8 | (bytes[3] & 0xff);
-		for(int k =0;k<bytes.length;k++){
-			Log.d(TAG, "ByteArrayToFloat  bytes[" + k +"]" + bytes[k] + ","+i);
-		}
-		//int i = ((((bytes[3] & 0xff) << 8 | (bytes[2] & 0xff)) << 8) | (bytes[1] & 0xff)) << 8 | (bytes[0] & 0xff);
-		float f1 = Float.intBitsToFloat(i);
-		Log.d(TAG, "ByteArrayToFloat  " + f1);
-		return f1;
-	}	
+	
 	public static List<Map<String, Object>> reverseListData(List<Map<String, Object>> inList){
 		
 		if(inList == null) return null;
@@ -126,5 +116,23 @@ public class  SystemUtil {
 	            }
 	        }
 	    }
+	private static byte[] hexStringToByteArray(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
+	private static float ByteArrayToFloat(byte[] bytes) {
+		int i = ((((bytes[0] & 0xff) << 8 | (bytes[1] & 0xff)) << 8) | (bytes[2] & 0xff)) << 8 | (bytes[3] & 0xff);
+		return Float.intBitsToFloat(i);
+	}
 	
+	public static float getTemperature(String s){
+		byte[] bytes =hexStringToByteArray(s);
+		return ByteArrayToFloat(bytes);
+	}
+
 }

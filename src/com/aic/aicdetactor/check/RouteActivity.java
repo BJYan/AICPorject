@@ -15,9 +15,11 @@ import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.service.DataService;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.QuiteToast;
+import com.aic.aicdetactor.view.SwitchView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +43,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -58,6 +61,8 @@ public class RouteActivity extends Activity {
      ListView mListView;
      boolean isUseWivewPager =false;
 	String TAG = "luotest";
+	private boolean bTempCheck = false;
+	private SwitchView mSwitch = null;
 	 //public String mPath = "/sdcard/down.txt";
    //  MyJSONParse json = new MyJSONParse();
 	@Override
@@ -85,7 +90,8 @@ public class RouteActivity extends Activity {
 			initViewPager();
 		} else {
 			mListView = (ListView) findViewById(R.id.listView);
-			//
+			mSwitch = (SwitchView)findViewById(R.id.link_switch);
+			//mSwitch.setOnCheckedChangeListener(listener);
 			//init();
 			iniDataThread.start();
 			if (isTestInterface) {
@@ -155,16 +161,20 @@ public class RouteActivity extends Activity {
 			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 			int iRouteCount = ((myApplication) getApplication()).InitData();
 			Log.d(TAG,"in init() 2 start "+SystemUtil.getSystemTime());
+			CheckStatus status = null;
 			for(int i =0;i<iRouteCount;i++){
 			try {	
 				Log.d(TAG,"in init() for start i="+i+","+SystemUtil.getSystemTime());
 					Map<String, String> map = new HashMap<String, String>();
+					status = ((myApplication) getApplication())
+							.getRoutePartItemCount(i);
+					status.setContext(getApplicationContext());
 					map.put(CommonDef.route_info.NAME, ((myApplication) getApplication())
 							.getRoutName(i));
-					map.put(CommonDef.route_info.DEADLINE, "2015-06-20 10:00");
-					map.put(CommonDef.route_info.STATUS, "已检查");
-					map.put(CommonDef.route_info.PROGRESS, "0/"+ ((myApplication) getApplication())
-							.getRoutePartItemCount(i));
+					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
+					map.put(CommonDef.route_info.STATUS, status.getStatus());
+					
+					map.put(CommonDef.route_info.PROGRESS, status.mCheckedCount+"/"+status.mSum );
 //					map.put("progress", "2/");
 					String index = ""+(i+ 1);
 					map.put(CommonDef.route_info.INDEX, index);

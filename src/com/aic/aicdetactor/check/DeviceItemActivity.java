@@ -48,6 +48,8 @@ import com.aic.aicdetactor.MainActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.media.MediaMainActivity;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -85,14 +87,18 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private Button mButton_Next = null;
 	private Button mButton_Measurement = null;
 	private Button mButtion_Position = null;
-	private Button mButtion_Media = null;
+	//private Button mButtion_Media = null;
 	private LinearLayout LinearLayout_y = null;
 	private LinearLayout LinearLayout_z = null;
 	private TextView mTextViewX = null;
 	private TextView mTextViewY = null;
 	private TextView mTextViewZ = null;
+	private TextView mTextViewCountDown = null;
 	private int iCheckedCount =0;
 	private boolean bHasFinishChecked = false;
+	//测试倒计时，用于待信号稳定
+	private final int mMaxSecond_StartMeasure = 30;
+	private int mCountDown =mMaxSecond_StartMeasure;
 	//设置颜色级别
 	private RadioButton mRadioButton = null;
 	@Override
@@ -285,7 +291,9 @@ Log.d(TAG,"routeName is "+ routeNameStr);
         mTextViewX = (TextView)findViewById(R.id.x_value);
         mTextViewY = (TextView)findViewById(R.id.y_value);
         mTextViewZ = (TextView)findViewById(R.id.z_value);
+        mTextViewCountDown = (TextView)findViewById(R.id.countdown);
         mRadioButton = (RadioButton)findViewById(R.id.radioButton2);
+        
 	}
 
 	
@@ -355,19 +363,23 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			if(updateAdapter){
 				 mMapList.clear();
 			}
+			
 			for (int i = 0; i < mPartItemSelectedList.size(); i++) {
 				Map<String, Object> map = new HashMap<String, Object>();				
 				map.put(CommonDef.check_item_info.UNIT_NAME, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_UNIT_NAME));
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_UNIT_NAME));
 				//checkname
 				map.put(CommonDef.check_item_info.NAME, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_CHECKPOINT_NAME));
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME));
 				map.put(CommonDef.check_item_info.DATA_TYPE, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),((myApplication) getApplication()).PARTITEM_DATA_TYPE_NAME));
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_DATA_TYPE_NAME));
+				
+				map.put(CommonDef.check_item_info.DEADLINE, ((myApplication) getApplication())
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME));
 
-
-				//已检查项的检查数值怎么保存？并显示出来
-				map.put(CommonDef.check_item_info.DEADLINE, "2015-06-20 10:00");				
+				//已检查项的检查数值怎么保存？并显示出来,
+				//已巡检的项的个数统计，暂时由是否有巡检时间来算，如果有的话，即已巡检过了，否则为未巡检。
+				//map.put(CommonDef.check_item_info.DEADLINE, "2015-06-20 10:00");				
 				mMapList.add(map);
 			}
 			if(updateAdapter){
@@ -384,21 +396,21 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     */
    private void checkUnit_ViewControl(){
 	   switch(mCheckUnit_DataType){
-	   case CommonDef.ACCELERATION:
-	   case  CommonDef.SPEED:
+	   case CommonDef.checkUnit_Type.ACCELERATION:
+	   case  CommonDef.checkUnit_Type.SPEED:
 		  // 需要方向
 		   LinearLayout_y.setVisibility(View.VISIBLE);
 		   LinearLayout_z.setVisibility(View.VISIBLE);
-		   mButton_Direction.setVisibility(View.VISIBLE);
+		   mButton_Direction.setEnabled(true);
 		   break;
-	   case CommonDef.TEMPERATURE:
-	   case CommonDef.ROTATIONAL_SPEED:
+	   case CommonDef.checkUnit_Type.TEMPERATURE:
+	   case CommonDef.checkUnit_Type.ROTATIONAL_SPEED:
 		  //方向按鈕隱藏
-		   mButton_Direction.setVisibility(View.GONE);
+		   mButton_Direction.setEnabled(false);
 		   LinearLayout_y.setVisibility(View.GONE);
 		   LinearLayout_z.setVisibility(View.GONE);
 		   break;
-	   case CommonDef.RECORD:
+	   case CommonDef.checkUnit_Type.RECORD:
 		   break;
 		   default:
 			   break;
@@ -443,6 +455,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
     */
 	private void nextCheckItem() {
+		startCountDown();
 		iCheckedCount++;
 		if (iCheckedCount == (mListView.getCount() - 1)) {
 			// last item,and save current device checkItem data
@@ -504,6 +517,15 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			HashMap<String, String> map = (HashMap<String, String>) mListView
 					.getItemAtPosition(mCurrentCheckIndex);
 			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
+				json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+
+				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
+				mMax_temperature =		tmp.max;
+				mMid_temperature =tmp.mid;
+				mMin_temperature =tmp.min;
+		
+			}
 			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
@@ -521,7 +543,9 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	}
 	
 
-	
+	private float mMax_temperature =0;
+	private float mMid_temperature =0;
+	private float mMin_temperature =0;
 	
      @Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
@@ -574,9 +598,10 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     void genRandomXYZ_temperation(){
     	int max_xyz=360;
     	float max_temperation=300;
-    	float MAX_TEMP = 200;
-    	float MID_TEMP = 80;
-    	float LOW_TEMP = 0;
+    	float MAX_TEMP = mMax_temperature;
+    	float MID_TEMP = mMid_temperature;
+    	float LOW_TEMP = mMin_temperature;
+   
     	int x = (int) (Math.random()*max_xyz);
     	int y = (int) (Math.random()*max_xyz);
     	int z = (int) (Math.random()*max_xyz);
@@ -603,5 +628,28 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     	}
     }
     
+    /**
+     * 倒计时显示，每个测试项需要先稳定30秒，之后才可以巡检，确保数据的稳定性
+     */
+    private void startCountDown(){
+    	mCountDown =mMaxSecond_StartMeasure;
+		handler.postDelayed(runnable, 1000);
+    }
+    Handler handler = new Handler(); 
+	Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			mCountDown--;
+			if (mCountDown >= 0) {
+				mTextViewCountDown.setText(String.format(
+						getString(R.string.measurement_countdown), mCountDown));
+				handler.postDelayed(this, 1000);
+				if (mCountDown == 0) {
+					mButton_Measurement.setEnabled(true);
+				}
+			}
+
+		}
+	}; 
 
 }

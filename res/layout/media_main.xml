@@ -18,19 +18,19 @@
 
         <Button
             android:id="@+id/camera"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/three_button_width"
             android:layout_height="wrap_content"
             android:text="@string/camera" />
 
         <Button
             android:id="@+id/sound"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/three_button_width"
             android:layout_height="wrap_content"
             android:text="@string/soundrecord" />
 
         <Button
             android:id="@+id/record"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/three_button_width"
             android:layout_height="wrap_content"
             android:text="@string/textrecord" />
     </LinearLayout>

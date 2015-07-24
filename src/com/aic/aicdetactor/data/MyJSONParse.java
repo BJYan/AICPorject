@@ -24,8 +24,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import com.aic.aicdetactor.comm.CommonDef;
+
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.SystemUtil;
 
 public class MyJSONParse {
 	String TAG = "luotest";
@@ -157,7 +159,8 @@ public class MyJSONParse {
 		if (data != null) {
 			Log.d("luotest", "data is not null");
 			try {
-				JSONArray jsonArray = new JSONArray(data);
+				JSONTokener jsonTokener = new JSONTokener(data);
+				JSONArray jsonArray = (JSONArray) jsonTokener.nextValue();
 				for (int i = 0; i < jsonArray.length(); i++) {
 					Log.d("luotest", "data is not null" + "i = " + i);
 					JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -238,38 +241,52 @@ public class MyJSONParse {
 		}
 		return json;
 	}
-	public int getDevicePartItemCount(Object deviceItemObject)
+	public CheckStatus getDevicePartItemCount(Object deviceItemObject)
 			throws JSONException {
 
 		int count = 0;
-
+		CheckStatus status = new CheckStatus();
 		JSONObject object = (JSONObject) deviceItemObject;
 		List<Object> partlist = this.getPartList(object);
 		count = partlist.size();
+		JSONObject itemObject = null;
+		String checkTimeStr = null;
+		
 		for (int k = 0; k < partlist.size(); k++) {
 			Log.d(TAG, " getDevicePartItemCount k=" + k + "," + partlist.get(k));
+			itemObject = (JSONObject) partlist.get(k);			
+			checkTimeStr = this.getPartItemCheckUnitName(itemObject, CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME);
+			if(checkTimeStr != null){
+				status.mCheckedCount++;
+				status.mLastTime = checkTimeStr;
+			}
 		}
-
-		return count;
+		status.mSum = count;
+		return status;
 	}
 
-	public int getStationPartItemCount(Object staionItemObject)
+	public CheckStatus getStationPartItemCount(Object staionItemObject)
 			throws JSONException {
 		int count = 0;
-
+		CheckStatus status = new CheckStatus();
+		String checkTimeStr=null;
 		JSONObject object = (JSONObject) staionItemObject;
 		List<Object> devicelist = this.getDeviceList(object);
+		List<Object> partlist =null;
 		for (int n = 0; n < devicelist.size(); n++) {
-
-			List<Object> partlist = this.getPartList(devicelist.get(n));
+			partlist = this.getPartList(devicelist.get(n));
 			count = count + partlist.size();
-			// for(int k =0 ;k<partlist.size();k++){
-			// Log.d(TAG, " getStationPartItemCount k=" + k + "," +
-			// partlist.get(k));
-			// }
+			for(int k=0;k<partlist.size();k++){
+				JSONObject itemObject = (JSONObject) partlist.get(k);				
+				checkTimeStr = this.getPartItemCheckUnitName(itemObject, CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME);
+				if(checkTimeStr != null){
+					status.mCheckedCount++;
+					status.mLastTime = checkTimeStr;
+				}			
+			}
 		}
-
-		return count;
+		status.mSum = count;
+		return status;
 	}
 
 	/**
@@ -278,24 +295,34 @@ public class MyJSONParse {
 	 * @return
 	 * @throws JSONException
 	 */
-	public int getRoutePartItemCount(int routeIndex) throws JSONException {
+	public CheckStatus getRoutePartItemCount(int routeIndex) throws JSONException {
+		
+		CheckStatus status = new CheckStatus();
 		List<Object> list = getStationList(routeIndex);
-		int count = 0;
+		int count = 0;		
+		String checkTimeStr=null;
+		List<Object> devicelist  = null;
 		for (int i = 0; i < list.size(); i++) {
 			JSONObject object = (JSONObject) list.get(i);
-			List<Object> devicelist = this.getDeviceList(object);
-
+			devicelist = this.getDeviceList(object);
+			
 			for (int n = 0; n < devicelist.size(); n++) {
 				List<Object> partlist = this.getPartList(devicelist.get(n));
 				count = count + partlist.size();
-				// for(int k =0 ;k<partlist.size();k++){
-				// Log.d(TAG, " getRoutePartItemCount k=" + k + "," +
-				// partlist.get(k));
-				// }
+				for(int k=0;k<partlist.size();k++){
+					JSONObject itemObject = (JSONObject) partlist.get(k);				
+					checkTimeStr = this.getPartItemCheckUnitName(itemObject, CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME);
+					if(checkTimeStr != null){
+						status.mCheckedCount++;
+						status.mLastTime = checkTimeStr;
+					}
+					
+				}
 			}
+			status.mSum = count;
 		}
 
-		return count;
+		return status;
 	}
 
 	/**
@@ -634,6 +661,20 @@ public class MyJSONParse {
 		return list;
 	}
 
+	public Temperature getPartItemTemperatrue(Object object){
+		if (object == null) {
+			Log.d(TAG, "getPartItemTemperatrue " + " object is null");
+			return null;
+		}
+		Temperature info = new Temperature();
+		String name = getPartItemName(object);		
+		if(name != null){
+			info.max = SystemUtil.getTemperature(this.getPartItemSubStr(name, 6));
+			info.mid = SystemUtil.getTemperature(this.getPartItemSubStr(name, 7));
+			info.min = SystemUtil.getTemperature(this.getPartItemSubStr(name, 8));
+		}		
+		return info;
+	}
 	// input params must be partItem sub
 	public String getPartItemName(Object partItemobject) {
 		//Log.d(TAG, "getPartItemName 0");
@@ -810,4 +851,6 @@ public class MyJSONParse {
 		}
 		return result;
 	}	
+	
+	
 }

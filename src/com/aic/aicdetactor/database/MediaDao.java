@@ -14,19 +14,19 @@ public class MediaDao {
 
 	DBHelper helper = null;	
 	private SQLiteDatabase mDB = null;
-	Setting mSetting= null;
+	//Setting mSetting= null;
 
 	public MediaDao(Context cxt) {
 		helper = new DBHelper(cxt);
 		mDB = helper.getWritableDatabase();
-		mSetting = new Setting();
+		//mSetting = new Setting();
 	}
 
 	
 	public MediaDao(Context cxt, int version) {
 		helper = new DBHelper(cxt, version);
 		mDB = helper.getWritableDatabase();
-		mSetting = new Setting();
+		//mSetting = new Setting();
 	}
 
 	public int insertInfo(int fileType,String fileName, String path,String contentStr,long duration) {
@@ -44,6 +44,23 @@ public class MediaDao {
 		}
 		
 		return insertInfo( TableName, fileName,  path, contentStr, duration);
+	}
+	
+	public String getTableName(int fileType) {
+		String TableName = null;	
+		switch(fileType){
+		case CommonDef.FILE_TYPE_PICTRUE:
+			TableName = DBHelper.TABLE_NAME_PICTRUE;
+			break;
+		case CommonDef.FILE_TYPE_AUDIO:
+			TableName = DBHelper.TABLE_NAME_AUDIO;
+			break;
+		case CommonDef.FILE_TYPE_TEXTRECORD:
+			TableName = DBHelper.TABLE_NAME_TEXTRECORD;
+			break;
+		}
+		
+		return TableName;
 	}
 	
 	private int insertInfo(String TableNameStr,String fileName, String path,String contentStr,long duration) {
@@ -88,7 +105,7 @@ public class MediaDao {
 	}
 
 	public Cursor queryRecord(int fileType) {
-		String TableNameStr = mSetting.getData_Media_Director(fileType);
+		String TableNameStr = getTableName(fileType);
 		return mDB
 				.query(TableNameStr,
 						null,

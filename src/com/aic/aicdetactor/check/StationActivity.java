@@ -15,6 +15,7 @@ import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
@@ -103,14 +104,18 @@ public class StationActivity extends Activity {
 				List<Object> stationItemList = ((myApplication) getApplication())
 						.getStationList(mRouteIndex);
 
+				CheckStatus status = null;
 				for (int i = 0; i < stationItemList.size(); i++) {
 					Map<String, String> map = new HashMap<String, String>();
+					status = ((myApplication) getApplication())
+							.getStationPartItemCount(stationItemList.get(i));
+					status.setContext(getApplicationContext());
 					map.put(CommonDef.station_info.NAME, ((myApplication) getApplication())
 							.getStationItemName(stationItemList.get(i)));
-					map.put(CommonDef.station_info.DEADLINE, "2015-06-20 10:00");
-					map.put(CommonDef.station_info.STATUS, "已检查");
-					map.put(CommonDef.station_info.PROGRESS, "2/"+((myApplication) getApplication())
-							.getStationPartItemCount(stationItemList.get(i)));
+					map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
+					map.put(CommonDef.station_info.STATUS, status.getStatus());
+					
+					map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount+"/"+status.mSum);
 					//String index = "" + (i + 1);
 					//map.put("index", index);
 
@@ -165,14 +170,18 @@ public class StationActivity extends Activity {
 				
 				// test getpartitemsub,TEST pass
 				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
+				//"0102*F#测点*转速*00000007*r/min*129*461C4000*460CA000*459C4000*"
+
 				for (int n = 0; n < 10; n++) {
 
 					String str = ((myApplication) getApplication())
 							.getPartItemSubStr(teststr, n);
 					Log.d(TAG,"teststr is "	+ str);
 				}
-				float f1 = SystemUtil.ByteArrayToFloat("42700000".getBytes());
-				Log.d(TAG,"teststr is "	+ f1);
+				float f1 = SystemUtil.getTemperature("42700000");
+				Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
+				Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42b40000"));
+				//Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
 				///
 				
 			}

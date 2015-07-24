@@ -23,14 +23,22 @@
     <string name="tem_check">Temporary check</string>
     <string name="checked">Checked</string>
     <string name="uncheck">Uncheck</string>
+    <string name="checking">Checking</string>
+     <string name="bluetooth_string">蓝牙</string>
+    <string name="check_string">巡检</string>
+    <string name="search_string">查询</string>
+    <string name="notice_string">通知</string>
+    <string name="data_string">数据</string>
+    <string name="check_order">反向巡检</string>
     <string name="no_bt_device">Can not support bluetooth</string>
     <string name="shureQuiteApp">Back agin will quite AIC app</string>
    
+    
 <string name="position">位置</string>
     <string name="direction">方向</string>
     <string name="next_item">下一点</string>
     <string name="measurement">测量</string>
-    <string name="measurement_countdown">测量倒计时</string>
+    <string name="measurement_countdown">测量倒计时：%1$d秒</string>
     <string name="motor_type">电机型号</string>
     
     <string name="motor_power">电机功率</string>
@@ -52,8 +60,12 @@
           <string name="textrecord">记录</string>
     <string name="prepoint">pre CheckPoint</string>
     <string name="notendtips">还有没完成的巡检项，请查看！</string>
-    <string name="sound_start">开始</string>
-    <string name="sound_pause">暂停</string>
-    <string name="sound_save">保存</string>
+    <string name="sound_start">Start</string>
+    <string name="sound_pause">Puase</string>
+    <string name="sound_save">Save</string>
     <string name="sound_play">Playback</string>
+    <string name="tmp_title">Title：</string>
+    <string name="tmp_datatype">Tpye:</string>
+    <string name="tmp_content">Content:</string>
+     <string name="save">Save</string>
 </resources>
