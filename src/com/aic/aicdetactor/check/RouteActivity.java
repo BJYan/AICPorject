@@ -14,8 +14,10 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.R.menu;
+import com.aic.aicdetactor.TestSetting;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.service.DataService;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.QuiteToast;
@@ -63,8 +65,9 @@ public class RouteActivity extends Activity {
 	String TAG = "luotest";
 	private boolean bTempCheck = false;
 	private SwitchView mSwitch = null;
-	 //public String mPath = "/sdcard/down.txt";
-   //  MyJSONParse json = new MyJSONParse();
+	private List<String> mFileList = null;	
+	 String name = null;
+	 String pwd= null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -93,6 +96,11 @@ public class RouteActivity extends Activity {
 			mSwitch = (SwitchView)findViewById(R.id.link_switch);
 			//mSwitch.setOnCheckedChangeListener(listener);
 			//init();
+			Intent intent=getIntent();  
+	       name =intent.getStringExtra("name");  
+	         pwd=intent.getStringExtra("pwd");  
+	        
+			
 			iniDataThread.start();
 			if (isTestInterface) {
 				// //test idinfo ,test pass
@@ -148,77 +156,83 @@ public class RouteActivity extends Activity {
 			return true;
 		}
 		
-		void init(){
-			Log.d(TAG,"in init() start "+SystemUtil.getSystemTime());
-			String name = SystemUtil.createGUID();
-			name = "down.txt";
-			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down.txt",this);
-			name = "down1.txt";
-			((myApplication) getApplication()).insertNewRouteInfo(name,"/sdcard/down1.txt",this);
-//			startService(new Intent(RouteActivity.this,  
-//					DataService.class));  
-			Log.d(TAG,"in init() 1 start "+SystemUtil.getSystemTime());
-			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-			int iRouteCount = ((myApplication) getApplication()).InitData();
-			Log.d(TAG,"in init() 2 start "+SystemUtil.getSystemTime());
-			CheckStatus status = null;
-			for(int i =0;i<iRouteCount;i++){
-			try {	
-				Log.d(TAG,"in init() for start i="+i+","+SystemUtil.getSystemTime());
-					Map<String, String> map = new HashMap<String, String>();
-					status = ((myApplication) getApplication())
-							.getRoutePartItemCount(i);
-					status.setContext(getApplicationContext());
-					map.put(CommonDef.route_info.NAME, ((myApplication) getApplication())
-							.getRoutName(i));
-					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
-					map.put(CommonDef.route_info.STATUS, status.getStatus());
-					
-					map.put(CommonDef.route_info.PROGRESS, status.mCheckedCount+"/"+status.mSum );
-//					map.put("progress", "2/");
-					String index = ""+(i+ 1);
-					map.put(CommonDef.route_info.INDEX, index);
+	void init() {
+		Log.d(TAG, "in init() start " + SystemUtil.getSystemTime() + "name is "+name + " pwd is "+pwd);
+		RouteDao dao = new RouteDao(this.getApplicationContext());
+		mFileList = dao.queryLogIn(name, pwd);
+		for (int i = 0; i < mFileList.size(); i++) {
+			((myApplication) getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
+			Log.d(TAG,"read file from databse i=" + i + ","+ mFileList.get(i));
+		}
 
-					list.add(map);
-					Log.d(TAG,"in init() for end i="+i+","+SystemUtil.getSystemTime());
-					
+	
+		Log.d(TAG, "in init() 1 start " + SystemUtil.getSystemTime());
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		int iRouteCount = ((myApplication) getApplication()).InitData();
+		Log.d(TAG, "in init() 2 start " + SystemUtil.getSystemTime());
+		CheckStatus status = null;
+		for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
+			try {
+				Log.d(TAG, "in init() for start i=" + routeIndex + ","
+						+ SystemUtil.getSystemTime());
+				Map<String, String> map = new HashMap<String, String>();
+				status = ((myApplication) getApplication()).getNodeCount(null,
+						0, routeIndex);
+				status.setContext(getApplicationContext());
+				map.put(CommonDef.route_info.NAME,
+						((myApplication) getApplication())
+								.getRoutName(routeIndex));
+				map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
+				map.put(CommonDef.route_info.STATUS, status.getStatus());
+
+				map.put(CommonDef.route_info.PROGRESS, status.mCheckedCount
+						+ "/" + status.mSum);
+				// map.put("progress", "2/");
+				String index = "" + (routeIndex + 1);
+				map.put(CommonDef.route_info.INDEX, index);
+
+				list.add(map);
+				Log.d(TAG, "in init() for end i=" + routeIndex + ","
+						+ SystemUtil.getSystemTime());
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			}
-
-			SimpleAdapter adapter = new SimpleAdapter(this, list,
-					R.layout.checkitem, new String[] { CommonDef.route_info.INDEX, CommonDef.route_info.NAME,
-					CommonDef.route_info.DEADLINE, CommonDef.route_info.STATUS, CommonDef.route_info.PROGRESS }, new int[] {
-							R.id.index, R.id.pathname, R.id.deadtime,
-							R.id.status, R.id.progress });
-			Log.d(TAG,"in init() setAdapter"+SystemUtil.getSystemTime());
-			mListView.setAdapter(adapter);
-			Log.d(TAG,"in init() after setAdapter"+SystemUtil.getSystemTime());
-			mListView.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					// TODO Auto-generated method stub
-					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-							.getItemAtPosition(arg2));
-					Log.d(TAG,
-							"MAPITEM is " + mapItem.toString()
-									+ " pathname is "
-									+ (String) mapItem.get(CommonDef.route_info.NAME));
-					Intent intent = new Intent();
-					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, arg2);
-					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-					intent.putExtra(CommonDef.route_info.NAME,
-							(String) mapItem.get(CommonDef.route_info.NAME));
-					intent.putExtra(CommonDef.route_info.INDEX, (String) mapItem.get(CommonDef.route_info.INDEX));
-					intent.setClass(getApplicationContext(),
-							StationActivity.class);
-					startActivity(intent);
-				}
-			});
-			
 		}
+
+		SimpleAdapter adapter = new SimpleAdapter(this, list,
+				R.layout.checkitem, new String[] { CommonDef.route_info.INDEX,
+						CommonDef.route_info.NAME,
+						CommonDef.route_info.DEADLINE,
+						CommonDef.route_info.STATUS,
+						CommonDef.route_info.PROGRESS }, new int[] {
+						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
+						R.id.progress });
+		Log.d(TAG, "in init() setAdapter" + SystemUtil.getSystemTime());
+		mListView.setAdapter(adapter);
+		Log.d(TAG, "in init() after setAdapter" + SystemUtil.getSystemTime());
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
+						.getItemAtPosition(arg2));
+				Log.d(TAG, "MAPITEM is " + mapItem.toString() + " pathname is "
+						+ (String) mapItem.get(CommonDef.route_info.NAME));
+				Intent intent = new Intent();
+				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, arg2);
+				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+				intent.putExtra(CommonDef.route_info.NAME,
+						(String) mapItem.get(CommonDef.route_info.NAME));
+				intent.putExtra(CommonDef.route_info.INDEX,
+						(String) mapItem.get(CommonDef.route_info.INDEX));
+				intent.setClass(getApplicationContext(), StationActivity.class);
+				startActivity(intent);
+			}
+		});
+
+	}
 	private	Handler InitDataHandler = new Handler()
 	    {
 			public final  int INIT_DATA = 0;

@@ -108,7 +108,7 @@ public class StationActivity extends Activity {
 				for (int i = 0; i < stationItemList.size(); i++) {
 					Map<String, String> map = new HashMap<String, String>();
 					status = ((myApplication) getApplication())
-							.getStationPartItemCount(stationItemList.get(i));
+							.getNodeCount(stationItemList.get(i),1,0);
 					status.setContext(getApplicationContext());
 					map.put(CommonDef.station_info.NAME, ((myApplication) getApplication())
 							.getStationItemName(stationItemList.get(i)));

@@ -9,6 +9,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Service;
@@ -112,23 +113,20 @@ public class DataService extends Service {
 		if (mRouteList == null) {
 			mRouteList = new ArrayList<Map<String, String>>();
 			int iRouteCount = ((myApplication) getApplication()).InitData();
-			for (int i = 0; i < iRouteCount; i++) {
+			CheckStatus status = null;
+			for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
 				try {
 					Map<String, String> map = new HashMap<String, String>();
+					status = ((myApplication) getApplication())
+							.getNodeCount(null,0,routeIndex);
 					map.put(CommonDef.route_info.NAME,
-							((myApplication) getApplication()).getRoutName(i));
-					map.put(CommonDef.route_info.DEADLINE, "2015-06-20 10:00");
+							((myApplication) getApplication()).getRoutName(routeIndex));
+					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
 					map.put(CommonDef.route_info.STATUS, "已检查");
-					map.put(CommonDef.route_info.PROGRESS,
-							"0/"
-									+ ((myApplication) getApplication())
-											.getRoutePartItemCount(i));
-					// map.put("progress", "2/");
-					String index = "" + (i + 1);
+					map.put(CommonDef.route_info.PROGRESS,status.mCheckedCount+"/"+status.mSum);					
+					String index = "" + (routeIndex + 1);
 					map.put(CommonDef.route_info.INDEX, index);
-
 					mRouteList.add(map);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

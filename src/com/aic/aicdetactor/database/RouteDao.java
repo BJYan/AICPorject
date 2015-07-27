@@ -3,7 +3,22 @@ package com.aic.aicdetactor.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aic.aicdetactor.data.RouteInfo;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.aic.aicdetactor.data.MyJSONParse;
+import com.aic.aicdetactor.data.Route;
+
+
+
+
+
+
+
+
+import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.data.WorkerInfo;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,7 +28,10 @@ import android.util.Log;
 
 public class RouteDao {
 	DBHelper helper = null;
-	private String RouteTableName = "jxcheck";
+	private String RouteTableName = DBHelper.TABLE_SOURCE_FILE;
+	private String WorkerTableName = DBHelper.TABLE_WORKERS;
+	private String TurnTableName = DBHelper.TABLE_TURN;
+	
 	private SQLiteDatabase mDB = null;
 
 	public RouteDao(Context cxt) {
@@ -33,12 +51,135 @@ public class RouteDao {
 	}
 
 	public int insertNewRouteInfo(String fileName, String path) {
+		RouteBean routeBean = new RouteBean();
+		routeBean.mGUID = fileName;
+		routeBean.mPath = path;
+		
+		insertRouteBaseInfo(fileName,path);
+//		insertData(route);
+		return 1;
+	}
+	public void insertRouteBaseInfo(String fileName,String path) {
+		Log.d("luotest", "in insertRouteBaseInfo() " +path);
+		
+		Route info = 	MyJSONParse.getPlanInfo(path);
+		info.parseBaseInfo();
+		
 		RouteBean route = new RouteBean();
 		route.mGUID = fileName;
 		route.mPath = path;
-		insertData(route);
-		return 1;
+		
+		if (route == null) {
+			return;
+		}
+		Cursor cursor = null;
+		Log.d("testluo", " name is " + route.mGUID + ",path is " + route.mPath);
+		/**
+		 * + "guid varchar(64)," + "jxName varchar(128)," +
+		 * "filePath varchar(128)," + "downTime varchar(24)," +
+		 * "isBeiginChecked BOOLEAN," + "isChecked BOOLEAN," +
+		 * "isuploaded BOOLEAN," + "lastcheckTime varchar(24)," +
+		 * "workerName varchar(128)," + "firstcheckTime varchar(24)," +
+		 * "lastCheckStation varchar(8)," + "lastCheckDeviceIndex varchar(8)," +
+		 * "lastCheckPartItemIndex varchar(8)," + "isReverseCheck BOOLEAN)";
+		 */
+		cursor = mDB.query(RouteTableName,
+					null,
+					DBHelper.SourceTable.PLANGUID + "=?", new String[] { info.minfo.PlanGuid }, null, null,
+					null);
+		String sql = null;
+		if(cursor== null || cursor.getCount()<1){ 
+		 sql = "insert into "+RouteTableName
+				+" (" + "guid," + "jxName,"
+				+ "filePath," + "downTime," + "isChecked," + "isBeiginChecked,"
+				+ "isuploaded," + "lastcheckTime," + "workerName,"
+				+ "firstcheckTime," + "lastCheckStation,"
+				+ "lastCheckDeviceIndex," + "lastCheckPartItemIndex,"
+				+ "isReverseCheck," 
+				+ DBHelper.SourceTable.PLANNAME+","
+				+ DBHelper.SourceTable.PLANGUID+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		
+		mDB.execSQL(sql, new Object[] { route.mGUID, route.mjxName,
+				route.mPath, route.mDownLoadTime, route.mIsChecked,
+				route.mIsBeiginCheck, route.mIsUploaded, route.mLastCheckTime,
+				route.mWorkerName, route.mFirstCheckTime,
+				route.mLastCheckedStationIndex, route.mLastCheckedDeviceIndex,
+				route.mLastCheckedPartItemIndex, route.mIsReverseChecking,
+				info.minfo.PlanName,info.minfo.PlanGuid});
+		
+		}
+		if(cursor != null){cursor.close();}
+		
+		WorkerInfo workerinfo = null;
+		
+		//parse worker information from json txt
+		////////////////////////////////////////////
+		
+		for(int i = 0;i<info.WorkerInfoList.size();i++){
+			workerinfo = (WorkerInfo) info.WorkerInfoList.get(i);
+			cursor = mDB.query(WorkerTableName,
+					null,
+					DBHelper.Plan_Worker_Table.Number + "=?", new String[] { workerinfo.WorkerNumber }, null, null,
+					null);
+			if(cursor== null || cursor.getCount()<1){ 
+				 sql = "insert into "+WorkerTableName
+						 +"(" + DBHelper.Plan_Worker_Table.Name+","				 
+						 + DBHelper.Plan_Worker_Table.Number+","
+						 + DBHelper.Plan_Worker_Table.Password+","
+						 + DBHelper.Plan_Worker_Table.IsAdministrator+","
+						 + DBHelper.Plan_Worker_Table.PlanGuid+","
+						 + DBHelper.Plan_Worker_Table.GroupName
+						 +")values(?,?,?,?,?,?)";
+						
+			
+				mDB.execSQL(sql, new Object[] {
+						workerinfo.WorkerName,
+						workerinfo.WorkerNumber,
+						workerinfo.WorkerPwd,
+						workerinfo.isAdministrator,				
+						info.minfo.PlanGuid,
+						workerinfo.GroupName});
+				}
+			if(cursor != null){cursor.close();}
+		}
+		
+		/////////////////////////////////////////////
+		
+		TurnInfo turninfo = null;
+		
+		//parse turn information from json txt
+		
+		for(int i = 0;i<info.TurnInfoList.size();i++){
+			turninfo = (TurnInfo) info.TurnInfoList.get(i);
+			cursor = mDB.query(TurnTableName,
+					null,
+					DBHelper.Plan_Turn_Table.Number + "=?" + " and "+DBHelper.Plan_Turn_Table.PlanGuid + "=?", 
+					new String[] { turninfo.Number, info.minfo.PlanGuid}, null, null,
+					null);
+			if(cursor== null || cursor.getCount()<1){ 
+				 sql = "insert into "+TurnTableName
+						 +"(" + DBHelper.Plan_Turn_Table.Number +","				 
+						 + DBHelper.Plan_Turn_Table.StartTime+","
+						 + DBHelper.Plan_Turn_Table.EndTime+","
+						 + DBHelper.Plan_Turn_Table.DutyNumber+","
+						 + DBHelper.Plan_Turn_Table.PlanGuid
+						 +")values(?,?,?,?,?)";
+						
+				// SQLiteDatabase db = helper.getWritableDatabase();
+				mDB.execSQL(sql, new Object[] {
+						turninfo.Number,
+						turninfo.StartTime,
+						turninfo.EndTime,
+						turninfo.DutyNumber,				
+						info.minfo.PlanGuid
+						});
+				}
+			if(cursor != null){cursor.close();}
+		}
+		
 	}
+
+	
 
 	// 插入操作
 	public void insertData(RouteBean route) {
@@ -160,32 +301,77 @@ public class RouteDao {
 		return cursor;
 	}
 
-	public List<RouteInfo> getNoCheckFinishRouteInfo() {
-		List<RouteInfo> list = new ArrayList<RouteInfo>();
+	public List<String> queryLogIn(String name,String pwsd) {
+		
+		List<String>guidList = new ArrayList<String>();
+		Cursor cur = mDB
+				.query(WorkerTableName,						
+						null,
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Password+ "=?", new String[] { name,pwsd }, 
+						null,
+						null, null);
+		if (cur != null) {
+			cur.moveToFirst();
+			for(int n=0;n<cur.getCount();n++){
+			String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.PlanGuid));
+			guidList.add(GUID);
+			cur.moveToNext();
+			Log.d("luotest", "sear worker table " +n);
+			}
+		}
+
+		List<String>fileNameList = new ArrayList<String>();
+		
+		for(int k =0 ;k<guidList.size();k++){
+			Log.d("luotest", " 2 sear worker table " +k);
+			Cursor cursor2 = mDB
+					.query(RouteTableName,						
+							new String[]{DBHelper.SourceTable.PATH},
+							DBHelper.SourceTable.PLANGUID+ "=?" , new String[] { guidList.get(k) }, 
+							null,
+							null,
+							null);
+				if (cursor2 != null) {
+					cursor2.moveToFirst();
+					for(int i=0;i<cursor2.getCount();i++){
+						String GUID =	cursor2.getString(0);				
+					fileNameList.add(GUID);
+					cursor2.moveToNext();
+					Log.d("luotest", " 2 sear filesouce table " +i);
+					}
+				}
+		}
+
+		
+		return fileNameList;
+	}
+	
+	public List<Route> getNoCheckFinishRouteInfo() {
+		List<Route> list = new ArrayList<Route>();
 		Cursor cursor = queryNotFinishRouteInfo();
 		if (cursor != null) {
 			cursor.moveToFirst();
 			for (int i = 0; i < cursor.getCount(); i++) {
-				RouteInfo info = new RouteInfo();
+				Route info = new Route();
 
 				info.mIsReverseCheck = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.ISREVERSE_CHECK)));
+						.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
 				info.mDeviceIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.LASTCHECKDEVICE_INDEX)));
+						.getColumnIndex(DBHelper.SourceTable.LASTCHECKDEVICE_INDEX)));
 				info.mIsBeiginChecked = Integer.parseInt(cursor
 						.getString(cursor
-								.getColumnIndex(DBHelper.ISBEIGINCHECKED)));
+								.getColumnIndex(DBHelper.SourceTable.ISBEIGINCHECKED)));
 				info.mIsChecked = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.ISCHECKED)));
+						.getColumnIndex(DBHelper.SourceTable.ISCHECKED)));
 				info.mIsReverseCheck = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.ISREVERSE_CHECK)));
+						.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
 				info.mPartItemIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.LASTCHECKPARTITEM_INDEX)));
+						.getColumnIndex(DBHelper.SourceTable.LASTCHECKPARTITEM_INDEX)));
 				info.mRoutName = cursor.getString(cursor
-						.getColumnIndex(DBHelper.JXNAME));
+						.getColumnIndex(DBHelper.SourceTable.JXNAME));
 				info.mStationIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.LASTCHECKSTATION)));
-				int k = cursor.getColumnIndex(DBHelper.PATH);
+						.getColumnIndex(DBHelper.SourceTable.LASTCHECKSTATION)));
+				int k = cursor.getColumnIndex(DBHelper.SourceTable.PATH);
 				Log.d("luotest", "k = " + k);
 				info.mFileName = cursor.getString(k);
 				list.add(info);
@@ -200,8 +386,8 @@ public class RouteDao {
 		int count = 0;
 		Cursor cursor = mDB
 				.query(RouteTableName,
-						new String[] { "guid,jxName,downTime,isChecked,isBeiginChecked,isuploaded,lastcheckTime,workerName,firstcheckTime,lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck" },
-						null, null, null, null, null);
+						//new String[] { "guid,jxName,downTime,isChecked,isBeiginChecked,isuploaded,lastcheckTime,workerName,firstcheckTime,lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck" },
+						null,null, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 			count = cursor.getCount();

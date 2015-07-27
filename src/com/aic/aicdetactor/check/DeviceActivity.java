@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.R.id;
 import com.aic.aicdetactor.R.layout;
@@ -13,6 +15,9 @@ import com.aic.aicdetactor.R.layout;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
+
+
+
 
 
 import android.app.Activity;
@@ -25,13 +30,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class DeviceActivity extends Activity {
+public class DeviceActivity extends Activity implements OnClickListener{
 	int mStationIndex = 0;
 	int mRouteIndex = 0;
 	ListView mListView = null;
@@ -40,7 +46,8 @@ public class DeviceActivity extends Activity {
 	String mCheckNameStr = null;
 	String mRouteNameStr = null;
 	String mStationNameStr = null;
-	
+	Button mButtonStartCheck = null;
+	List<Map<String, String>> mDataList = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -81,7 +88,7 @@ public class DeviceActivity extends Activity {
 
 		Log.d(TAG, "oncreate() index is " + mStationIndex);
 		mListView = (ListView) findViewById(R.id.listView);
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		mDataList = new ArrayList<Map<String, String>>();
 		try {
 
 			/**
@@ -95,8 +102,8 @@ public class DeviceActivity extends Activity {
 			for (int i = 0; i < deviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
 				status = ((myApplication) getApplication())
-						.getDevicePartItemCount(deviceItemList
-								.get(i));
+						.getNodeCount(deviceItemList
+								.get(i),2,0);
 				status.setContext(getApplicationContext());
 				map.put(CommonDef.device_info.INDEX,""+(itemindex+1) );
 				map.put(CommonDef.device_info.NAME, ((myApplication) getApplication())
@@ -108,14 +115,14 @@ public class DeviceActivity extends Activity {
 			
 				map.put(CommonDef.device_info.PROGRESS,
 						status.mCheckedCount+"/"+status.mSum);
-				list.add(map);
+				mDataList.add(map);
 				itemindex++;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		SimpleAdapter adapter = new SimpleAdapter(this, list,
+		SimpleAdapter adapter = new SimpleAdapter(this, mDataList,
 				R.layout.checkitem, new String[] { CommonDef.device_info.INDEX, CommonDef.device_info.NAME,
 				CommonDef.device_info.DEADLINE, CommonDef.device_info.STATUS, CommonDef.device_info.PROGRESS }, new int[] {
 						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
@@ -126,19 +133,19 @@ public class DeviceActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// TODO Auto-generated method stub
-				HashMap<String, String> map = (HashMap<String, String>) mListView
-						.getItemAtPosition(arg2);
-				Intent intent = new Intent();
-				intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
-				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, mRouteIndex);
-				intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, mStationIndex);
-				intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, arg2);
-				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-				intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
-				intent.putExtra(CommonDef.device_info.NAME, map.get(CommonDef.device_info.NAME));
-				intent.setClass(getApplicationContext(),
-						DeviceItemActivity.class);
-				startActivity(intent);
+//				HashMap<String, String> map = (HashMap<String, String>) mListView
+//						.getItemAtPosition(arg2);
+//				Intent intent = new Intent();
+//				intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
+//				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, mRouteIndex);
+//				intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, mStationIndex);
+//				intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, arg2);
+//				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+//				intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
+//				intent.putExtra(CommonDef.device_info.NAME, map.get(CommonDef.device_info.NAME));
+//				intent.setClass(getApplicationContext(),
+//						DeviceItemActivity.class);
+//				startActivity(intent);
 			}
 		});
 
@@ -153,6 +160,9 @@ public class DeviceActivity extends Activity {
 			}
 
 		});
+		
+		mButtonStartCheck = (Button)findViewById(R.id.start_checkdevice);
+		mButtonStartCheck.setOnClickListener(this);
 	}
 
 	@Override
@@ -185,4 +195,57 @@ public class DeviceActivity extends Activity {
 		super.onStop();
 	}
 
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.start_checkdevice: {
+			int itemindex = 0;
+			try{
+			List<Object> deviceItemList = ((myApplication) getApplication())
+					.getDeviceItemList(mStationIndex);
+
+			CheckStatus status = null;		
+			
+			for ( int i = 0; i < deviceItemList.size(); i++) {
+				Map<String, String> map = new HashMap<String, String>();
+				status = ((myApplication) getApplication())
+						.getNodeCount(deviceItemList
+								.get(i),2,0);
+				if(!status.hasChecked){
+					itemindex = i ;
+					break;
+					}
+			}
+				
+			}catch(JSONException e){
+				e.printStackTrace();
+			}
+			
+			HashMap<String, String> map = (HashMap<String, String>) mListView
+					.getItemAtPosition(itemindex);
+			Intent intent = new Intent();
+			intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
+			intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
+					mRouteIndex);
+			intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX,
+					mStationIndex);
+			intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX,itemindex);
+			intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+			intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
+			intent.putExtra(CommonDef.device_info.NAME,
+					map.get(CommonDef.device_info.NAME));
+			intent.setClass(getApplicationContext(), DeviceItemActivity.class);
+			startActivity(intent);
+		}
+			break;
+		}
+	}
+
+	boolean canBeiginCheck(){
+		boolean ok = false ;
+		//先穷举ID号，再者就是比较实际了。
+		
+		return ok;
+	}
 }

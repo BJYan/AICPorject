@@ -13,8 +13,11 @@ import org.json.JSONObject;
 
 
 
-import com.aic.aicdetactor.data.CheckStatus;
 
+
+
+
+import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.Temperature;
 
@@ -46,9 +49,9 @@ public class myApplication extends Application
     public List<Object> getStationList(int routeIndex) throws JSONException {
      return	json.getStationList(routeIndex);
     }
-    public CheckStatus getRoutePartItemCount(int routeIndex) throws JSONException{
-    	 return	json.getRoutePartItemCount(routeIndex);
-    }
+//    public CheckStatus getRoutePartItemCount(int routeIndex) throws JSONException{
+//    	 return	json.getRoutePartItemCount(routeIndex);
+//    }
     public String getStationItemName(Object object) throws JSONException {
     	return json.getStationItemName(object);
     }
@@ -58,12 +61,15 @@ public class myApplication extends Application
     public List<Object> getDeviceItemList(int stationIndex) throws JSONException {
     	return json.getDeviceItem(stationIndex);
     }
-    public CheckStatus getDevicePartItemCount(Object deviceItemObject) throws JSONException {
-    	return json.getDevicePartItemCount(deviceItemObject);
+//    public CheckStatus getDevicePartItemCount(Object deviceItemObject) throws JSONException {
+//    	return json.getDevicePartItemCount(deviceItemObject);
+//    }
+    public CheckStatus getNodeCount(Object Object,int nodeType,int RouteIndex) throws JSONException{
+    	return json.getNodeCount(Object,nodeType,RouteIndex);
     }
-    public CheckStatus getStationPartItemCount(Object staionItemObject) throws JSONException {
-    	return json.getStationPartItemCount(staionItemObject);
-    }
+//    public CheckStatus getStationPartItemCount(Object staionItemObject) throws JSONException {
+//    	return json.getStationPartItemCount(staionItemObject);
+//    }
     public List<Object> getPartItemDataList(int stationIndex,int deviceIndex) throws JSONException {
     	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
     	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
@@ -106,11 +112,20 @@ public class myApplication extends Application
     public String getRoutName(int routeIndex) throws JSONException{
     	return json.getRoutName(routeIndex);
     }
-    public Object addIsChecked(Object DeviceItemJson,boolean bValue){
-    	return json.addIsChecked(DeviceItemJson,bValue);
-    }
+//    public Object addIsChecked(Object DeviceItemJson,boolean bValue){
+//    	return json.addIsChecked(DeviceItemJson,bValue);
+//    }
     public Temperature getPartItemTemperatrue(Object object){
     	return json.getPartItemTemperatrue(object);
     }   
+    public String getDeviceQueryNumber(Object object){
+    	return json.getDeviceQueryNumber(object);
+    }
+    public void SaveData(int RouteIndex){
+    	 json.SaveData(RouteIndex);
+    }
+    public void setAuxiliaryNode(int RouteIndex,Object object){
+    	 json.setAuxiliaryNode(RouteIndex,object);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.check;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -48,6 +51,7 @@ import com.aic.aicdetactor.MainActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.AuxiliaryInfoNode;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.media.MediaMainActivity;
@@ -69,13 +73,13 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private List<Map<String, Object>> mMapList;
 	public final int SPINNER_SELECTCHANGED =0;
 	private SimpleAdapter mListViewAdapter = null;
-	private List<Map<String, Object>> mPartItemRevertMapList = null;
+	
 	private List<Object> mPartItemSelectedList=null;
 	private CheckBox mCheckbox = null;
 	private int mRouteIndex =0;
-	private int mCurrentStationIndex =0;
-	private int mCurrentDeviceIndex = 0;
-	private int mCurrentCheckIndex =0;
+	private int mStationIndex =0;
+	private int mDeviceIndex = 0;
+	private int mCheckIndex =0;
 	//是否需要反向排序来巡检
 	private boolean isReverseDetection = false;
 	//点击listItem后 ListView 视图消失，显示具体测试点界面
@@ -101,6 +105,11 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private int mCountDown =mMaxSecond_StartMeasure;
 	//设置颜色级别
 	private RadioButton mRadioButton = null;
+	
+	private JSONArray mJSONArray = null;
+	String mDeviceNameStr= null;
+	String mDeviceQueryNameStr = null;
+	String mDeviceItemDefStr = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -124,11 +133,11 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 
 		Intent intent = getIntent();
 		mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
-		mCurrentStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
-		mCurrentDeviceIndex = intent.getExtras().getInt(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
+		mStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
+		mDeviceIndex = intent.getExtras().getInt(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
 
 		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
-		String deviceNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
+		mDeviceNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
 		String routeNameStr = intent.getExtras().getString(CommonDef.route_info.NAME);
 		String  stationName = intent.getExtras().getString(CommonDef.station_info.NAME);
 Log.d(TAG,"routeName is "+ routeNameStr);
@@ -136,7 +145,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		planNameTextView.setText(oneCatalog);
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
-		RouteNameTextView.setText(""+(mCurrentDeviceIndex+1) +" >>"+routeNameStr+">>"+stationName+">>"+deviceNameStr);
+		RouteNameTextView.setText(""+(mDeviceIndex+1) +" >>"+routeNameStr+">>"+stationName+">>"+mDeviceNameStr);
 
 		TextView secondcatalognameTextView = (TextView) findViewById(R.id.secondcatalogname);
 		secondcatalognameTextView.setText(routeNameStr);
@@ -154,8 +163,8 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		});
 		mUnitcheck_Vibrate = (LinearLayout)findViewById(R.id.unitcheck);
 		mUnitcheck_Vibrate.setVisibility(View.GONE);
-		Log.d(TAG, "ONcREATE stationIndex is " + mCurrentStationIndex + "deviceIndex"
-				+ mCurrentDeviceIndex);
+		Log.d(TAG, "ONcREATE stationIndex is " + mStationIndex + "deviceIndex"
+				+ mDeviceIndex);
 		mListView = (ListView) findViewById(R.id.listView);
 		mMapList = new ArrayList<Map<String, Object>>();
 		
@@ -187,10 +196,10 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 =“00000010” 表示振动矢量波形
 
 				 */
-				mCurrentCheckIndex = arg2;
+				mCheckIndex = arg2;
 				// TODO Auto-generated method stub
 				 HashMap<String,String>
-				 map = (HashMap<String,String>)mListView.getItemAtPosition(mCurrentCheckIndex);
+				 map = (HashMap<String,String>)mListView.getItemAtPosition(mCheckIndex);
 				 mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 				 mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 				 mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
@@ -254,6 +263,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
             	msg.what = SPINNER_SELECTCHANGED;
             	myHandler.sendMessage(msg);
             	mLastSpinnerIndex = arg2;
+            	mDeviceItemDefStr = spinnerList.get(arg2);
                 
             }    
             public void onNothingSelected(AdapterView<?> arg0) {    
@@ -276,7 +286,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 					OutList.add(mMapList.get(n));
 				}
 				//mMapList.clear();
-				mMapList = SystemUtil.reverseListData(OutList);
+				SystemUtil.reverseListData(mMapList);
 				
 				for(int i =0;i< mMapList.size();i++){
 					Log.d(TAG, "ListReverse " + i +","+mMapList.get(i).toString());
@@ -293,6 +303,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
         mTextViewZ = (TextView)findViewById(R.id.z_value);
         mTextViewCountDown = (TextView)findViewById(R.id.countdown);
         mRadioButton = (RadioButton)findViewById(R.id.radioButton2);
+        mJSONArray = new JSONArray();
         
 	}
 
@@ -348,15 +359,15 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	   try {
 		   if(partItemObject == null){
 			partItemObject = ((myApplication) getApplication())
-					.getPartItemObject(mCurrentStationIndex,mCurrentDeviceIndex);
+					.getPartItemObject(mStationIndex,mDeviceIndex);
 			Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
 			}
 		   
 		   List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mCurrentStationIndex);
+					.getDeviceItemList(mStationIndex);
 		   
-		   mCurrentDeviceObject = deviceItemList.get(mCurrentDeviceIndex);
-		   
+		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
+		   mDeviceQueryNameStr =   ((myApplication) getApplication()).getDeviceQueryNumber(mCurrentDeviceObject);
 		   Log.d(TAG, "mCurrentDeviceObject IS " + mCurrentDeviceObject.toString());
 			mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
 			
@@ -450,6 +461,40 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	   }
    }
    
+	private void SaveData() throws JSONException {
+		bHasFinishChecked = true;
+		
+		AuxiliaryInfoNode node = new AuxiliaryInfoNode();
+		node.set(AuxiliaryInfoNode.KEY_Index, 8);
+
+		node.set(AuxiliaryInfoNode.KEY_Date, SystemUtil.getSystemTime());
+
+		node.set(AuxiliaryInfoNode.KEY_GUID, SystemUtil.createGUID());
+
+		node.set(AuxiliaryInfoNode.KEY_TurnNumber, "00200");
+
+		node.set(AuxiliaryInfoNode.KEY_WorkerNumber, "123454");
+
+		node.set(AuxiliaryInfoNode.KEY_StartTime, "10:00");
+
+		node.set(AuxiliaryInfoNode.KEY_EndTime, "12:00");
+
+		((myApplication) getApplication()).setAuxiliaryNode(mRouteIndex,
+				node.getObject());
+		
+		JSONObject deviceObject = (JSONObject) mCurrentDeviceObject;
+		deviceObject.put("IsChecked", 1);
+		deviceObject.put("GroupName", 1);
+		deviceObject.put("WorkerName", 1);
+		deviceObject.put("WorkerNumber", 1);
+		
+		if(mDeviceItemDefStr == null){						
+			deviceObject.put("ItemDef", spinnerList.get(0));
+		}else{
+			deviceObject.put("ItemDef", mDeviceItemDefStr);
+		}		
+		((myApplication) getApplication()).SaveData(mRouteIndex);
+	}
    /**
     * 点击下一项时触发的VIEW变化，显示当前测试项的下一项，
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
@@ -457,68 +502,27 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	private void nextCheckItem() {
 		startCountDown();
 		iCheckedCount++;
-		if (iCheckedCount == (mListView.getCount() - 1)) {
-			// last item,and save current device checkItem data
-			
-			Object obj=((myApplication) getApplication()).addIsChecked(mCurrentDeviceObject,true);
-			Log.d(TAG, "nextCheckItem() obj is "+obj.toString());
-			Toast.makeText(getApplicationContext(),
-					getString(R.string.save_device_checkdata),
-					Toast.LENGTH_SHORT).show();
-			bHasFinishChecked = true;
-			finish();
-			//准备返回到Listview界面中。
-//			AlertDialog.Builder builder = new Builder(DeviceItemActivity.this);
-//			  builder.setMessage("确认退出吗？");  
-//			  builder.setTitle("提示");  
-//			  builder.setPositiveButton("确认", new OnClickListener() {   
-////			   @Override
-////			   public void onClick(DialogInterface dialog, int which) {
-////			    dialog.dismiss();  
-////			    bListViewVisible = true;// 返回到Listview界面中。
-////				needVisible();
-////			   // Main.this.finish();
-////			   }
-//
-//			@Override
-//			public void onClick(View arg0) {
-//				// TODO Auto-generated method stub
-//				((DialogInterface) arg0).dismiss();  
-//				    bListViewVisible = true;// 返回到Listview界面中。
-//					needVisible();
-//			}
-//			});  
-//			  builder.setNegativeButton("取消", new OnClickListener() {  
-////			   @Override
-////			   public void onClick(DialogInterface dialog, int which) {
-////			    dialog.dismiss();
-////			   }
-//
-//			@Override
-//			public void onClick(View arg0) {
-//				// TODO Auto-generated method stub
-//				((DialogInterface) arg0).dismiss();
-//			}
-//			  });  
-//			  builder.create().show();
-			  
-			
-			
-			//继续巡检下一个DeviceItem中的PartItemData
-			
-		} else if((mCurrentCheckIndex < (mListView.getCount() - 1))){
+		Log.d(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
+		
+		if((mCheckIndex <= (mListView.getCount() - 1))){
 			//先保存当前测试项的数据
-			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
 			Log.d(TAG, "Test json is 0,"+json);
+			
+			//添加巡检结果到结果中，便于形成最后的结果。
 			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
-			Log.d(TAG, "Test json is 1,"+json);
+			Log.d(TAG, "Test json is 1,"+json);			
+			mJSONArray.put(json);
+			
 			//
-			mCurrentCheckIndex++;
+			mCheckIndex++;
 			HashMap<String, String> map = (HashMap<String, String>) mListView
-					.getItemAtPosition(mCurrentCheckIndex);
+					.getItemAtPosition(mCheckIndex);
 			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+			
+			//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
 			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
-				json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+				json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
 
 				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
 				mMax_temperature =		tmp.max;
@@ -529,17 +533,127 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
-			bHasFinishChecked = false;
-			needVisible();
-		}else if((mCurrentCheckIndex == (mListView.getCount() - 1))&& (iCheckedCount !=(mListView.getCount() - 1))){
 			
-			bHasFinishChecked = false;
-			mButton_Next.setText(getString(R.string.prepoint));
-			Toast.makeText(getApplicationContext(),
-					getString(R.string.notendtips),
-					Toast.LENGTH_LONG).show();
+			needVisible();
+			
+			if(iCheckedCount ==(mListView.getCount() - 1)){
+				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+				mJSONArray.put(json);
+				try {
+					SaveData();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.save_device_checkdata),
+						Toast.LENGTH_SHORT).show();
+				finish();
+			}			
+			
 		}
-		Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
+		
+		
+		
+		
+		
+//		if (iCheckedCount == (mListView.getCount() - 1)) {
+//			// last item,and save current device checkItem data
+//			
+//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);			
+//			Log.d(TAG, "nextCheckItem() obj is "+json.toString());
+//			
+//			
+//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+//			Toast.makeText(getApplicationContext(),
+//					getString(R.string.save_device_checkdata),
+//					Toast.LENGTH_SHORT).show();
+//			bHasFinishChecked = true;
+//			mJSONArray.put(json);
+//			
+//			Log.d(TAG, "nextCheckItem() mCurrentDeviceObject "+mCurrentDeviceObject.toString());
+//			JSONObject obj=(JSONObject) ((myApplication) getApplication()).addIsChecked(mCurrentDeviceObject,true);
+//			try {
+//				SystemUtil.writeFileToSD("sdcard/3.txt", mJSONArray.toString());
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			finish();
+//			//准备返回到Listview界面中。
+////			AlertDialog.Builder builder = new Builder(DeviceItemActivity.this);
+////			  builder.setMessage("确认退出吗？");  
+////			  builder.setTitle("提示");  
+////			  builder.setPositiveButton("确认", new OnClickListener() {   
+//////			   @Override
+//////			   public void onClick(DialogInterface dialog, int which) {
+//////			    dialog.dismiss();  
+//////			    bListViewVisible = true;// 返回到Listview界面中。
+//////				needVisible();
+//////			   // Main.this.finish();
+//////			   }
+////
+////			@Override
+////			public void onClick(View arg0) {
+////				// TODO Auto-generated method stub
+////				((DialogInterface) arg0).dismiss();  
+////				    bListViewVisible = true;// 返回到Listview界面中。
+////					needVisible();
+////			}
+////			});  
+////			  builder.setNegativeButton("取消", new OnClickListener() {  
+//////			   @Override
+//////			   public void onClick(DialogInterface dialog, int which) {
+//////			    dialog.dismiss();
+//////			   }
+////
+////			@Override
+////			public void onClick(View arg0) {
+////				// TODO Auto-generated method stub
+////				((DialogInterface) arg0).dismiss();
+////			}
+////			  });  
+////			  builder.create().show();
+//			  
+//			
+//			
+//			//继续巡检下一个DeviceItem中的PartItemData
+//			
+//		} else if((mCurrentCheckIndex <= (mListView.getCount() - 1))){
+//			//先保存当前测试项的数据
+//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+//			Log.d(TAG, "Test json is 0,"+json);
+//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+//			Log.d(TAG, "Test json is 1,"+json);
+//			//
+//			mJSONArray.put(json);
+//			mCurrentCheckIndex++;
+//			HashMap<String, String> map = (HashMap<String, String>) mListView
+//					.getItemAtPosition(mCurrentCheckIndex);
+//			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+//			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
+//				json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
+//
+//				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
+//				mMax_temperature =		tmp.max;
+//				mMid_temperature =tmp.mid;
+//				mMin_temperature =tmp.min;
+//		
+//			}
+//			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
+//			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+//			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+//			bHasFinishChecked = false;
+//			needVisible();
+//		}else if((mCurrentCheckIndex == (mListView.getCount() - 1))&& (iCheckedCount !=(mListView.getCount() - 1))){
+//			
+//			bHasFinishChecked = false;
+//			mButton_Next.setText(getString(R.string.prepoint));
+//			Toast.makeText(getApplicationContext(),
+//					getString(R.string.notendtips),
+//					Toast.LENGTH_LONG).show();
+//		}
+	//	Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
 	}
 	
 

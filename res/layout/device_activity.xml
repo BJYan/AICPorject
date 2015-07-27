@@ -63,6 +63,22 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/red_line2"
-        android:layout_weight="1"
+      
        />
+   <LinearLayout
+       android:id="@+id/line_start_check"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"      
+       android:layout_alignParentBottom="true" 
+       android:weightSum="3"    
+            > 
+    <Button 
+        android:id="@+id/start_checkdevice"        
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/start_check" 
+        android:layout_weight="1"      
+      />
+    </LinearLayout>
 </RelativeLayout>

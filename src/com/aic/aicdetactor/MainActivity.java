@@ -1,19 +1,32 @@
 package com.aic.aicdetactor;
 
+import java.util.List;
+
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.RouteActivity;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.QuiteToast;
 
 import android.app.ActivityGroup;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Toast;
 
 /**
  * 
@@ -24,15 +37,19 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
  * 鍒涘缓鏃堕棿锛�012-11-23 涓嬪崍10:26:03   
  * Copyright (c) 鏂瑰媷-鐗堟潈鎵�湁
  */
-public class MainActivity extends ActivityGroup {
+public class MainActivity extends ActivityGroup implements OnClickListener {
 
 	/* 搴曢儴鑿滃崟锛宐bar */
 	private RadioGroup group;
 	/* 涓棿閮ㄥ垎锛宐ody */
 	private LinearLayout body;
+	private Button mButtonLog = null;
+	private EditText mEditTextUserName = null;
+	private EditText mEditTextUserPwd = null;
 	/* 椤堕儴鑿滃崟,tbar */
 	//private TextView view_title;
 
+	TestSetting testControl = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,12 +59,19 @@ public class MainActivity extends ActivityGroup {
 		setContentView(R.layout.activity_main);
 		findViews();
 		setListeners();
+		testControl = new TestSetting(this.getApplicationContext());
+		testControl.setAppTestKey(true);
+		
 	}
 
 	private void findViews() {
 		group = (RadioGroup) findViewById(R.id.group);
 		body = (LinearLayout) findViewById(R.id.body);
 		//view_title = (TextView) findViewById(R.id.title);
+		mButtonLog = ( Button)findViewById(R.id.login);
+		mButtonLog.setOnClickListener(this);
+		mEditTextUserName = (EditText)findViewById(R.id.name);
+		mEditTextUserPwd = (EditText)findViewById(R.id.password);
 	}
 
 	private void setListeners() {
@@ -94,14 +118,14 @@ public class MainActivity extends ActivityGroup {
 			/* 鍒嗙被椤�*/
 			case R.id.btnB:
 				/* 璁剧疆璺宠浆 */
-				Intent categoryIntent = new Intent();
-				categoryIntent.setClass(MainActivity.this, RouteActivity.class);
-
-				categoryIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-				View categoryView = getLocalActivityManager().startActivity("category", categoryIntent).getDecorView();
-				body.addView(categoryView);
-
+//				Intent categoryIntent = new Intent();
+//				categoryIntent.setClass(MainActivity.this, RouteActivity.class);
+//
+//				categoryIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//				View categoryView = getLocalActivityManager().startActivity("category", categoryIntent).getDecorView();
+//				body.addView(categoryView);
+				Login();
 				//view_title.setText("category");
 				break;
 			/* 璐墿杞﹂〉 */
@@ -142,6 +166,47 @@ public class MainActivity extends ActivityGroup {
 		}
 
 	};
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch(arg0.getId()){
+			case R.id.login:
+				Login();
+				break;
+		}
+	}
 	 
+	String TAG = "luotest";
+	void Login(){
+		String name = mEditTextUserName.getText().toString();
+		String pwd = mEditTextUserPwd.getText().toString();
+		//search table 
+		TestSetting test = new TestSetting(this.getApplicationContext());
+		List<String> testlist = test.getTestFile();
+
+		if (testlist != null) {
+			for (int testi = 0; testi < testlist.size(); testi++) {
+				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
+				((myApplication) getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this);
+			}
+		} 
+		RouteDao dao = new RouteDao(this.getApplicationContext());
+	List<String>fileList = 	dao.queryLogIn(name, pwd);
+	
+	if(fileList.size()<1){
+	Toast.makeText(getApplicationContext(), "用户名或密码有误，请再次确认重试！", Toast.LENGTH_LONG).show();	
+	}else{
+		Intent categoryIntent = new Intent();
+		categoryIntent.setClass(MainActivity.this, RouteActivity.class);
+		categoryIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		categoryIntent.putExtra("name",name );
+		categoryIntent.putExtra("pwd",pwd );
+		View categoryView = getLocalActivityManager().startActivity("category", categoryIntent).getDecorView();
+		body.addView(categoryView);
+	}
+	}
+	
+	
 }
 

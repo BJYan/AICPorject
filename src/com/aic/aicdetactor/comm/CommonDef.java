@@ -175,6 +175,10 @@ public class CommonDef {
 		public static final String JSON_INDEX = "4";
 
 	}
+	
+	public class organization_info{
+		public static final String JSON_INDEX = "3";
+	}
 
 	public class device_info {
 		public static final String NAME = "Device_Name";
@@ -213,5 +217,6 @@ public class CommonDef {
 	public static final int  FILE_TYPE_PICTRUE  =0;
 	public static final int  FILE_TYPE_AUDIO  =1;
 	public static final int  FILE_TYPE_TEXTRECORD  =2;
+	public static final int  FILE_TYPE_WORKER  =3;
 
 }

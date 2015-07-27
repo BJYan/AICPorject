@@ -68,18 +68,18 @@ public class MediaDao {
 		String sqlStr = "INSERT INTO " + TableNameStr;		
 		if(DBHelper.TABLE_NAME_AUDIO.equals(TableNameStr)){
 			 sqlStr = sqlStr + "(" 
-		                +DBHelper.Media_audio.Name+","+DBHelper.Media_audio.filePath+","+ DBHelper.Media_audio.duration+","+DBHelper.Media_audio.addTime+ ")"
+		                +DBHelper.Media_audio_Table.Name+","+DBHelper.Media_audio_Table.filePath+","+ DBHelper.Media_audio_Table.duration+","+DBHelper.Media_audio_Table.addTime+ ")"
 		                		+ " VALUES " + "(?,?,?,?)";
 			 mDB.execSQL(sqlStr,new Object[]{fileName,path,duration,System.currentTimeMillis()});
 		       
 		}else if(DBHelper.TABLE_NAME_TEXTRECORD.equals(TableNameStr)){
 			 sqlStr = sqlStr + "(" 
-		                +DBHelper.Media_textRecord.Name+","+DBHelper.Media_textRecord.filePath+","+ DBHelper.Media_textRecord.content+","+DBHelper.Media_textRecord.addTime+ ")"
+		                +DBHelper.Media_textRecord_Table.Name+","+DBHelper.Media_textRecord_Table.filePath+","+ DBHelper.Media_textRecord_Table.content+","+DBHelper.Media_textRecord_Table.addTime+ ")"
 		                		+ " VALUES " + "(?,?,?,?)";
 			 mDB.execSQL(sqlStr,new Object[]{fileName,path,contentStr,System.currentTimeMillis()});
 		}else if(DBHelper.TABLE_NAME_PICTRUE.equals(TableNameStr)){
 			 sqlStr = sqlStr + "(" 
-		                +DBHelper.Media_pic.Name+","+DBHelper.Media_pic.filePath+","+DBHelper.Media_pic.addTime+ ")"
+		                +DBHelper.Media_pic_Table.Name+","+DBHelper.Media_pic_Table.filePath+","+DBHelper.Media_pic_Table.addTime+ ")"
 		                		+ " VALUES " + "(?,?,?)";
 			 mDB.execSQL(sqlStr,new Object[]{fileName,path,System.currentTimeMillis()});
 		}

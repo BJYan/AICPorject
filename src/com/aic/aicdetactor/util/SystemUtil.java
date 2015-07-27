@@ -1,6 +1,14 @@
 package com.aic.aicdetactor.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +47,9 @@ public class  SystemUtil {
 		for(int i = inList.size()-1;i>=0;i--){
 			OutList.add(inList.get(i));
 		}
-		return OutList;
+		inList.clear();
+		inList.addAll(OutList);
+		return inList;
 	}
 	public static String getDataRootStoragePath(){
 		
@@ -134,5 +144,52 @@ public class  SystemUtil {
 		byte[] bytes =hexStringToByteArray(s);
 		return ByteArrayToFloat(bytes);
 	}
+	
+	public static void writeFileToSD(String fileName, String StrContent)
+			throws IOException {
+		
+		Log.d("luotest", "writeFileToSD() StrContent is  "+StrContent);		
+		File file = new File(fileName);
+		;
+		Log.d("luotest", "writeFileToSD() name is "+file.getName());
+
+		FileOutputStream outStream = new FileOutputStream(file);
+		outStream.write(StrContent.getBytes("GB2312"));
+		outStream.close();
+	}  
+	
+	public static String openFile(String path) {
+		if (null == path) {
+
+			return null;
+		}
+
+		Log.d("luotest", "path 1= " + path);
+		File file = new File(path);
+		if (file.exists()) {
+			Log.d("luotest", "path 2= " + path);
+			try {
+				StringBuffer sb = new StringBuffer();
+				// HttpEntity entity = response.getEntity();
+				InputStream is = new FileInputStream(path);// entity.getContent();
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						is, "GB2312"));
+				String data = "";
+
+				while ((data = br.readLine()) != null) {
+					sb.append(data);
+				}
+				String result = sb.toString();
+				
+				// return result.getBytes("UTF-8");
+				return result;
+			} catch (Exception e) {
+				Log.d("luotest", "read data exception " + e.toString());
+				e.printStackTrace();
+			}
+		}
+		Log.d("luotest", "path 3 = " + path);
+		return null;
+	}	
 
 }
