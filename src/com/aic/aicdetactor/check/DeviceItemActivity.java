@@ -467,7 +467,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		AuxiliaryInfoNode node = new AuxiliaryInfoNode();
 		node.set(AuxiliaryInfoNode.KEY_Index, 8);
 
-		node.set(AuxiliaryInfoNode.KEY_Date, SystemUtil.getSystemTime());
+		node.set(AuxiliaryInfoNode.KEY_Date, SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
 		node.set(AuxiliaryInfoNode.KEY_GUID, SystemUtil.createGUID());
 
@@ -510,7 +510,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			Log.d(TAG, "Test json is 0,"+json);
 			
 			//添加巡检结果到结果中，便于形成最后的结果。
-			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
 			Log.d(TAG, "Test json is 1,"+json);			
 			mJSONArray.put(json);
 			
@@ -537,7 +537,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			needVisible();
 			
 			if(iCheckedCount ==(mListView.getCount() - 1)){
-				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
+				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
 				mJSONArray.put(json);
 				try {
 					SaveData();

@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import com.aic.aicdetactor.setting.Setting;
 
+import android.text.format.Time;
 import android.util.Log;
 
 
@@ -26,10 +27,35 @@ import android.util.Log;
 public class  SystemUtil {
 
 	static String TAG ="luotest";
-	public  static String getSystemTime(){
+	public static final int TIME_FORMAT_YYMMDDHHMM = 0;
+	public static final int TIME_FORMAT_HHMM = 1;
+	/**
+	 * 
+	 * @param type 0,yyyy-mm-dd hh:mm:ss,1:hhmm
+	 * @return
+	 */
+	public  static String getSystemTime(int type){
+		String str = null;
+		if(type ==TIME_FORMAT_YYMMDDHHMM){
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String str = df.format(new Date());
+		str = df.format(new Date());
 		Log.d(TAG, "getSystemTime time is " + str);
+		}else if (type ==TIME_FORMAT_HHMM){
+			Time t=new Time(); // or Time t=new Time("GMT+8"); 加上Time Zone资料。  
+			t.setToNow(); // 取得系统时间。  
+			int year = t.year;  
+			int month = t.month;  
+			int date = t.monthDay;  
+			int hour = t.hour; // 0-23  
+			int minute = t.minute;  
+			int second = t.second;  
+			str  = (hour<10?("0"+hour):hour)+""+(minute<10?("0"+minute):minute);
+		}
+		
+		
+		
+		
+		
 		return str;
 	}
 	public static String createGUID(){
@@ -191,5 +217,6 @@ public class  SystemUtil {
 		Log.d("luotest", "path 3 = " + path);
 		return null;
 	}	
+	
 
 }

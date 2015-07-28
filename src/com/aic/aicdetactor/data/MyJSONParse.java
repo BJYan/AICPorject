@@ -72,7 +72,7 @@ public class MyJSONParse {
 	 * 
 	 * @param context
 	 */
-	public int InitData(Context context){
+	public int InitData(Context context,List<String>list){
 		mContext = context;
 		if(mRouteDao== null){
 		mRouteDao = new RouteDao(mContext);}
@@ -90,7 +90,7 @@ public class MyJSONParse {
 		mSavePath = mSharedPreferences.getString(CommonDef.PATH_DIRECTOR,null);		
 		
 		//再查数据库中是否有完成的巡检路线，加载到mRouteList中
-		mRouteList = mRouteDao.getNoCheckFinishRouteInfo();
+		mRouteList = mRouteDao.getRouteInfoByFilePath(list);
 		
 		for(int index =0;index <mRouteList.size();index++){
 			String path = mRouteList.get(index).getFileName();
@@ -115,9 +115,9 @@ public class MyJSONParse {
 		if(mRouteDao== null){
 			mRouteDao = new RouteDao(mContext);
 			}
-		if(mRouteDao.getCount()<12){		
+		//if(mRouteDao.getCount()<12){		
 		mRouteDao.insertNewRouteInfo(fileName, path);
-		}
+		//}
 		return 1;
 	}
 	public static Route getPlanInfo(String Routepath){
@@ -205,12 +205,13 @@ public class MyJSONParse {
 					} else if (index.equals(CommonDef.turn_info.JSON_INDEX)) {
 						mRouteList.get(routeIndex).mTurnInfo_Root_Object = jsonObject;
 					} else if (index.equals(CommonDef.worker_info.JSON_INDEX)) {
-						mRouteList.get(routeIndex).mWorkerInfo_Root_Object = jsonObject;
+						mRouteList.get(routeIndex).mWorkerInfo_Root_Object = jsonObject;						
 					} else if (index.equals(CommonDef.station_info.JSON_INDEX)) {
 						mRouteList.get(routeIndex).mStationInfo_Root_Object = jsonObject;
 					} else if(index.equals(CommonDef.organization_info.JSON_INDEX)){						
 						mRouteList.get(routeIndex).mOrganization_Root_Object = jsonObject;
 					}
+					//mRouteList.get(routeIndex).parseBaseInfo();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -902,28 +903,31 @@ public static List<TurnInfo> parseTurnNode(Object TurnObject) throws JSONExcepti
 	
 }
 	
-	public List<Object> getTurnInfoItem(int routeIndex) throws JSONException {
+	public List<TurnInfo> getTurnInfoItem(int routeIndex) throws JSONException {
 		if (mRouteList.get(mRouteIndex).mTurnInfo_Root_Object == null)
 			return null;
 
-		if (mRouteList.get(mRouteIndex).mTurnList != null)
-			return mRouteList.get(mRouteIndex).mTurnList;
+		if (mRouteList.get(mRouteIndex).TurnInfoList != null)
+			return mRouteList.get(mRouteIndex).TurnInfoList;
 
-		mRouteList.get(mRouteIndex).mTurnList = new ArrayList<Object>();
+		mRouteList.get(mRouteIndex).TurnInfoList = new ArrayList<TurnInfo>();
 		try {
 			JSONObject object = (JSONObject) mRouteList.get(mRouteIndex).mTurnInfo_Root_Object;
 
 			JSONArray array = object.getJSONArray("TurnInfo");
 
 			for (int i = 0; i < array.length(); i++) {
-
-				mRouteList.get(mRouteIndex).mTurnList.add(array.getJSONObject(i));
-
+				TurnInfo info = new TurnInfo();
+				info.Number=((JSONObject)array.get(i)).getString("Number");
+				info.StartTime=((JSONObject)array.get(i)).getString("StartTime");
+				info.EndTime=((JSONObject)array.get(i)).getString("EndTime");
+				info.DutyNumber=((JSONObject)array.get(i)).getString("DutyNumber");					
+				mRouteList.get(mRouteIndex).TurnInfoList.add(info);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return mRouteList.get(mRouteIndex).mTurnList;
+		return mRouteList.get(mRouteIndex).TurnInfoList;
 	}
 
 	public Object getStationItem(int routeIndex,int index) {

@@ -71,4 +71,5 @@
       <string name="start_check">Start Check</string>
        <string name="default_username">巡检人员</string>
     <string name="default_password">000000</string>
+    <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
 </resources>

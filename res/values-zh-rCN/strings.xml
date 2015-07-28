@@ -5,7 +5,7 @@
     <string name="action_settings">设置</string>
     <string name="hello_world">Hello world!</string>
     <string name="user_name">用户名:</string>
-    <string name="user_pswd">密码:</string>
+    <string name="user_pswd">"密    码":</string>
     <string name="login">登录</string>
     <string name="login_title">用户 登录</string>
     
@@ -71,4 +71,5 @@
     <string name="start_check">开始巡检</string>
     <string name="default_username">巡检人员</string>
     <string name="default_password">000000</string>
+    <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
 </resources>

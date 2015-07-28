@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.check;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,13 @@ import com.aic.aicdetactor.data.CheckStatus;
 
 
 
+
+
+import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.util.SystemUtil;
+
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +43,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 public class DeviceActivity extends Activity implements OnClickListener{
 	int mStationIndex = 0;
@@ -199,52 +207,86 @@ public class DeviceActivity extends Activity implements OnClickListener{
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
-		case R.id.start_checkdevice: {
-			int itemindex = 0;
-			try{
-			List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mStationIndex);
-
-			CheckStatus status = null;		
-			
-			for ( int i = 0; i < deviceItemList.size(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				status = ((myApplication) getApplication())
-						.getNodeCount(deviceItemList
-								.get(i),2,0);
-				if(!status.hasChecked){
-					itemindex = i ;
-					break;
-					}
+		case R.id.start_checkdevice: {			
+			if(!IsInworkerTime()){
+				Toast.makeText(this.getApplicationContext(), getString(R.string.cannot_check_time_tips), Toast.LENGTH_LONG).show();
+			}else{
+				startCheck();
 			}
-				
-			}catch(JSONException e){
-				e.printStackTrace();
-			}
-			
-			HashMap<String, String> map = (HashMap<String, String>) mListView
-					.getItemAtPosition(itemindex);
-			Intent intent = new Intent();
-			intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
-			intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
-					mRouteIndex);
-			intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX,
-					mStationIndex);
-			intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX,itemindex);
-			intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-			intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
-			intent.putExtra(CommonDef.device_info.NAME,
-					map.get(CommonDef.device_info.NAME));
-			intent.setClass(getApplicationContext(), DeviceItemActivity.class);
-			startActivity(intent);
 		}
-			break;
+		break;
 		}
 	}
 
+	void startCheck(){
+		int itemindex = 0;
+		try{
+		List<Object> deviceItemList = ((myApplication) getApplication())
+				.getDeviceItemList(mStationIndex);
+
+		CheckStatus status = null;		
+		
+		for ( int i = 0; i < deviceItemList.size(); i++) {
+			Map<String, String> map = new HashMap<String, String>();
+			status = ((myApplication) getApplication())
+					.getNodeCount(deviceItemList
+							.get(i),2,0);
+			if(!status.hasChecked){
+				itemindex = i ;
+				break;
+				}
+		}
+			
+		}catch(JSONException e){
+			e.printStackTrace();
+		}
+		
+		HashMap<String, String> map = (HashMap<String, String>) mListView
+				.getItemAtPosition(itemindex);
+		Intent intent = new Intent();
+		intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
+		intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
+				mRouteIndex);
+		intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX,
+				mStationIndex);
+		intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX,itemindex);
+		intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+		intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
+		intent.putExtra(CommonDef.device_info.NAME,
+				map.get(CommonDef.device_info.NAME));
+		intent.setClass(getApplicationContext(), DeviceItemActivity.class);
+		startActivity(intent);
+	}
+		
+	
+	
+	boolean IsInworkerTime() {
+		String systemTime = SystemUtil
+				.getSystemTime(SystemUtil.TIME_FORMAT_HHMM);
+		String tisp = getString(R.string.cannot_check_time_tips);
+		List<TurnInfo> turnInfo = null;
+		;
+		try {
+			turnInfo = ((myApplication) getApplication()).getRouteTurnInfoList();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		boolean bok = false;
+		for (int i = 0; i < turnInfo.size(); i++) {
+			String strstartTime = turnInfo.get(i).StartTime;
+			if (systemTime.compareTo(strstartTime) > 0 && systemTime.compareTo(turnInfo.get(i).EndTime)<0) {
+				bok = true;
+			}
+		}
+		return bok;
+	}
 	boolean canBeiginCheck(){
 		boolean ok = false ;
 		//先穷举ID号，再者就是比较实际了。
+		
+		SimpleDateFormat    sDateFormat    =   new    SimpleDateFormat("MMdd    hh:mm:ss");       
+		String    date    =    sDateFormat.format(new    java.util.Date());   
 		
 		return ok;
 	}

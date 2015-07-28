@@ -120,9 +120,7 @@ public class RouteActivity extends Activity {
 				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
 				for (int n = 0; n < 10; n++) {
 
-					Log.d(TAG,
-							"teststr is "
-									+ ((myApplication) getApplication())
+					Log.d(TAG,"teststr is "	+ ((myApplication) getApplication())
 											.getPartItemSubStr(teststr, n));
 				}
 				
@@ -157,24 +155,19 @@ public class RouteActivity extends Activity {
 		}
 		
 	void init() {
-		Log.d(TAG, "in init() start " + SystemUtil.getSystemTime() + "name is "+name + " pwd is "+pwd);
-		RouteDao dao = new RouteDao(this.getApplicationContext());
-		mFileList = dao.queryLogIn(name, pwd);
-		for (int i = 0; i < mFileList.size(); i++) {
-			((myApplication) getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
-			Log.d(TAG,"read file from databse i=" + i + ","+ mFileList.get(i));
-		}
-
+		Log.d(TAG, "in init() start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM) + "name is "+name + " pwd is "+pwd);
+		
+		((myApplication) getApplication()).setUserInfo(name, pwd);
 	
-		Log.d(TAG, "in init() 1 start " + SystemUtil.getSystemTime());
+		Log.d(TAG, "in init() 1 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		int iRouteCount = ((myApplication) getApplication()).InitData();
-		Log.d(TAG, "in init() 2 start " + SystemUtil.getSystemTime());
+		Log.d(TAG, "in init() 2 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		CheckStatus status = null;
 		for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
 			try {
 				Log.d(TAG, "in init() for start i=" + routeIndex + ","
-						+ SystemUtil.getSystemTime());
+						+ SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 				Map<String, String> map = new HashMap<String, String>();
 				status = ((myApplication) getApplication()).getNodeCount(null,
 						0, routeIndex);
@@ -193,7 +186,7 @@ public class RouteActivity extends Activity {
 
 				list.add(map);
 				Log.d(TAG, "in init() for end i=" + routeIndex + ","
-						+ SystemUtil.getSystemTime());
+						+ SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -208,9 +201,9 @@ public class RouteActivity extends Activity {
 						CommonDef.route_info.PROGRESS }, new int[] {
 						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
 						R.id.progress });
-		Log.d(TAG, "in init() setAdapter" + SystemUtil.getSystemTime());
+		Log.d(TAG, "in init() setAdapter" + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		mListView.setAdapter(adapter);
-		Log.d(TAG, "in init() after setAdapter" + SystemUtil.getSystemTime());
+		Log.d(TAG, "in init() after setAdapter" + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -222,6 +215,7 @@ public class RouteActivity extends Activity {
 						+ (String) mapItem.get(CommonDef.route_info.NAME));
 				Intent intent = new Intent();
 				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, arg2);
+				((myApplication) getApplication()).setCurrentRouteIndex(arg2);
 				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
 				intent.putExtra(CommonDef.route_info.NAME,
 						(String) mapItem.get(CommonDef.route_info.NAME));

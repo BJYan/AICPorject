@@ -19,6 +19,7 @@ import com.aic.aicdetactor.data.Route;
 
 import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.data.WorkerInfo;
+import com.aic.aicdetactor.database.DBHelper.SourceTable;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -280,6 +281,21 @@ public class RouteDao {
 
 		return cursor;
 	}
+	
+	public Cursor queryRouteInfoByPath(String path) {
+		String strarg = "0";
+
+		Cursor cursor = mDB
+				.query(RouteTableName,
+						new String[] { "guid,jxName,filePath,downTime,isChecked,isBeiginChecked,isuploaded,lastcheckTime,workerName,firstcheckTime,lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck" },
+						SourceTable.PATH+ "=?", new String[] { path }, null,
+						null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+
+		return cursor;
+	}
 
 	/**
 	 * 查询已经巡检完毕了，但还没上传服务器的巡检路线信息
@@ -316,8 +332,9 @@ public class RouteDao {
 			String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.PlanGuid));
 			guidList.add(GUID);
 			cur.moveToNext();
-			Log.d("luotest", "sear worker table " +n);
+			Log.d("luotest", "search worker table result  GUID is" +GUID);
 			}
+			cur.close();
 		}
 
 		List<String>fileNameList = new ArrayList<String>();
@@ -334,17 +351,67 @@ public class RouteDao {
 				if (cursor2 != null) {
 					cursor2.moveToFirst();
 					for(int i=0;i<cursor2.getCount();i++){
-						String GUID =	cursor2.getString(0);				
-					fileNameList.add(GUID);
+						String path =	cursor2.getString(0);				
+					fileNameList.add(path);
 					cursor2.moveToNext();
-					Log.d("luotest", " 2 sear filesouce table " +i);
+					Log.d("luotest", " search route table  result path is " +path);
 					}
+					cursor2.close();
 				}
 		}
 
 		
 		return fileNameList;
 	}
+	
+	public List<Route> getRouteInfoByFilePath(List<String >filelist) {
+		if(filelist ==null) return null;
+		
+		List<Route> list = new ArrayList<Route>();
+		for (int n = 0; n < filelist.size(); n++) {
+			Cursor cursor = queryRouteInfoByPath(filelist.get(n));
+			if (cursor != null) {
+				cursor.moveToFirst();
+				for (int i = 0; i < cursor.getCount(); i++) {
+					Route info = new Route();
+
+					info.mIsReverseCheck = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
+					info.mDeviceIndex = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.LASTCHECKDEVICE_INDEX)));
+					info.mIsBeiginChecked = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.ISBEIGINCHECKED)));
+					info.mIsChecked = Integer.parseInt(cursor.getString(cursor
+							.getColumnIndex(DBHelper.SourceTable.ISCHECKED)));
+					info.mIsReverseCheck = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
+					info.mPartItemIndex = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.LASTCHECKPARTITEM_INDEX)));
+					info.mRoutName = cursor.getString(cursor
+							.getColumnIndex(DBHelper.SourceTable.JXNAME));
+					info.mStationIndex = Integer
+							.parseInt(cursor.getString(cursor
+									.getColumnIndex(DBHelper.SourceTable.LASTCHECKSTATION)));
+					int k = cursor.getColumnIndex(DBHelper.SourceTable.PATH);
+					Log.d("luotest", "k = " + k);
+					info.mFileName = cursor.getString(k);
+					list.add(info);
+					cursor.moveToNext();
+				}
+
+			}
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+		return list;
+	}
+
 	
 	public List<Route> getNoCheckFinishRouteInfo() {
 		List<Route> list = new ArrayList<Route>();

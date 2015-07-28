@@ -1,5 +1,6 @@
 package com.aic.aicdetactor;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import com.aic.aicdetactor.app.myApplication;
@@ -10,10 +11,12 @@ import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.QuiteToast;
 
 import android.app.ActivityGroup;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -60,8 +63,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		findViews();
 		setListeners();
 		testControl = new TestSetting(this.getApplicationContext());
-		testControl.setAppTestKey(true);
-		
+		testControl.setAppTestKey(true);		
 	}
 
 	private void findViews() {
@@ -206,7 +208,5 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		body.addView(categoryView);
 	}
 	}
-	
-	
 }
 

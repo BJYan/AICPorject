@@ -17,9 +17,15 @@ import org.json.JSONObject;
 
 
 
+
+
+
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.Temperature;
+import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Application;
 import android.content.Context;
@@ -27,9 +33,39 @@ import android.util.Log;
 
 public class myApplication extends Application
 {
-    private static final String VALUE = "aicdetector";
+    private static final String TAG = "aicdetector";
     
+    private int mRouteIndex =0;
+    private String mStrGuid = null;
+    private String mWorkerName = null;
+    private String mWorkerPwd = null;
+	private List<String> mFileList = null;	
+	RouteDao dao = null;
+    public void setUserInfo(String name ,String pwsd){
+    	mWorkerName = name;
+    	mWorkerPwd = pwsd;
+    	dao = new RouteDao(this.getApplicationContext());
+		mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd);
+		for (int i = 0; i < mFileList.size(); i++) {
+			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
+			Log.d(TAG,"setUserInfo i=" + i + ","+ mFileList.get(i));
+		}
+    }
+    public void setCurrentRouteIndex(int routeIndex){
+    	this.mRouteIndex = routeIndex;
+    }
     
+    public int getCurrentRouteIndex(){
+    	return this.mRouteIndex;
+    }
+    
+    public void setCurrentRoutePlanGuid(String strGuid){
+    	this.mStrGuid = strGuid;
+    }
+    
+    public String getCurrentRoutePlanGuid(){
+    	return this.mStrGuid;
+    }
     
    // private String value;
    // public String mPath = "/sdcard/down.txt";
@@ -40,7 +76,7 @@ public class myApplication extends Application
         super.onCreate(); 
     }
     public int InitData(){
-    	return json.InitData(this.getApplicationContext());
+    	return json.InitData(this.getApplicationContext(),mFileList);
     }
     public int insertNewRouteInfo(String fileName,String path,Context context){
     	json.insertNewRouteInfo(fileName, path,context);
@@ -126,6 +162,10 @@ public class myApplication extends Application
     }
     public void setAuxiliaryNode(int RouteIndex,Object object){
     	 json.setAuxiliaryNode(RouteIndex,object);
+    }
+    
+    public List<TurnInfo>getRouteTurnInfoList() throws JSONException{
+    	return json.getTurnInfoItem(mRouteIndex);
     }
 
 }
