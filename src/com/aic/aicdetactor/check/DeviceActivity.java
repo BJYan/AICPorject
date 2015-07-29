@@ -97,39 +97,8 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		Log.d(TAG, "oncreate() index is " + mStationIndex);
 		mListView = (ListView) findViewById(R.id.listView);
 		mDataList = new ArrayList<Map<String, String>>();
-		try {
-
-			/**
-			 * 返回的DeviceItem 下的数组list,每项包含 DeviceName ,ItemDef,QueryNumber及PartItem
-			 */
-			List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mStationIndex);
-
-			CheckStatus status = null;
-			int itemindex = mStationIndex;
-			for (int i = 0; i < deviceItemList.size(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				status = ((myApplication) getApplication())
-						.getNodeCount(deviceItemList
-								.get(i),2,0);
-				status.setContext(getApplicationContext());
-				map.put(CommonDef.device_info.INDEX,""+(itemindex+1) );
-				map.put(CommonDef.device_info.NAME, ((myApplication) getApplication())
-						.getDeviceItemName(deviceItemList.get(i)));
-				((myApplication) getApplication())
-						.getDeviceItemDefList(deviceItemList.get(i));
-				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.device_info.STATUS, status.getStatus());
-			
-				map.put(CommonDef.device_info.PROGRESS,
-						status.mCheckedCount+"/"+status.mSum);
-				mDataList.add(map);
-				itemindex++;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		
+		InitData();
 		SimpleAdapter adapter = new SimpleAdapter(this, mDataList,
 				R.layout.checkitem, new String[] { CommonDef.device_info.INDEX, CommonDef.device_info.NAME,
 				CommonDef.device_info.DEADLINE, CommonDef.device_info.STATUS, CommonDef.device_info.PROGRESS }, new int[] {
@@ -173,6 +142,40 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		mButtonStartCheck.setOnClickListener(this);
 	}
 
+	void InitData(){
+		try {
+
+			/**
+			 * 返回的DeviceItem 下的数组list,每项包含 DeviceName ,ItemDef,QueryNumber及PartItem
+			 */
+			List<Object> deviceItemList = ((myApplication) getApplication())
+					.getDeviceItemList(mStationIndex);
+
+			CheckStatus status = null;
+			int itemindex = mStationIndex;
+			for (int i = 0; i < deviceItemList.size(); i++) {
+				Map<String, String> map = new HashMap<String, String>();
+				status = ((myApplication) getApplication())
+						.getNodeCount(deviceItemList
+								.get(i),2,0);
+				status.setContext(getApplicationContext());
+				map.put(CommonDef.device_info.INDEX,""+(itemindex+1) );
+				map.put(CommonDef.device_info.NAME, ((myApplication) getApplication())
+						.getDeviceItemName(deviceItemList.get(i)));
+				((myApplication) getApplication())
+						.getDeviceItemDefList(deviceItemList.get(i));
+				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
+				map.put(CommonDef.device_info.STATUS, status.getStatus());
+			
+				map.put(CommonDef.device_info.PROGRESS,
+						status.mCheckedCount+"/"+status.mSum);
+				mDataList.add(map);
+				itemindex++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -189,6 +192,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		
 	}
 
 	@Override
@@ -219,7 +223,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 	}
 
 	void startCheck(){
-		int itemindex = 0;
+		int itemindex = -1;
 		try{
 		List<Object> deviceItemList = ((myApplication) getApplication())
 				.getDeviceItemList(mStationIndex);
@@ -240,7 +244,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		}catch(JSONException e){
 			e.printStackTrace();
 		}
-		
+		if(itemindex != -1){
 		HashMap<String, String> map = (HashMap<String, String>) mListView
 				.getItemAtPosition(itemindex);
 		Intent intent = new Intent();
@@ -256,6 +260,9 @@ public class DeviceActivity extends Activity implements OnClickListener{
 				map.get(CommonDef.device_info.NAME));
 		intent.setClass(getApplicationContext(), DeviceItemActivity.class);
 		startActivity(intent);
+		}else{
+			Toast.makeText(getApplicationContext(),getString(R.string.no_need_check_again), Toast.LENGTH_LONG).show();
+		}
 	}
 		
 	

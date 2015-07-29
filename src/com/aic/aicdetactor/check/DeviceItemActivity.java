@@ -495,50 +495,122 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		}		
 		((myApplication) getApplication()).SaveData(mRouteIndex);
 	}
+	/**
+	 * 保存当前的 巡检项巡检结果
+	 */
+	void saveCheckedItemNode(){
+		if((mCheckIndex < (mListView.getCount()))){
+			//先保存当前测试项的数据
+			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
+			Log.d(TAG, "saveCheckedItemNode(),"+json);
+			
+			//添加巡检结果到结果中，便于形成最后的结果。
+			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+			Log.d(TAG, "saveCheckedItemNode() result is,"+json);			
+			mJSONArray.put(json);
+		}
+	}
+	/**
+	 * 显示指定某一项的巡检项
+	 * @param index
+	 */
+	void displayItemNode(int index ){
+		if((mCheckIndex < (mListView.getCount()))){
+		JSONObject json = null;
+		HashMap<String, String> map = (HashMap<String, String>) mListView
+				.getItemAtPosition(index);
+		mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+		
+		//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
+		if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
+			json = (JSONObject) mPartItemSelectedList.get(index);
+
+			Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
+			mMax_temperature =		tmp.max;
+			mMid_temperature =tmp.mid;
+			mMin_temperature =tmp.min;
+	
+		}
+		mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
+		mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+		Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+		
+		needVisible();
+		}
+	}
    /**
     * 点击下一项时触发的VIEW变化，显示当前测试项的下一项，
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
     */
 	private void nextCheckItem() {
-		startCountDown();
+		//startCountDown();
+		
+		saveCheckedItemNode();
+		
 		iCheckedCount++;
 		Log.d(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
-		
-		if((mCheckIndex <= (mListView.getCount() - 1))){
+		mCheckIndex++;
+		displayItemNode(mCheckIndex);
+//		if((mCheckIndex < (mListView.getCount()))){
+//			JSONObject json = null;
 			//先保存当前测试项的数据
-			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-			Log.d(TAG, "Test json is 0,"+json);
-			
-			//添加巡检结果到结果中，便于形成最后的结果。
-			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-			Log.d(TAG, "Test json is 1,"+json);			
-			mJSONArray.put(json);
-			
+//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
+//			Log.d(TAG, "Test json is 0,"+json);
+//			
+//			//添加巡检结果到结果中，便于形成最后的结果。
+//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+//			Log.d(TAG, "Test json is 1,"+json);			
+//			mJSONArray.put(json);
+//			
 			//
-			mCheckIndex++;
-			HashMap<String, String> map = (HashMap<String, String>) mListView
-					.getItemAtPosition(mCheckIndex);
-			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
 			
-			//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
-			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
-				json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-
-				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
-				mMax_temperature =		tmp.max;
-				mMid_temperature =tmp.mid;
-				mMin_temperature =tmp.min;
-		
-			}
-			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
-			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
-			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+//			HashMap<String, String> map = (HashMap<String, String>) mListView
+//					.getItemAtPosition(mCheckIndex);
+//			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
+//			
+//			//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
+//			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
+//				json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
+//
+//				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
+//				mMax_temperature =		tmp.max;
+//				mMid_temperature =tmp.mid;
+//				mMin_temperature =tmp.min;
+//		
+//			}
+//			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
+//			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+//			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+//			
+//			needVisible();
 			
-			needVisible();
-			
-			if(iCheckedCount ==(mListView.getCount() - 1)){
-				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-				mJSONArray.put(json);
+//			if(iCheckedCount ==(mListView.getCount())){
+//				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+//				mJSONArray.put(json);
+//				try {
+//					SaveData();
+//				} catch (JSONException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				Toast.makeText(getApplicationContext(),
+//						getString(R.string.save_device_checkdata),
+//						Toast.LENGTH_SHORT).show();
+//				finish();
+//			}			
+//			
+//		}
+//		if(mCheckIndex == (mListView.getCount())){
+//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
+//			Log.d(TAG, "Test json is 0,"+json);
+//			
+//			//添加巡检结果到结果中，便于形成最后的结果。
+//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+//			Log.d(TAG, "Test json is 1,"+json);			
+//			mJSONArray.put(json);	
+			if(iCheckedCount ==(mListView.getCount())){
+//				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+//				mJSONArray.put(json);
 				try {
 					SaveData();
 				} catch (JSONException e) {
@@ -550,8 +622,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 						Toast.LENGTH_SHORT).show();
 				finish();
 			}			
-			
-		}
+		//}
 		
 		
 		
