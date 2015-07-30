@@ -107,9 +107,10 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	private RadioButton mRadioButton = null;
 	
 	private JSONArray mJSONArray = null;
-	String mDeviceNameStr= null;
-	String mDeviceQueryNameStr = null;
-	String mDeviceItemDefStr = null;
+	private String mDeviceNameStr= null;
+	private String mDeviceQueryNameStr = null;
+	private String mDeviceItemDefStr = null;
+	private boolean []mBValue = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -375,20 +376,25 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     * @param updateAdapter:是否要重新裝載adapter data
     */
    void InitDataNeeded(int itemIndex,boolean updateAdapter){
-	   try {		   
-			partItemObject = ((myApplication) getApplication()).getPartItemObject(mStationIndex,mDeviceIndex);
-			Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
+	   try {
+		   partItemObject = ((myApplication) getApplication()).getPartItemObject(mStationIndex,mDeviceIndex);
+		   Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
 		   List<Object> deviceItemList = ((myApplication) getApplication()).getDeviceItemList(mStationIndex);
 		   
 		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
 		   mDeviceQueryNameStr =   ((myApplication) getApplication()).getDeviceQueryNumber(mCurrentDeviceObject);
 		   Log.d(TAG, "mCurrentDeviceObject IS " + mCurrentDeviceObject.toString());
-			mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
+		   mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
 			
-			if(updateAdapter){
-				 mMapList.clear();
-			}
-			
+		   if(updateAdapter){
+			   mMapList.clear();
+			   }
+		   if(mBValue == null){
+			   mBValue = new boolean[mPartItemSelectedList.size()];
+			   for(int i = 0; i < mPartItemSelectedList.size(); i++){
+				   mBValue[i]=false;
+				   }
+		   }
 			for (int i = 0; i < mPartItemSelectedList.size(); i++) {
 				Map<String, Object> map = new HashMap<String, Object>();				
 				map.put(CommonDef.check_item_info.UNIT_NAME, ((myApplication) getApplication())
@@ -528,6 +534,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
 			Log.d(TAG, "saveCheckedItemNode() result is,"+json);			
 			mJSONArray.put(json);
+			mBValue[mCheckIndex]= true;
 		}
 	}
 	/**
@@ -537,8 +544,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	void displayItemNode(int index ){
 		if((mCheckIndex < (mListView.getCount()))){
 		JSONObject json = null;
-		HashMap<String, String> map = (HashMap<String, String>) mListView
-				.getItemAtPosition(index);
+		HashMap<String, String> map = (HashMap<String, String>) mListView.getItemAtPosition(index);
 		mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
 		
 		//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
@@ -563,18 +569,27 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
     */
 	private void nextCheckItem() {
-		//startCountDown();
-		
+		//startCountDown();		
 		saveCheckedItemNode();
-		
-		iCheckedCount++;
+		//iCheckedCount++;
 		Log.d(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
 		mCheckIndex++;
 		displayItemNode(mCheckIndex);
-
-			if(iCheckedCount ==(mListView.getCount())){
-
-				try {
+		int count = 0 ;
+		for(int i = 0; i <mBValue.length;i++){
+			if(mBValue[i]){
+				Log.d(TAG, "nextCheckItem() i = "+i );
+				count++;	
+			}
+		}
+//		if(count ==(mListView.getCount()-1)){
+//			
+//		}else{
+//			mButton_Next.setText(getString(R.string.next_item));
+//		}
+		if(count ==(mListView.getCount())){
+			mButton_Next.setText(getString(R.string.save_and_finish));
+			try {
 					SaveData();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

@@ -43,19 +43,19 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class StationActivity extends Activity {
 
-	 RadioGroup mRadioGroup = null;
-     ViewPager mViewPager = null;
-     List<View> mList_Views = null;
-     int mStationIndex =0;
-     String mStationNameStr = null;
-     boolean isStationClicked = false;
-     boolean isTestInterface = true;
+	private RadioGroup mRadioGroup = null;
+	private ViewPager mViewPager = null;
+	private  List<View> mList_Views = null;
+	private  int mStationIndex =0;
+	private String mStationNameStr = null;
+	private boolean isStationClicked = false;
+	private boolean isTestInterface = true;
 	//
-     int mRouteIndex =0;
-     ListView mListView;
-     boolean isUseWivewPager =false;
+	private int mRouteIndex =0;
+	private ListView mListView;
+	private boolean isUseWivewPager =false;
 	String TAG = "luotest";
-	String  routeName = null;
+	private String  routeName = null;
 	private SimpleAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	@Override

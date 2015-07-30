@@ -53,23 +53,23 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 public class RouteActivity extends Activity {
 
 	// RadioGroup mRadioGroup = null;
-     ViewPager mViewPager = null;
-     List<View> mList_Views = null;
-     int mStationIndex =0;
-     String mStationNameStr = null;
-     boolean isStationClicked = false;
-     boolean isTestInterface = false;
+	private ViewPager mViewPager = null;
+	private List<View> mList_Views = null;
+	private int mStationIndex =0;
+	private String mStationNameStr = null;
+	private boolean isStationClicked = false;
+	private boolean isTestInterface = false;
 	//
-     ListView mListView;
-     boolean isUseWivewPager =false;
+	private ListView mListView;
+	private boolean isUseWivewPager =false;
 	String TAG = "luotest";
 	private boolean bTempCheck = false;
 	private SwitchView mSwitch = null;
 	private List<String> mFileList = null;	
-	 String name = null;
-	 String pwd= null;
-	 private List<Map<String, String>> mItemDatas = null;
-	 private SimpleAdapter mListViewAdapter = null;
+	private String name = null;
+	private String pwd= null;
+	private List<Map<String, String>> mItemDatas = null;
+	private SimpleAdapter mListViewAdapter = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -102,6 +102,7 @@ public class RouteActivity extends Activity {
 			pwd = intent.getStringExtra("pwd");
 
 			//iniDataThread.start();
+			mItemDatas = new ArrayList<Map<String, String>>();
 			initListData();
 			mListViewAdapter = new SimpleAdapter(this, mItemDatas,
 					R.layout.checkitem, new String[] {
@@ -208,10 +209,11 @@ public class RouteActivity extends Activity {
 		((myApplication) getApplication()).setUserInfo(name, pwd);
 	
 		Log.d(TAG, "in init() 1 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-		mItemDatas = new ArrayList<Map<String, String>>();
+		
 		int iRouteCount = ((myApplication) getApplication()).InitData();
 		Log.d(TAG, "in init() 2 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		CheckStatus status = null;
+		mItemDatas.clear();
 		for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
 			try {
 				Log.d(TAG, "in init() for start i=" + routeIndex + ","
@@ -251,8 +253,6 @@ public class RouteActivity extends Activity {
 	        @Override
 	        public void handleMessage(Message msg) {
 	            // TODO Auto-generated method stub
-	          //  super.handleMessage(msg);
-	            //InitDataHandler.post(update_thread);
 	        	switch(msg.what){
 	        	case INIT_DATA:
 	        		//initListData();

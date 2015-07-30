@@ -73,4 +73,5 @@
     <string name="default_password">000000</string>
     <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
     <string name="no_need_check_again">设备已经巡检完毕，不必重新巡检！</string>
+    <string name="save_and_finish">Finish</string>
 </resources>
