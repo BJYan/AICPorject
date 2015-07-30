@@ -163,16 +163,23 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		});
 		mUnitcheck_Vibrate = (LinearLayout)findViewById(R.id.unitcheck);
 		mUnitcheck_Vibrate.setVisibility(View.GONE);
-		Log.d(TAG, "ONcREATE stationIndex is " + mStationIndex + "deviceIndex"
-				+ mDeviceIndex);
+		Log.d(TAG, "ONcREATE stationIndex is " + mStationIndex + "deviceIndex"+ mDeviceIndex);
 		mListView = (ListView) findViewById(R.id.listView);
 		mMapList = new ArrayList<Map<String, Object>>();
 		
 		InitDataNeeded(0,false);
 		mListViewAdapter = new SimpleAdapter(this, mMapList,
-				R.layout.checkunit, new String[] { CommonDef.check_item_info.INDEX, CommonDef.check_item_info.UNIT_NAME,CommonDef.check_item_info.VALUE,
-				CommonDef.check_item_info.DEADLINE ,CommonDef.check_item_info.NAME }, new int[] {
-						R.id.index, R.id.pathname,R.id.checkvalue, R.id.deadtime});
+				R.layout.checkunit, new String[] { 
+				CommonDef.check_item_info.INDEX, //索引
+				CommonDef.check_item_info.UNIT_NAME,//巡检项名称
+				CommonDef.check_item_info.VALUE,//巡检结果
+				CommonDef.check_item_info.DEADLINE, //巡检最近时间
+				CommonDef.check_item_info.NAME 
+				}, new int[] {
+						R.id.index,
+						R.id.pathname,
+						R.id.checkvalue, 
+						R.id.deadtime});
 		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -233,44 +240,32 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	//	mButtion_Media.setOnClickListener(this);
 		mSpinner = (Spinner) findViewById(R.id.spinner1);
 		mItemDefTextView = (TextView)findViewById(R.id.status);
-		try {
-			spinnerList = ((myApplication) getApplication()).getDeviceItemDefList(partItemObject);
-			if(spinnerList.size()<=1){
-				bSpinnerVisible= false;
-				mSpinner.setVisibility(Spinner.GONE);
-				mItemDefTextView.setVisibility(TextView.VISIBLE);
-				mItemDefTextView.setText(spinnerList.get(0));
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(bSpinnerVisible){
-		
-		spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,spinnerList);    
-        //第三步：为适配器设置下拉列表下拉时的菜单样式。    
-		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
-        //第四步：将适配器添加到下拉列表上    
-        mSpinner.setAdapter(spinnerAdapter);    
-        //第五步：为下拉列表设置各种事件的响应，这个事响应菜单被选中    
-        mSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){    
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {    
-                // TODO Auto-generated method stub   
-            	if(mLastSpinnerIndex == arg2) return ;
-            	
-            	Message msg = new Message();
-            	msg.arg1 = arg2;
-            	msg.what = SPINNER_SELECTCHANGED;
-            	myHandler.sendMessage(msg);
-            	mLastSpinnerIndex = arg2;
-            	mDeviceItemDefStr = spinnerList.get(arg2);
-                
-            }    
-            public void onNothingSelected(AdapterView<?> arg0) {    
-                // TODO Auto-generated method stub    
-             
-            }    
-        });   
+		initSpinnerData();
+		if(bSpinnerVisible){		
+			spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,spinnerList);    
+	        //第三步：为适配器设置下拉列表下拉时的菜单样式。    
+			spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
+	        //第四步：将适配器添加到下拉列表上    
+	        mSpinner.setAdapter(spinnerAdapter);    
+	        //第五步：为下拉列表设置各种事件的响应，这个事响应菜单被选中    
+	        mSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){    
+	            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {    
+	                // TODO Auto-generated method stub   
+	            	if(mLastSpinnerIndex == arg2) return ;
+	            	
+	            	Message msg = new Message();
+	            	msg.arg1 = arg2;
+	            	msg.what = SPINNER_SELECTCHANGED;
+	            	myHandler.sendMessage(msg);
+	            	mLastSpinnerIndex = arg2;
+	            	mDeviceItemDefStr = spinnerList.get(arg2);
+	                
+	            }    
+	            public void onNothingSelected(AdapterView<?> arg0) {    
+	                // TODO Auto-generated method stub    
+	             
+	            }    
+	        });   
 		}
         mCheckbox = (CheckBox)findViewById(R.id.checkBox1);
         mCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -308,6 +303,31 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	}
 
 	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		InitDataNeeded(0,true);
+		initSpinnerData();
+		super.onResume();
+	}
+
+	void initSpinnerData(){
+		try {
+			spinnerList = ((myApplication) getApplication()).getDeviceItemDefList(partItemObject);
+			if(spinnerList.size()<=1){
+				bSpinnerVisible= false;
+				mSpinner.setVisibility(Spinner.GONE);
+				mItemDefTextView.setVisibility(TextView.VISIBLE);
+				mItemDefTextView.setText(spinnerList.get(0));
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(spinnerAdapter != null){
+		spinnerAdapter.notifyDataSetChanged();
+		}
+	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -341,8 +361,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		
         public void handleMessage(Message msg) {   
              switch (msg.what) {   
-                  case SPINNER_SELECTCHANGED:			
-					//resetListViewData(msg.arg1);
+                  case SPINNER_SELECTCHANGED:
 					InitDataNeeded(msg.arg1,true);			
                        break;   
              }   
@@ -356,15 +375,10 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     * @param updateAdapter:是否要重新裝載adapter data
     */
    void InitDataNeeded(int itemIndex,boolean updateAdapter){
-	   try {
-		   if(partItemObject == null){
-			partItemObject = ((myApplication) getApplication())
-					.getPartItemObject(mStationIndex,mDeviceIndex);
+	   try {		   
+			partItemObject = ((myApplication) getApplication()).getPartItemObject(mStationIndex,mDeviceIndex);
 			Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
-			}
-		   
-		   List<Object> deviceItemList = ((myApplication) getApplication())
-					.getDeviceItemList(mStationIndex);
+		   List<Object> deviceItemList = ((myApplication) getApplication()).getDeviceItemList(mStationIndex);
 		   
 		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
 		   mDeviceQueryNameStr =   ((myApplication) getApplication()).getDeviceQueryNumber(mCurrentDeviceObject);
@@ -384,6 +398,9 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME));
 				map.put(CommonDef.check_item_info.DATA_TYPE, ((myApplication) getApplication())
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_DATA_TYPE_NAME));
+				
+				map.put(CommonDef.check_item_info.VALUE, ((myApplication) getApplication())
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO_NAME));
 				
 				map.put(CommonDef.check_item_info.DEADLINE, ((myApplication) getApplication())
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME));
@@ -439,6 +456,8 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   }
 		   mCheckbox.setVisibility(CheckBox.VISIBLE);
 		   mUnitcheck_Vibrate.setVisibility(View.GONE);
+		   InitDataNeeded(0,true);
+		   initSpinnerData();
 	   }else{
 		   mUnitcheck_Vibrate.setVisibility(View.VISIBLE);
 		   mListView.setVisibility(ListView.GONE);
@@ -495,6 +514,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		}		
 		((myApplication) getApplication()).SaveData(mRouteIndex);
 	}
+	String mCheckValue = null;
 	/**
 	 * 保存当前的 巡检项巡检结果
 	 */
@@ -505,7 +525,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 			Log.d(TAG, "saveCheckedItemNode(),"+json);
 			
 			//添加巡检结果到结果中，便于形成最后的结果。
-			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
 			Log.d(TAG, "saveCheckedItemNode() result is,"+json);			
 			mJSONArray.put(json);
 		}
@@ -551,66 +571,9 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		Log.d(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
 		mCheckIndex++;
 		displayItemNode(mCheckIndex);
-//		if((mCheckIndex < (mListView.getCount()))){
-//			JSONObject json = null;
-			//先保存当前测试项的数据
-//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-//			Log.d(TAG, "Test json is 0,"+json);
-//			
-//			//添加巡检结果到结果中，便于形成最后的结果。
-//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-//			Log.d(TAG, "Test json is 1,"+json);			
-//			mJSONArray.put(json);
-//			
-			//
-			
-//			HashMap<String, String> map = (HashMap<String, String>) mListView
-//					.getItemAtPosition(mCheckIndex);
-//			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
-//			
-//			//如果是测温的话，需要解析上中下限的数据，来显示温度颜色
-//			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
-//				json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-//
-//				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
-//				mMax_temperature =		tmp.max;
-//				mMid_temperature =tmp.mid;
-//				mMin_temperature =tmp.min;
-//		
-//			}
-//			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
-//			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
-//			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
-//			
-//			needVisible();
-			
-//			if(iCheckedCount ==(mListView.getCount())){
-//				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-//				mJSONArray.put(json);
-//				try {
-//					SaveData();
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				Toast.makeText(getApplicationContext(),
-//						getString(R.string.save_device_checkdata),
-//						Toast.LENGTH_SHORT).show();
-//				finish();
-//			}			
-//			
-//		}
-//		if(mCheckIndex == (mListView.getCount())){
-//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-//			Log.d(TAG, "Test json is 0,"+json);
-//			
-//			//添加巡检结果到结果中，便于形成最后的结果。
-//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-//			Log.d(TAG, "Test json is 1,"+json);			
-//			mJSONArray.put(json);	
+
 			if(iCheckedCount ==(mListView.getCount())){
-//				json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-//				mJSONArray.put(json);
+
 				try {
 					SaveData();
 				} catch (JSONException e) {
@@ -621,110 +584,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 						getString(R.string.save_device_checkdata),
 						Toast.LENGTH_SHORT).show();
 				finish();
-			}			
-		//}
-		
-		
-		
-		
-		
-//		if (iCheckedCount == (mListView.getCount() - 1)) {
-//			// last item,and save current device checkItem data
-//			
-//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);			
-//			Log.d(TAG, "nextCheckItem() obj is "+json.toString());
-//			
-//			
-//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
-//			Toast.makeText(getApplicationContext(),
-//					getString(R.string.save_device_checkdata),
-//					Toast.LENGTH_SHORT).show();
-//			bHasFinishChecked = true;
-//			mJSONArray.put(json);
-//			
-//			Log.d(TAG, "nextCheckItem() mCurrentDeviceObject "+mCurrentDeviceObject.toString());
-//			JSONObject obj=(JSONObject) ((myApplication) getApplication()).addIsChecked(mCurrentDeviceObject,true);
-//			try {
-//				SystemUtil.writeFileToSD("sdcard/3.txt", mJSONArray.toString());
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			finish();
-//			//准备返回到Listview界面中。
-////			AlertDialog.Builder builder = new Builder(DeviceItemActivity.this);
-////			  builder.setMessage("确认退出吗？");  
-////			  builder.setTitle("提示");  
-////			  builder.setPositiveButton("确认", new OnClickListener() {   
-//////			   @Override
-//////			   public void onClick(DialogInterface dialog, int which) {
-//////			    dialog.dismiss();  
-//////			    bListViewVisible = true;// 返回到Listview界面中。
-//////				needVisible();
-//////			   // Main.this.finish();
-//////			   }
-////
-////			@Override
-////			public void onClick(View arg0) {
-////				// TODO Auto-generated method stub
-////				((DialogInterface) arg0).dismiss();  
-////				    bListViewVisible = true;// 返回到Listview界面中。
-////					needVisible();
-////			}
-////			});  
-////			  builder.setNegativeButton("取消", new OnClickListener() {  
-//////			   @Override
-//////			   public void onClick(DialogInterface dialog, int which) {
-//////			    dialog.dismiss();
-//////			   }
-////
-////			@Override
-////			public void onClick(View arg0) {
-////				// TODO Auto-generated method stub
-////				((DialogInterface) arg0).dismiss();
-////			}
-////			  });  
-////			  builder.create().show();
-//			  
-//			
-//			
-//			//继续巡检下一个DeviceItem中的PartItemData
-//			
-//		} else if((mCurrentCheckIndex <= (mListView.getCount() - 1))){
-//			//先保存当前测试项的数据
-//			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
-//			Log.d(TAG, "Test json is 0,"+json);
-//			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,SystemUtil.getSystemTime()+"*3");
-//			Log.d(TAG, "Test json is 1,"+json);
-//			//
-//			mJSONArray.put(json);
-//			mCurrentCheckIndex++;
-//			HashMap<String, String> map = (HashMap<String, String>) mListView
-//					.getItemAtPosition(mCurrentCheckIndex);
-//			mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
-//			if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
-//				json = (JSONObject) mPartItemSelectedList.get(mCurrentCheckIndex);
-//
-//				Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
-//				mMax_temperature =		tmp.max;
-//				mMid_temperature =tmp.mid;
-//				mMin_temperature =tmp.min;
-//		
-//			}
-//			mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
-//			mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
-//			Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
-//			bHasFinishChecked = false;
-//			needVisible();
-//		}else if((mCurrentCheckIndex == (mListView.getCount() - 1))&& (iCheckedCount !=(mListView.getCount() - 1))){
-//			
-//			bHasFinishChecked = false;
-//			mButton_Next.setText(getString(R.string.prepoint));
-//			Toast.makeText(getApplicationContext(),
-//					getString(R.string.notendtips),
-//					Toast.LENGTH_LONG).show();
-//		}
-	//	Log.d(TAG, "in nextCheckItem() mCurrentCheckIndex = "+mCurrentCheckIndex +",maxSize is "+mListView.getCount());
+			}
 	}
 	
 
@@ -811,6 +671,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     	}else if(temp>=MAX_TEMP){
     		mRadioButton.setBackgroundColor(Color.RED);
     	}
+    	mCheckValue = x+","+y+","+z + ","+temp+"*";
     }
     
     /**

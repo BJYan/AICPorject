@@ -1,5 +1,6 @@
 package com.aic.aicdetactor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,14 @@ public class TestSetting {
 		
 		if(isTest){
 			List<String>list = new ArrayList<String>();
+			File f1 = new File(file1);
+		    if(f1.exists()){
 			list.add(file1);
+			}
+		    File f = new File(file1);
+		    if(f.exists()){
 			list.add(file);
+		    }
 			return list;
 		}
 		return null;

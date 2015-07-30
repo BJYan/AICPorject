@@ -253,18 +253,24 @@ public class MyJSONParse {
 		try {		
 			String Oldvalue = this.getPartItemName(json);
 			Oldvalue =json.getString(KEY.KEY_PARTITEMDATA);
-			String[] array1 = Oldvalue.split(PARTITEMDATA_SPLIT_KEYWORD);
+			String[] arrayOld = Oldvalue.split(PARTITEMDATA_SPLIT_KEYWORD);
 			
 			String[] array2 = Value.split(PARTITEMDATA_SPLIT_KEYWORD);
-			Log.d(TAG, "setPartItem_ItemDef() old length ="+array1.length + ",new Length ="+array2.length);
-			if((array1.length+array2.length) <partItemDefault_Max_Lenth){
-				if(array1.length<partItemDefaultLenth){
-					for(int i = array1.length;i<partItemDefaultLenth;i++){
-						Oldvalue=Oldvalue+"*";
-					}
+			Log.d(TAG, "setPartItem_ItemDef() old length ="+arrayOld.length + ",new Length ="+array2.length);
+			Oldvalue = null;
+			if(arrayOld.length<partItemDefaultLenth){
+				for(int i = 0;i<arrayOld.length;i++){
+				Oldvalue = Oldvalue + arrayOld[i]+"*";
 				}
+				Oldvalue = Oldvalue + Value;
+			}else{
+				arrayOld[9] = Value;
+				for(int i = 0;i<partItemDefaultLenth;i++){
+					Oldvalue = Oldvalue + arrayOld[i]+"*";
+					}
+					Oldvalue = Oldvalue + Value;
 			}
-			Oldvalue= Oldvalue + Value;
+			Log.d(TAG, "setPartItem_ItemDef() Oldvalue is "+Oldvalue);
 			json.put(KEY.KEY_PARTITEMDATA, Oldvalue);
 		
 		} catch (JSONException e) {
@@ -717,14 +723,18 @@ public class MyJSONParse {
 				Log.d(TAG, "getPartItemCheckUnitName " + " object is null");
 				return null;
 			}
-			String name = null;
-			//Log.d(TAG, "getPartItemName 1");
+			String name = null;			
 			try {
 				JSONObject newObject = (JSONObject) partItemobject;
 
 				//Log.d(TAG, "getPartItemName 3");
 				name = newObject.getString(KEY.KEY_PARTITEMDATA);
+				String nameArray[] = name.split("\\*");
+				if((nameArray.length == 10) &&(index == CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO_NAME)){
+					name = null;
+				}else{
 				name = getPartItemSubStr(name,index);
+				}
 				//Log.d(TAG, "getPartItemName 4");
 
 			} catch (Exception e) {

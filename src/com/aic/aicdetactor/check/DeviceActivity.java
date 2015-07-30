@@ -46,16 +46,17 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 public class DeviceActivity extends Activity implements OnClickListener{
-	int mStationIndex = 0;
-	int mRouteIndex = 0;
-	ListView mListView = null;
+	private int mStationIndex = 0;
+	private int mRouteIndex = 0;
+	private ListView mListView = null;
 	String TAG = "luotest";
 	
-	String mCheckNameStr = null;
-	String mRouteNameStr = null;
-	String mStationNameStr = null;
-	Button mButtonStartCheck = null;
-	List<Map<String, String>> mDataList = null;
+	private String mCheckNameStr = null;
+	private String mRouteNameStr = null;
+	private String mStationNameStr = null;
+	private Button mButtonStartCheck = null;
+	private List<Map<String, String>> mDataList = null;
+	private SimpleAdapter mListViewAdapter = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -99,30 +100,30 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		mDataList = new ArrayList<Map<String, String>>();
 		
 		InitData();
-		SimpleAdapter adapter = new SimpleAdapter(this, mDataList,
+		mListViewAdapter = new SimpleAdapter(this, mDataList,
 				R.layout.checkitem, new String[] { CommonDef.device_info.INDEX, CommonDef.device_info.NAME,
 				CommonDef.device_info.DEADLINE, CommonDef.device_info.STATUS, CommonDef.device_info.PROGRESS }, new int[] {
 						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
 						R.id.progress });
-		mListView.setAdapter(adapter);
+		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// TODO Auto-generated method stub
-//				HashMap<String, String> map = (HashMap<String, String>) mListView
-//						.getItemAtPosition(arg2);
-//				Intent intent = new Intent();
-//				intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
-//				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, mRouteIndex);
-//				intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, mStationIndex);
-//				intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, arg2);
-//				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-//				intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
-//				intent.putExtra(CommonDef.device_info.NAME, map.get(CommonDef.device_info.NAME));
-//				intent.setClass(getApplicationContext(),
-//						DeviceItemActivity.class);
-//				startActivity(intent);
+				HashMap<String, String> map = (HashMap<String, String>) mListView
+						.getItemAtPosition(arg2);
+				Intent intent = new Intent();
+				intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
+				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, mRouteIndex);
+				intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, mStationIndex);
+				intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, arg2);
+				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+				intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
+				intent.putExtra(CommonDef.device_info.NAME, map.get(CommonDef.device_info.NAME));
+				intent.setClass(getApplicationContext(),
+						DeviceItemActivity.class);
+				startActivity(intent);
 			}
 		});
 
@@ -144,7 +145,6 @@ public class DeviceActivity extends Activity implements OnClickListener{
 
 	void InitData(){
 		try {
-
 			/**
 			 * 返回的DeviceItem 下的数组list,每项包含 DeviceName ,ItemDef,QueryNumber及PartItem
 			 */
@@ -153,6 +153,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 
 			CheckStatus status = null;
 			int itemindex = mStationIndex;
+			mDataList.clear();
 			for (int i = 0; i < deviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
 				status = ((myApplication) getApplication())
@@ -175,6 +176,9 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		if(mListViewAdapter != null){
+			mListViewAdapter.notifyDataSetChanged();
+		}
 	}
 	@Override
 	protected void onDestroy() {
@@ -191,6 +195,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		InitData();
 		super.onResume();
 		
 	}

@@ -68,6 +68,8 @@ public class RouteActivity extends Activity {
 	private List<String> mFileList = null;	
 	 String name = null;
 	 String pwd= null;
+	 private List<Map<String, String>> mItemDatas = null;
+	 private SimpleAdapter mListViewAdapter = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -79,29 +81,74 @@ public class RouteActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
-		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
+		requestWindowFeature(Window.FEATURE_NO_TITLE); // 无title
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		if (isUseWivewPager) {
 			setContentView(R.layout.plancheck_main);
 		} else {
 			setContentView(R.layout.route_activity);
 		}
 
-
 		if (isUseWivewPager) {
 			initViewPager();
 		} else {
 			mListView = (ListView) findViewById(R.id.listView);
-			mSwitch = (SwitchView)findViewById(R.id.link_switch);
-			//mSwitch.setOnCheckedChangeListener(listener);
-			//init();
-			Intent intent=getIntent();  
-	       name =intent.getStringExtra("name");  
-	         pwd=intent.getStringExtra("pwd");  
-	        
-			
-			iniDataThread.start();
+			mSwitch = (SwitchView) findViewById(R.id.link_switch);
+			// mSwitch.setOnCheckedChangeListener(listener);
+			// init();
+			Intent intent = getIntent();
+			name = intent.getStringExtra("name");
+			pwd = intent.getStringExtra("pwd");
+
+			//iniDataThread.start();
+			initListData();
+			mListViewAdapter = new SimpleAdapter(this, mItemDatas,
+					R.layout.checkitem, new String[] {
+							CommonDef.route_info.INDEX,
+							CommonDef.route_info.NAME,
+							CommonDef.route_info.DEADLINE,
+							CommonDef.route_info.STATUS,
+							CommonDef.route_info.PROGRESS }, new int[] {
+							R.id.index, R.id.pathname, R.id.deadtime,
+							R.id.status, R.id.progress });
+			Log.d(TAG,
+					"in init() setAdapter"
+							+ SystemUtil
+									.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
+			mListView.setAdapter(mListViewAdapter);
+			Log.d(TAG,
+					"in init() after setAdapter"
+							+ SystemUtil
+									.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
+			mListView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
+							.getItemAtPosition(arg2));
+					Log.d(TAG,
+							"MAPITEM is "
+									+ mapItem.toString()
+									+ " pathname is "
+									+ (String) mapItem
+											.get(CommonDef.route_info.NAME));
+					Intent intent = new Intent();
+					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
+							arg2);
+					((myApplication) getApplication())
+							.setCurrentRouteIndex(arg2);
+					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.route_info.NAME,
+							(String) mapItem.get(CommonDef.route_info.NAME));
+					intent.putExtra(CommonDef.route_info.INDEX,
+							(String) mapItem.get(CommonDef.route_info.INDEX));
+					intent.setClass(getApplicationContext(),
+							StationActivity.class);
+					startActivity(intent);
+				}
+			});
 			if (isTestInterface) {
 				// //test idinfo ,test pass
 				int myid = 100;
@@ -109,7 +156,7 @@ public class RouteActivity extends Activity {
 				teststr = "AIC8D7D1E09C";
 				try {
 					myid = ((myApplication) getApplication())
-							.getStationItemIndexByID(0,teststr);
+							.getStationItemIndexByID(0, teststr);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -120,13 +167,14 @@ public class RouteActivity extends Activity {
 				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
 				for (int n = 0; n < 10; n++) {
 
-					Log.d(TAG,"teststr is "	+ ((myApplication) getApplication())
+					Log.d(TAG,
+							"teststr is "
+									+ ((myApplication) getApplication())
 											.getPartItemSubStr(teststr, n));
 				}
-				
-				
-				///
-				
+
+				// /
+
 			}
 		}
 
@@ -154,13 +202,13 @@ public class RouteActivity extends Activity {
 			return true;
 		}
 		
-	void init() {
-		Log.d(TAG, "in init() start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM) + "name is "+name + " pwd is "+pwd);
+	void initListData() {
+		Log.d(TAG, "initListData() start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM) + "name is "+name + " pwd is "+pwd);
 		
 		((myApplication) getApplication()).setUserInfo(name, pwd);
 	
 		Log.d(TAG, "in init() 1 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		mItemDatas = new ArrayList<Map<String, String>>();
 		int iRouteCount = ((myApplication) getApplication()).InitData();
 		Log.d(TAG, "in init() 2 start " + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		CheckStatus status = null;
@@ -184,7 +232,7 @@ public class RouteActivity extends Activity {
 				String index = "" + (routeIndex + 1);
 				map.put(CommonDef.route_info.INDEX, index);
 
-				list.add(map);
+				mItemDatas.add(map);
 				Log.d(TAG, "in init() for end i=" + routeIndex + ","
 						+ SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
@@ -192,40 +240,10 @@ public class RouteActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
-
-		SimpleAdapter adapter = new SimpleAdapter(this, list,
-				R.layout.checkitem, new String[] { CommonDef.route_info.INDEX,
-						CommonDef.route_info.NAME,
-						CommonDef.route_info.DEADLINE,
-						CommonDef.route_info.STATUS,
-						CommonDef.route_info.PROGRESS }, new int[] {
-						R.id.index, R.id.pathname, R.id.deadtime, R.id.status,
-						R.id.progress });
-		Log.d(TAG, "in init() setAdapter" + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-		mListView.setAdapter(adapter);
-		Log.d(TAG, "in init() after setAdapter" + SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-		mListView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				// TODO Auto-generated method stub
-				HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-						.getItemAtPosition(arg2));
-				Log.d(TAG, "MAPITEM is " + mapItem.toString() + " pathname is "
-						+ (String) mapItem.get(CommonDef.route_info.NAME));
-				Intent intent = new Intent();
-				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, arg2);
-				((myApplication) getApplication()).setCurrentRouteIndex(arg2);
-				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
-				intent.putExtra(CommonDef.route_info.NAME,
-						(String) mapItem.get(CommonDef.route_info.NAME));
-				intent.putExtra(CommonDef.route_info.INDEX,
-						(String) mapItem.get(CommonDef.route_info.INDEX));
-				intent.setClass(getApplicationContext(), StationActivity.class);
-				startActivity(intent);
-			}
-		});
-
+		
+		if(mListViewAdapter !=null){
+		mListViewAdapter.notifyDataSetChanged();
+		}
 	}
 	private	Handler InitDataHandler = new Handler()
 	    {
@@ -237,14 +255,20 @@ public class RouteActivity extends Activity {
 	            //InitDataHandler.post(update_thread);
 	        	switch(msg.what){
 	        	case INIT_DATA:
-	        		init();
+	        		//initListData();
 	        		break;
 	        	}
 	           
 	        }       
 	    };
 	    
-	    private Thread iniDataThread = new Thread(new Runnable(){
+	    @Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+	    initListData();
+		super.onResume();
+	}
+		private Thread iniDataThread = new Thread(new Runnable(){
 
 			@Override
 			public void run() {

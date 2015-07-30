@@ -56,6 +56,8 @@ public class StationActivity extends Activity {
      boolean isUseWivewPager =false;
 	String TAG = "luotest";
 	String  routeName = null;
+	private SimpleAdapter mListViewAdapter = null;
+	private List<Map<String, String>> mListDatas = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -98,39 +100,15 @@ public class StationActivity extends Activity {
 
 		
 			mListView = (ListView) findViewById(R.id.listView);
-			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-			try {
-
-				List<Object> stationItemList = ((myApplication) getApplication())
-						.getStationList(mRouteIndex);
-
-				CheckStatus status = null;
-				for (int i = 0; i < stationItemList.size(); i++) {
-					Map<String, String> map = new HashMap<String, String>();
-					status = ((myApplication) getApplication())
-							.getNodeCount(stationItemList.get(i),1,0);
-					status.setContext(getApplicationContext());
-					map.put(CommonDef.station_info.NAME, ((myApplication) getApplication())
-							.getStationItemName(stationItemList.get(i)));
-					map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-					map.put(CommonDef.station_info.STATUS, status.getStatus());
-					
-					map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount+"/"+status.mSum);
-					//String index = "" + (i + 1);
-					//map.put("index", index);
-
-					list.add(map);
-				} 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			SimpleAdapter adapter = new SimpleAdapter(this, list,
+			mListDatas = new ArrayList<Map<String, String>>();
+			
+			initListViewData();
+			mListViewAdapter = new SimpleAdapter(this, mListDatas,
 					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
 					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
 							R.id.index, R.id.pathname, R.id.deadtime,
 							R.id.status, R.id.progress });
-			mListView.setAdapter(adapter);
+			mListView.setAdapter(mListViewAdapter);
 			mListView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
@@ -186,4 +164,47 @@ public class StationActivity extends Activity {
 				
 			}
 		}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		initListViewData();
+		super.onResume();
+	}
+
+
+
+	private void initListViewData(){
+		Log.d(TAG,"initListViewData()");
+		try {
+
+			List<Object> stationItemList = ((myApplication) getApplication())
+					.getStationList(mRouteIndex);
+
+			CheckStatus status = null;
+			mListDatas.clear();
+			for (int i = 0; i < stationItemList.size(); i++) {
+				Map<String, String> map = new HashMap<String, String>();
+				status = ((myApplication) getApplication())
+						.getNodeCount(stationItemList.get(i),1,0);
+				status.setContext(getApplicationContext());
+				map.put(CommonDef.station_info.NAME, ((myApplication) getApplication())
+						.getStationItemName(stationItemList.get(i)));
+				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
+				map.put(CommonDef.station_info.STATUS, status.getStatus());
+				
+				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount+"/"+status.mSum);
+				//String index = "" + (i + 1);
+				//map.put("index", index);
+
+				mListDatas.add(map);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if(mListViewAdapter != null){
+			mListViewAdapter.notifyDataSetChanged();
+		}
+	}
 }
