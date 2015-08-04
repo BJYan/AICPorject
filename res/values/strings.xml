@@ -46,7 +46,7 @@
     <string name="rated_voltage">额定电压</string>
     <string name="rated_current">额定电流</string>
     <string name="rated_power">额定功率</string>
-    <string name="edite">编辑</string>
+    <string name="edit">编辑</string>
     <string name="x">X:</string>
     <string name="y">Y:</string>
     <string name="z">Z:</string>
@@ -74,4 +74,6 @@
     <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
     <string name="no_need_check_again">设备已经巡检完毕，不必重新巡检！</string>
     <string name="save_and_finish">Finish</string>
+        <string name="electric_device_parameters">电机参数</string>
+    <string name="electric_device_spectrum">电机振动频谱</string>
 </resources>

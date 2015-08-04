@@ -12,21 +12,18 @@ import android.util.Log;
 
 public class MediaDao {
 
-	DBHelper helper = null;	
-	private SQLiteDatabase mDB = null;
-	//Setting mSetting= null;
+	private DBHelper helper = null;	
+	private SQLiteDatabase mDB = null;	
 
 	public MediaDao(Context cxt) {
 		helper = new DBHelper(cxt);
-		mDB = helper.getWritableDatabase();
-		//mSetting = new Setting();
+		mDB = helper.getWritableDatabase();		
 	}
 
 	
 	public MediaDao(Context cxt, int version) {
 		helper = new DBHelper(cxt, version);
-		mDB = helper.getWritableDatabase();
-		//mSetting = new Setting();
+		mDB = helper.getWritableDatabase();	
 	}
 
 	public int insertInfo(int fileType,String fileName, String path,String contentStr,long duration) {
@@ -93,7 +90,7 @@ public class MediaDao {
 	public void clearTableContent(String TableNameStr) {
 		Cursor cursor = queryRecord(TableNameStr);
 		String path = null;
-		if(cursor !=null){
+		if(cursor !=null && cursor.getCount()>0){
 			cursor.moveToFirst();
 			for(int i=0;i<cursor.getCount();i++)
 			path = cursor.getString(cursor.getColumnIndex(DBHelper.MEDIA_PATH_NAME));

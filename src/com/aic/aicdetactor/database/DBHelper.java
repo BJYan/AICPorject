@@ -12,7 +12,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
-	 public static String TABLE_SOURCE_FILE = "jxcheck";
+	// public static String TABLE_SOURCE_FILE = "jxcheck";
+	 public static String TABLE_SOURCE_FILE = "T_Original_Json_File";
 	 public class SourceTable{
 	 public static final String GUID="guid";
 	 public static final String JXNAME="jxName";
@@ -29,8 +30,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String LASTCHECKPARTITEM_INDEX="lastCheckPartItemIndex";
 	 public static final String ISREVERSE_CHECK="isReverseCheck";
 	 
-	 public static final String PLANNAME="PlanName";
-	 public static final String PLANGUID="PlanGuid";
+	 public static final String PLANNAME="T_Line_Name";
+	 public static final String PLANGUID="T_Line_Guid";
 	 
 	 }
 
@@ -77,18 +78,27 @@ public class DBHelper extends SQLiteOpenHelper {
 	 }
 	 
 	 
-	 public static String TABLE_CHECKING = "checkFile";
-	 public class Checking_Table{
-		 public static final String FileName = "FileName";
-		 public static final String Path = "Path";
-		 public static final String PlanName = "PlanName";		 
-		 public static final String LastTime = "LastTime";
-		 public static final String WorkerName = "WorkerName";
-		 public static final String WorkerNumber = "WorkerNumber";
-		 public static final String PlanGuid = "PlanGuid";
+	// public static String TABLE_CHECKING = "checkFile";
+	 public static String TABLE_CHECKING = "T_Upload_Json_File";
+	 public class Checking_Table{	 
 		 
-		
-		 
+		 public static final String T_Line_Guid = "T_Line_Guid";
+		 public static final String T_Line_Name = "T_Line_Name";		 	 
+		 public static final String Task_Mode = "Task_Mode";
+		 public static final String Start_Point = "Start_Point";		 
+		 public static final String Span = "Span";
+		 public static final String Turn_Finish_Mode = "Turn_Finish_Mode";		 
+		 public static final String T_Period_Unit_Code = "T_Period_Unit_Code";
+		 public static final String Base_Point = "Base_Point";		 
+		 public static final String Worker_Name = "Worker_Name";
+		 public static final String Worker_Number = "Worker_Number";
+		 public static final String Class_Group = "Class_Group";
+		 public static final String Turn_Name = "Turn_Name";		 
+		 public static final String Turn_Number = "Turn_Number";
+		 public static final String Date = "Date";	
+		 public static final String File_Guid = "File_Guid";		 
+		 public static final String Is_Uploaded = "Is_Uploaded";
+		 public static final String Is_Updateed = "Is_Updateed";
 	 } 
 	 //自带的构造方法
 	 public DBHelper(Context context, String name, CursorFactory factory,
@@ -169,14 +179,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		String checkingsql = "create table IF NOT EXISTS "
 				+ TABLE_CHECKING 
 				+ "(" 
-				+ Checking_Table.FileName +" varchar(256) PRIMARY KEY,"
-				+ Checking_Table.PlanGuid +" varchar(256),"
-				+ Checking_Table.Path +" varchar(256),"
-				+ Checking_Table.PlanName +" varchar(256),"
-				+ Checking_Table.LastTime +" varchar(24),"
-				+ Checking_Table.WorkerName +" varchar(128),"
-				+ Checking_Table.WorkerNumber +" varchar(128)"
-				//+ "PRIMARY KEY (" +Checking_Table.FileName +")"
+				+ Checking_Table.T_Line_Guid +" varchar(256) PRIMARY KEY,"
+				+ Checking_Table.T_Line_Name +" varchar(256),"
+				+ Checking_Table.Task_Mode +" varchar(256),"
+				+ Checking_Table.Start_Point +" varchar(256),"
+				+ Checking_Table.Span +" varchar(24),"
+				+ Checking_Table.Turn_Finish_Mode +" varchar(128),"
+				+ Checking_Table.T_Period_Unit_Code +" varchar(128),"
+				
+				+ Checking_Table.Base_Point +" varchar(256),"
+				+ Checking_Table.Worker_Name +" varchar(256),"
+				+ Checking_Table.Worker_Number +" varchar(24),"
+				+ Checking_Table.Class_Group +" varchar(128),"
+				+ Checking_Table.Turn_Name +" varchar(128),"
+				
+				+ Checking_Table.Turn_Number +" varchar(256),"
+				+ Checking_Table.Date +" varchar(256),"
+				+ Checking_Table.Is_Uploaded +" BOOLEAN,"
+				+ Checking_Table.Is_Updateed +" BOOLEAN "				
 				+")";
 
 		db.execSQL(checkingsql);

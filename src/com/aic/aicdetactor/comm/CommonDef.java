@@ -5,65 +5,9 @@ package com.aic.aicdetactor.comm;
  *
  */
 public class CommonDef {
-	public static String TAG = "luotest";
-	/*
-	 * 站点索引
-	 */
-	// public static String STATION_INDEX ="stationIndex";
-	// /*
-	// * 巡检计划名
-	// */
-	// public static String PLANNAME="planName";
-	//
-	// /* 巡检路线名 */
-	// public static String ROUTENAME="routeName";
-	// /*
-	// * 站点名
-	// */
-	// public static String STATIONNAME="stationName";
-	// /*
-	// * 设备名
-	// */
-	// public static String DEVICENAME ="deviceName";
-	// /*
-	// * 设备索引
-	// */
-	// public static String DEVICE_INDEX = "deviceIndex";
-	// /*
-	// * ListView Item Index
-	// */
-	// public static String LISTITEM_INDEX = "listIndex";
-	// /*
-	// * 检查项名
-	// */
-	// public static String CHECKNAME = "checkName";
-	/*
-	 * 计划巡检 或临时巡检的标签
-	 */
-	public static String ONE_CATALOG = "oneCatalog";
-	// /*
-	// * root note name
-	// */
-	// public static String ROOTNAME= "rootName";
-	// /*
-	// * root Index
-	// */
-	// public static String ROUTE_INDEX = "routeIndex";
-	// /*
-	// * partItemIndex
-	// */
-	// public static String PARTITEM_INDEX = "partItemIndex";
-	//
-	// /*
-	// * 是否反向巡检
-	// */
-	// public static String ISREVERSECHECKING = "isReverseChecking";
-
-	/*
-	 * /*GUID 用于route文件的存储文件名字
-	 */
+	public static String TAG = "luotest";	
+	public static String ROUTE_CLASS_NAME = "route_Class";	
 	public static String GUID = "guid";
-
 	/*
 	 * 巡检文件存储位置目录
 	 */
@@ -212,6 +156,7 @@ public class CommonDef {
 		public static final String DEADLINE = "CheckItem_DeadLine";
 		public static final String ISCHECKED = "IsChecked";
 		public static final String CHECKED_RESULT = "Value";
+		public static final String ITEM_COUNTS= "counts";
 	}
 	
 	public static final int  FILE_TYPE_PICTRUE  =0;

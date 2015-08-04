@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="134dp" >
+    </ListView>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_current" />
+
+    <TextView
+        android:id="@+id/temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content" 
+     android:orientation="horizontal"
+     android:gravity="center">
+
+     <TextView
+         android:id="@+id/resultTips"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text=""
+         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	 <RadioButton
+	        android:id="@+id/radioButton2"        
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:button="@null"	        
+	        android:layout_centerVertical="true" 
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="20dp"        
+	        />
+ </LinearLayout>
+
+</LinearLayout>

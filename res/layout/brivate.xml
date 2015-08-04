@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="134dp" >
+    </ListView>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_current" />
+
+  <!-- 中间部分 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center"
+	     android:weightSum="3">
+	     <!-- 左侧部分 -->
+		     <LinearLayout
+		     android:layout_width="match_parent"
+		     android:layout_height="wrap_content" 
+		     android:orientation="vertical"
+		     android:layout_weight="2"
+		     android:layout_marginLeft="20dp">
+		     <!-- X -->
+			     <LinearLayout
+			     android:layout_width="match_parent"
+			     android:layout_height="wrap_content" 
+			     android:orientation="horizontal"
+			     android:gravity="left">
+
+			         <TextView
+			             android:id="@+id/x"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text="@string/x"
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			         <TextView
+			             android:id="@+id/x_value"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text=""
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+			     </LinearLayout>
+			     <!-- Y -->
+			     <LinearLayout
+			     android:layout_width="match_parent"
+			     android:layout_height="wrap_content" 
+			     android:orientation="horizontal"
+			     android:gravity="left">
+			       <TextView
+			             android:id="@+id/y"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text="@string/y"
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			         <TextView
+			             android:id="@+id/y_value"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text=""
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     </LinearLayout>
+			     <!-- Z -->
+			     <LinearLayout
+			     android:layout_width="match_parent"
+			     android:layout_height="wrap_content" 
+			     android:orientation="horizontal"
+			     android:gravity="left">
+			       <TextView
+			             android:id="@+id/z"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text="@string/z"
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			         <TextView
+			             android:id="@+id/z_value"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:text=""
+			             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     </LinearLayout>
+		     </LinearLayout>
+		     
+		     <!-- 右边部分，显示倒计时 -->
+		     <LinearLayout
+		     android:layout_width="match_parent"
+		     android:layout_height="wrap_content" 
+		     android:orientation="vertical"
+		     android:gravity="center"
+		     android:layout_weight="1">
+		      <TextView
+	             android:id="@+id/time"
+	             android:layout_width="wrap_content"
+	             android:layout_height="wrap_content"
+	             android:text="@string/measurement_countdown"
+	             android:textAppearance="?android:attr/textAppearanceMedium" />
+	         <TextView
+	             android:id="@+id/time_value"
+	             android:layout_width="wrap_content"
+	             android:layout_height="wrap_content"
+	             android:text=""
+	             android:textAppearance="?android:attr/textAppearanceMedium" />
+		     </LinearLayout>
+	 
+	 </LinearLayout>
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content" 
+     android:orientation="horizontal"
+     android:gravity="center">
+
+     <!-- 巡检结果文字描述 -->
+     <TextView
+         android:id="@+id/colordiscrip"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"       
+         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+     <!-- 根据实际测量结果显示对应的颜色级别 -->
+	 <RadioButton
+	        android:id="@+id/colorRadio"        
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:button="@null"	        
+	        android:layout_centerVertical="true" 
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="20dp"        
+	        />
+ </LinearLayout>
+
+</LinearLayout>

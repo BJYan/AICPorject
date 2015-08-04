@@ -1,9 +1,6 @@
 package com.aic.aicdetactor.check;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +8,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -46,13 +41,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aic.aicdetactor.BtActivity;
-import com.aic.aicdetactor.MainActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.AuxiliaryInfoNode;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.media.MediaMainActivity;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -137,13 +129,16 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 		mStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
 		mDeviceIndex = intent.getExtras().getInt(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
 
-		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
+		String oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);
 		mDeviceNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
 		String routeNameStr = intent.getExtras().getString(CommonDef.route_info.NAME);
 		String  stationName = intent.getExtras().getString(CommonDef.station_info.NAME);
 Log.d(TAG,"routeName is "+ routeNameStr);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
+		((myApplication) getApplication()).gRouteName =  oneCatalog;
+		((myApplication) getApplication()).gStationName =  stationName;
+		((myApplication) getApplication()).gDeviceName =  mDeviceNameStr;
 
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
 		RouteNameTextView.setText(""+(mDeviceIndex+1) +" >>"+routeNameStr+">>"+stationName+">>"+mDeviceNameStr);
@@ -212,7 +207,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				 mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 				 mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
 				 Log.d(TAG,"partitemdata data type =" +mCheckUnit_DataType);
-				 needVisible();
+				// needVisible();
+				 
+				 ((myApplication) getApplication()).mPartItemName = mCheckItemNameStr;
+				 ((myApplication) getApplication()).mPartItemIndex = arg2;
+				 Intent intent = new Intent();
+				// intent.putExtra(CommonDef.check_item_info.INDEX, arg2);
+				 intent.putExtra(CommonDef.check_item_info.DATA_TYPE, mCheckUnit_DataType);
+				 intent.putExtra(CommonDef.check_item_info.ITEM_COUNTS, mListView.getCount());
+				 
+				 intent.setClass(DeviceItemActivity.this,PartItemActivity.class);
+				 startActivity(intent);
 			}
 		});
 		mButtion_Position = (Button)findViewById(R.id.position);
@@ -494,16 +499,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 
 		node.set(AuxiliaryInfoNode.KEY_Date, SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
-		node.set(AuxiliaryInfoNode.KEY_GUID, SystemUtil.createGUID());
+		node.set(AuxiliaryInfoNode.KEY_GUID, SystemUtil.createGUID());	
 
-		node.set(AuxiliaryInfoNode.KEY_TurnNumber, "00200");
+		node.set(AuxiliaryInfoNode.KEY_TurnNumber, ((myApplication) getApplication()).mTurnNumber);
 
-		node.set(AuxiliaryInfoNode.KEY_WorkerNumber, "123454");
+		node.set(AuxiliaryInfoNode.KEY_WorkerNumber, ((myApplication) getApplication()).mWorkerNumber);
 
-		node.set(AuxiliaryInfoNode.KEY_StartTime, "10:00");
+		node.set(AuxiliaryInfoNode.KEY_StartTime, ((myApplication) getApplication()).mTurnStartTime);
 
-		node.set(AuxiliaryInfoNode.KEY_EndTime, "12:00");
-
+		node.set(AuxiliaryInfoNode.KEY_EndTime, ((myApplication) getApplication()).mTurnEndTime);
+Log.d(TAG,"SaveData() turnNumber is " + ((myApplication) getApplication()).mTurnNumber + ",startTime is "+ ((myApplication) getApplication()).mTurnStartTime
+		+",endTime is "+ ((myApplication) getApplication()).mTurnEndTime);
 		((myApplication) getApplication()).setAuxiliaryNode(mRouteIndex,
 				node.getObject());
 		
@@ -518,7 +524,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		}else{
 			deviceObject.put("ItemDef", mDeviceItemDefStr);
 		}		
-		((myApplication) getApplication()).SaveData(mRouteIndex);
+		((myApplication) getApplication()).SaveData(mRouteIndex,((myApplication) getApplication()).genXJFileName());
 	}
 	String mCheckValue = null;
 	/**

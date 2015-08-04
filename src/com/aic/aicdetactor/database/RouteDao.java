@@ -287,7 +287,7 @@ public class RouteDao {
 
 		Cursor cursor = mDB
 				.query(RouteTableName,
-						new String[] { "guid,jxName,filePath,downTime,isChecked,isBeiginChecked,isuploaded,lastcheckTime,workerName,firstcheckTime,lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck" },
+						null,
 						SourceTable.PATH+ "=?", new String[] { path }, null,
 						null, null);
 		if (cursor != null) {
@@ -317,6 +317,27 @@ public class RouteDao {
 		return cursor;
 	}
 
+public List<String> queryWorkerNumber(String name,String pwsd) {
+		
+		List<String>guidList = new ArrayList<String>();
+		Cursor cur = mDB
+				.query(WorkerTableName,						
+						null,
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Password+ "=?", new String[] { name,pwsd }, 
+						null,
+						null, null);
+		if (cur != null) {
+			cur.moveToFirst();
+			for(int n=0;n<cur.getCount();n++){
+			String number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
+			guidList.add(number);
+			cur.moveToNext();
+			Log.d("luotest", "search worker table result  number is" +number);
+			}
+			cur.close();
+		}
+		return guidList;
+}
 	public List<String> queryLogIn(String name,String pwsd) {
 		
 		List<String>guidList = new ArrayList<String>();

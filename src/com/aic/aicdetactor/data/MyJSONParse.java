@@ -168,12 +168,12 @@ public class MyJSONParse {
 	 * 一旦巡检完一个设备节点就需要保存数据。
 	 * @param RouteIndex
 	 */
-	public void SaveData(int RouteIndex){
+	public void SaveData(int RouteIndex,String fileName){
 		
 		Route info =mRouteList.get(RouteIndex);
 		
 		try {
-			info.SaveData();
+			info.SaveData(fileName);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

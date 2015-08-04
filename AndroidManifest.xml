@@ -39,6 +39,9 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name=".btwifi_setting_activity">
+        </activity>
+        <activity
             android:name="com.aic.aicdetactor.check.StationActivity"
             android:label="@string/app_name" >
         </activity>
@@ -79,6 +82,14 @@
             android:label="@string/app_name" >
         </activity>
         
+        <activity
+            android:name="com.aic.aicdetactor.check.PartItemActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.aic.aicdetactor.check.ElectricParameteActivity"
+            android:label="@string/app_name" >
+        </activity>
         <service android:name="com.aic.aicdetactor.service.DataService"> 
         <intent-filter> 
                 <action android:name="com.demo.SERVICE_DEMO" /> 

@@ -6,33 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.aic.aicdetactor.BtActivity;
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.R.id;
-import com.aic.aicdetactor.R.layout;
-import com.aic.aicdetactor.R.menu;
-import com.aic.aicdetactor.TestSetting;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.service.DataService;
-import com.aic.aicdetactor.util.SystemUtil;
-import com.aic.aicdetactor.view.QuiteToast;
-import com.aic.aicdetactor.view.SwitchView;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -43,12 +23,15 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.view.QuiteToast;
+import com.aic.aicdetactor.view.SwitchView;
 
 public class RouteActivity extends Activity {
 
@@ -135,12 +118,14 @@ public class RouteActivity extends Activity {
 									+ " pathname is "
 									+ (String) mapItem
 											.get(CommonDef.route_info.NAME));
+					((myApplication) getApplication()).gRouteName = mapItem.get(CommonDef.route_info.NAME);
+					 ((myApplication) getApplication()).mRouteIndex = arg2;
 					Intent intent = new Intent();
 					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
 							arg2);
 					((myApplication) getApplication())
 							.setCurrentRouteIndex(arg2);
-					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
 					intent.putExtra(CommonDef.route_info.NAME,
 							(String) mapItem.get(CommonDef.route_info.NAME));
 					intent.putExtra(CommonDef.route_info.INDEX,

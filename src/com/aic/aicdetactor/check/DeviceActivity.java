@@ -8,26 +8,7 @@ import java.util.Map;
 
 import org.json.JSONException;
 
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.R.id;
-import com.aic.aicdetactor.R.layout;
-
-
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-
-
-
-
-
-
-
-import com.aic.aicdetactor.data.TurnInfo;
-import com.aic.aicdetactor.util.SystemUtil;
-
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,14 +17,20 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.util.SystemUtil;
 
 public class DeviceActivity extends Activity implements OnClickListener{
 	private int mStationIndex = 0;
@@ -82,7 +69,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		Intent intent = getIntent();
 		mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
 		mStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
-		String oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);
+		String oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);
 		mCheckNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
 		//String indexStr = intent.getExtras().getString(CommonDef.LISTITEM_INDEX);
 		mRouteNameStr = intent.getExtras().getString(CommonDef.route_info.NAME);
@@ -113,12 +100,16 @@ public class DeviceActivity extends Activity implements OnClickListener{
 				// TODO Auto-generated method stub
 				HashMap<String, String> map = (HashMap<String, String>) mListView
 						.getItemAtPosition(arg2);
+				
+				 ((myApplication) getApplication()).gDeviceName = map.get(CommonDef.device_info.NAME);
+				 ((myApplication) getApplication()).mDeviceIndex = arg2;
+				 
 				Intent intent = new Intent();
 				intent.putExtra(CommonDef.route_info.NAME, mRouteNameStr);
 				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, mRouteIndex);
 				intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, mStationIndex);
 				intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, arg2);
-				intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+				intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
 				intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
 				intent.putExtra(CommonDef.device_info.NAME, map.get(CommonDef.device_info.NAME));
 				intent.setClass(getApplicationContext(),
@@ -220,6 +211,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 			if(!IsInworkerTime()){
 				Toast.makeText(this.getApplicationContext(), getString(R.string.cannot_check_time_tips), Toast.LENGTH_LONG).show();
 			}else{
+				((myApplication) getApplication()).mStartDate = SystemUtil.getSystemTime(0);
 				startCheck();
 			}
 		}
@@ -259,7 +251,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX,
 				mStationIndex);
 		intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX,itemindex);
-		intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+		intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
 		intent.putExtra(CommonDef.station_info.NAME, mStationNameStr);
 		intent.putExtra(CommonDef.device_info.NAME,
 				map.get(CommonDef.device_info.NAME));
@@ -288,6 +280,12 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		for (int i = 0; i < turnInfo.size(); i++) {
 			String strstartTime = turnInfo.get(i).StartTime;
 			if (systemTime.compareTo(strstartTime) > 0 && systemTime.compareTo(turnInfo.get(i).EndTime)<0) {
+				((myApplication) getApplication()).mTurnNumber=turnInfo.get(i).Number;
+				((myApplication) getApplication()).mTurnStartTime=turnInfo.get(i).StartTime;
+				((myApplication) getApplication()).mTurnEndTime=turnInfo.get(i).EndTime;
+				Log.d(TAG,"IsInworkerTime() NUMBER is " + turnInfo.get(i).Number +
+						",startTime is " +turnInfo.get(i).Number
+						+",endTime is " +turnInfo.get(i).EndTime);
 				bok = true;
 			}
 		}

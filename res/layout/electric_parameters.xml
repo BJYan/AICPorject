@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+   <!--   <include layout="@layout/top_navitation"/>
+   -->
+   <fragment 
+       android:name="com.aic.aicdetactor.fragment.Top_Navigation_Fragment"
+       android:id="@+id/topfragment"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+       </fragment>
+       
+   
+ <!-- 电机型号 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/type"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/motor_type"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/type_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+			     </LinearLayout>
+<!-- 电机功率 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/power"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/motor_power"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/power_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+     </LinearLayout>
+     <!-- 电机转速 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/zhuansu"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/rated_speed"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/zhuansu_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+     </LinearLayout>
+     <!-- 电机电压 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/voltage"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/rated_voltage"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/voltage_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+     </LinearLayout>
+     <!-- 电机电流 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/electricity"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/rated_current"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/electricity_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+     </LinearLayout>
+     <!-- 电机频率 -->
+	 <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="horizontal"
+	     android:gravity="center">
+	     
+	     <TextView
+             android:id="@+id/frequency"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/rated_power"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+         <EditText
+             android:id="@+id/frequency_value"
+             android:layout_width="160dp"
+             android:layout_height="wrap_content"
+             android:text=""
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+			     
+     </LinearLayout>
+
+	  <LinearLayout
+	     android:layout_width="match_parent"
+	     android:layout_height="wrap_content" 
+	     android:orientation="vertical"
+	     android:gravity="right">
+	 <Button
+	     android:id="@+id/button1"
+	     android:layout_width="160dp"
+	     android:layout_height="wrap_content"
+	     android:text="@string/edit"
+	      />
+	 </LinearLayout>
+		     
+</LinearLayout>

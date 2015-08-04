@@ -17,10 +17,12 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
@@ -34,7 +36,7 @@ public class BtActivity extends Activity {
 	Switch mSwitch = null;
 	BluetoothAdapter mBTAdapter = null;
 	TextView mBTStatusTextView = null;
-
+	ImageView mImageViewSetting = null;
 
      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
      BaseSimpleAdapter adapter;
@@ -66,7 +68,18 @@ public class BtActivity extends Activity {
 		
 		adapter = new BaseSimpleAdapter(BtActivity.this);
 		adapter.setList(list);
-		
+		mImageViewSetting = (ImageView)findViewById(R.id.sensor_image);
+		mImageViewSetting.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(getApplicationContext(), btwifi_setting_activity.class);
+				startActivity(intent);
+			}
+			
+		});
 		mListView.setAdapter(adapter);
 		mSwitch = (Switch)findViewById(R.id.link_switch);
 		mSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class Route {
@@ -96,7 +97,7 @@ public class Route {
 	public String getFileName(){
 		return mFileName;
 	}
-	public void SaveData() throws JSONException{
+	public void SaveData(String fileName) throws JSONException{
 		
 		//Auxiliary information node
 		JSONArray rootArray = new JSONArray();
@@ -110,24 +111,11 @@ public class Route {
 			rootArray.put(5, mAuxiliary_Root_Object);
 		}
 		try {
-			SystemUtil.writeFileToSD(mFileName, rootArray.toString());
+			SystemUtil.writeFileToSD(fileName, rootArray.toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
-	
-	
-	
-	
-//	public class WorkerInfo{
-//		public String GroupName = null;
-//		public String WorkerName = null;
-//		public String WorkerNumber = null;
-//		public String WorkerPwd = null;
-//		public boolean isAdministrator = false;
-//		public String PlanGUID = null;
-//		public WorkerInfo(){}
-//	}
 }

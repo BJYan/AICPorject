@@ -38,22 +38,24 @@
     <string name="direction">方向</string>
     <string name="next_item">下一点</string>
     <string name="measurement">测量</string>
-    <string name="measurement_countdown">测量倒计时:%1$d秒</string>
-    <string name="motor_type">电机型号</string>
-    
-    <string name="motor_power">电机功率</string>
-    <string name="rated_speed">额定转速</string>
-    <string name="rated_voltage">额定电压</string>
-    <string name="rated_current">额定电流</string>
-    <string name="rated_power">额定功率</string>
-    <string name="edite">编辑</string>
+    <string name="measurement_countdown">测量倒计时</string>
+    <string name="motor_type">电机型号：</string>    
+    <string name="motor_power">电机功率：</string>
+    <string name="rated_speed">额定转速：</string>
+    <string name="rated_voltage">额定电压：</string>
+    <string name="rated_current">额定电流：</string>
+    <string name="rated_power">额定频率：</string>
+    <string name="edit">编辑</string>
     <string name="x">X:</string>
     <string name="y">Y:</string>
     <string name="z">Z:</string>
     <string name="position_select">位置选择</string>
     <string name="checkitem_name">巡检项：</string>
     <string name="save_device_checkdata">正在保存设备项巡检结果</string>
-    <string name="warning">警告：</string>
+    <string name="warning">警告</string>
+    <string name="normal">正常</string>
+    <string name="dangerous">危险</string>
+    <string name="invalid">无效</string>  
     <string name="extra">临检</string>
      <string name="camera">拍照</string>
          <string name="soundrecord">录音</string>
@@ -74,4 +76,9 @@
     <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
     <string name="no_need_check_again">设备已经巡检完毕，不必重新巡检！</string>
     <string name="save_and_finish">完成</string>
+    <string name="electric_device_parameters">电机参数</string>
+    <string name="electric_device_spectrum">电机振动频谱</string>
+    
+     <string name="bluetooth">蓝牙</string>
+    <string name="wifi">WIFI</string>
 </resources>

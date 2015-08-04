@@ -1,8 +1,5 @@
 package com.aic.aicdetactor.check;
 
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.media.SoundRecordActivity;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -17,6 +14,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.media.SoundRecordActivity;
 
 public class TempPlanActivity extends Activity implements OnClickListener {
 

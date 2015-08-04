@@ -6,27 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.aic.aicdetactor.BtActivity;
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.R.id;
-import com.aic.aicdetactor.R.layout;
-import com.aic.aicdetactor.R.menu;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -38,8 +23,12 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.util.SystemUtil;
 
 public class StationActivity extends Activity {
 
@@ -80,7 +69,7 @@ public class StationActivity extends Activity {
 			Intent intent =getIntent();
 			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
 			
-			String  oneCatalog = intent.getExtras().getString(CommonDef.ONE_CATALOG);		
+			String  oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);		
 			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
 			TextView planNameTextView  =(TextView)findViewById(R.id.planname);
 			planNameTextView.setText(oneCatalog);			
@@ -119,10 +108,18 @@ public class StationActivity extends Activity {
 					Log.d(TAG,
 							"stationActivit StationName is "
 									+ (String) mapItem.get(CommonDef.station_info.NAME));
+					
+					
+					 
+					 ((myApplication) getApplication()).gStationName = routeName ;
+					 ((myApplication) getApplication()).mStationIndex = arg2;
+					 
+					 
+					 
 					Intent intent = new Intent();
 					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX , mRouteIndex);
 					intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, arg2);
-					intent.putExtra(CommonDef.ONE_CATALOG, "计划巡检");
+					intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
 					intent.putExtra(CommonDef.station_info.NAME,
 							(String) mapItem.get(CommonDef.station_info.NAME));
 					intent.putExtra(CommonDef.route_info.NAME, routeName);					
