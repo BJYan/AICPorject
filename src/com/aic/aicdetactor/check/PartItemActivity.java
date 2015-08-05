@@ -58,6 +58,7 @@ import com.aic.aicdetactor.fragment.Temperature_fragment.OnMeasureListener;
 import com.aic.aicdetactor.fragment.Vibrate_fragment;
 import com.aic.aicdetactor.fragment.Vibrate_fragment.OnVibateListener;
 import com.aic.aicdetactor.media.MediaMainActivity;
+import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.media.SoundRecordActivity;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -474,7 +475,12 @@ Log.d(TAG,"SaveData() turnNumber is "
 			break;		
 		case R.id.bottombutton3:
 			if(mButton_Measurement.getText().equals(getString(R.string.textrecord))){
-				
+				Intent intent = new Intent();
+				JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
+				String value = ((myApplication) getApplication()).getPartItemCheckUnitName(json, CommonDef.partItemData_Index.PARTITEM_UNIT_NAME);
+				intent.putExtra(CommonDef.check_unit_info.NAME, value);
+				intent.setClass(PartItemActivity.this, NotepadActivity.class);
+				startActivityForResult(intent,2);
 			}
 			break;
 		case R.id.bottombutton2:

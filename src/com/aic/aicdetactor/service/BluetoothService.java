@@ -27,7 +27,7 @@ import android.util.Log;
 @SuppressLint("NewApi")
 public class BluetoothService {
     // Debugging
-    private static final String TAG = "BluetoothService";
+    private static final String TAG = "luotest";
     private static final boolean D = true;
 
     // Name for the SDP record when creating server socket
@@ -86,10 +86,16 @@ public class BluetoothService {
         if (D) Log.d(TAG, "start");
 
         // Cancel any thread attempting to make a connection
-        if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+        if (mConnectThread != null) {
+        	mConnectThread.cancel(); 
+        	mConnectThread = null;
+        	}
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.cancel();
+        	mConnectedThread = null;
+        	}
 
         // Start the thread to listen on a BluetoothServerSocket
         if (mAcceptThread == null) {
@@ -108,11 +114,17 @@ public class BluetoothService {
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
-            if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+            if (mConnectThread != null) {
+            	mConnectThread.cancel();
+            	mConnectThread = null;
+            	}
         }
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.cancel();
+        	mConnectedThread = null;
+        	}
 
         // Start the thread to connect with the given device
         mConnectThread = new ConnectThread(device);
@@ -129,13 +141,22 @@ public class BluetoothService {
         if (D) Log.d(TAG, "connected");
 
         // Cancel the thread that completed the connection
-        if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+        if (mConnectThread != null) {
+        	mConnectThread.cancel(); 
+        	mConnectThread = null;
+        	}
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.cancel(); 
+        	mConnectedThread = null;
+        	}
 
         // Cancel the accept thread because we only want to connect to one device
-        if (mAcceptThread != null) {mAcceptThread.cancel(); mAcceptThread = null;}
+        if (mAcceptThread != null) {
+        	mAcceptThread.cancel();
+        	mAcceptThread = null;
+        	}
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket);
@@ -184,7 +205,7 @@ public class BluetoothService {
      */
     private void connectionFailed() {
         setState(STATE_LISTEN);
-
+        if (D) Log.d(TAG, "connectionFailed()");
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Bluetooth.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -198,7 +219,7 @@ public class BluetoothService {
      */
     private void connectionLost() {
         setState(STATE_LISTEN);
-
+        if (D) Log.d(TAG, "connectionLost()");
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Bluetooth.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -228,6 +249,7 @@ public class BluetoothService {
                 Log.e(TAG, "listen() failed", e);
             }
             mmServerSocket = tmp;
+           
         }
 
         public void run() {
@@ -240,7 +262,7 @@ public class BluetoothService {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
-                    socket = mmServerSocket.accept();
+                    socket = mmServerSocket.accept(1000);
                 } catch (IOException e) {
                     Log.e(TAG, "accept() failed", e);
                     break;
@@ -257,6 +279,7 @@ public class BluetoothService {
                             break;
                         case STATE_NONE:
                         case STATE_CONNECTED:
+                        	Log.e(TAG, "will close this socket. state ="+mState);
                             // Either not ready or already connected. Terminate new socket.
                             try {
                                 socket.close();
@@ -290,19 +313,20 @@ public class BluetoothService {
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-
+        
         public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
             BluetoothSocket tmp = null;
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
-            try {
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+            try {            	
+            	tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
             } catch (IOException e) {
                 Log.e(TAG, "create() failed", e);
             }
-            mmSocket = tmp;
+            mmSocket = tmp;      
+           
         }
 
         public void run() {
@@ -310,15 +334,24 @@ public class BluetoothService {
             setName("ConnectThread");
 
             // Always cancel discovery because it will slow down a connection
-            mAdapter.cancelDiscovery();
+            
+            if(mAdapter.isDiscovering()){
+            	mAdapter.cancelDiscovery();
+            }
 
             // Make a connection to the BluetoothSocket
             try {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
+            	if(mmSocket.isConnected()){
+            		Log.d(TAG, " socket has connted");
+            	}else{
+            		Log.d(TAG, " socket has not connted");
+            	}
                 mmSocket.connect();
             } catch (IOException e) {
                 connectionFailed();
+                Log.d(TAG," connect failed exceptoin:"+e.toString());
                 // Close the socket
                 try {
                     mmSocket.close();
@@ -415,7 +448,7 @@ public class BluetoothService {
 
         public void cancel() {
             try {
-                mmSocket.close();
+                mmSocket.close();               
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }

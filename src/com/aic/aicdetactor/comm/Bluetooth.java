@@ -8,5 +8,7 @@ public class Bluetooth {
 	public static final String  DEVICE_NAME = "bt_Name";
 	public static final int MESSAGE_DEVICE_NAME = 104;
 	public static final int MESSAGE_STATE_CHANGE = 105;
+	public static final int MESSAGE_START_DISCOVERY =106;
+	public static final int MESSAGE_START_CONNECT =107;
 	
 }

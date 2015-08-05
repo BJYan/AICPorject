@@ -13,7 +13,7 @@
     <string name="unlink">未连接</string>
     <string name="sensor_name">传感器名</string>
     <string name="sensor_status">状态</string>
-    <string name="charge">充电</string>
+    <string name="charge">电量</string>
     <string name="shock">振动</string>
     <string name="temperature">温度</string>
     <string name="revolution_speed">转速</string>
@@ -79,6 +79,10 @@
     <string name="electric_device_parameters">电机参数</string>
     <string name="electric_device_spectrum">电机振动频谱</string>
     
-     <string name="bluetooth">蓝牙</string>
+    <string name="bluetooth">蓝牙</string>
     <string name="wifi">WIFI</string>
+    
+    <string name="finish">完成</string>
+    <string name="time">时间：</string>
+    <string name="beizhu">备注：</string>
 </resources>

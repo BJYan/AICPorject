@@ -77,15 +77,19 @@
             android:name="com.aic.aicdetactor.media.SoundRecordActivity"
             android:label="@string/app_name" >
         </activity>
+         <activity
+            android:name="com.aic.aicdetactor.media.NotepadActivity"
+            android:label="@string/app_name" >
+        </activity>
         <activity
             android:name="com.aic.aicdetactor.check.TempPlanActivity"
             android:label="@string/app_name" >
         </activity>
         
-        <activity
-            android:name="com.aic.aicdetactor.check.PartItemActivity"
-            android:label="@string/app_name" >
-        </activity>
+        <activity android:name="com.aic.aicdetactor.check.PartItemActivity" />        
+         <activity android:name="org.achartengine.GraphicalActivity" />
+          <activity android:name=".NetTestActivity" />
+         
         <activity
             android:name="com.aic.aicdetactor.check.ElectricParameteActivity"
             android:label="@string/app_name" >

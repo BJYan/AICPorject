@@ -17,8 +17,11 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.BaseAdapter;
@@ -29,22 +32,36 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BtActivity extends Activity {
+public class BtActivity extends Activity implements OnClickListener{
 
-	ListView mListView =null;
-	String TAG = "luotest";
-	Switch mSwitch = null;
-	BluetoothAdapter mBTAdapter = null;
-	TextView mBTStatusTextView = null;
-	ImageView mImageViewSetting = null;
+	private ListView mListView =null;
+	private final String TAG = "luotest";
+	private Switch mSwitch = null;
+	private BluetoothAdapter mBTAdapter = null;
+	private TextView mBTStatusTextView = null;
+	private ImageView mImageViewSetting = null;
+	
+	private TextView mBTName = null;	
+	private TextView mBTStatus = null;
 
-     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-     BaseSimpleAdapter adapter;
+	private Button bNetButton = null;
+
+	private List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	private SimpleAdapter adapter;
+ 	private final String mName = "Name";
+ 	private final String mValue = "Value";
     private int count = 0;
     
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
+		Log.d(TAG, " onActivityResult() requestCode = "+requestCode +",resultCode = "+resultCode);
+		if(requestCode == RESULT_OK){
+			Log.d(TAG, " onActivityResult()");
+			Bundle b=data.getExtras();
+			mBTName.setText(b.get("Name").toString());
+			mBTStatus.setText(b.get("Status").toString());
+		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -58,16 +75,30 @@ public class BtActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN); 
+		
 		setContentView(R.layout.bt_activity);
 
  		
 		IntentFilter mFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		this.registerReceiver(mReceiver, mFilter);
 		
+		mBTName = (TextView)findViewById(R.id.sensor_name2);
+		mBTStatus = (TextView)findViewById(R.id.sensor_status2);
+		
+		
+		
+		bNetButton = (Button)findViewById(R.id.net);
+		bNetButton.setOnClickListener(this);
 		mListView = (ListView)findViewById(R.id.listView);
 		
-		adapter = new BaseSimpleAdapter(BtActivity.this);
-		adapter.setList(list);
+		adapter = new SimpleAdapter(this, list,
+				R.layout.bt_adapter_item, new String[] {
+				mName,mValue}, new int[] {R.id.bt_name,R.id.bt_adress});
+
+		mListView.setAdapter(adapter);
 		mImageViewSetting = (ImageView)findViewById(R.id.sensor_image);
 		mImageViewSetting.setOnClickListener(new OnClickListener(){
 
@@ -75,12 +106,12 @@ public class BtActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(getApplicationContext(), btwifi_setting_activity.class);
-				startActivity(intent);
+				intent.setClass(BtActivity.this, btwifi_setting_activity.class);
+				startActivityForResult(intent, RESULT_OK);
 			}
 			
 		});
-		mListView.setAdapter(adapter);
+		
 		mSwitch = (Switch)findViewById(R.id.link_switch);
 		mSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
@@ -113,12 +144,20 @@ public class BtActivity extends Activity {
 			mSwitch.setChecked(false);
 			mBTStatusTextView.setText(getString(R.string.unlink));
 		}
-		
+		initListData();
 		
 		
 	}
 	
  
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		CaptrueDataFromRemote();
+		super.onResume();
+	}
+
+
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -132,11 +171,10 @@ public class BtActivity extends Activity {
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				// 如果是已配对的则略过，已得到显示，其余的在添加到列表中进行显示
 				Map<String, Object> map = new HashMap<String, Object>();
- 				map.put("check_name", device.getName());
-				map.put("value", device.getAddress());
-				list.add(map); 
-				adapter.setList(list);
-				adapter.notifyDataSetChanged();
+ 				map.put(mName, device.getName());
+				map.put(mValue, device.getAddress());
+//				list.add(map); 				
+//				adapter.notifyDataSetChanged();
 				mListView.setVisibility(View.VISIBLE);
 				// 搜索完成action
 				count++;
@@ -146,45 +184,62 @@ public class BtActivity extends Activity {
 		
 	};
 	
+
+ void initListData(){
+	 mListView.setVisibility(View.VISIBLE);
+	 Map<String, Object> map = new HashMap<String, Object>();
+		map.put(mName, getString(R.string.charge));
+		//map.put(mValue, device.getAddress());
+		list.add(map);
+		
+		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put(mName, getString(R.string.shock));
+		//map.put(mValue, device.getAddress());
+		list.add(map1);
+		
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		map2.put(mName, getString(R.string.temperature));
+		//map.put(mValue, device.getAddress());
+		list.add(map2);
+		
+		Map<String, Object> map3 = new HashMap<String, Object>();
+		map3.put(mName, getString(R.string.revolution_speed));
+		//map.put(mValue, device.getAddress());
+		list.add(map3);
+		
+ }
+ 
+ void CaptrueDataFromRemote(){
+	 String charging = "38";
+	 String shock = "x:12 y:37 z:76";
+	 String temperature = "12";
+	 String speed = "67";
+	 
+	 Map<String, Object> map2  = list.get(0);
+	 map2.put(mValue, charging);
+	 
+	 map2  = list.get(1);
+	 map2.put(mValue, shock);	
+	 
+	 map2  = list.get(2);
+	 map2.put(mValue, temperature);	
+	 
+	 map2  = list.get(3);
+	 map2.put(mValue, speed);
+	 
+	 adapter.notifyDataSetChanged();
+ }
+
+@Override
+public void onClick(View arg0) {
+	// TODO Auto-generated method stub
+	switch(arg0.getId()){
+	case R.id.net:
+		Intent intent = new Intent();
+		intent.setClass(getApplicationContext(), NetTestActivity.class);
+		startActivityForResult(intent, RESULT_OK);
+		break;
+	}
 }
 
-class BaseSimpleAdapter extends BaseAdapter{
-
-	List<Map<String,Object>> list;
-	Context mContext;
-	BaseSimpleAdapter(Context context){
-		mContext = context;
-	}
-	
-	
-	public void setList(List<Map<String,Object>> dataList){
-		list = dataList;
-	}
-	
-	@Override
-	public int getCount() {
-		// TODO Auto-generated method stub
-		return list.size();
-	}
-
-	@Override
-	public Object getItem(int position) {
-		// TODO Auto-generated method stub
-		return list.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return position;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		convertView = (View)LayoutInflater.from(mContext).inflate(R.layout.two_text_item, null);
-		((TextView)convertView.findViewById(R.id.checkitem_name)).setText(list.get(position).get("check_name").toString());;
-		((TextView)convertView.findViewById(R.id.value)).setText(list.get(position).get("value").toString());;
-			return convertView;
-	}
-	
 }

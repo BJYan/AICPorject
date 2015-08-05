@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="网络测试界面"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+<!-- 是否有网络可连接 -->
+        <TextView
+            android:id="@+id/netstr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="网络："
+            android:textAppearance="?android:attr/textAppearanceLarge" 
+            android:layout_marginLeft="40dp"/>
+
+        <TextView
+            android:id="@+id/netcanlink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="是否"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </LinearLayout>
+<!-- wifi or 手机卡连接 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_marginLeft="40dp" />
+
+    </LinearLayout>
+<!-- 如果是手机卡连接，目前是在2G还是3g OR 4g下 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" 
+            android:layout_marginLeft="40dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

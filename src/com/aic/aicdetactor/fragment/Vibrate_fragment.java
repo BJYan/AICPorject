@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
+
+
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -27,7 +32,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+
+
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
+import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
@@ -113,8 +122,16 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 					Intent intent = new Intent();					
 					 intent.setClass(Vibrate_fragment.this.getActivity(),ElectricParameteActivity.class);
 					 startActivity(intent);
+				}else{
+					Intent intent = null;
+					IDemoChart[] mCharts = new IDemoChart[] {
+							 new AverageTemperatureChart()};
+				     // intent = new Intent(this, TemperatureChart.class);
+				      intent = mCharts[0].execute(Vibrate_fragment.this.getActivity());
+				    startActivity(intent);
 				}
 				 
+				
 			}
 		});
 		
@@ -132,7 +149,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 		
 		return view;
 	}
-
+	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
