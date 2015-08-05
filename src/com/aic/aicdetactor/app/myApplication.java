@@ -58,8 +58,8 @@ public class myApplication extends Application
     public String mPartItemName = "";
     
     private String mStrGuid = null;
-    private String mWorkerName = null;
-    private String mWorkerPwd = null;
+    public String mWorkerName = null;
+    public String mWorkerPwd = null;
     //生成第六个节点用的信息
     public String mStartDate = null;
     public String mTurnNumber = null;
@@ -70,6 +70,8 @@ public class myApplication extends Application
 	private MyJSONParse json = null;
 	private RouteDao dao = null;
 	
+	public boolean gBLogIn = false;
+
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
 	}
