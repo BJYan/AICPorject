@@ -5,4 +5,29 @@
 	<item>X-Z</item>
 	<item>Y-Z</item>	
 </string-array>
+<string-array name="check_data_type">
+	<item>温度</item>
+	<item>录入</item>
+	<item>测量</item>	
+	<item>加速度</item>
+	<item>速度</item>
+	<item>位移</item>	
+	<item>转速</item>
+	<item>预设状况</item>
+	<item>观察类</item>	
+	<item>观察类</item>	
+	<item>观察类</item>	
+</string-array>  
+ <string-array name="exception_msg">
+	<item>无效</item>
+	<item>正常</item>
+	<item>警告</item>	
+	<item>危险</item>
+	<item>失效</item>
+	<item>异常</item>	
+	<item>一般</item>
+	<item>轻微</item>
+	<item>严重</item>	
+	<item>紧急</item>	
+</string-array>  
 </resources>

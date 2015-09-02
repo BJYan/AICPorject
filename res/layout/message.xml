@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+  
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/msg_linear1"
+        android:layout_marginTop="30dp">"
+        
+		 <RadioGroup
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal" 
+		        android:id="@+id/meg_group"		        
+		        android:gravity="center"
+		        android:padding="1dp">
+		        <RadioButton
+		            android:id="@+id/msg_radioButton1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 		            
+		            android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/msg_today"
+		            android:textSize="@dimen/top_item_text_size"/>
+		
+		        <RadioButton
+		            android:id="@+id/msg_radioButton2"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		            android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/msg_all"
+		            android:textSize="@dimen/top_item_text_size"/>
+		          
+		
+		        <RadioButton
+		            android:id="@+id/msg_radioButton3"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		           android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/msg_unread"
+		            android:checked="true"
+		            android:textSize="@dimen/top_item_text_size"/>
+		            
+		</RadioGroup> 
+		  </LinearLayout>
+    <ListView
+        android:id="@+id/msg_listView1"
+        android:layout_width="match_parent"
+        android:layout_height="283dp" >
+    </ListView>
+
+    
+  
+
+</LinearLayout>

@@ -3,6 +3,8 @@ package com.aic.aicdetactor.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import com.aic.aicdetactor.comm.Bluetooth;
@@ -34,7 +36,9 @@ public class BluetoothService {
     private static final String NAME = "Bluetooth";
 
     // Unique UUID for this application
-    private static final UUID MY_UUID = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    //"fa87c0d0-afac-11de-8a39-0800200c9a66"
+    static String uuid = "00001101-0000-1000-8000-00805F9B34FB";
+    private static final UUID MY_UUID = UUID.fromString(uuid);
 
     // Member fields
     private BluetoothAdapter mAdapter = null;
@@ -99,8 +103,14 @@ public class BluetoothService {
 
         // Start the thread to listen on a BluetoothServerSocket
         if (mAcceptThread == null) {
-            mAcceptThread = new AcceptThread();
-            mAcceptThread.start();
+            try {
+				mAcceptThread = new AcceptThread();
+				mAcceptThread.start();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+           
         }
         setState(STATE_LISTEN);
     }
@@ -228,7 +238,7 @@ public class BluetoothService {
         mHandler.sendMessage(msg);
     }
 
-    /**
+    /**蓝牙服务端的程序
      * This thread runs while listening for incoming connections. It behaves
      * like a server-side client. It runs until a connection is accepted
      * (or until cancelled).
@@ -238,15 +248,23 @@ public class BluetoothService {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
 
-        public AcceptThread() {
+        public AcceptThread() throws IOException {
             BluetoothServerSocket tmp = null;
 
             // Create a new listening server socket
             try {
             	//开启监听
                 tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-            } catch (IOException e) {
-                Log.e(TAG, "listen() failed", e);
+//            	 Method listenMethod =        mAdapter.getClass().getMethod("listenUsingRfcommOn",
+//            			   new   Class[]{int.class});
+//            	 tmp = ( BluetoothServerSocket) listenMethod.invoke(mAdapter,                                                  Integer.valueOf( 1));
+                 
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             mmServerSocket = tmp;
            
@@ -262,7 +280,7 @@ public class BluetoothService {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
-                    socket = mmServerSocket.accept(1000);
+                    socket = mmServerSocket.accept();
                 } catch (IOException e) {
                     Log.e(TAG, "accept() failed", e);
                     break;
@@ -334,7 +352,20 @@ public class BluetoothService {
             setName("ConnectThread");
 
             // Always cancel discovery because it will slow down a connection
-            
+            try {    
+                // 连接建立之前的先配对    
+                if (mmDevice.getBondState() == BluetoothDevice.BOND_NONE) {    
+                    Method creMethod = BluetoothDevice.class    
+                            .getMethod("createBond");    
+                    Log.e(TAG, "开始配对");    
+                    creMethod.invoke(mmDevice);    
+                } else {    
+                }    
+            } catch (Exception e) {    
+                // TODO: handle exception    
+                //DisplayMessage("无法配对！");    
+                e.printStackTrace();    
+            }    
             if(mAdapter.isDiscovering()){
             	mAdapter.cancelDiscovery();
             }

@@ -49,6 +49,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:ems="10" 
+	        android:drawableLeft="@drawable/user"
 	        android:text="@string/default_username"/>
 	</LinearLayout>
 	 <LinearLayout
@@ -71,6 +72,7 @@
 	        android:layout_height="wrap_content"
 	        android:text="@string/default_password"
 	        android:ems="10"
+	        android:drawableLeft="@drawable/pwd"
 	        android:inputType="textPassword" />
 		</LinearLayout>
 		 <LinearLayout

@@ -100,9 +100,10 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	
 	private JSONArray mJSONArray = null;
 	private String mDeviceNameStr= null;
-	private String mDeviceQueryNameStr = null;
+	
 	private String mDeviceItemDefStr = null;
 	private boolean []mBValue = null;
+	private myApplication app = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -119,11 +120,11 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
-		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+//		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.deviceitem_activity_ex);
-
+        app = (myApplication) getApplication();
 		Intent intent = getIntent();
 		mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
 		mStationIndex = intent.getExtras().getInt(CommonDef.station_info.LISTVIEW_ITEM_INDEX);
@@ -136,10 +137,10 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 Log.d(TAG,"routeName is "+ routeNameStr);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
-		((myApplication) getApplication()).gRouteName =  oneCatalog;
-		((myApplication) getApplication()).gStationName =  stationName;
-		((myApplication) getApplication()).gDeviceName =  mDeviceNameStr;
-
+		app.gRouteName =  oneCatalog;
+		app.gStationName =  stationName;
+		app.gDeviceName =  mDeviceNameStr;
+		app.mDeviceIndex = mDeviceIndex;
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
 		RouteNameTextView.setText(""+(mDeviceIndex+1) +" >>"+routeNameStr+">>"+stationName+">>"+mDeviceNameStr);
 
@@ -167,7 +168,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		mListViewAdapter = new SimpleAdapter(this, mMapList,
 				R.layout.checkunit, new String[] { 
 				CommonDef.check_item_info.INDEX, //索引
-				CommonDef.check_item_info.UNIT_NAME,//巡检项名称
+				CommonDef.check_item_info.NAME,//巡检项名称
 				CommonDef.check_item_info.VALUE,//巡检结果
 				CommonDef.check_item_info.DEADLINE, //巡检最近时间
 				CommonDef.check_item_info.NAME 
@@ -184,33 +185,19 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				bListViewVisible = false;
 				
 				//获取partItemData中的巡检数据种类
-				/**
-				 * 4、5相同
-				 * 2、7
-				 * 8个字节，不能为空。共9种数据类型，分别为：
-=”00000002” 表示测量温度
-=“00000003” 表示记录项，用户即可从上位机事先编好的多个选项里选择一项，也可编辑一些新的信息，项与项之间用“/”隔开。另外每项字符串末尾有额外“0”或“1”单字节控制信息，“0”代表正常，“1”代表“异常”，如：“正常0/微亏1/严亏1”，巡检仪界面上只会显示“正常/微亏/严亏”，如用户选择了“正常”，上传的巡检项末尾会添加“0”，表示设备正常，如选择了“微亏”或“严亏”，上传的巡检项末尾会添加“1”，表示设备异常。
-=“00000004” 表示测量加速度
-=“00000005” 表示测量速度
-=“00000006” 表示测量位移
-=“00000007” 表示测量转速
-=“00000008” 表示预设状况项，用户即从上位机事先编好的多个选项里选择多项，也可编辑。如从编辑好的项中选择或编辑选择项，上传的巡检项末尾会添加“1”，表示异常；如用户输入 “正常”字符串，上传的巡检项末尾会添加“0”，表示正常。
-=“00000009” 表示图片
-=“00000010” 表示振动矢量波形
-
-				 */
+				
 				mCheckIndex = arg2;
 				// TODO Auto-generated method stub
 				 HashMap<String,String>
 				 map = (HashMap<String,String>)mListView.getItemAtPosition(mCheckIndex);
 				 mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
-				 mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+				// mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 				 mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
 				 Log.d(TAG,"partitemdata data type =" +mCheckUnit_DataType);
 				// needVisible();
 				 
-				 ((myApplication) getApplication()).mPartItemName = mCheckItemNameStr;
-				 ((myApplication) getApplication()).mPartItemIndex = arg2;
+				 app.mPartItemName = mCheckItemNameStr;
+				 app.mPartItemIndex = arg2;
 				 Intent intent = new Intent();
 				// intent.putExtra(CommonDef.check_item_info.INDEX, arg2);
 				 intent.putExtra(CommonDef.check_item_info.DATA_TYPE, mCheckUnit_DataType);
@@ -247,7 +234,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		mSpinner = (Spinner) findViewById(R.id.spinner1);
 		mItemDefTextView = (TextView)findViewById(R.id.status);
 		initSpinnerData();
-		if(bSpinnerVisible){		
+		if(spinnerList!= null &&bSpinnerVisible){		
 			spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,spinnerList);    
 	        //第三步：为适配器设置下拉列表下拉时的菜单样式。    
 			spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
@@ -318,18 +305,18 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 	}
 
 	void initSpinnerData(){
-		try {
-			spinnerList = ((myApplication) getApplication()).getDeviceItemDefList(partItemObject);
-			if(spinnerList.size()<=1){
+		//try {
+			spinnerList = null;//app.getDeviceItemDefList(partItemObject);
+			if(spinnerList!= null &&spinnerList.size()<=1){
 				bSpinnerVisible= false;
 				mSpinner.setVisibility(Spinner.GONE);
 				mItemDefTextView.setVisibility(TextView.VISIBLE);
 				mItemDefTextView.setText(spinnerList.get(0));
 			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if(spinnerAdapter != null){
 		spinnerAdapter.notifyDataSetChanged();
 		}
@@ -382,14 +369,12 @@ Log.d(TAG,"routeName is "+ routeNameStr);
     */
    void InitDataNeeded(int itemIndex,boolean updateAdapter){
 	   try {
-		   partItemObject = ((myApplication) getApplication()).getPartItemObject(mStationIndex,mDeviceIndex);
+		   partItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
 		   Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
-		   List<Object> deviceItemList = ((myApplication) getApplication()).getDeviceItemList(mStationIndex);
+		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
 		   
 		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
-		   mDeviceQueryNameStr =   ((myApplication) getApplication()).getDeviceQueryNumber(mCurrentDeviceObject);
-		   Log.d(TAG, "mCurrentDeviceObject IS " + mCurrentDeviceObject.toString());
-		   mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
+		   mPartItemSelectedList = app.getPartItem(partItemObject,-1);
 			
 		   if(updateAdapter){
 			   mMapList.clear();
@@ -402,19 +387,19 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   }
 			for (int i = 0; i < mPartItemSelectedList.size(); i++) {
 				Map<String, Object> map = new HashMap<String, Object>();				
-				map.put(CommonDef.check_item_info.UNIT_NAME, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_UNIT_NAME));
+//				map.put(CommonDef.check_item_info.UNIT_NAME, app
+//						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_TURN_NAME));
 				//checkname
-				map.put(CommonDef.check_item_info.NAME, ((myApplication) getApplication())
+				map.put(CommonDef.check_item_info.NAME, app
 						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME));
-				map.put(CommonDef.check_item_info.DATA_TYPE, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_DATA_TYPE_NAME));
+				map.put(CommonDef.check_item_info.DATA_TYPE, app
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
 				
-				map.put(CommonDef.check_item_info.VALUE, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO_NAME));
+				map.put(CommonDef.check_item_info.VALUE, app
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
 				
-				map.put(CommonDef.check_item_info.DEADLINE, ((myApplication) getApplication())
-						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_CHECKED_TIME));
+				map.put(CommonDef.check_item_info.DEADLINE, app
+						.getPartItemCheckUnitName(mPartItemSelectedList.get(i),CommonDef.partItemData_Index.PARTITEM_ADD_END_DATE_20));
 
 				//已检查项的检查数值怎么保存？并显示出来,
 				//已巡检的项的个数统计，暂时由是否有巡检时间来算，如果有的话，即已巡检过了，否则为未巡检。
@@ -501,17 +486,17 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 
 		node.set(AuxiliaryInfoNode.KEY_GUID, SystemUtil.createGUID());	
 
-		node.set(AuxiliaryInfoNode.KEY_TurnNumber, ((myApplication) getApplication()).mTurnNumber);
+		node.set(AuxiliaryInfoNode.KEY_TurnNumber, app.mTurnNumber);
 
-		node.set(AuxiliaryInfoNode.KEY_WorkerNumber, ((myApplication) getApplication()).mWorkerNumber);
+		node.set(AuxiliaryInfoNode.KEY_WorkerNumber, app.mWorkerNumber);
 
-		node.set(AuxiliaryInfoNode.KEY_StartTime, ((myApplication) getApplication()).mTurnStartTime);
+		node.set(AuxiliaryInfoNode.KEY_StartTime, app.mTurnStartTime);
 
-		node.set(AuxiliaryInfoNode.KEY_EndTime, ((myApplication) getApplication()).mTurnEndTime);
-Log.d(TAG,"SaveData() turnNumber is " + ((myApplication) getApplication()).mTurnNumber + ",startTime is "+ ((myApplication) getApplication()).mTurnStartTime
-		+",endTime is "+ ((myApplication) getApplication()).mTurnEndTime);
-		((myApplication) getApplication()).setAuxiliaryNode(mRouteIndex,
-				node.getObject());
+		node.set(AuxiliaryInfoNode.KEY_EndTime, app.mTurnEndTime);
+Log.d(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.mTurnStartTime
+		+",endTime is "+ app.mTurnEndTime);
+//		app.setAuxiliaryNode(mRouteIndex,
+//				node.getObject());
 		
 		JSONObject deviceObject = (JSONObject) mCurrentDeviceObject;
 		deviceObject.put("IsChecked", 1);
@@ -524,7 +509,7 @@ Log.d(TAG,"SaveData() turnNumber is " + ((myApplication) getApplication()).mTurn
 		}else{
 			deviceObject.put("ItemDef", mDeviceItemDefStr);
 		}		
-		((myApplication) getApplication()).SaveData(mRouteIndex,((myApplication) getApplication()).genXJFileName());
+		app.SaveData(mRouteIndex,app.genXJFileName());
 	}
 	String mCheckValue = null;
 	/**
@@ -537,7 +522,7 @@ Log.d(TAG,"SaveData() turnNumber is " + ((myApplication) getApplication()).mTurn
 			Log.d(TAG, "saveCheckedItemNode(),"+json);
 			
 			//添加巡检结果到结果中，便于形成最后的结果。
-			json = ((myApplication) getApplication()).setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+			json = app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
 			Log.d(TAG, "saveCheckedItemNode() result is,"+json);			
 			mJSONArray.put(json);
 			mBValue[mCheckIndex]= true;
@@ -557,14 +542,14 @@ Log.d(TAG,"SaveData() turnNumber is " + ((myApplication) getApplication()).mTurn
 		if(mCheckUnit_DataType  == CommonDef.checkUnit_Type.TEMPERATURE){
 			json = (JSONObject) mPartItemSelectedList.get(index);
 
-			Temperature tmp = ((myApplication) getApplication()).getPartItemTemperatrue(json);
+			Temperature tmp = app.getPartItemTemperatrue(json);
 			mMax_temperature =		tmp.max;
 			mMid_temperature =tmp.mid;
 			mMin_temperature =tmp.min;
 	
 		}
 		mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
-		mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
+		//mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 		Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
 		
 		needVisible();

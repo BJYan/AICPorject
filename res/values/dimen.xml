@@ -7,6 +7,35 @@
 <dimen name="two_button_width">105dp</dimen>
 <dimen name="three_button_width">75dp</dimen>
 <dimen name="left_text_width">40dp</dimen>
+<!-- 页面顶部的选项的字体大小 -->
+<dimen name="top_item_text_size">20sp</dimen>
+<!-- listview 控件里字体的大小 -->
+<dimen name="listview_group_text_size">20sp</dimen>
+<dimen name="listview_group_index_text_size">19sp</dimen>
+<dimen name="listview_children_text_size">18sp</dimen>
+<dimen name="listview_check_status_deadline_text_size">8sp</dimen>
+<!-- 测试项 测试结果在listview里显示的字体大小 -->
+<dimen name="listview_children_value_text_size">22sp</dimen>
+<!-- 导航栏中的路线的字体大小 -->
+<dimen name="navigation_bar_route_text_size">20sp</dimen>
+<!-- 导航栏中的站点的字体大小 -->
+<dimen name="navigation_bar_station_text_size">20sp</dimen>
+<!-- 导航栏中的设备的字体大小 -->
+<dimen name="navigation_bar_device_text_size">20sp</dimen>
 
+<!-- 一般一级字体大小 -->
+<dimen name="normal_one_text_size">18sp</dimen>
+<!-- 一般二级字体大小 -->
+<dimen name="normal_two_text_size">16sp</dimen>
 
+<!-- 页面上字体大小 -->
+<dimen name="normal_text_size">16sp</dimen>
+<!-- 页面上字体大小 -->
+<dimen name="normal_big_text_size">18sp</dimen>
+
+<!-- Button 上字体大小 -->
+<dimen name="button_text_size">20sp</dimen>
+
+<!-- 测试温度字体大小 -->
+<dimen name="temperatrue_text_size">30sp</dimen>
 </resources>

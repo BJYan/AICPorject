@@ -9,8 +9,10 @@ import com.aic.aicdetactor.comm.CommonDef;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class TestSetting {
+	private final String TAG = "luotest";
 	/**
 	 * 
 	 */
@@ -28,8 +30,8 @@ public class TestSetting {
 		SharedPreferences.Editor editor = mSharedPreferences.edit();
 		// 用putString的方法保存数据
 		if (isTest) {
-		editor.putString("file1", "/sdcard/down1.txt");
-		editor.putString("file", "/sdcard/down.txt");
+		editor.putString("file1", "/sdcard/AICNormal.txt");
+		editor.putString("file", "/sdcard/AICNormal.txt");
 		}
 		editor.putBoolean("isTest", isTest);
 		
@@ -46,13 +48,17 @@ public class TestSetting {
 		
 		if(isTest){
 			List<String>list = new ArrayList<String>();
-			File f1 = new File(file1);
-		    if(f1.exists()){
-			list.add(file1);
+			File f1 = new File(file);
+		    if(f1!=null &&f1.exists()){
+			list.add(file);
+			}else{
+				Log.e(TAG, "getTestFile() "+ file+" not exist");
 			}
 		    File f = new File(file1);
-		    if(f.exists()){
+		    if(f!=null &&f.exists()){
 			list.add(file);
+		    }else{
+		    	Log.e(TAG, "getTestFile() "+ file1+" not exist");
 		    }
 			return list;
 		}

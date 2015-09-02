@@ -15,36 +15,57 @@ public class CommonDef {
 
 	//checkItemData 以*隔开的数据编号
 	public class partItemData_Index{
-    //轮次
-    public  final static int PARTITEM_TURN_NAME =0;
-    //部件名
-    public  final static int PARTITEM_UNIT_NAME =1;
+   
     //巡检项目名
-    public  final static int PARTITEM_CHECKPOINT_NAME =2;
+    public  final static int PARTITEM_CHECKPOINT_NAME =0;
+    //巡检项编号
+    public  final static int PARTITEM_CODE =1;
+    //数据类型ID
+    public  final static int PARTITEM_DATA_TYPE_ID =2;
     //巡检数据种类
-    public  final static int PARTITEM_DATA_TYPE_NAME =3;
+    public  final static int PARTITEM_DATA_TYPE =3;
   //测量单位
-    public  final static int PARTITEM_MEASUREMENT_UNIT_NAME =4;
-    //状态标识
-    public  final static int PARTITEM_STATE_MARK_NAME =5;
+    public  final static int PARTITEM_MEASUREMENT_UNIT =4;
+    //启停状态标识控制码
+    public  final static int PARTITEM_START_STOP_STATUS_FLAG =5;
     
     //上限数值
-    public  final static int PARTITEM_MAX_VALUE_NAME =6;
+    public  final static int PARTITEM_MAX_VALUE =6;
     
     //中限数值
-    public  final static int PARTITEM_MIDDLE_VALUE_NAME =7;
+    public  final static int PARTITEM_MIDDLE_VALUE =7;
     
     //下限数值
-    public  final static int PARTITEM_MIN_VALUE_NAME =8;
+    public  final static int PARTITEM_MIN_VALUE =8;
+    //发射率
+    public  final static int PARTITEM_RF_RATE =9;
+    //提示标志
+    public  final static int PARTITEM_TIPS_FLAG =10;
+    //轴数
+    public  final static int PARTITEM_RELAX_COUNT =11;
+    //检查方法，格式：目视/手摸/…,用法选几项(始终为空，APP不用处理)
+    public  final static int PARTITEM_CHECK_METHOD =12;
+   
+    /**额外信息
+     * 不为空。有两个作用：
+	1. 巡检完后的结果值
+	  温度、录入、加速度（有效值）、速度（有效值）、位移（有效值）、转速、观察项里的备注、选择”录入项“里某一项、选择“预设状况”里的一项或多项。	
+	2.图片，音频，振动波形的文件名也放在此项。
+     */
+    public  final static int PARTITEM_ADDITIONAL_INFO =13;
+    //维修状态
+    public  final static int PARTITEM_FIX_STATUS =14; 
     
-    //额外信息
-    //测量结果值、用户录入或选择的字符串、照片或振动波形文件名
-    public  final static int PARTITEM_ADDITIONAL_INFO_NAME =9;    
-  
-    //巡检时间
-    public  final static int PARTITEM_CHECKED_TIME =10;
-    //巡检最终结果，正常还是异常
-    public  final int PARTITEM_LAST_RESULT =11;
+    //第十八项之后 ，是PartItemData上传数据时添加的项目
+    //启停状态 新添加
+    public  final static int PARTITEM_ADD_ITEMDEF_18 =18; 
+    //开始巡检时间 新添加
+    public  final static int PARTITEM_ADD_START_DATE_19 =19; 
+    //结束巡检时间  新添加
+    public  final static int PARTITEM_ADD_END_DATE_20 =20; 
+    //总耗时	添加	整个巡检项耗时，单位S  新添加
+    public  final static int PARTITEM_ADD_TIME_DIFF_21 =21; 
+   
     
 	}
     
@@ -52,37 +73,48 @@ public class CommonDef {
 	public class checkUnit_Type{
 	
 	/**
-	 * =”00000002” 表示测量温度 =“00000003”
-	 * 表示记录项，用户即可从上位机事先编好的多个选项里选择一项，也可编辑一些新的信息，项与项之间用
-	 * “/”隔开。另外每项字符串末尾有额外“0”或“1”单字节控制信息
-	 * ，“0”代表正常，“1”代表“异常”，如：“正常0/微亏1/严亏1”，巡检仪界面上只会显示
-	 * “正常/微亏/严亏”，如用户选择了“正常”，上传的巡检项末尾会添加
-	 * “0”，表示设备正常，如选择了“微亏”或“严亏”，上传的巡检项末尾会添加“1”，表示设备异常。 =“00000004” 表示测量加速度
-	 * =“00000005” 表示测量速度 =“00000006” 表示测量位移 =“00000007” 表示测量转速 =“00000008”
-	 * 表示预设状况项
-	 * ，用户即从上位机事先编好的多个选项里选择多项，也可编辑。如从编辑好的项中选择或编辑选择项，上传的巡检项末尾会添加“1”，表示异常；如用户输入
-	 * “正常”字符串，上传的巡检项末尾会添加“0”，表示正常。 =“00000009” 表示图片 =“00000010” 表示振动矢量波形
+	两字节，不能空，总共有12种类型，分别为：
+		="00", 表示温度。		
+		="01", 录入项， 		
+		="02", 测量，只能输入数字，小数点，正负号，如压力、流量等。		
+		="03"，表示测量加速度		
+		="04"，表示测量速度		
+		="05"，表示测量位移		
+		="06"，表示测量转速		
+		="07"，表示预设状况项， 		
+		="08"，表示图片		
+		="09"，表示音频		
+		="10"，表示观察
+		在APP端自动启动照相、音频、备注。		
+		="11",  振动波形		
+		注：8,9,11类型在下载的JSON格式里不存在
 	 */
 
 	// 温度
-	public static final int TEMPERATURE = 2;
-	// 记录
-	public static final int RECORD = 3;
+	public static final int TEMPERATURE = 0;
+	// 录入项
+	public static final int RECORD = 1;
+	// 测量，只能输入数字，小数点，正负号，如压力、流量等。	
+	public static final int MEASUREMENT = 2;	
 	// 加速度
-	public static final int ACCELERATION = 4;
+	public static final int ACCELERATION = 3;
 	// 速度
-	public static final int SPEED = 5;
+	public static final int SPEED = 4;
 	// 位移
-	public static final int DISPLACEMENT = 6;
+	public static final int DISPLACEMENT = 5;
 	// 转速
-	public static final int ROTATIONAL_SPEED = 7;
+	public static final int ROTATIONAL_SPEED = 6;
 	// 预设状况项
-	public static final int DEFAULT_CONDITION = 8;
+	public static final int DEFAULT_CONDITION = 7;
 	// 图片
-	public static final int PICTURE = 9;
+	public static final int PICTURE = 8;
+	// 音频
+	public static final int AUDIO = 9;
+	// 观察
+	public static final int OBSERVER = 10;
 	// 振动矢量波形
 	// Vibration vector wave
-	public static final int VIBRATION_VECTOR_WAVE = 10;
+	public static final int VIBRATION_VECTOR_WAVE = 11;
 	}
 	/**
 	 * 
@@ -144,7 +176,7 @@ public class CommonDef {
 
 	public class check_item_info {
 		public static final String NAME = "CheckItem_Name";
-		public static final String UNIT_NAME = "CheckUnit_Name";
+		//public static final String UNIT_NAME = "CheckUnit_Name";
 		public static final String DATA_TYPE = "CheckItem_Type";
 		public static final String VALUE = "CheckItem_Value";
 		public static final String INDEX = "CheckItem_Index";
@@ -159,9 +191,25 @@ public class CommonDef {
 		public static final String ITEM_COUNTS= "counts";
 	}
 	
+	public class PartItemData_Shered_info {
+		public static final String Time = "shered_Time";
+		public static final String Content = "Shered_Content";
+	}
+	
+	
+	public class Temporary_Check_info {
+		public static final String type = "type";
+		public static final String past_time = "past_tiem";
+		public static final String receive_date = "receive_date";
+		public static final String title = "title";
+	}
+	
+	
+	
 	public static final int  FILE_TYPE_PICTRUE  =0;
 	public static final int  FILE_TYPE_AUDIO  =1;
 	public static final int  FILE_TYPE_TEXTRECORD  =2;
 	public static final int  FILE_TYPE_WORKER  =3;
-
+	public static final String AUDIO_PATH= "audioPath";
+	public static final String TEXT_RECORD_PATH= "textPath";
 }

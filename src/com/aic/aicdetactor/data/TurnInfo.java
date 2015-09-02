@@ -1,12 +1,10 @@
 package com.aic.aicdetactor.data;
 
 public class TurnInfo{
-	public String Number = null;
-	public String StartTime = null;
-	public String EndTime = null;
-	public String DutyNumber = null;
-	public String PlanGUID = null;
-	public TurnInfo(){
-		
-	}
+	public   String End_Time = "";
+	public   String Name = "";
+	public   String Number = "";
+	public   String Start_Time ="";
+	public   String T_Line_Guid ="";
+	public   String T_Line_Content_Guid ="";	
 }

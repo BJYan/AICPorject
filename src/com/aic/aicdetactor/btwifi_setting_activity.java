@@ -5,15 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
-
-
 import com.aic.aicdetactor.comm.Bluetooth;
 import com.aic.aicdetactor.service.BluetoothService;
 
@@ -262,25 +253,26 @@ public class btwifi_setting_activity  extends Activity  implements OnClickListen
 				// 得到蓝牙设备
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// 如果是已配对的则略过，已得到显示，其余的在添加到列表中进行显示
+				// 如果是已配对的则略过，已得到显示，其余的在添加到列表中进行显�?
 				Map<String, Object> map = new HashMap<String, Object>();
  				map.put(mBtName, device.getName());
 				map.put(mBtAddress, device.getAddress());
 				Log.d(TAG,"UUID is "+	device.getUuids());
-//				if(mList_bt.size()>0){
-//				for(int i =0;i<mList_bt.size();i++){
-//					Map<String, Object> temp = mList_bt.get(i);
-//					if(temp.get(mBtName).equals(device.getName())
-//							&& temp.get(mBtAddress).equals(device.getAddress())){
-//					}else{
-//						mList_bt.add(map); 				
-//						mAdapter_bt.notifyDataSetChanged();
-//					}
-//				}	
-//				}else{
-//					mList_bt.add(map); 				
-//					mAdapter_bt.notifyDataSetChanged();
-//				}	
+				if(mList_bt.size()>0){
+				for(int i =0;i<mList_bt.size();i++){
+					Map<String, Object> temp = mList_bt.get(i);
+					if(temp.get(mBtName).equals(device.getName())
+							&& temp.get(mBtAddress).equals(device.getAddress())){
+					}else{
+						mList_bt.add(map); 				
+						mAdapter_bt.notifyDataSetChanged();
+					}
+				}	
+				}else{
+					mList_bt.add(map); 				
+					mAdapter_bt.notifyDataSetChanged();
+				}	
+			
 				mList_bt.add(map); 				
 				mAdapter_bt.notifyDataSetChanged();
 				mListView_bt.setVisibility(View.VISIBLE);

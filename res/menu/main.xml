@@ -1,9 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_modify_pwd"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:title="@string/menu_modify_pwd"/>
+     <item
+        android:id="@+id/action_changeWorker"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_change_worker"/>
+      <item
+        android:id="@+id/action_more"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_more"/>
 
 </menu>

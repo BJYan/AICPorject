@@ -6,5 +6,6 @@
     -->
     <dimen name="activity_horizontal_margin">128dp</dimen>
     <dimen name="toright">20dp</dimen>
-
+<!-- 页面顶部的选项的字体大小 -->
+<dimen name="top_item_text_size">25sp</dimen>
 </resources>

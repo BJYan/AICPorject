@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -25,6 +26,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.StationListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
@@ -41,11 +43,11 @@ public class StationActivity extends Activity {
 	private boolean isTestInterface = true;
 	//
 	private int mRouteIndex =0;
-	private ListView mListView;
+	private ExpandableListView mListView;
 	private boolean isUseWivewPager =false;
 	String TAG = "luotest";
 	private String  routeName = null;
-	private SimpleAdapter mListViewAdapter = null;
+	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -59,9 +61,9 @@ public class StationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
-		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+//		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 			setContentView(R.layout.station_activity);
 			
 			
@@ -88,52 +90,53 @@ public class StationActivity extends Activity {
 			});
 
 		
-			mListView = (ListView) findViewById(R.id.listView);
+			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			
 			initListViewData();
-			mListViewAdapter = new SimpleAdapter(this, mListDatas,
-					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
-					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
-							R.id.index, R.id.pathname, R.id.deadtime,
-							R.id.status, R.id.progress });
+//			mListViewAdapter = new SimpleAdapter(this, mListDatas,
+//					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
+//					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
+//							R.id.index, R.id.pathname, R.id.deadtime,
+//							R.id.status, R.id.progress });
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
 			mListView.setAdapter(mListViewAdapter);
-			mListView.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					// TODO Auto-generated method stub
-					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-							.getItemAtPosition(arg2));
-					Log.d(TAG,
-							"stationActivit StationName is "
-									+ (String) mapItem.get(CommonDef.station_info.NAME));
-					
-					
-					 
-					 ((myApplication) getApplication()).gStationName = routeName ;
-					 ((myApplication) getApplication()).mStationIndex = arg2;
-					 
-					 
-					 
-					Intent intent = new Intent();
-					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX , mRouteIndex);
-					intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, arg2);
-					intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
-					intent.putExtra(CommonDef.station_info.NAME,
-							(String) mapItem.get(CommonDef.station_info.NAME));
-					intent.putExtra(CommonDef.route_info.NAME, routeName);					
-					intent.setClass(getApplicationContext(),
-							DeviceActivity.class);
-					startActivity(intent);
-				}
-			});
+//			mListView.setOnItemClickListener(new OnItemClickListener() {
+//				@Override
+//				public void onItemClick(AdapterView<?> arg0, View arg1,
+//						int arg2, long arg3) {
+//					// TODO Auto-generated method stub
+//					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
+//							.getItemAtPosition(arg2));
+//					Log.d(TAG,
+//							"stationActivit StationName is "
+//									+ (String) mapItem.get(CommonDef.station_info.NAME));
+//					
+//					
+//					 
+//					 ((myApplication) getApplication()).gStationName = routeName ;
+//					 ((myApplication) getApplication()).mStationIndex = arg2;
+//					 
+//					 
+//					 
+//					Intent intent = new Intent();
+//					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX , mRouteIndex);
+//					intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, arg2);
+//					intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
+//					intent.putExtra(CommonDef.station_info.NAME,
+//							(String) mapItem.get(CommonDef.station_info.NAME));
+//					intent.putExtra(CommonDef.route_info.NAME, routeName);					
+//					intent.setClass(getApplicationContext(),
+//							DeviceActivity.class);
+//					startActivity(intent);
+//				}
+//			});
 
 			if (isTestInterface) {
 				// //test idinfo ,test pass
 				int myid = 100;
 				String teststr = "AIC8E791D89B";
-				teststr = "AIC8D7D1E09C";
+				teststr = "AIC8C78BD09B";
 				try {
 					myid = ((myApplication) getApplication())
 							.getStationItemIndexByID(0,teststr);

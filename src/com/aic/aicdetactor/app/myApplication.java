@@ -5,21 +5,11 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import android.app.Application;
+import android.content.ContentValues;
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.MyJSONParse;
@@ -27,11 +17,6 @@ import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
-
-import android.app.Application;
-import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 
 public class myApplication extends Application
 {
@@ -58,14 +43,18 @@ public class myApplication extends Application
     public String mPartItemName = "";
     
     private String mStrGuid = null;
+    //登录的工人用户名
     public String mWorkerName = null;
+    //登录用户名对应的密码
     public String mWorkerPwd = null;
+    //登录工人的工号
+    public String mWorkerNumber = null;
     //生成第六个节点用的信息
     public String mStartDate = null;
     public String mTurnNumber = null;
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
-    public String mWorkerNumber = null;    
+      
 	private List<String> mFileList = null;	
 	private MyJSONParse json = null;
 	private RouteDao dao = null;
@@ -90,8 +79,9 @@ public class myApplication extends Application
     public void setUserInfo(String name ,String pwsd){
     	mWorkerName = name;
     	mWorkerPwd = pwsd;
-    	dao = new RouteDao(this.getApplicationContext());
-		mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd);
+    	dao = RouteDao.getInstance(this.getApplicationContext());
+    	ContentValues cv = new ContentValues();
+    	mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd,cv);
 		for (int i = 0; i < mFileList.size(); i++) {
 			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
 			Log.d(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
@@ -142,7 +132,7 @@ public class myApplication extends Application
     public void onCreate()
     {
         super.onCreate(); 
-        json = new MyJSONParse();
+        json = MyJSONParse.getInstance();
     }
     
     /**
@@ -165,6 +155,9 @@ public class myApplication extends Application
     	return 1;
     }
     
+    public int insertUpLoadInfo(Context context){
+    	return json.insertUpLoadInfo(context);
+    }
     /**
      * 获取指定序号的巡检路线对应的站点集合
      * @param routeIndex
@@ -184,7 +177,9 @@ public class myApplication extends Application
     public List<Object> getDeviceItemList(int stationIndex) throws JSONException {
     	return json.getDeviceItem(stationIndex);
     }
-
+    public ContentValues getNeedCheckDeviceItemIndex(int stationIndex){
+    	return json.getNeedCheckDeviceItemIndex(stationIndex);
+    }
     public CheckStatus getNodeCount(Object Object,int nodeType,int RouteIndex) throws JSONException{
     	return json.getNodeCount(Object,nodeType,RouteIndex);
     }
@@ -204,9 +199,7 @@ public class myApplication extends Application
      return 	object;
     }
     
-    public List<String>getDeviceItemDefList(Object deviceItemObject) throws JSONException{
-    	 return 	json.getDeviceItemDefList(deviceItemObject);
-    }
+   
     public String getDeviceItemName(Object object) {
     	return json.getDeviceItemName(object);
     }
@@ -225,9 +218,7 @@ public class myApplication extends Application
     public String getPartItemSubStr(String partItemDataStr,int index){
     	return json.getPartItemSubStr(partItemDataStr,index);
     }
-    public List<Object> getPartItemListByItemDef(Object partItemobject ,int index) throws JSONException{
-    	return json.getPartItemListByItemDef(partItemobject,index);
-    }
+  
     public String getRoutName(int routeIndex) throws JSONException{
     	return json.getRoutName(routeIndex);
     }
@@ -235,18 +226,24 @@ public class myApplication extends Application
     public Temperature getPartItemTemperatrue(Object object){
     	return json.getPartItemTemperatrue(object);
     }   
-    public String getDeviceQueryNumber(Object object){
-    	return json.getDeviceQueryNumber(object);
-    }
+   
     public void SaveData(int RouteIndex,String fileName){
     	 json.SaveData(RouteIndex,fileName);
     }
-    public void setAuxiliaryNode(int RouteIndex,Object object){
-    	 json.setAuxiliaryNode(RouteIndex,object);
-    }
+//    public void setAuxiliaryNode(int RouteIndex,Object object){
+//    	 json.setAuxiliaryNode(RouteIndex,object);
+//    }
     
     public List<TurnInfo>getRouteTurnInfoList() throws JSONException{
     	return json.getTurnInfoItem(mRouteIndex);
+    }
+    /**
+     * 
+     * @param object:PartItem
+     * @return
+     */
+    public List<Object>getPartItem(Object object,int item_def_index){
+    	return json.getPartItem(object,item_def_index);
     }
 
 }

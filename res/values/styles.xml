@@ -1,5 +1,8 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="my_actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#FFFF00</item>
+    </style>
     <!--
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
@@ -10,11 +13,24 @@
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
+        <item name="android:actionMenuTextColor">@color/red</item>
+        <item name="android:actionBarStyle">@style/my_actionbar_style</item>
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
+         
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+
+	 <style name="customDialog" parent="@android:Theme.Dialog">
+	        <item name="android:windowFrame">@null</item>
+	        <item name="android:windowNoTitle">true</item> 
+	        <item name="android:windowIsFloating">true</item>
+	        <item name="android:windowContentOverlay">@null</item>
+	        <item name="android:background">#FFF</item> 
+	        <item name="android:textColor">@color/black</item>
+	        <item name="android:windowBackground">@android:color/transparent</item> 
+	 </style>
 </resources>

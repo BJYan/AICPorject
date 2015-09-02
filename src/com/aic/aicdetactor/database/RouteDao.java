@@ -3,143 +3,123 @@ package com.aic.aicdetactor.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.aic.aicdetactor.data.MyJSONParse;
-import com.aic.aicdetactor.data.Route;
-
-
-
-
-
-
-
-
-import com.aic.aicdetactor.data.TurnInfo;
-import com.aic.aicdetactor.data.WorkerInfo;
-import com.aic.aicdetactor.database.DBHelper.SourceTable;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.aic.aicdetactor.data.MyJSONParse;
+import com.aic.aicdetactor.data.OrganizationInfo;
+import com.aic.aicdetactor.data.RoutePeroid;
+import com.aic.aicdetactor.data.T_Route;
+import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.data.WorkerInfo;
+import com.aic.aicdetactor.data.upLoadInfo;
+import com.aic.aicdetactor.database.DBHelper.SourceTable;
+
+
 public class RouteDao {
-	DBHelper helper = null;
+	private final String TAG ="luotest";
+	private DBHelper helper = null;
 	private String RouteTableName = DBHelper.TABLE_SOURCE_FILE;
 	private String WorkerTableName = DBHelper.TABLE_WORKERS;
 	private String TurnTableName = DBHelper.TABLE_TURN;
 	
 	private SQLiteDatabase mDB = null;
 
-	public RouteDao(Context cxt) {
+	private RouteDao(Context cxt) {
 		helper = new DBHelper(cxt);
 		mDB = helper.getWritableDatabase();
 	}
-
+	private static RouteDao singleton = null;
+	public static RouteDao getInstance(Context cxt) {
+		
+			if (singleton == null) {
+				singleton = new RouteDao(cxt);
+			}
+			return singleton;
+	}
 	/**
 	 * 当Activity中调用此构造方法，传入一个版本号时，系统会在下一次调用数据库时调用Helper中的onUpgrade()方法进行更新
 	 * 
 	 * @param cxt
 	 * @param version
 	 */
-	public RouteDao(Context cxt, int version) {
+	private RouteDao(Context cxt, int version) {
 		helper = new DBHelper(cxt, version);
 		mDB = helper.getWritableDatabase();
 	}
 
-	public int insertNewRouteInfo(String fileName, String path) {
-		RouteBean routeBean = new RouteBean();
-		routeBean.mGUID = fileName;
-		routeBean.mPath = path;
-		
-		insertRouteBaseInfo(fileName,path);
-//		insertData(route);
-		return 1;
-	}
-	public void insertRouteBaseInfo(String fileName,String path) {
-		Log.d("luotest", "in insertRouteBaseInfo() " +path);
-		
-		Route info = 	MyJSONParse.getPlanInfo(path);
+	
+	/**
+	 * 根据JSON全路径，解析插入数据库
+	 * @param filePath:JSON的全路径文件
+	 * @return
+	 */
+	public int insertNewRouteInfo(String filePath) {	
+	
+		T_Route info = 	MyJSONParse.getPlanInfo(filePath);
 		info.parseBaseInfo();
 		
-		RouteBean route = new RouteBean();
-		route.mGUID = fileName;
-		route.mPath = path;
-		
-		if (route == null) {
-			return;
-		}
-		Cursor cursor = null;
-		Log.d("testluo", " name is " + route.mGUID + ",path is " + route.mPath);
-		/**
-		 * + "guid varchar(64)," + "jxName varchar(128)," +
-		 * "filePath varchar(128)," + "downTime varchar(24)," +
-		 * "isBeiginChecked BOOLEAN," + "isChecked BOOLEAN," +
-		 * "isuploaded BOOLEAN," + "lastcheckTime varchar(24)," +
-		 * "workerName varchar(128)," + "firstcheckTime varchar(24)," +
-		 * "lastCheckStation varchar(8)," + "lastCheckDeviceIndex varchar(8)," +
-		 * "lastCheckPartItemIndex varchar(8)," + "isReverseCheck BOOLEAN)";
-		 */
+
+		Cursor cursor = null;		
+		//查数据表中是否存在已有的GUID，如果没有的话 ，直接插入
 		cursor = mDB.query(RouteTableName,
 					null,
-					DBHelper.SourceTable.PLANGUID + "=?", new String[] { info.minfo.PlanGuid }, null, null,
+					DBHelper.SourceTable.PLANGUID + "=?", new String[] { info.Guid }, null, null,
 					null);
 		String sql = null;
 		if(cursor== null || cursor.getCount()<1){ 
 		 sql = "insert into "+RouteTableName
-				+" (" + "guid," + "jxName,"
-				+ "filePath," + "downTime," + "isChecked," + "isBeiginChecked,"
-				+ "isuploaded," + "lastcheckTime," + "workerName,"
-				+ "firstcheckTime," + "lastCheckStation,"
-				+ "lastCheckDeviceIndex," + "lastCheckPartItemIndex,"
-				+ "isReverseCheck," 
+				 +"("
+				 + DBHelper.SourceTable.Path+","
 				+ DBHelper.SourceTable.PLANNAME+","
-				+ DBHelper.SourceTable.PLANGUID+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ DBHelper.SourceTable.PLANGUID+")values(?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { route.mGUID, route.mjxName,
-				route.mPath, route.mDownLoadTime, route.mIsChecked,
-				route.mIsBeiginCheck, route.mIsUploaded, route.mLastCheckTime,
-				route.mWorkerName, route.mFirstCheckTime,
-				route.mLastCheckedStationIndex, route.mLastCheckedDeviceIndex,
-				route.mLastCheckedPartItemIndex, route.mIsReverseChecking,
-				info.minfo.PlanName,info.minfo.PlanGuid});
+		mDB.execSQL(sql, new Object[] { info.Path, info.Name,info.Guid});
 		
 		}
-		if(cursor != null){cursor.close();}
+		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入
+		if(cursor != null){
+			cursor.close();
+			}
 		
+		//解析工人信息到数据表中
 		WorkerInfo workerinfo = null;
 		
 		//parse worker information from json txt
 		////////////////////////////////////////////
 		
-		for(int i = 0;i<info.WorkerInfoList.size();i++){
-			workerinfo = (WorkerInfo) info.WorkerInfoList.get(i);
+		for(int i = 0;i<info.mWorkerList.size();i++){
+			workerinfo = (WorkerInfo) info.mWorkerList.get(i);
 			cursor = mDB.query(WorkerTableName,
 					null,
-					DBHelper.Plan_Worker_Table.Number + "=?", new String[] { workerinfo.WorkerNumber }, null, null,
+					DBHelper.Plan_Worker_Table.Number + "=?", new String[] { workerinfo.Number }, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 				 sql = "insert into "+WorkerTableName
-						 +"(" + DBHelper.Plan_Worker_Table.Name+","				 
+						 +"(" 
+						 + DBHelper.Plan_Worker_Table.Name+","				 
+						 + DBHelper.Plan_Worker_Table.Alias_Name+","
+						 + DBHelper.Plan_Worker_Table.Class_Group+","
 						 + DBHelper.Plan_Worker_Table.Number+","
-						 + DBHelper.Plan_Worker_Table.Password+","
-						 + DBHelper.Plan_Worker_Table.IsAdministrator+","
-						 + DBHelper.Plan_Worker_Table.PlanGuid+","
-						 + DBHelper.Plan_Worker_Table.GroupName
-						 +")values(?,?,?,?,?,?)";
+						 + DBHelper.Plan_Worker_Table.T_Line_Content_Guid+","
+						 + DBHelper.Plan_Worker_Table.T_Line_Guid+ ","
+						 + DBHelper.Plan_Worker_Table.T_Organization_Guid +","
+						 + DBHelper.Plan_Worker_Table.Pwd
+						 +")values(?,?,?,?,?,?,?,?)";
 						
 			
 				mDB.execSQL(sql, new Object[] {
-						workerinfo.WorkerName,
-						workerinfo.WorkerNumber,
-						workerinfo.WorkerPwd,
-						workerinfo.isAdministrator,				
-						info.minfo.PlanGuid,
-						workerinfo.GroupName});
+						workerinfo.Name,
+						workerinfo.Alias_Name,
+						workerinfo.Class_Group,								
+						workerinfo.Number,
+						workerinfo.T_Line_Content_Guid,		
+						workerinfo.T_Line_Guid,
+						workerinfo.T_Organization_Guid,
+						"00000000"});
 				}
 			if(cursor != null){cursor.close();}
 		}
@@ -150,69 +130,151 @@ public class RouteDao {
 		
 		//parse turn information from json txt
 		
-		for(int i = 0;i<info.TurnInfoList.size();i++){
-			turninfo = (TurnInfo) info.TurnInfoList.get(i);
+		for(int i = 0;i<info.mTurnList.size();i++){
+			turninfo = (TurnInfo) info.mTurnList.get(i);
 			cursor = mDB.query(TurnTableName,
 					null,
-					DBHelper.Plan_Turn_Table.Number + "=?" + " and "+DBHelper.Plan_Turn_Table.PlanGuid + "=?", 
-					new String[] { turninfo.Number, info.minfo.PlanGuid}, null, null,
+					DBHelper.Plan_Turn_Table.Number + "=?" , 
+					new String[] { turninfo.Number}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 				 sql = "insert into "+TurnTableName
 						 +"(" + DBHelper.Plan_Turn_Table.Number +","				 
-						 + DBHelper.Plan_Turn_Table.StartTime+","
-						 + DBHelper.Plan_Turn_Table.EndTime+","
-						 + DBHelper.Plan_Turn_Table.DutyNumber+","
-						 + DBHelper.Plan_Turn_Table.PlanGuid
-						 +")values(?,?,?,?,?)";
+						 + DBHelper.Plan_Turn_Table.End_Time+","
+						 + DBHelper.Plan_Turn_Table.Name+","
+						 + DBHelper.Plan_Turn_Table.Start_Time+","
+						 + DBHelper.Plan_Turn_Table.T_Line_Guid+","						
+						 + DBHelper.Plan_Turn_Table.T_Line_Content_Guid
+						 +")values(?,?,?,?,?,?)";
 						
 				// SQLiteDatabase db = helper.getWritableDatabase();
 				mDB.execSQL(sql, new Object[] {
 						turninfo.Number,
-						turninfo.StartTime,
-						turninfo.EndTime,
-						turninfo.DutyNumber,				
-						info.minfo.PlanGuid
+						turninfo.End_Time,
+						turninfo.Name,
+						turninfo.Start_Time,	
+						turninfo.T_Line_Guid,		
+						turninfo.T_Line_Content_Guid
 						});
 				}
 			if(cursor != null){cursor.close();}
 		}
 		
-	}
-
-	
-
-	// 插入操作
-	public void insertData(RouteBean route) {
-		Log.d("luotest", "in insertData");
-		if (route == null) {
-			return;
+		
+			
+		{
+			Log.d(TAG," info.mOrganizationInfo.CorporationName = "+info.mOrganizationInfo.CorporationName);
+			////insert organization	
+			cursor = mDB.query(DBHelper.TABLE_T_Organization_CorporationName,
+					null,
+					DBHelper.Organization_CorporationName_Table.CorporationName + "=?" , 
+					new String[] { info.mOrganizationInfo.CorporationName}, null, null,
+					null);
+			if(cursor== null || cursor.getCount()<1){ 
+			 sql = "insert into "
+			+DBHelper.TABLE_T_Organization_CorporationName
+			+"("
+			+ DBHelper.Organization_CorporationName_Table.CorporationName 
+			+")values(?)";					
+			
+			mDB.execSQL(sql, new Object[] {
+					info.mOrganizationInfo.CorporationName
+					});
+			}
+			if(cursor != null){cursor.close();}
+			
+			//GroupName
+			cursor = mDB.query(DBHelper.TABLE_T_Organization_GroupName,
+					null,
+					DBHelper.Organization_GroupName_Table.GroupName + "=?" , 
+					new String[] {info.mOrganizationInfo.GroupName}, null, null,
+					null);
+			if(cursor== null || cursor.getCount()<1){ 
+			 sql = "insert into "
+			+DBHelper.TABLE_T_Organization_GroupName
+			+"("
+			+ DBHelper.Organization_GroupName_Table.GroupName 
+			+")values(?)";					
+			
+			mDB.execSQL(sql, new Object[] {
+					info.mOrganizationInfo.GroupName
+					});
+			}
+			if(cursor != null){cursor.close();}
+			
+			//WorkShopName
+			cursor = mDB.query(DBHelper.TABLE_T_Organization_WorkShopName,
+					null,
+					DBHelper.Organization_WorkShopName_Table.WorkShopName  + "=?" , 
+					new String[] {info.mOrganizationInfo.WorkShopName}, null, null,
+					null);
+			if(cursor== null || cursor.getCount()<1){ 
+			 sql = "insert into "
+			+DBHelper.TABLE_T_Organization_WorkShopName
+			+"("
+			+ DBHelper.Organization_WorkShopName_Table.WorkShopName 
+			+")values(?)";					
+			
+			mDB.execSQL(sql, new Object[] {
+					info.mOrganizationInfo.WorkShopName
+					});
+			}
+			if(cursor != null){cursor.close();}
 		}
-		Log.d("testluo", " name is " + route.mGUID + ",path is " + route.mPath);
-		/**
-		 * + "guid varchar(64)," + "jxName varchar(128)," +
-		 * "filePath varchar(128)," + "downTime varchar(24)," +
-		 * "isBeiginChecked BOOLEAN," + "isChecked BOOLEAN," +
-		 * "isuploaded BOOLEAN," + "lastcheckTime varchar(24)," +
-		 * "workerName varchar(128)," + "firstcheckTime varchar(24)," +
-		 * "lastCheckStation varchar(8)," + "lastCheckDeviceIndex varchar(8)," +
-		 * "lastCheckPartItemIndex varchar(8)," + "isReverseCheck BOOLEAN)";
-		 */
-		String sql = "insert into jxcheck (" + "guid," + "jxName,"
-				+ "filePath," + "downTime," + "isChecked," + "isBeiginChecked,"
-				+ "isuploaded," + "lastcheckTime," + "workerName,"
-				+ "firstcheckTime," + "lastCheckStation,"
-				+ "lastCheckDeviceIndex," + "lastCheckPartItemIndex,"
-				+ "isReverseCheck" + ")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		// SQLiteDatabase db = helper.getWritableDatabase();
-		mDB.execSQL(sql, new Object[] { route.mGUID, route.mjxName,
-				route.mPath, route.mDownLoadTime, route.mIsChecked,
-				route.mIsBeiginCheck, route.mIsUploaded, route.mLastCheckTime,
-				route.mWorkerName, route.mFirstCheckTime,
-				route.mLastCheckedStationIndex, route.mLastCheckedDeviceIndex,
-				route.mLastCheckedPartItemIndex, route.mIsReverseChecking });
+		
+		return 1;
+		
+	}	
+	/**
+	 * 把巡检结果插入数据表中
+	 * @param info
+	 */
+	public  void insertUploadFile(upLoadInfo info){
+		Log.d(TAG, "insertUploadFile() start");
+		String sql = "insert into "
+					+DBHelper.TABLE_CHECKING
+					+"("
+					+ DBHelper.Checking_Table.Base_Point +"," 
+					+ DBHelper.Checking_Table.Class_Group +"," 
+					+ DBHelper.Checking_Table.Date +"," 
+					+ DBHelper.Checking_Table.File_Guid +"," 
+					+ DBHelper.Checking_Table.Is_Updateed +"," 
+					+ DBHelper.Checking_Table.Is_Uploaded +"," 
+					+ DBHelper.Checking_Table.Span +"," 
+					+ DBHelper.Checking_Table.Start_Point +"," 
+					+ DBHelper.Checking_Table.T_Line_Guid +"," 
+					+ DBHelper.Checking_Table.T_Line_Name +"," 					
+					+ DBHelper.Checking_Table.T_Period_Unit_Code +"," 
+					+ DBHelper.Checking_Table.Task_Mode +"," 
+					+ DBHelper.Checking_Table.Turn_Finish_Mode +"," 					
+					+ DBHelper.Checking_Table.Turn_Name +"," 
+					+ DBHelper.Checking_Table.Turn_Number +"," 
+					+ DBHelper.Checking_Table.Worker_Name +"," 					
+					+ DBHelper.Checking_Table.Worker_Number 
+					+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";					
+					
+					mDB.execSQL(sql, new Object[] {
+							info.Base_Point,
+							info.Class_Group,
+							info.Date,
+							info.File_Guid,
+							info.Is_Updateed,
+							info.Is_Uploaded,
+							info.Span,
+							info.Start_Point,
+							info.T_Line_Guid,
+							info.T_Line_Name,
+							info.T_Period_Unit_Code,
+							info.Task_Mode,
+							info.Turn_Finish_Mode,
+							info.Turn_Name,
+							info.Turn_Number,
+							info.Worker_Name,
+							info.Worker_Number
+							});
+					
+					Log.d(TAG, "insertUploadFile() end");
 	}
-
 	// 其它操作
 	// 删除操作
 	public void delete(int id) {
@@ -223,44 +285,74 @@ public class RouteDao {
 	}
 
 	/**
-	 * 修改操作
+	 * 修改工人登录密码，原的密码保持不变
+	 * @param name
+	 * @param pwd
+	 * @param newPwd
 	 */
-	public void update(int id, RouteBean updateRoute) {
-		if (updateRoute == null) {
-			return;
+	public boolean ModifyWorkerPwd(String name,String pwd,String newPwd,ContentValues errorcv){
+		
+		String error = "";
+		boolean bok = true;
+		//first 查找 name  ismodify =1 and newpwd 
+		Cursor cursor = mDB.query(DBHelper.TABLE_WORKERS,
+				null,
+				DBHelper.Plan_Worker_Table.Name  + "=? and " +DBHelper.Plan_Worker_Table.newPwd +"=? and "+DBHelper.Plan_Worker_Table.IsModifyPwd +"=?" , 
+				new String[] {name,pwd,"1"}, null, null,
+				null);
+		if(cursor== null || cursor.getCount()>0){ 
+			String where  =  DBHelper.Plan_Worker_Table.Name+"=? and "+DBHelper.Plan_Worker_Table.newPwd +"=?";
+			String[] whereValue = {name,pwd};
+			
+			ContentValues cv = new ContentValues();			
+			cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
+			
+			mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
+			cursor.close();
+			cursor= null;
+		}else{
+			if(cursor !=null){
+				cursor.close();
+				cursor = null;
+			}
+			
+			cursor = mDB.query(DBHelper.TABLE_WORKERS,
+					null,
+					DBHelper.Plan_Worker_Table.Name  + "=? and " +DBHelper.Plan_Worker_Table.Pwd +"=?  " , 
+					new String[] {name,pwd}, null, null,
+					null);
+			if(cursor== null || cursor.getCount()>0){ 
+				String where  =  DBHelper.Plan_Worker_Table.Name+"=? and "+DBHelper.Plan_Worker_Table.Pwd +"=?";
+				String[] whereValue = {name,pwd};
+				
+				ContentValues cv = new ContentValues();			
+				cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
+				cv.put(DBHelper.Plan_Worker_Table.IsModifyPwd, true);
+				mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
+				cursor.close();
+				cursor= null;
+				}else{
+					errorcv.put("error", "请确认您的用户名及密码");
+					bok = false;
+				}
+			if(cursor !=null)cursor.close();
 		}
-		// SQLiteDatabase db = helper.getWritableDatabase();
-		String where = id + " = ?";
-		String[] whereValue = { Integer.toString(id) };
-
-		ContentValues cv = new ContentValues();
-		cv.put("guid", updateRoute.mGUID);
-		cv.put("jxName", updateRoute.mjxName);
-		cv.put("downTime", updateRoute.mDownLoadTime);
-		cv.put("isChecked", updateRoute.mIsChecked);
-		cv.put("isBeiginChecked", updateRoute.mIsBeiginCheck);
-		cv.put("isuploaded", updateRoute.mIsUploaded);
-		cv.put("lastcheckTime", updateRoute.mLastCheckTime);
-		cv.put("workerName", updateRoute.mWorkerName);
-		cv.put("firstcheckTime", updateRoute.mFirstCheckTime);
-		cv.put("lastCheckStation", updateRoute.mLastCheckedStationIndex);
-		cv.put("lastCheckDeviceIndex", updateRoute.mLastCheckedDeviceIndex);
-		cv.put("lastCheckPartItemIndex", updateRoute.mLastCheckedPartItemIndex);
-		cv.put("isReverseCheck", updateRoute.mIsReverseChecking);
-
-		mDB.update(RouteTableName, cv, where, whereValue);
+		
+		return bok;
+//		{
+//		String where  =  DBHelper.Plan_Worker_Table.Name+"=? and "+DBHelper.Plan_Worker_Table.Pwd +"=?";
+//		String[] whereValue = {name,pwd};
+//		
+//		ContentValues cv = new ContentValues();
+//		cv.put(DBHelper.Plan_Worker_Table.IsModifyPwd, true);
+//		cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
+//		
+//		mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
+//		}
 	}
+	
 
-	// 查询操作
-
-	public Cursor queryLastCheckIndex(String strGUID) {
-		return mDB
-				.query(RouteTableName,
-						new String[] { "lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck,isChecked,isuploaded" },
-						"guid" + "=?", new String[] { strGUID }, null, null,
-						null);
-
-	}
+	
 
 	/**
 	 * 有两种情况 第一种，还没巡检过的 第二种，已经开始巡检了，但还没巡检完毕
@@ -288,7 +380,7 @@ public class RouteDao {
 		Cursor cursor = mDB
 				.query(RouteTableName,
 						null,
-						SourceTable.PATH+ "=?", new String[] { path }, null,
+						SourceTable.Path+ "=?", new String[] { path }, null,
 						null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
@@ -323,7 +415,7 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 		Cursor cur = mDB
 				.query(WorkerTableName,						
 						null,
-						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Password+ "=?", new String[] { name,pwsd }, 
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Number+ "=?", new String[] { name,pwsd }, 
 						null,
 						null, null);
 		if (cur != null) {
@@ -338,89 +430,130 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 		}
 		return guidList;
 }
-	public List<String> queryLogIn(String name,String pwsd) {
-		
-		List<String>guidList = new ArrayList<String>();
-		Cursor cur = mDB
-				.query(WorkerTableName,						
-						null,
-						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Password+ "=?", new String[] { name,pwsd }, 
-						null,
-						null, null);
-		if (cur != null) {
+
+/**
+ * 查询工人信息，如果工人信息正确，调用GetUploadJsonFile 函数，
+ * @param name
+ * @param pwsd
+ * @param cv
+ * @return 工人对应的JSON文件路径
+ */
+	public List<String> queryLogIn(String name, String pwsd, ContentValues cv) {
+		Log.d("luotest", "queryLogIn()  name is" + name + ",pwsd is " + pwsd);
+		List<String> guidList = new ArrayList<String>();
+		String error = "";
+		//查询工人信息
+		Cursor cur = mDB.query(WorkerTableName, null,
+				DBHelper.Plan_Worker_Table.Name + "=?" + " and "
+						+ DBHelper.Plan_Worker_Table.newPwd + "=? and "
+						+ DBHelper.Plan_Worker_Table.IsModifyPwd + "=?",
+				new String[] { name, pwsd, "1" }, null, null, null);
+		if (cur != null && cur.getCount() > 0) {
+			Log.d("luotest",
+					"queryLogIn()  cur != null cur.count =" + cur.getCount());
 			cur.moveToFirst();
-			for(int n=0;n<cur.getCount();n++){
-			String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.PlanGuid));
-			guidList.add(GUID);
-			cur.moveToNext();
-			Log.d("luotest", "search worker table result  GUID is" +GUID);
+			for (int n = 0; n < cur.getCount(); n++) {
+				String GUID = cur
+						.getString(cur
+								.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+				guidList.add(GUID);
+				cur.moveToNext();
+				Log.d("luotest", "queryLogIn()  searvher worker table GUID is"
+						+ GUID);
 			}
+			cur.close();
+			cur = null;
+		} else {
+			if(cur !=null){
+				cur.close();
+				cur = null;
+			}
+			cur = mDB.query(WorkerTableName, null,
+					DBHelper.Plan_Worker_Table.Name + "=?" + " and "
+							+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
+					new String[] { name, pwsd}, null, null, null);
+			if (cur != null && cur.getCount() > 0) {
+				Log.d("luotest",
+						"queryLogIn()  cur != null cur.count ="
+								+ cur.getCount());
+				cur.moveToFirst();
+				for (int n = 0; n < cur.getCount(); n++) {
+					String GUID = cur
+							.getString(cur
+									.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+					guidList.add(GUID);
+					cur.moveToNext();
+					Log.d("luotest",
+							"queryLogIn()  searvher worker table GUID is"
+									+ GUID);
+				}
+				cur.close();
+				cur = null;
+			} else {
+				Log.d("luotest",
+						"queryLogIn() searvher worker table cur is null");
+				error = "没有您的信息，请核实再登录";
+			}
+		}
+
+		if (cur != null) {
 			cur.close();
 		}
 
-		List<String>fileNameList = new ArrayList<String>();
-		
-		for(int k =0 ;k<guidList.size();k++){
-			Log.d("luotest", " 2 sear worker table " +k);
-			Cursor cursor2 = mDB
-					.query(RouteTableName,						
-							new String[]{DBHelper.SourceTable.PATH},
-							DBHelper.SourceTable.PLANGUID+ "=?" , new String[] { guidList.get(k) }, 
-							null,
-							null,
-							null);
-				if (cursor2 != null) {
-					cursor2.moveToFirst();
-					for(int i=0;i<cursor2.getCount();i++){
-						String path =	cursor2.getString(0);				
+		List<String> fileNameList = new ArrayList<String>();
+
+		for (int k = 0; k < guidList.size(); k++) {
+			Log.d("luotest", " queryLogIn() search worker table " + k);
+			Cursor cursor2 = mDB.query(RouteTableName,
+					new String[] { DBHelper.SourceTable.Path },
+					DBHelper.SourceTable.PLANGUID + "=?",
+					new String[] { guidList.get(k) }, null, null, null);
+			if (cursor2 != null && cursor2.getCount() > 0) {
+				cursor2.moveToFirst();
+				for (int i = 0; i < cursor2.getCount(); i++) {
+					String path = cursor2.getString(0);
 					fileNameList.add(path);
 					cursor2.moveToNext();
-					Log.d("luotest", " search route table  result path is " +path);
-					}
-					cursor2.close();
+					Log.d("luotest",
+							" queryLogIn() search route table  result path is "
+									+ path);
 				}
-		}
+				cursor2.close();
+				cursor2 = null;
+			} else {
+				Log.d("luotest",
+						" queryLogIn() search route table cursor2 is null");
+				error = "没有您对应的巡检任务";
+			}
 
-		
+			if (cursor2 != null) {
+				cursor2.close();
+			}
+		}
+		Log.d("luotest", "queryLogIn() end  error=" + error);
+		cv.put("error", error);
 		return fileNameList;
 	}
 	
-	public List<Route> getRouteInfoByFilePath(List<String >filelist) {
+	/**
+	 * 根据传入的文件路径 解析路线信息
+	 * @param filelist
+	 * @return
+	 */
+	public List<T_Route> getRouteInfoByFilePath(List<String >filelist) {
 		if(filelist ==null) return null;
 		
-		List<Route> list = new ArrayList<Route>();
+		List<T_Route> list = new ArrayList<T_Route>();
 		for (int n = 0; n < filelist.size(); n++) {
 			Cursor cursor = queryRouteInfoByPath(filelist.get(n));
 			if (cursor != null) {
 				cursor.moveToFirst();
 				for (int i = 0; i < cursor.getCount(); i++) {
-					Route info = new Route();
+					T_Route info = new T_Route();
 
-					info.mIsReverseCheck = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
-					info.mDeviceIndex = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.LASTCHECKDEVICE_INDEX)));
-					info.mIsBeiginChecked = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.ISBEIGINCHECKED)));
-					info.mIsChecked = Integer.parseInt(cursor.getString(cursor
-							.getColumnIndex(DBHelper.SourceTable.ISCHECKED)));
-					info.mIsReverseCheck = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
-					info.mPartItemIndex = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.LASTCHECKPARTITEM_INDEX)));
-					info.mRoutName = cursor.getString(cursor
-							.getColumnIndex(DBHelper.SourceTable.JXNAME));
-					info.mStationIndex = Integer
-							.parseInt(cursor.getString(cursor
-									.getColumnIndex(DBHelper.SourceTable.LASTCHECKSTATION)));
-					int k = cursor.getColumnIndex(DBHelper.SourceTable.PATH);
-					Log.d("luotest", "k = " + k);
-					info.mFileName = cursor.getString(k);
+					info.Guid =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+					info.Name =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+					info.Path =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.Path));
 					list.add(info);
 					cursor.moveToNext();
 				}
@@ -434,34 +567,21 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 	}
 
 	
-	public List<Route> getNoCheckFinishRouteInfo() {
-		List<Route> list = new ArrayList<Route>();
+	public List<T_Route> getNoCheckFinishRouteInfo() {
+		List<T_Route> list = new ArrayList<T_Route>();
 		Cursor cursor = queryNotFinishRouteInfo();
 		if (cursor != null) {
 			cursor.moveToFirst();
 			for (int i = 0; i < cursor.getCount(); i++) {
-				Route info = new Route();
+				T_Route info = new T_Route();
 
-				info.mIsReverseCheck = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
-				info.mDeviceIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.LASTCHECKDEVICE_INDEX)));
-				info.mIsBeiginChecked = Integer.parseInt(cursor
+				info.Name = cursor.getString(cursor
+						.getColumnIndex(DBHelper.SourceTable.Path));
+				info.Guid = cursor.getString(cursor
+						.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+				info.Name = cursor
 						.getString(cursor
-								.getColumnIndex(DBHelper.SourceTable.ISBEIGINCHECKED)));
-				info.mIsChecked = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.ISCHECKED)));
-				info.mIsReverseCheck = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.ISREVERSE_CHECK)));
-				info.mPartItemIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.LASTCHECKPARTITEM_INDEX)));
-				info.mRoutName = cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.JXNAME));
-				info.mStationIndex = Integer.parseInt(cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.LASTCHECKSTATION)));
-				int k = cursor.getColumnIndex(DBHelper.SourceTable.PATH);
-				Log.d("luotest", "k = " + k);
-				info.mFileName = cursor.getString(k);
+								.getColumnIndex(DBHelper.SourceTable.PLANNAME));
 				list.add(info);
 				cursor.moveToNext();
 			}
@@ -473,9 +593,13 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 	public int getCount() {
 		int count = 0;
 		Cursor cursor = mDB
-				.query(RouteTableName,
-						//new String[] { "guid,jxName,downTime,isChecked,isBeiginChecked,isuploaded,lastcheckTime,workerName,firstcheckTime,lastCheckStation,lastCheckDeviceIndex,lastCheckPartItemIndex,isReverseCheck" },
-						null,null, null, null, null, null);
+				.query(RouteTableName,						
+						null,
+						null, 
+						null,
+						null, 
+						null, 
+						null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 			count = cursor.getCount();
@@ -486,5 +610,17 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 	public void updateRouteInfoList() {
 
 	}
+	/**
+	 * （1）	JSON周期数组来自表T_Line_Original_Json
+（2）	当前APP时间—调用函数那一刻APP时间
+（3）	T_Line_Guid来自T_Line_Original_Json
+（4）	m_CurPeriod 机构数组，返回参数、
+（5）	m_FileName –巡检文件名，返回参数
 
+	 * @return
+	 */
+	boolean GetUploadJsonFile(Object object, String date, String filePath,RoutePeroid m_CurPeriod,ContentValues cv){
+		
+		return true;
+	}
 }

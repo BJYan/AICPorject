@@ -9,6 +9,13 @@ import java.util.Map;
 
 
 
+
+
+
+
+
+
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -22,15 +29,24 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+
+
+
+
+
+
+
 
 
 
@@ -43,6 +59,8 @@ import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.util.SystemUtil;
 
 
 public class Vibrate_fragment extends Fragment  implements OnButtonListener{
@@ -61,29 +79,27 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	private TextView mZTextView  = null;
 	private TextView mTimeTextView  = null;
 	private TextView mColorTextView  = null;
+	private TextView mDeviceNameTextView = null;
 	private String TAG = "luotest";
-	
-	//public static void newInstance(int routeIndex,int stationIndex,int deviceIndex,int partItemIndex){
-//		Vibrate_fragment frag = new Vibrate_fragment();
-//		Bundle args = new Bundle();
-//		args.putInt("routeIndex", routeIndex);
-//		args.putInt("stationIndex", stationIndex);
-//		args.putInt("deviceIndex", deviceIndex);
-//		args.putInt("partItemIndex", partItemIndex);
-//		frag.setArguments(args);
-//	}
+	private ImageView mHistoryImageView = null;
+	String parStr = null;
+	private int mZhouCounts = 0;
+	private LinearLayout MYLinear = null;
+	private LinearLayout MZLinear = null;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
 		// TODO Auto-generated method stub
-		
+		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
+		mZhouCounts =getArguments().getInt(KEY.KEY_ZHOU_COUNTS);
 		mMapList = new ArrayList<Map<String, Object>>();
 		//初始化ListVew 数据项
 		String [] arraryStr = new String[]{this.getString(R.string.electric_device_parameters),
 				this.getString(R.string.electric_device_spectrum)};
 			for (int i = 0; i < arraryStr.length; i++) {
 				Map<String, Object> map = new HashMap<String, Object>();				
-				map.put(CommonDef.check_item_info.UNIT_NAME,arraryStr[i] );								
+				map.put(CommonDef.check_item_info.NAME,arraryStr[i] );								
 				map.put(CommonDef.check_item_info.DEADLINE, "2015-06-20 10:00");
 
 				//已检查项的检查数值怎么保存？并显示出来
@@ -94,8 +110,8 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 			super.onCreate(savedInstanceState);
 	}
  
-	public Vibrate_fragment(int index){
-		mIndex = index;
+	public Vibrate_fragment(){
+		mIndex = 0;
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,7 +123,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 		mListView = (ListView)view.findViewById(R.id.listView1);
 		mListViewAdapter = new SimpleAdapter(this.getActivity().getApplicationContext(), mMapList,
 				R.layout.checkunit, new String[] { 			
-				CommonDef.check_item_info.UNIT_NAME,//巡检项名称		
+				CommonDef.check_item_info.NAME,//巡检项名称		
 				CommonDef.check_item_info.DEADLINE, //巡检最近时间			
 				}, new int[] {				
 						R.id.pathname,				
@@ -141,10 +157,24 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 		mResultTipStr = (TextView)view.findViewById(R.id.textiew1);
 		
 		mXTextView = (TextView)view.findViewById(R.id.x_value);
-		
+		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
+		mDeviceNameTextView.setText(parStr);
 		mYTextView = (TextView)view.findViewById(R.id.y_value);
 		mZTextView = (TextView)view.findViewById(R.id.z_value);
 		mTimeTextView = (TextView)view.findViewById(R.id.time_value);
+		MYLinear = (LinearLayout)view.findViewById(R.id.y_linear);
+		MZLinear = (LinearLayout)view.findViewById(R.id.z_linear);
+		if(mZhouCounts==0){
+			MYLinear.setVisibility(View.GONE);
+			
+		}
+		if(mZhouCounts==1){
+			MYLinear.setVisibility(View.GONE);
+			MZLinear.setVisibility(View.GONE);
+		}
+		if(mZhouCounts==2){
+			MZLinear.setVisibility(View.GONE);	
+		}
 		mColorTextView = (TextView)view.findViewById(R.id.colordiscrip);
 		
 		return view;
@@ -190,7 +220,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	  @Override
 		public void onStart() {
 			// TODO Auto-generated method stub
-		  genRandomXYZ();
+		  
 		  displayPic(null);
 			super.onStart();
 		}
@@ -202,6 +232,15 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 			genRandomXYZ();
 		}
 	}; 
+	
+	void parseExternalInfo(){
+    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
+		mXTextView.setText(newValue);
+		mYTextView.setText(newValue);
+		mZTextView.setText(newValue);
+		
+    }
 	void displayPic(Uri path){
 		if(path == null ){
 			return ;
@@ -266,7 +305,14 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
     	float MAX = 200;
     	float MID = 100;
     	float LOW = 0;
-   
+    	
+		String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+		
+    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
+    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
+    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
+
+		
     	int x = (int) (Math.random()*max_xyz);
     	int y = (int) (Math.random()*max_xyz);
     	int z = (int) (Math.random()*max_xyz);
@@ -275,7 +321,14 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
     	mXTextView.setText(String.valueOf(x));
     	mYTextView.setText(String.valueOf(y));
     	mZTextView.setText(String.valueOf(z));
-    	
+    	switch(mZhouCounts){
+    	case 1:
+    		y=z=0;
+    		break;
+    	case 2:
+    		z=0;
+    		break;
+    	}
    
     	if((temp < MAX) && (temp>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
@@ -297,7 +350,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
     	}
     	
     	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
-    	mCallback.OnClick("x =" +x+",y ="+y+",z="+z+"*");
+    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
     }
 
 	
@@ -305,7 +358,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
     
     public interface OnVibateListener{
     	
-    	void OnClick(String IndexButton);
+    	void OnClick(int genPartItemDataCounts,int xValue,int yValue,int zValue);
     }
     
     @Override
@@ -324,7 +377,6 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	@Override
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
-		Bundle b = bundle;
-		b.get("");
+		genRandomXYZ();
 	}
 }

@@ -3,7 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+ <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_name"
+            android:textSize="@dimen/normal_text_size"/>
+
+        <TextView
+            android:id="@+id/check_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:singleLine="true"
+            android:textSize="@dimen/normal_text_size" />
+    </LinearLayout>
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
@@ -20,8 +38,9 @@
         android:id="@+id/temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="we"
+        android:textSize="@dimen/temperatrue_text_size"
+         />
 
  <LinearLayout
      android:layout_width="match_parent"

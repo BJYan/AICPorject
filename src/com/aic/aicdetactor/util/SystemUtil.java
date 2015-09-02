@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.setting.Setting;
 
+import android.content.Context;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -29,9 +32,12 @@ public class  SystemUtil {
 	static String TAG ="luotest";
 	public static final int TIME_FORMAT_YYMMDDHHMM = 0;
 	public static final int TIME_FORMAT_HHMM = 1;
+	public static final int TIME_FORMAT_YYMMDD = 2;
 	/**
 	 * 
-	 * @param type 0,yyyy-mm-dd hh:mm:ss,1:hhmm
+	 * @param type 0,yyyy-mm-dd hh:mm:ss;
+	 * 1:hhmm;
+	 * 2:yyyy-mm--dd
 	 * @return
 	 */
 	public  static String getSystemTime(int type){
@@ -50,6 +56,9 @@ public class  SystemUtil {
 			int minute = t.minute;  
 			int second = t.second;  
 			str  = (hour<10?("0"+hour):hour)+""+(minute<10?("0"+minute):minute);
+		}else if(type ==TIME_FORMAT_YYMMDD){
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			str = df.format(new Date());
 		}
 		
 		
@@ -218,5 +227,79 @@ public class  SystemUtil {
 		return null;
 	}	
 	
+	/**
+	 * 计算给定时间与系统当前时间的差
+	 * 入参 time 格式必须是 "yyyy-MM-dd HH:mm:ss" 
+	 * @param time
+	 * @return
+	 * 几分钟前
+	 * 几小时前
+	 * 昨天
+	 * 几天前 
+	 */
+	public  static String getDiffDate(String time,Context ct){
+		String str = null;
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try{
+			
+		  Date d1 = df.parse(time);		 
+		  Date d2 = df.parse(getSystemTime(TIME_FORMAT_YYMMDDHHMM));
+		  long diff = d2.getTime() - d1.getTime();
+		  long days = diff / (1000 * 60 * 60 * 24);
+		 
+		  long hours = (diff-days*(1000 * 60 * 60 * 24))/(1000* 60 * 60);
+		  long minutes = (diff-days*(1000 * 60 * 60 * 24)-hours*(1000* 60 * 60))/(1000* 60);
+		  
+		  if(days<1){
+			  if(hours<1){
+				  //分钟前
+				  String sMinutesFormat = ct.getString(R.string.time_tips_minutes); 
+				  str = String.format(sMinutesFormat, minutes);
+			  }else{
+				  //小时前
+				  String sHoursFormat = ct.getString(R.string.time_tips_hours); 
+				  str = String.format(sHoursFormat, hours);
+			  }
+		  }else{
+			  //几天前
+			  if(days ==1){
+				  str  = ct.getString(R.string.time_tips_yestoday);   
+			  }else{
+				  String sdayFormat = ct.getString(R.string.time_tips_days); 
+				  str = String.format(sdayFormat, days);
+				  
+			  }
+			  
+		  }
+		}
+		catch (Exception e)
+		{
+		}
+		return str;
+	}
 
+	/**
+	 * 计算给定两个时间的差
+	 * 入参 time 格式必须是 "yyyy-MM-dd HH:mm:ss" 
+	 * @param time
+	 * @param endTime
+	 * @return 单位 秒
+	 */
+	public static String getDiffDate(String time, String endTime) {
+		if("".equals(time)||"".equals(endTime)){return ""+0;}
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			Date d1 = df.parse(time);
+			Date d2 = df.parse(endTime);
+			long diff = d2.getTime() - d1.getTime();
+			long minutes = diff / 1000;
+			return "" + minutes;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ""+0;
+	}
+	
 }

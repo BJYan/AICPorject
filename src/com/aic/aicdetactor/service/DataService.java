@@ -105,7 +105,7 @@ public class DataService extends Service {
     }
 	void init() {
 		String name = SystemUtil.createGUID();
-		name = "down.txt";
+		name = "AICNormal.txt";
 		mNewRouteFileStr = "/sdcard/"+name;
 		((myApplication) getApplication()).insertNewRouteInfo(name,
 				mNewRouteFileStr, this);		

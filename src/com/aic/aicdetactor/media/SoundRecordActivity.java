@@ -3,6 +3,7 @@ package com.aic.aicdetactor.media;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.MediaDao;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -184,6 +186,14 @@ public class SoundRecordActivity extends Activity implements OnClickListener{
 		super.onDestroy();
 	}
 
+	@Override
+    public void onBackPressed() {
+        //Log.i(TAG, "onBackPressed");
+		Intent intent = new Intent();
+		intent.putExtra(CommonDef.AUDIO_PATH, mFilePath);
+        setResult(PartItem_Contact.PARTITEM_NOTEPAD_RESULT,intent);
+        super.onBackPressed();
+    }
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub

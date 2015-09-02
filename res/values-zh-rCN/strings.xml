@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">测试</string>
+    <string name="app_name">AIC巡检</string>
     <string name="action_settings">设置</string>
     <string name="hello_world">Hello world!</string>
     <string name="user_name">用户名:</string>
@@ -21,6 +21,7 @@
     
     <string name="plancheck_name">计划巡检</string>
     <string name="tem_check">临时任务</string>
+    <string name="tem_spec">特巡</string>
     <string name="checked">已巡检</string>
     <string name="uncheck">未巡检</string>
     <string name="checking">巡检中</string>
@@ -37,6 +38,7 @@
     <string name="position">位置</string>
     <string name="direction">方向</string>
     <string name="next_item">下一点</string>
+    <string name="pre_item">上一点</string>
     <string name="measurement">测量</string>
     <string name="measurement_countdown">测量倒计时</string>
     <string name="motor_type">电机型号：</string>    
@@ -71,8 +73,8 @@
     <string name="tmp_content">"内        容："</string>
     <string name="save">保存</string>
     <string name="start_check">开始巡检</string>
-    <string name="default_username">巡检人员</string>
-    <string name="default_password">000000</string>
+    <string name="default_username">张三1</string>
+    <string name="default_password">00000000</string>
     <string name="cannot_check_time_tips">您好，现在还没到巡检轮次的时间</string>
     <string name="no_need_check_again">设备已经巡检完毕，不必重新巡检！</string>
     <string name="save_and_finish">完成</string>
@@ -85,4 +87,85 @@
     <string name="finish">完成</string>
     <string name="time">时间：</string>
     <string name="beizhu">备注：</string>
+    
+    <string name="msg_today">今天</string>
+    <string name="msg_all">全部</string>
+    <string name="msg_unread">未读</string>
+    
+    <string name="time_tips_hours">%1$d小时前</string>
+    <string name="time_tips_minutes">%1$d分钟前</string>
+    <string name="time_tips_days">%1$d天前</string>
+    <string name="time_tips_yestoday">昨天</string>
+    <string name="setting_title">设置</string>
+    <string name="setting_only_wifi">仅在WIFI环境中</string>    
+    <string name="setting_service_ip">服务器IP:</string>
+     <string name="setting_pda_code">PDA编号:</string>
+      <string name="setting_locoal_wifi">无线局域网</string>
+      <string name="setting_local_phone">蜂窝移动网络</string>
+     <string name="setting_back_up">存储备份</string>
+      <string name="setting_remind">提醒</string>
+      <string name="up_title">上传</string>
+      <string name="up_base_info">基本信息</string>
+      <string name="up_service_ip">服务器IP:</string>
+     <string name="up_pda_code">PDA编号:</string>
+     <string name="up_pda_ip">PDA IP:</string>
+     <string name="up_pda_mac">PDA MAC:</string>
+      <string name="up_auto_up">自动上传计划</string>
+      <string name="up_type">上传类型</string>
+      <string name="up_type_xj">常规巡检计划</string>
+     <string name="up_type_temp">特别巡检计划</string>
+     <string name="up_type_id">纽扣:%1$s</string>
+      <string name="up_type_pda_info">PDA信息</string>
+      <string name="up_up">上传</string>
+      <string name="up_uped_delete">上传完，即销毁数据</string>
+      
+       <string name="down_base_info">基本信息</string>
+       <string name="down_service_ip">服务器IP:</string>
+     <string name="down_pda_code">PDA编号:</string>
+     <string name="down_pda_ip">PDA IP:</string>
+     <string name="down_pda_mac">PDA MAC:</string>
+          <string name="down_auto_down">自动下载计划</string>
+           <string name="down_type">下载类型</string>
+       <string name="down_type_xj">常规巡检计划</string>
+     <string name="down_type_temp">特别巡检计划</string> 
+     <string name="down_down">下载</string>
+     
+      <string name="search_fliter">筛选</string>
+       <string name="search_by_time">排序</string>
+     <string name="search_check_type">检测类型</string>
+     <string name="search_brivate">振动</string>
+     <string name="search_check_temperator">测温</string>
+     <string name="search_check_speed">测转速</string>
+      <string name="search_check_observer">观察</string>
+     <string name="search_check_txtrecord">快记</string>
+     <string name="search_device_type">设备类型</string>
+     <string name="search_device_a_class">A 类</string>
+     <string name="search_device_b_class">B 类</string>
+     <string name="search_device_c_class">C 类</string>
+                     
+     <string name="search_info_type">信息类型</string>
+    
+      <string name="search_info_xj">巡检</string>
+      <string name="search_info_temp">临检</string>
+      <string name="search_info_d">档案</string>
+      <string name="search_exception_class">异常级别</string>
+      
+       <string name="search_fliter_by_time_asc">升序排序（由远及近）</string>
+      <string name="search_fliter_by_time_dsc">降序排序（由近及远）</string>
+       <string name="time_out">巡检时间已经超时，即将退出巡检</string>               
+            
+      <string name="pwd_modify">密码修改</string>
+      <string name="pwd_old_pwd">旧  密  码</string>      
+       <string name="pwd_new_pwd">新  密  码</string>
+      <string name="pwd_sure_pwd">确认密码</string>
+       <string name="pwd_save">保存</string>       
+    <string name="pwd_not_login">您还没登录，请登录后再修改密码</string>   
+     <string name="pwd_modify_sucess">密码修改成功</string>  
+     
+     <string name="search_local">本地查询</string>   
+     <string name="search_database">数据库查询</string>  
+      <string name="menu_modify_pwd">修改密码</string>   
+     <string name="menu_change_worker">切换账户</string>   
+     <string name="menu_more">更多</string>     
+    <string name="check_name">巡检项名称:</string>     
 </resources>

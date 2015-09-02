@@ -35,7 +35,7 @@
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content" 
       android:layout_weight="1" 
-      android:background="@drawable/bt_selector" 
+      android:background="@drawable/bottom_bt_selector" 
       android:button="@null" 
       android:checked="true" /> 
   <RadioButton 
@@ -43,28 +43,28 @@
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content" 
       android:layout_weight="1" 
-      android:background="@drawable/check_selector" 
+      android:background="@drawable/bottom_check_selector" 
       android:button="@null" /> 
   <RadioButton 
       android:id="@+id/radio_search" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content" 
       android:layout_weight="1" 
-      android:background="@drawable/search_selector" 
+      android:background="@drawable/bottom_search_selector" 
       android:button="@null" /> 
   <RadioButton 
       android:id="@+id/radio_notification" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content" 
       android:layout_weight="1" 
-      android:background="@drawable/notification_selector" 
+      android:background="@drawable/bottom_notification_selector" 
       android:button="@null" /> 
   <RadioButton 
       android:id="@+id/radio_downup" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content" 
       android:layout_weight="1" 
-      android:background="@drawable/downup_selector" 
+      android:background="@drawable/bottom_downup_selector" 
       android:button="@null" /> 
   </RadioGroup>
   </RelativeLayout>

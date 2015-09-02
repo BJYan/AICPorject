@@ -10,11 +10,15 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.KEY;
 
 
 public class Observer_fragment extends Fragment implements OnButtonListener{
@@ -35,11 +39,14 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 	
 	//之间的通信接口
 	private OnMediakListener mCallback = null;
-	
+	String parStr = null;
+	EditText mExternalInfoEditText = null;
+	private TextView mDeviceNameTextView = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
 	}
 
 	@Override
@@ -50,15 +57,13 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		View view = inflater.inflate(R.layout.observer, container, false);
 		mListview = (ListView)view.findViewById(R.id.listView1);
 		mImageView = (ImageView)view.findViewById(R.id.imageView1);	
-	
+		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
+		mDeviceNameTextView.setText(parStr);
+		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);	
+		parseExternalInfo();
 		return view;
 	}
 
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
 	
     public interface OnMediakListener{
     	
@@ -78,6 +83,11 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
         }
     }
 
+    void parseExternalInfo(){
+    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
+		mExternalInfoEditText.setText(newValue);
+    }
 	@Override
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
@@ -154,6 +164,9 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		        }  
 			 
 			 mCallback.OnClick(imageFilePath.toString() + "*");
+		}else{
+			mCallback.OnClick(mExternalInfoEditText.getText().toString());
 		}
 	}
+
 }

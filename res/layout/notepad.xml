@@ -3,16 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" 
+         android:gravity="center"  >
+    
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/finish"
-        android:gravity="center" />
+       />
 
     
-
+</LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -43,10 +48,9 @@
         android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.63"
-        android:ems="10" >
+        android:ems="10"
+        android:hint="请输入您观察到的客观现象" >
 
-        <requestFocus />
     </EditText>
 
 </LinearLayout>

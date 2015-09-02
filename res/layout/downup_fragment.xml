@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/dwonup_linear1"
+        android:layout_marginTop="30dp">"
+        
+		 <RadioGroup
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal" 
+		        android:id="@+id/downup_group"		        
+		        android:gravity="center"
+		        android:padding="1dp">
+		        <RadioButton
+		            android:id="@+id/downup_radioButton1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:checked="true"		            
+		            android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/up_title"
+		            android:textSize="@dimen/top_item_text_size"
+		            />
+		
+		        <RadioButton
+		            android:id="@+id/downup_radioButton2"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		            android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/down_title"	
+		            android:textSize="@dimen/top_item_text_size"	           	             
+		           />
+		
+		        <RadioButton
+		            android:id="@+id/downup_radioButton3"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		             android:background="@drawable/top_item_selector"
+		            android:button="@null"
+		            android:text="@string/setting_title"
+		            android:textSize="@dimen/top_item_text_size"		           
+		            />
+		</RadioGroup> 
+	</LinearLayout>
+<!-- 上传布局 -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/up_linear" 
+       android:orientation="vertical"
+      >
+
+       <TextView
+           android:id="@+id/textView1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/up_base_info"
+           android:textSize="@dimen/normal_one_text_size" />
+       <!-- 服务器IP -->
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear1" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/textView2"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_service_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_up_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		         
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear2" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/textView4"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_pda_code"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_up_pda_code"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear3" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/textView6"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_pda_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_up_pda_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear4" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/textView8"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_pda_mac"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_up_pda_mac"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear5" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">		     
+		     <CheckBox
+		           android:id="@+id/checkbox_up_auto_up"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_auto_up"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/up_linear15" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">		     
+		     <CheckBox
+		           android:id="@+id/uped_delete_checkbox1"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_uped_delete"
+		          
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+          <TextView
+		           android:id="@+id/textView10"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/up_type"
+		           android:textSize="@dimen/normal_one_text_size" />
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	      >		     
+		    <RadioGroup
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical" 
+		        android:id="@+id/up_group"		        
+		        android:gravity="left"
+		        android:padding="1dp">
+		        <RadioButton
+		            android:id="@+id/up_radioButton1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:text="@string/up_type_xj"
+		            android:textSize="@dimen/normal_two_text_size"
+		            />
+		
+		        <RadioButton
+		            android:id="@+id/up_radioButton2"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		            android:text="@string/up_type_temp"
+		            android:textSize="@dimen/normal_two_text_size"
+		           />
+		
+		        <RadioButton
+		            android:id="@+id/up_radioButton3"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		           android:text="@string/up_type_id"
+		           android:textSize="@dimen/normal_two_text_size"
+		            />
+		         <RadioButton
+		            android:id="@+id/up_radioButton4"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		           android:text="@string/up_type_pda_info"
+		           android:textSize="@dimen/normal_two_text_size"
+		            />
+		</RadioGroup> 	
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	        android:gravity="center"
+	      >	
+	      <Button 
+	          android:id="@+id/up_up"
+	          android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:text="@string/up_up"
+		      android:textSize="@dimen/button_text_size"	/>	  
+	       </LinearLayout>
+	  </LinearLayout>     
+   <!-- 下载布局 -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/down_linear" 
+       android:orientation="vertical"
+       android:visibility="gone"
+       >
+
+       <TextView
+           android:id="@+id/down_textView1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/down_base_info"
+           android:textSize="@dimen/normal_one_text_size" />
+       <!-- 服务器IP -->
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear1" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView2"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_service_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_service_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		         
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+        
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear2" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView4"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_code"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_code"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear3" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView6"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear4" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView8"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_mac"
+		          android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_mac"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear5" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">		     
+		     <CheckBox
+		           android:id="@+id/down_checkbox1"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_auto_down"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+          <TextView
+		           android:id="@+id/down_textView10"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_type"
+		           android:textSize="@dimen/normal_two_text_size" />
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	      >		     
+		    <RadioGroup
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical" 
+		        android:id="@+id/down_group"		        
+		        android:gravity="left"
+		        android:padding="1dp">
+		        <RadioButton
+		            android:id="@+id/down_radioButton1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:text="@string/down_type_xj"
+		            android:textSize="@dimen/normal_two_text_size"
+		            />
+		
+		        <RadioButton
+		            android:id="@+id/down_radioButton2"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		            android:text="@string/down_type_temp"
+		            android:textSize="@dimen/normal_two_text_size"
+		           />
+		</RadioGroup> 	
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	        android:gravity="center"
+	      >	
+	      <Button 
+	          android:id="@+id/down_down"
+	          android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:text="@string/down_down"
+		      android:textSize="@dimen/button_text_size"	/>	  
+	       </LinearLayout>"
+   </LinearLayout>
+	
+   <!-- 设置布局 -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/setting_linear" 
+       android:orientation="vertical"
+        android:visibility="gone"       
+       >
+          <CheckBox
+	           android:id="@+id/setting_checkbox1"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:text="@string/setting_only_wifi"	          
+	           android:textSize="@dimen/normal_one_text_size" />	
+      
+       <!-- 服务器IP -->
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear1" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView2"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_service_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_setting_service_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		         
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+        
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear2" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView4"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_pda_code"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_setting_pda_code"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear3" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView6"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_locoal_wifi"
+		           android:textSize="@dimen/normal_two_text_size" />
+		     <LinearLayout
+			       android:layout_width="match_parent"
+			       android:layout_height="wrap_content"	 
+			       android:orientation="vertical"
+			       android:gravity="right"
+			       >
+				     <ImageView
+				         android:id="@+id/imageView1"
+				         android:layout_width="wrap_content"
+				         android:layout_height="wrap_content"
+				         android:src="@drawable/arrow" />
+			 </LinearLayout>
+		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear4" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView7"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_local_phone"
+		           android:textSize="@dimen/normal_two_text_size" />
+		      <LinearLayout
+			       android:layout_width="match_parent"
+			       android:layout_height="wrap_content"	 
+			       android:orientation="vertical"
+			       android:gravity="right"
+			       >
+				     <ImageView
+				         android:id="@+id/imageView2"
+				         android:layout_width="wrap_content"
+				         android:layout_height="wrap_content"
+				         android:src="@drawable/arrow" />
+			 </LinearLayout>
+		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear5" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView8"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_back_up"
+		           android:textSize="@dimen/normal_two_text_size" />
+		    <LinearLayout
+			       android:layout_width="match_parent"
+			       android:layout_height="wrap_content"	 
+			       android:orientation="vertical"
+			       android:gravity="right"
+			       >
+				     <ImageView
+				         android:id="@+id/imageView3"
+				         android:layout_width="wrap_content"
+				         android:layout_height="wrap_content"
+				         android:src="@drawable/arrow" />
+			 </LinearLayout>
+		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/setting_linear6" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/setting_textView9"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/setting_remind"
+		           android:textSize="@dimen/normal_two_text_size" />
+		        <LinearLayout
+			       android:layout_width="match_parent"
+			       android:layout_height="wrap_content"	 
+			       android:orientation="vertical"
+			       android:gravity="right"
+			       >
+				     <ImageView
+				         android:id="@+id/imageView6"
+				         android:layout_width="wrap_content"
+				         android:layout_height="wrap_content"
+				         android:src="@drawable/arrow" />
+			 </LinearLayout>
+        </LinearLayout>
+       
+   </LinearLayout>
+</LinearLayout>
