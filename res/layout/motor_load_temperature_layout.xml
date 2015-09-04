@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="5dip" >
+
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" 
+            android:gravity="center_horizontal">
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="T"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="15dip"
+                android:textColor="#000000"/>
+            <EditText 
+                android:layout_width="100dip"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="15dip"
+                android:textColor="#000000"
+                android:text="5.06"
+                android:gravity="center"
+                android:textSize="12dp"/>
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="℃"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="15dip"
+                android:layout_marginRight="15dip"
+                android:textColor="#000000"/>
+        </LinearLayout>
+    <TextView 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:text="最佳测量距离10CM"
+        android:layout_gravity="center"
+        android:textColor="#ff0033"
+        android:gravity="center"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="5dip">
+        <TextView 
+            android:layout_width="80dip"
+            android:layout_height="25dip"
+            android:background="#6699cc"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="下一项"/>
+    </LinearLayout>
+
+</LinearLayout>

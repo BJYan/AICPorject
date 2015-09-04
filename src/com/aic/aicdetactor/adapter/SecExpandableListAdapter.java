@@ -20,7 +20,7 @@ import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 
 public class SecExpandableListAdapter  extends BaseExpandableListAdapter {
-	Context context;
+	private Context context;
 	private LayoutInflater mInflater;
 	ArrayList<ArrayList<Map<String, String>>> mChildrenList;
 
@@ -45,7 +45,8 @@ public class SecExpandableListAdapter  extends BaseExpandableListAdapter {
 
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView ExListView = new ExpandableListView(context);
-		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, 50);
+		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		ExListView.setPadding(40, 5, 10, 0);
 		ExListView.setLayoutParams(lp);
 		return ExListView;
 	}
@@ -75,7 +76,7 @@ public class SecExpandableListAdapter  extends BaseExpandableListAdapter {
 			public void onGroupCollapse(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						50);
+						LayoutParams.WRAP_CONTENT);
 				thrGroupView.setLayoutParams(lp);
 			}
 			
@@ -117,7 +118,7 @@ public class SecExpandableListAdapter  extends BaseExpandableListAdapter {
 		final TextView DeadLineText;
 		
 		if (arg2 == null) {			
-			arg2 = mInflater.inflate(R.layout.checkunit, null);
+			arg2 = mInflater.inflate(R.layout.checkitem_sec_item, null);
 		}
 		/*HashMap<String, String> map = (HashMap<String, String>) mChildrenList
 				.get(arg0).get(arg1);
@@ -134,8 +135,8 @@ public class SecExpandableListAdapter  extends BaseExpandableListAdapter {
 		DeadLineText.setText(map.get(CommonDef.check_item_info.DEADLINE));	*/
 		
 		//NameText.setTextColor(Color.RED);	
-		NameText = (TextView) arg2.findViewById(R.id.pathname);
-		NameText.setText("我是二级目录");
+		//NameText = (TextView) arg2.findViewById(R.id.pathname);
+		//NameText.setText("我是二级目录");
 		return arg2;
 	}
 

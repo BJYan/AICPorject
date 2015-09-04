@@ -73,7 +73,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView ExListView = new ExpandableListView(mContext);
-		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, 50);
+		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		ExListView.setPadding(40, 5, 20, 5);
 		ExListView.setLayoutParams(lp);
 		return ExListView;
 	}
@@ -127,7 +128,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupCollapse(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						50);
+						LayoutParams.WRAP_CONTENT);
 				secGroupView.setLayoutParams(lp);
 			}
 			

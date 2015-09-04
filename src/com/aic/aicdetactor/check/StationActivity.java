@@ -101,6 +101,7 @@ public class StationActivity extends Activity {
 //							R.id.status, R.id.progress });
 			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
 			mListView.setAdapter(mListViewAdapter);
+
 //			mListView.setOnItemClickListener(new OnItemClickListener() {
 //				@Override
 //				public void onItemClick(AdapterView<?> arg0, View arg1,

@@ -30,4 +30,9 @@
 	<item>严重</item>	
 	<item>紧急</item>	
 </string-array>  
+ <string-array name="groungding_spinner">
+	<item>良好</item>
+	<item>不良</item>
+	<item>断开</item>	
+</string-array> 
 </resources>

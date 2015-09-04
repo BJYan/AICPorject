@@ -65,5 +65,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/red_line2"
         android:layout_weight="1"
-       />
+       android:layout_marginLeft="5dip"
+       android:layout_marginRight="5dip"
+       android:layout_marginBottom="5dip"
+       android:layout_marginTop="5dip"/>
 </RelativeLayout>
