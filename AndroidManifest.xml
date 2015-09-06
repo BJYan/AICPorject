@@ -27,7 +27,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Main"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -39,6 +39,11 @@
         <activity
             android:name=".BtActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+         <activity
+            android:name=".Main"
+            android:label="@string/title1"
             android:screenOrientation="portrait" >
         </activity>
         <activity

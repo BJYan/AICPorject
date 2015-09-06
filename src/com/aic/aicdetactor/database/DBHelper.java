@@ -21,6 +21,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String PLANGUID="T_Line_Guid";
 	//文件的存储路径
 	 public static final String Path ="Path";
+	 public static final String Checked_Count = "Checked_Count";
+	 public static final String ItemCounts = "ItemCounts";
 	 
 	 }
 
@@ -91,6 +93,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		 public static final String File_Guid = "File_Guid";		 
 		 public static final String Is_Uploaded = "Is_Uploaded";
 		 public static final String Is_Updateed = "Is_Updateed";
+		 
+		 public static final String Checked_Count = "Checked_Count";
+		 public static final String ItemCounts = "ItemCounts";
 	 } 
 	 
 	 public static String TABLE_TEMPORARY = "T_Temporary_Line_Json";  
@@ -179,7 +184,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+"("
 				+ SourceTable.Path +" varchar(256),"
 				+ SourceTable.PLANNAME +" varchar(256),"
-				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY"				
+				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
+				+ SourceTable.Checked_Count +" INT,"
+				+ SourceTable.PLANNAME +" INT"
 				+")";
 
 		db.execSQL(jxchecksql);
@@ -245,7 +252,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Turn_Number +" varchar(256),"
 				+ Checking_Table.Date +" varchar(256),"
 				+ Checking_Table.Is_Uploaded +" BOOLEAN,"
-				+ Checking_Table.Is_Updateed +" BOOLEAN "				
+				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
+				+ Checking_Table.Checked_Count +" INT,"
+				+ Checking_Table.ItemCounts +" INT "	
 				+")";
 
 		db.execSQL(checkingsql);

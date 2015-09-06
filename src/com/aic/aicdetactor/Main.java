@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,7 +52,10 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 		app = (myApplication) getApplication();
 		testControl = new TestSetting(this.getApplicationContext());
 		testControl.setAppTestKey(true);	
-		
+		Intent intent = getIntent();
+		mIsLogin=intent.getExtras().getBoolean("isLog");
+		String Name=intent.getExtras().getString("name");
+		String pwd=intent.getExtras().getString("pwd");
 		 ActionBar actionBar = getActionBar();  
 		    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
 		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);  
@@ -83,7 +87,7 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 					fragmentTransaction.commit();
 					}else{
 						//Toast.makeText(getApplicationContext(), "巡检：您还没登录", Toast.LENGTH_LONG).show();
-						initFragment();
+						//initFragment();
 					}
 				}
 					break;
@@ -106,7 +110,7 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 						fragmentTransaction.commit();
 					}else{
 						Toast.makeText(getApplicationContext(), "通知：您还没登录", Toast.LENGTH_LONG).show();
-						initFragment();
+						//initFragment();
 					}
 					}
 					break;
@@ -124,15 +128,29 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 			}
 			
 		});
-		initFragment();
+		initFragment(Name,pwd);
 	}
-	void initFragment(){		
+	void initFragment(String Name,String pwd){		
+//		FragmentManager fragmentManager = getFragmentManager();
+//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//		Fragment fragment = new LoginFragment();	
+//		fragmentTransaction.replace(R.id.fragment_main,fragment);		
+//		fragmentTransaction.commit();
+		mIsLogin = true;
+		app.mWorkerName = Name;
+		app.mWorkerPwd = pwd;
+		app.gBLogIn = true;
+		app.setUserInfo(Name, pwd);
+		//跳转到巡检项页面
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		Fragment fragment = new LoginFragment();	
-		fragmentTransaction.replace(R.id.fragment_main,fragment);		
+		Fragment fragment = new RouteFragment();
+		Bundle args = new Bundle();
+		args.putString("name", Name);
+		args.putString("pwd", pwd);
+		fragment.setArguments(args);
+		fragmentTransaction.replace(R.id.fragment_main,fragment);			
 		fragmentTransaction.commit();
-		
 	}
 	
 	
@@ -209,7 +227,7 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 	        dialog.show();
 	      break;  
 	    case R.id.action_changeWorker:
-	    	initFragment();
+	    //	initFragment();
 	    	break;
 	    case R.id.action_more:
 	    	break;

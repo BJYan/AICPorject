@@ -13,13 +13,13 @@ import android.widget.TextView;
   
   
 public class TreeViewAdapter extends BaseExpandableListAdapter{  
-    public static final int ItemHeight=48;//每项的高度  
+    public static final int ItemHeight=68;//每项的高度  
     public static final int PaddingLeft=36;//每项的高度  
     private int myPaddingLeft=0;//如果是由SuperTreeView调用，则作为子项需要往右移  
   
     static public class TreeNode{  
-        Object parent;  
-        List<Object> childs=new ArrayList<Object>();  
+        public Object parent;  
+        public List<Object> childs=new ArrayList<Object>();  
     }  
       
     List<TreeNode> treeNodes = new ArrayList<TreeNode>();  

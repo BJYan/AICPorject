@@ -66,7 +66,7 @@ public class RouteFragment extends Fragment {
 	
 		mListView = (ListView) view.findViewById(R.id.listView);	
 
-		/*mRadioGroup = (RadioGroup)view.findViewById(R.id.route_group);
+		mRadioGroup = (RadioGroup)view.findViewById(R.id.route_group);
 		
 		mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
@@ -89,7 +89,7 @@ public class RouteFragment extends Fragment {
 				}
 			}
 			
-		});	*/
+		});	
 		mItemDatas = new ArrayList<Map<String, String>>();
 		//initListData(ROUTE_XJ);
 		mListViewAdapter = new SimpleAdapter(this.getActivity(), mItemDatas,

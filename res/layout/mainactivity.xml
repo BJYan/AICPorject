@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom|center"
+    android:orientation="vertical"
+    android:background="#ff0fefff" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="223dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/xunjian_lost" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/devicename"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:textSize="@dimen/normal_one_text_size" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="clip_vertical"
+        android:orientation="vertical">"
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:padding="1dp" 
+            android:weightSum="3">
+            <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_name"
+            android:layout_weight="1"
+           android:textSize="@dimen/normal_text_size"/>
+             <EditText
+            android:id="@+id/editText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:singleLine="true"  
+            android:ems="10" 
+             android:hint="请输入..."  
+             android:background="@drawable/edittextbackgroud"
+            android:text="@string/default_username">
+
+            <requestFocus />
+        </EditText>
+        </LinearLayout>
+<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:padding="1dp" 
+            android:weightSum="3">
+            <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_pswd"
+            android:layout_weight="1"
+           android:textSize="@dimen/normal_text_size"/>
+             <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:singleLine="true"  
+            android:ems="10" 
+            android:password="true"
+             android:hint="请输入..."  
+             android:background="@drawable/edittextbackgroud"
+            android:text="@string/default_password">
+
+            <requestFocus />
+        </EditText>
+        </LinearLayout>
+       
+        
+
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_margin="10dp" >
+
+        <CheckBox
+            android:id="@+id/checkBox1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_uinfo" />
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nolog" />
+
+    </LinearLayout>
+ <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">"
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:layout_gravity="center" 
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_margin="20dp"/>
+</LinearLayout>
+   
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/infors"
+            android:gravity="center"
+            android:textSize="@dimen/normal_text_size"
+            android:layout_margin="10dp" />
+
+</LinearLayout>

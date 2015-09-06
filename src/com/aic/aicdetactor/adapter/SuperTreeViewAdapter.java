@@ -19,9 +19,9 @@ import android.widget.TextView;
 public class SuperTreeViewAdapter extends BaseExpandableListAdapter {  
   
     static public class SuperTreeNode {  
-        Object parent;  
+        public Object parent;  
         //二级树形菜单的结构体  
-        List<TreeViewAdapter.TreeNode> childs = new ArrayList<TreeViewAdapter.TreeNode>();  
+        public List<TreeViewAdapter.TreeNode> childs = new ArrayList<TreeViewAdapter.TreeNode>();  
     }  
   
     private List<SuperTreeNode> superTreeNodes = new ArrayList<SuperTreeNode>();  
