@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 7;//版本号
+	 private final static int VERSION = 8;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -185,8 +185,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ SourceTable.Path +" varchar(256),"
 				+ SourceTable.PLANNAME +" varchar(256),"
 				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
-				+ SourceTable.Checked_Count +" INT,"
-				+ SourceTable.PLANNAME +" INT"
+				+ SourceTable.Checked_Count +" INTEGER,"
+				+ SourceTable.ItemCounts +" INTEGER"
 				+")";
 
 		db.execSQL(jxchecksql);
@@ -253,8 +253,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Date +" varchar(256),"
 				+ Checking_Table.Is_Uploaded +" BOOLEAN,"
 				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
-				+ Checking_Table.Checked_Count +" INT,"
-				+ Checking_Table.ItemCounts +" INT "	
+				+ Checking_Table.Checked_Count +" INTEGER,"
+				+ Checking_Table.ItemCounts +" INTEGER "	
 				+")";
 
 		db.execSQL(checkingsql);

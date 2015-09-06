@@ -167,5 +167,10 @@
       <string name="menu_modify_pwd">修改密码</string>   
      <string name="menu_change_worker">切换账户</string>   
      <string name="menu_more">更多</string>     
-    <string name="check_name">巡检项名称:</string>     
+    <string name="check_name">巡检项名称:</string>   
+    <string name="save_uinfo">保存登录信息</string>    
+     <string name="nolog">无账户模式登陆</string> 
+     <string name="infors">AIC致力于提升工业设备管理水平</string> 
+     <string name="devicename">工业点巡检仪</string>  
+     <string name="title1">AIC巡检操作</string>  
 </resources>
