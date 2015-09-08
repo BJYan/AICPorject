@@ -90,4 +90,15 @@ public class PartItemItem implements Parcelable{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String toString(){
+		String s="{"
+				+"Axle_Number:"+Axle_Number+","
+				+"Check_Content:"+Check_Content+","
+				+"Start_Stop_Flag:"+Start_Stop_Flag+","
+				+"T_Measure_Type_Code:"+T_Measure_Type_Code+","
+				+"Up_Limit:"+Up_Limit+","
+	+"}";
+		return s;
+	}
 }

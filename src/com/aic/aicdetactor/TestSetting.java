@@ -31,7 +31,7 @@ public class TestSetting {
 		// 用putString的方法保存数据
 		if (isTest) {
 		editor.putString("file1", "/sdcard/AICNormal.txt");
-		editor.putString("file", "/sdcard/AICNormal.txt");
+		editor.putString("file",  "/sdcard/AICNormal.txt");
 		}
 		editor.putBoolean("isTest", isTest);
 		

@@ -102,7 +102,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		//NameText.setTextColor(Color.RED);	
 		return arg3;*/
 		ExpandableListView secGroupView = getExpandableListView();
-		SecExpandableListAdapter secExListAdapter = new SecExpandableListAdapter(mContext, mChildrenList);
+		DeviceListAdapter secExListAdapter = null;//new DeviceListAdapter(mContext, mChildrenList);
 		secGroupView.setAdapter(secExListAdapter);
 		return secGroupView;
 	}

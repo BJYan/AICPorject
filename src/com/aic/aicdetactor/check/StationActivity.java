@@ -98,22 +98,23 @@ public class StationActivity extends Activity {
 			});
 
 		
-			//mListView = (ExpandableListView) findViewById(R.id.listView);
-			//mListDatas = new ArrayList<Map<String, String>>();
+			mListView = (ExpandableListView) findViewById(R.id.listView);
+			mListDatas = new ArrayList<Map<String, String>>();
 			
-			 adapter=new TreeViewAdapter(this,TreeViewAdapter.PaddingLeft>>1);  
-		        superAdapter=new SuperTreeViewAdapter(this,stvClickEvent);  
-		        expandableList=(ExpandableListView) StationActivity.this.findViewById(R.id.listView);  
-		        getStationList(mRouteIndex);
-		        InitListViewData();
-			//initListViewData();
+//			 adapter=new TreeViewAdapter(this,TreeViewAdapter.PaddingLeft>>1);  
+//		        superAdapter=new SuperTreeViewAdapter(this,stvClickEvent);  
+//		        expandableList=(ExpandableListView) StationActivity.this.findViewById(R.id.listView);  
+//		        getStationList(mRouteIndex);
+//		        InitListViewData();
+			
+			initListViewData();
 //			mListViewAdapter = new SimpleAdapter(this, mListDatas,
 //					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
 //					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
 //							R.id.index, R.id.pathname, R.id.deadtime,
 //							R.id.status, R.id.progress });
-			//mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
-			//mListView.setAdapter(mListViewAdapter);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
+			mListView.setAdapter(mListViewAdapter);
 //			mListView.setOnItemClickListener(new OnItemClickListener() {
 //				@Override
 //				public void onItemClick(AdapterView<?> arg0, View arg1,

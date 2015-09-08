@@ -212,4 +212,7 @@ public class CommonDef {
 	public static final int  FILE_TYPE_WORKER  =3;
 	public static final String AUDIO_PATH= "audioPath";
 	public static final String TEXT_RECORD_PATH= "textPath";
+	
+	
+	public static final int LISTITEM_HEIGHT =68;
 }

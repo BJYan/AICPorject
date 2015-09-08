@@ -12,6 +12,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.view.GroupViewHolder;
 
 import android.app.Activity;
 import android.content.Context;
@@ -108,7 +109,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		//NameText.setTextColor(Color.RED);	
 		return arg3;*/
 		final ExpandableListView secGroupView = getExpandableListView();
-		final SecExpandableListAdapter secExListAdapter = new SecExpandableListAdapter(mContext, mChildrenList);
+		final DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1);
 		secGroupView.setAdapter(secExListAdapter);
 		
 		secGroupView.setOnGroupExpandListener(new OnGroupExpandListener() {
@@ -117,7 +118,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						500);
+						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size());
 				secGroupView.setLayoutParams(lp);
 			}
 		});
@@ -163,34 +164,31 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
+		
 
-		final TextView indexText;
-		final TextView NameText;
-		final TextView DeadLineText;
-		final TextView StausText;
-		final TextView ProcessText;
-		if (arg2 == null) {			
-			arg2 = mInflater.inflate(R.layout.checkitem, null);
-		}
+		GroupViewHolder holder =null;
 		HashMap<String, String> map = (HashMap<String, String>) mDataList
 				.get(arg0);
-
-		indexText = (TextView) arg2.findViewById(R.id.index);
-		indexText.setText(""+(arg0+1));
-		NameText = (TextView) arg2.findViewById(R.id.pathname);
-		NameText.setText(map.get(CommonDef.station_info.NAME).toString());
+		if (arg2 == null) {			
+			arg2 = mInflater.inflate(R.layout.checkitem, null);
+			holder = new GroupViewHolder();
+			holder.indexText = (TextView) arg2.findViewById(R.id.index);
+			holder.NameText = (TextView) arg2.findViewById(R.id.pathname);
+			holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
+			holder.StausText = (TextView) arg2.findViewById(R.id.status);
+			holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
+			holder.indexText.setTextColor(Color.RED);
+			arg2.setTag(holder);
+		}else{
+			holder=(GroupViewHolder) arg2.getTag();
+			
+		}
+		holder.indexText.setText(""+(arg0+1));
+		holder.NameText.setText(map.get(CommonDef.station_info.NAME).toString());
+		holder.DeadLineText.setText(map.get(CommonDef.station_info.DEADLINE));
+		holder.StausText.setText(map.get(CommonDef.station_info.STATUS));
+		holder.ProcessText.setText(map.get(CommonDef.station_info.PROGRESS));
 		
-		DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
-		DeadLineText.setText(map.get(CommonDef.station_info.DEADLINE));
-		
-		StausText = (TextView) arg2.findViewById(R.id.status);
-		StausText.setText(map.get(CommonDef.station_info.STATUS));
-		
-		ProcessText = (TextView) arg2.findViewById(R.id.progress);
-		ProcessText.setText(map.get(CommonDef.station_info.PROGRESS));
-		
-		indexText.setTextColor(Color.RED);
-
 		return arg2;
 	}
 
@@ -216,7 +214,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			mDataList.clear();
 			for (int i = 0; i < mStationItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				status = app.getNodeCount(mStationItemList.get(i), 2, 0);
+				status = app.getNodeCount(mStationItemList.get(i), 1, 0);
 				status.setContext(mContext);
 				map.put(CommonDef.station_info.INDEX, "" + (itemindex + 1));
 				map.put(CommonDef.station_info.NAME,
