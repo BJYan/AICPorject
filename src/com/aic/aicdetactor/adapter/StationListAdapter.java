@@ -112,6 +112,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		final DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1);
 		secGroupView.setAdapter(secExListAdapter);
 		
+		secGroupView.setSelectedGroup(arg1);
+		
 		secGroupView.setOnGroupExpandListener(new OnGroupExpandListener() {
 
 			@Override

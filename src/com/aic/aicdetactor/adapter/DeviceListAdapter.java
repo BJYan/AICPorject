@@ -114,6 +114,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 			
 		});
 		thrGroupView.setAdapter(thrExListAdapter);
+		thrGroupView.setSelectedGroup(arg1);
 		return thrGroupView;
 		} else {
 
@@ -168,6 +169,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		
 		GroupViewHolder holder =null;
 		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(arg0);
+		Log.i(TAG, "getGroupView groupPosition = "+arg0);
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.checkitem, null);
 			holder = new GroupViewHolder();

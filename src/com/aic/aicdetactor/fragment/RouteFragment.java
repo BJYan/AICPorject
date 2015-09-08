@@ -91,7 +91,7 @@ public class RouteFragment extends Fragment {
 			
 		});	
 		mItemDatas = new ArrayList<Map<String, String>>();
-		//initListData(ROUTE_XJ);
+		initListData(ROUTE_XJ);
 		mListViewAdapter = new SimpleAdapter(this.getActivity(), mItemDatas,
 				R.layout.checkitem, new String[] {
 						CommonDef.route_info.INDEX,
