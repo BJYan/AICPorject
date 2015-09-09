@@ -143,7 +143,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 					IDemoChart[] mCharts = new IDemoChart[] {
 							 new AverageTemperatureChart()};
 				     // intent = new Intent(this, TemperatureChart.class);
-				      intent = mCharts[0].execute(Vibrate_fragment.this.getActivity());
+				      intent = mCharts[0].execute(Vibrate_fragment.this.getActivity(),"test");
 				    startActivity(intent);
 				}
 				 

@@ -122,7 +122,7 @@ public class DataService extends Service {
 					map.put(CommonDef.route_info.NAME,
 							((myApplication) getApplication()).getRoutName(routeIndex));
 					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
-					map.put(CommonDef.route_info.STATUS, "已检查");
+					//map.put(CommonDef.route_info.STATUS, "已检查");
 					map.put(CommonDef.route_info.PROGRESS,status.mCheckedCount+"/"+status.mSum);					
 					String index = "" + (routeIndex + 1);
 					map.put(CommonDef.route_info.INDEX, index);

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#cccccc" >
+   
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        
+        <ImageView
+        	android:id="@+id/arrow"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_alignParentStart="true"
+        	android:padding="5dip"/>
+         <LinearLayout
+             android:id="@+id/vline"
+             android:layout_width="1dp"
+             android:layout_height="30dp"
+             android:layout_centerVertical="true"
+             android:layout_toRightOf="@+id/arrow"
+             android:orientation="vertical"
+             android:background="@color/yellow" >
+         </LinearLayout>
+     
+         <TextView
+            android:id="@+id/pathname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"           
+            android:text="routeName" 
+            android:textSize="@dimen/listview_group_text_size"
+            android:layout_toRightOf="@id/vline"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" />
+      
+      </RelativeLayout>
+      <LinearLayout
+             android:id="@+id/hlinef"
+             android:layout_width="match_parent"
+             android:layout_height="1dp"
+             android:orientation="vertical"
+             android:background="@color/yellow"
+             android:layout_marginLeft="@dimen/listview_in_line_left_right_padding"
+             android:layout_marginRight="@dimen/listview_in_line_left_right_padding" 
+             >
+         </LinearLayout>
+      <RelativeLayout
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content" 
+        	>
+			<TextView
+            	android:id="@+id/deadtime"            
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"           
+            	android:text="deadline" 
+            	android:textSize="@dimen/listview_check_status_deadline_text_size"
+            	android:textColor="#27beda"
+            	android:layout_alignParentStart="true"
+                android:layout_marginLeft="30dp"  />
+			<TextView
+            	android:id="@+id/progress"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"           
+            	android:text="TextView" 
+            	android:layout_alignParentEnd="true"
+            	android:layout_marginRight="10dp"
+            	android:textSize="@dimen/listview_check_status_deadline_text_size"
+            	android:textColor="#27beda"/>
+		</RelativeLayout>
+</LinearLayout>

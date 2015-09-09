@@ -13,9 +13,12 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PartItemListAdapter extends BaseExpandableListAdapter {
 	Context context;
@@ -92,6 +95,20 @@ public class PartItemListAdapter extends BaseExpandableListAdapter {
 		final TextView NameText;
 		NameText = (TextView) arg2.findViewById(R.id.pathname);
 		NameText.setText(itemList.get(arg0).getCheckContent());
+		ImageView image = (ImageView) arg2.findViewById(R.id.history);
+		image.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				//添加拉起趋势图的
+				TextView NameText;
+				View p =(View) arg0.getParent();
+				NameText = (TextView) p.findViewById(R.id.pathname);
+				// TODO Auto-generated method stub
+				Toast.makeText(context, NameText.getText(), Toast.LENGTH_SHORT).show();
+			}
+			
+		});
 		return arg2;
 	}
 

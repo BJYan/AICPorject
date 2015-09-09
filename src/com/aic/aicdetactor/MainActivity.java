@@ -51,6 +51,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		mEditTextUserPwd = (EditText)findViewById(R.id.editText2);
 		mLogInButton = (Button) findViewById(R.id.button1);
 		mLogInButton.setOnClickListener(this);
+		 ContentValues a= new ContentValues() ;
+		 a.put("Start", false);
+		testa(a);
+		Log.d(TAG,"teat a ="+a.getAsBoolean("Start"));
 		mSaveUInfoCheckBox = (CheckBox) findViewById(R.id.checkBox1);
 		mNoLogModeCheckBox = (CheckBox) findViewById(R.id.checkBox2);
 		mNoLogModeCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -166,5 +170,10 @@ public class MainActivity extends Activity implements OnClickListener {
 			mSaveUInfoCheckBox.setChecked(true);
 		}
 		
+	}
+	
+	boolean testa(ContentValues a){
+		a.put("Start", true);
+		return true;
 	}
 }

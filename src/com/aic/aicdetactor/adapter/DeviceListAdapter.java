@@ -8,24 +8,33 @@ import java.util.Map;
 import org.json.JSONException;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
+import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
+import com.aic.aicdetactor.fragment.Vibrate_fragment;
 import com.aic.aicdetactor.view.GroupViewHolder;
 import com.google.gson.Gson;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
@@ -70,7 +79,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	@Override
 	public long getChildId(int arg0, int arg1) {
 		// TODO Auto-generated method stub
-		return 0;
+		return arg1;
 	}
 
 	public ExpandableListView getExpandableListView(){
@@ -78,6 +87,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		ExListView.setPadding(40, 5, 10, 0);
 		ExListView.setLayoutParams(lp);
+		LayoutParams params = new LayoutParams();
+		params.height=LayoutParams.MATCH_PARENT;
+		params.width=LayoutParams.MATCH_PARENT;
+		ExListView.setLayoutParams(params);
+		ExListView.setGroupIndicator(null);
 		return ExListView;
 	}
 	//是否三级list
@@ -88,7 +102,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		if(!LEVEL3){
 		final ExpandableListView thrGroupView = getExpandableListView();
 		final PartItemListAdapter thrExListAdapter = new PartItemListAdapter(context, mActivity,mChildrenList.get(arg0));
-		
 		
 		thrGroupView.setOnGroupExpandListener(new OnGroupExpandListener() {
 
@@ -121,15 +134,48 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 				GroupViewHolder holder = null;
 
 				if (arg3 == null) {
-					arg3 = mInflater.inflate(R.layout.checkitem, null);
+					arg3 = mInflater.inflate(R.layout.checkitem_thr_item, null);
 					holder = new GroupViewHolder();
 					holder.NameText = (TextView) arg3
 							.findViewById(R.id.pathname);
+					holder. image = (ImageView) arg3.findViewById(R.id.history);
+					holder.image.setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View arg0) {
+							//添加拉起趋势图的操作
+							Intent intent = null;
+							View v= (View) arg0.getParent();
+							TextView tv= (TextView) v.findViewById(R.id.pathname);
+							IDemoChart[] mCharts = new IDemoChart[] {
+									 new AverageTemperatureChart()};
+						      intent = mCharts[0].execute(context,tv.getText().toString());
+						      mActivity.startActivity(intent);
+						}
+						
+					});
 					arg3.setTag(holder);
 				} else {
 					holder = (GroupViewHolder) arg3.getTag();
 					
 				}
+				arg3.setOnClickListener(new OnClickListener(){
+
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+					//	mChildrenList.get(arg0).get(arg1)
+						//拉起测量等数据的检测界面
+						//TextView typeT= (TextView) arg0.findViewById(R.id.type);
+						//获取测试项的类型
+						//int itype = Integer.valueOf(typeT.getText().toString());
+						//根据类型选择显示不同的UI，调用界面类似于PartItemActivity:switchFragment函数
+//						Intent i = new Intent();
+//						mActivity.startActivity(i);
+						Toast.makeText(context, "000", Toast.LENGTH_SHORT).show();
+					}
+					
+				});
 				holder.NameText.setText(mChildrenList.get(arg0).get(arg1)
 						.getCheckContent());
 			return arg3;
@@ -171,24 +217,27 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(arg0);
 		Log.i(TAG, "getGroupView groupPosition = "+arg0);
 		if (arg2 == null) {			
-			arg2 = mInflater.inflate(R.layout.checkitem, null);
+			arg2 = mInflater.inflate(R.layout.device_list_item, null);
 			holder = new GroupViewHolder();
-			holder.indexText = (TextView) arg2.findViewById(R.id.index);
+			holder.image = (ImageView) arg2.findViewById(R.id.arrow);
 			holder.NameText = (TextView) arg2.findViewById(R.id.pathname);
-			holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
-			holder.StausText = (TextView) arg2.findViewById(R.id.status);
-			holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
-			holder.indexText.setTextColor(Color.RED);
+		//	holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
+		//	holder.StausText = (TextView) arg2.findViewById(R.id.status);
+		//	holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
 			arg2.setTag(holder);
 		}else{
 			holder=(GroupViewHolder) arg2.getTag();
 			
 		}
-		holder.indexText.setText(""+(arg0+1));
+		if(arg1){
+			holder.image.setBackgroundResource(R.drawable.arrow_ex);
+		}else{
+			holder.image.setBackgroundResource(R.drawable.arrow);
+		}
 		holder.NameText.setText(map.get(CommonDef.device_info.NAME).toString());
-		holder.DeadLineText.setText(map.get(CommonDef.device_info.DEADLINE));
-		holder.StausText.setText(map.get(CommonDef.device_info.STATUS));
-		holder.ProcessText.setText(map.get(CommonDef.device_info.PROGRESS));
+		//holder.DeadLineText.setText(map.get(CommonDef.device_info.DEADLINE));
+		//holder.StausText.setText(map.get(CommonDef.device_info.STATUS));
+		//holder.ProcessText.setText(map.get(CommonDef.device_info.PROGRESS));
 		//NameText.setTextColor(Color.RED);	
 		//NameText = (TextView) arg2.findViewById(R.id.pathname);
 		//NameText.setText("我是二级目录");
@@ -220,7 +269,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 				Map<String, String> map = new HashMap<String, String>();
 				status = app.getNodeCount(mDeviceItemList.get(i), 2, 0);
 				status.setContext(this.context);
-				map.put(CommonDef.device_info.INDEX, "" + (itemindex + 1));
 				map.put(CommonDef.device_info.NAME,
 						app.getDeviceItemName(mDeviceItemList.get(i)));
 				Log.d(TAG,"name is"+

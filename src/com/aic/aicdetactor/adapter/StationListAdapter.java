@@ -40,7 +40,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private int mrouteIndex = 0;
 	private Activity mActivity = null;
 	private LayoutInflater mInflater;
-	private final String TAG = "luotest";
+	private final String TAG = "luotest.StationListAdapter";
 	private List<Object> mDeviceItemList = null;
 	
 	// groupView data
@@ -77,13 +77,18 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		ExListView.setPadding(40, 5, 20, 5);
 		ExListView.setLayoutParams(lp);
+		LayoutParams params = new LayoutParams();
+		params.height=LayoutParams.MATCH_PARENT;
+		params.width=LayoutParams.MATCH_PARENT;
+		ExListView.setLayoutParams(params);
+		ExListView.setGroupIndicator(null);
 		return ExListView;
 	}
 
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
-		
+		Log.d(TAG,"getChildView " + arg0 +" ,"+arg1);
 		/*final TextView indexText;
 		final TextView NameText;
 		final TextView CheckValueText;
@@ -148,6 +153,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public Object getGroup(int arg0) {
 		// TODO Auto-generated method stub
+		Log.d(TAG,"getGroup " + arg0 );
 		return mDataList.get(arg0);
 	}
 
@@ -167,30 +173,30 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		
-
+		Log.d(TAG,"getGroupView " + arg0 );
 		GroupViewHolder holder =null;
 		HashMap<String, String> map = (HashMap<String, String>) mDataList
 				.get(arg0);
 		if (arg2 == null) {			
-			arg2 = mInflater.inflate(R.layout.checkitem, null);
+			arg2 = mInflater.inflate(R.layout.station_list_item, null);
 			holder = new GroupViewHolder();
-			holder.indexText = (TextView) arg2.findViewById(R.id.index);
+			holder.image = (ImageView) arg2.findViewById(R.id.arrow);
 			holder.NameText = (TextView) arg2.findViewById(R.id.pathname);
 			holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
-			holder.StausText = (TextView) arg2.findViewById(R.id.status);
 			holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
-			holder.indexText.setTextColor(Color.RED);
 			arg2.setTag(holder);
 		}else{
 			holder=(GroupViewHolder) arg2.getTag();
 			
 		}
-		holder.indexText.setText(""+(arg0+1));
 		holder.NameText.setText(map.get(CommonDef.station_info.NAME).toString());
 		holder.DeadLineText.setText(map.get(CommonDef.station_info.DEADLINE));
-		holder.StausText.setText(map.get(CommonDef.station_info.STATUS));
 		holder.ProcessText.setText(map.get(CommonDef.station_info.PROGRESS));
-		
+		if(arg1){
+			holder.image.setBackgroundResource(R.drawable.arrow_ex);
+		}else{
+			holder.image.setBackgroundResource(R.drawable.arrow);
+		}
 		return arg2;
 	}
 
@@ -218,13 +224,9 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 				Map<String, String> map = new HashMap<String, String>();
 				status = app.getNodeCount(mStationItemList.get(i), 1, 0);
 				status.setContext(mContext);
-				map.put(CommonDef.station_info.INDEX, "" + (itemindex + 1));
 				map.put(CommonDef.station_info.NAME,
 						app.getDeviceItemName(mStationItemList.get(i)));
-
 				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.station_info.STATUS, status.getStatus());
-
 				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount
 						+ "/" + status.mSum);
 				mDataList.add(map);

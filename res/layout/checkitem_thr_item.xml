@@ -14,7 +14,7 @@
         	android:layout_width="1dip"
         	android:layout_marginTop="5dip"
         	android:layout_marginBottom="5dip"
-        	android:background="#999999"
+        	android:background="@color/darkgrey"
         	android:layout_marginLeft="5dip"
         	/>
         <TextView 
@@ -31,7 +31,8 @@
             android:layout_height="fill_parent"
             android:src="@drawable/thradapter_graph"
             android:layout_marginRight="5dip"
-            android:padding="5dip"/>
+            android:padding="5dip"
+            android:id="@+id/history"/>"
     </LinearLayout>
     <View 
         android:layout_height="1dip"
@@ -40,5 +41,11 @@
         android:paddingRight="5dip"
         android:background="#000000"
         android:visibility="invisible"/>
+    <TextView 
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:id="@+id/type"
+            android:visibility="gone"/>
 
 </LinearLayout>

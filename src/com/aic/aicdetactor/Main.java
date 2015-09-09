@@ -59,7 +59,6 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 		 ActionBar actionBar = getActionBar();  
 		    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
 		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);  
-		    
 		mGroup = (RadioGroup)findViewById(R.id.group);
 		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 

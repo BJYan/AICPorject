@@ -11,8 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
         android:id="@+id/route_linear1"
-        android:layout_marginTop="30dp"
-        android:orientation="horizontal">"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal"
+       >
         
 		 <RadioGroup
 		        android:layout_width="match_parent"
@@ -22,6 +23,7 @@
 		        android:gravity="center"
 		        android:padding="1dp"
 		        android:background="@color/ivory"
+		         android:weightSum="3"
 		        >
 		        <RadioButton
 		            android:id="@+id/route_radioButton1"
@@ -31,7 +33,8 @@
 		            android:checked="true"
 		            android:button="@null"
 		            android:text="@string/plancheck_name"
-		            android:textSize="@dimen/top_item_text_size"/>		
+		            android:textSize="@dimen/top_item_text_size"
+		            android:layout_weight="1"/>		
 		        <RadioButton
 		            android:id="@+id/route_radioButton2"
 		            android:layout_width="wrap_content"
@@ -40,6 +43,7 @@
 		            android:button="@null"
 		            android:text="@string/tem_spec"
 		            android:textSize="@dimen/top_item_text_size"
+		            android:layout_weight="1"
 		           />	
 		            <RadioButton
 		            android:id="@+id/route_radioButton3"
@@ -49,6 +53,7 @@
 		            android:button="@null"
 		            android:text="@string/tem_check"
 		            android:textSize="@dimen/top_item_text_size"
+		            android:layout_weight="1"
 		           />	
 		       
 		</RadioGroup> 
@@ -68,7 +73,7 @@
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/red_line1"      
+        android:layout_below="@+id/red_line1"
        />
 
         

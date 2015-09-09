@@ -47,6 +47,6 @@ public interface IDemoChart {
    * @param context the context
    * @return the built intent
    */
-  Intent execute(Context context);
+  Intent execute(Context context,String title);
 
 }

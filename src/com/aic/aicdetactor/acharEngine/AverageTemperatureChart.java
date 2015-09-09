@@ -58,7 +58,7 @@ public class AverageTemperatureChart extends AbstractDemoChart {
    * @param context the context
    * @return the built intent
    */
-  public Intent execute(Context context) {
+  public Intent execute(Context context,String title) {
     String[] titles = new String[] { "Crete", "Corfu", "Thassos", "Skiathos" };
     List<double[]> x = new ArrayList<double[]>();
     for (int i = 0; i < titles.length; i++) {
@@ -93,7 +93,7 @@ public class AverageTemperatureChart extends AbstractDemoChart {
     XYSeries series = dataset.getSeriesAt(0);
     series.addAnnotation("Vacation", 6, 30);
     Intent intent = ChartFactory.getLineChartIntent(context, dataset, renderer,
-        "Average temperature");
+    		title);
     return intent;
   }
 

@@ -7,23 +7,35 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,26 +93,49 @@ public class StationActivity extends Activity {
 			
 			String  oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);		
 			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
-			TextView planNameTextView  =(TextView)findViewById(R.id.planname);
-			planNameTextView.setText(oneCatalog);			
-			TextView RouteNameTextView  =(TextView)findViewById(R.id.station_text_name);
-			RouteNameTextView.setText(""+(mRouteIndex +1)+ "		"+routeName);
-			ImageView imageView = (ImageView)findViewById(R.id.imageView1);
-			imageView.setOnClickListener(new OnClickListener(){
+			
+			TextView planNameTextView  =(TextView)findViewById(R.id.route_type_name);
+			planNameTextView.setText(routeName);	
+			
+			ActionBar bar=getActionBar();
+			bar.setLogo(null);;
+			bar.setDisplayUseLogoEnabled(false);
+			bar.setTitle(oneCatalog);
+			
+			//打卡
+			ImageView imageViewka = (ImageView)findViewById(R.id.ka);
+			imageViewka.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View arg0) {
 					Log.d(TAG,"imageView.setOnClickListener");
 					// TODO Auto-generated method stub
-					finish();
+					//全屏幕显示一个图片 及 去掉字样的button
+					//finish();
 				}
 				
 			});
+			
+			ImageView imageViewMenu = (ImageView)findViewById(R.id.menuimage);
+			imageViewMenu.setOnClickListener(new OnClickListener(){
 
+				@Override
+				public void onClick(View arg0) {
+					Log.d(TAG,"imageView.setOnClickListener");
+					// TODO Auto-generated method stub
+					//弹出菜单
+					//finish();
+					initPopupWindowFliter(arg0);
+				}
+				
+			});
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
-			
+			mListView.setDividerHeight(20);
+			//mListView.setGroupIndicator(this.getResources().getDrawable(R.drawable.arrow));
+			mListView.setGroupIndicator(null);
+			//mListView.setChildIndicator(null);
 //			 adapter=new TreeViewAdapter(this,TreeViewAdapter.PaddingLeft>>1);  
 //		        superAdapter=new SuperTreeViewAdapter(this,stvClickEvent);  
 //		        expandableList=(ExpandableListView) StationActivity.this.findViewById(R.id.listView);  
@@ -205,7 +240,7 @@ public class StationActivity extends Activity {
 				map.put(CommonDef.station_info.NAME, app
 						.getStationItemName(stationItemList.get(i)));
 				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.station_info.STATUS, status.getStatus());
+				//map.put(CommonDef.station_info.STATUS, status.getStatus());
 				
 				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount+"/"+status.mSum);
 				//String index = "" + (i + 1);
@@ -336,4 +371,48 @@ public class StationActivity extends Activity {
 	        }  
 	          
 	    };  
+	    void initPopupWindowFliter(View parent) {
+			LayoutInflater inflater = (LayoutInflater) this
+					.getApplicationContext()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+			final View rootview = inflater.inflate(
+					R.layout.station_menu, null, false);
+
+			final PopupWindow pw_Left = new PopupWindow(rootview, LayoutParams.MATCH_PARENT,
+					LayoutParams.WRAP_CONTENT, true);
+			pw_Left.setBackgroundDrawable(null);
+			
+			Spinner mSpinner = (Spinner) rootview.findViewById(R.id.spinner1);
+			String[] mItems = getResources().getStringArray(R.array.spinnername);
+			ArrayAdapter<String> _Adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
+		//	_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); 
+			mSpinner.setAdapter(_Adapter);
+			
+			
+			Spinner mSpinnerPoint = (Spinner) rootview.findViewById(R.id.spinner2);
+			ArrayAdapter<String> _AdapterPoint=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
+			mSpinnerPoint.setAdapter(_AdapterPoint);
+
+			// // 显示popupWindow对话框
+			pw_Left.setTouchInterceptor(new View.OnTouchListener() {
+
+				@Override
+				public boolean onTouch(View arg0, MotionEvent arg1) {
+					// TODO Auto-generated method stub
+					if (arg1.getAction() == MotionEvent.ACTION_OUTSIDE) {
+						pw_Left.dismiss();
+						return true;
+					}
+					return false;
+				}
+
+			});
+			ColorDrawable dw = new ColorDrawable(Color.GRAY);
+			pw_Left.setBackgroundDrawable(dw);
+			pw_Left.setOutsideTouchable(true);
+			pw_Left.showAsDropDown(parent, Gravity.CENTER, 0);
+			pw_Left.update();
+
+		}
 }

@@ -135,7 +135,7 @@ public class CommonDef {
 		public static final String INDEX = "Route_Index";
 		public static final String LISTVIEW_ITEM_INDEX = "Route_ListView_ItemIndex";
 		public static final String DEADLINE = "Route_DeadLine";
-		public static final String STATUS = "Route_Check_Status";
+		//public static final String STATUS = "Route_Check_Status";
 		public static final String PROGRESS = "Route_Progress";
 		public static final String JSON_INDEX = "7";
 
@@ -146,7 +146,7 @@ public class CommonDef {
 		public static final String INDEX = "Station_Index";
 		public static final String LISTVIEW_ITEM_INDEX = "Station_ListView_Item";
 		public static final String DEADLINE = "Station_DeadLine";
-		public static final String STATUS = "Station_Check_Status";
+		//public static final String STATUS = "Station_Check_Status";
 		public static final String PROGRESS = "Station_Progress";
 		public static final String JSON_INDEX = "4";
 

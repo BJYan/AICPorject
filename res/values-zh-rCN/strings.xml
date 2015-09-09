@@ -19,9 +19,9 @@
     <string name="revolution_speed">转速</string>
     
     
-    <string name="plancheck_name">计划巡检</string>
-    <string name="tem_check">临时任务</string>
-    <string name="tem_spec">特巡</string>
+    <string name="plancheck_name">日常巡检</string>
+    <string name="tem_check">临时检测</string>
+    <string name="tem_spec">特殊巡检</string>
     <string name="checked">已巡检</string>
     <string name="uncheck">未巡检</string>
     <string name="checking">巡检中</string>
@@ -173,4 +173,15 @@
      <string name="infors">AIC致力于提升工业设备管理水平</string> 
      <string name="devicename">工业点巡检仪</string>  
      <string name="title1">AIC巡检操作</string>  
+     
+     <string name="station_menu_order">作业顺序</string>    
+     <string name="station_menu_device">设备</string> 
+     <string name="station_menu_point">测点</string> 
+     <string name="station_menu_about_pro">关于进度</string>  
+     <string name="station_menu_about_pro2">作业进度</string> 
+     <string name="station_menu_exception_point">异常测点</string>  
+      <string name="station_menu_about_sto">关于振动存储</string>  
+     <string name="station_menu_pic_auto">谱图自动</string> 
+     
+     
 </resources>

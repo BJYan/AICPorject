@@ -7,6 +7,7 @@ import java.util.Map;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -49,6 +50,7 @@ public class RouteFragment extends Fragment {
 	//private String pwd= null;
 	private List<Map<String, String>> mItemDatas = null;
 	private SimpleAdapter mListViewAdapter = null;
+	private String mRouteTypeName =null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,28 +86,32 @@ public class RouteFragment extends Fragment {
 					break;
 				case R.id.route_radioButton3:
 					initListData(ROUTE_Temp);
-					mSelectedRadioIndex =1;
+					mSelectedRadioIndex =2;
 					break;
 				}
 			}
 			
 		});	
 		mItemDatas = new ArrayList<Map<String, String>>();
-		initListData(ROUTE_XJ);
+		//initListData(ROUTE_XJ);
 		mListViewAdapter = new SimpleAdapter(this.getActivity(), mItemDatas,
-				R.layout.checkitem, new String[] {
+				R.layout.route_list_item, new String[] {
 						CommonDef.route_info.INDEX,
 						CommonDef.route_info.NAME,
 						CommonDef.route_info.DEADLINE,
-						CommonDef.route_info.STATUS,
+						//CommonDef.route_info.STATUS,
 						CommonDef.route_info.PROGRESS }, new int[] {
 						R.id.index, R.id.pathname, R.id.deadtime,
-						R.id.status, R.id.progress });
+//						R.id.status, 
+						R.id.progress });
+		
 		Log.d(TAG,
 				"in init() setAdapter"
 						+ SystemUtil
 								.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		mListView.setAdapter(mListViewAdapter);
+		mListView.setDividerHeight(10);
+		mListView.setDivider(new ColorDrawable(0xffffff));
 		Log.d(TAG,
 				"in init() after setAdapter"
 						+ SystemUtil
@@ -129,7 +135,18 @@ public class RouteFragment extends Fragment {
 				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
 						arg2);
 				app.setCurrentRouteIndex(arg2);
-				intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
+				switch(mSelectedRadioIndex){
+				case 0:
+					mRouteTypeName = getString(R.string.plancheck_name);
+					break;
+				case 2:
+					mRouteTypeName = getString(R.string.tem_check);
+					break;
+				case 1:
+					mRouteTypeName = getString(R.string.tem_spec);
+					break;
+				}
+				intent.putExtra(CommonDef.ROUTE_CLASS_NAME, mRouteTypeName);
 				intent.putExtra(CommonDef.route_info.NAME,
 						(String) mapItem.get(CommonDef.route_info.NAME));
 				intent.putExtra(CommonDef.route_info.INDEX,
@@ -185,8 +202,8 @@ public class RouteFragment extends Fragment {
 									app.getRoutName(routeIndex));
 							map.put(CommonDef.route_info.DEADLINE,
 									status.mLastTime);
-							map.put(CommonDef.route_info.STATUS,
-									status.getStatus());
+//							map.put(CommonDef.route_info.STATUS,
+//									status.getStatus());
 
 							map.put(CommonDef.route_info.PROGRESS,
 									status.mCheckedCount + "/" + status.mSum);

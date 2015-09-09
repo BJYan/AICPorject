@@ -35,4 +35,9 @@
 	<item>不良</item>
 	<item>断开</item>	
 </string-array> 
+
+<string-array name="spinnername">
+    <item>正序</item>
+    <item>反序</item>	
+ </string-array>
 </resources>
