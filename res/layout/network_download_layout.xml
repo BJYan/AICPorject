@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:background="@color/white">
+           <TextView
+           android:id="@+id/down_textView1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/down_base_info"
+           android:textSize="@dimen/normal_one_text_size" />
+       <!-- 服务器IP -->
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear1" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView2"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_service_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_service_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		         
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+        
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear2" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView4"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_code"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_code"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear3" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView6"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_ip"
+		           android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_ip"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+        <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear4" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">
+		        <TextView
+		           android:id="@+id/down_textView8"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_pda_mac"
+		          android:textSize="@dimen/normal_two_text_size" />
+		
+		     <TextView
+		           android:id="@+id/textView_down_pda_mac"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		          
+		           android:textSize="@dimen/normal_two_text_size"/>		
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:id="@+id/down_linear5" 
+	       android:orientation="horizontal"
+	       android:layout_marginLeft="40dp">		     
+		     <CheckBox
+		           android:id="@+id/down_checkbox1"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_auto_down"
+		          
+		           android:textSize="@dimen/normal_two_text_size" />		
+        </LinearLayout>
+          <TextView
+		           android:id="@+id/down_textView10"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:text="@string/down_type"
+		           android:textSize="@dimen/normal_two_text_size" />
+		 <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	      >		     
+		    <RadioGroup
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical" 
+		        android:id="@+id/down_group"		        
+		        android:gravity="left"
+		        android:padding="1dp">
+		        <RadioButton
+		            android:id="@+id/down_radioButton1"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		            android:text="@string/down_type_xj"
+		            android:textSize="@dimen/normal_two_text_size"
+		            />
+		
+		        <RadioButton
+		            android:id="@+id/down_radioButton2"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"		           
+		            android:text="@string/down_type_temp"
+		            android:textSize="@dimen/normal_two_text_size"
+		           />
+		</RadioGroup> 	
+        </LinearLayout>
+         <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"	       
+	       android:orientation="vertical"
+	        android:layout_marginLeft="40dp"
+	        android:gravity="center"
+	      >	
+	      <Button 
+	          android:id="@+id/down_down"
+	          android:layout_width="wrap_content"
+		      android:layout_height="wrap_content"
+		      android:text="@string/down_down"
+		      android:textSize="@dimen/button_text_size"	/>	  
+	       </LinearLayout>"
+
+</LinearLayout>

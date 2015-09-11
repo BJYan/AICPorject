@@ -1,8 +1,10 @@
 package com.aic.aicdetactor.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
 
@@ -14,6 +16,9 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +29,8 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 
 public class DownLoadFragment extends Fragment implements OnClickListener {
@@ -73,6 +80,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	private TextView mDownMacTextView = null;
 	private TextView mUpIPTextView = null;
 	private TextView mDownIPTextView = null;
+	List<View> listViews;
+	TabHost tabHost;
+	ViewPager viewPager;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -85,12 +96,45 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		
-		View view = inflater.inflate(R.layout.downup_fragment, container, false);
+		//View view = inflater.inflate(R.layout.downup_fragment, container, false);
+		View view = inflater.inflate(R.layout.network_fragment, container, false);
+        tabHost = (TabHost)view.findViewById(R.id.tabhost);  
+        // 如果没有继承TabActivity时，通过该种方法加载启动tabHost  
+        tabHost.setup();
+        tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("上传")  
+                .setContent(  
+                R.id.view1));  
+  
+        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("下载")  
+                .setContent(R.id.view3));  
+  
+        tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("设置")  
+                .setContent(R.id.view2)); 
+        
+        viewPager = (ViewPager)view.findViewById(R.id.vPager); 
+        listViews = new ArrayList<View>();
+        listViews.add(inflater.inflate(R.layout.network_upload_layout, null));
+        listViews.add(inflater.inflate(R.layout.network_download_layout, null));
+        listViews.add(inflater.inflate(R.layout.network_setting_layout, null));
+        NetworkViewPagerAdapter networkViewPagerAdapter = new NetworkViewPagerAdapter(listViews);
+        viewPager.setAdapter(networkViewPagerAdapter);
+        viewPager.setCurrentItem(0);
+        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        
+        tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
+            @Override  
+            public void onTabChanged(String tabId){  
+                Log.i("DownLoadFragment--tabId--=", tabId);  
+                if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
+                if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
+                if(tabId.equals("tab3")) viewPager.setCurrentItem(1);
+            }  
+        });
+        
+		/*mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 		
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-		
-		mSetting_linearLayout = (LinearLayout)view.findViewById(R.id.setting_linear);
-		mUp_linearLayout = (LinearLayout)view.findViewById(R.id.up_linear);
+		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
+		mUp_linearLayout = (LinearLayout)listViews.get(0).findViewById(R.id.up_linear);
 		mDown_linearLayout = (LinearLayout)view.findViewById(R.id.down_linear);
 		mUpMacTextView = (TextView)view.findViewById(R.id.textView_up_pda_mac);
 		mDownMacTextView = (TextView)view.findViewById(R.id.textView_down_pda_mac);
@@ -218,7 +262,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		
 		//初始化信息
 		getData();
-		initViewValue();
+		initViewValue();*/
 	    return view;
 	}
 
@@ -319,5 +363,27 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		
 		mUpIPTextView.setText(mStr_Up_Pda_ip);
 		mDownIPTextView.setText(mStr_Up_Pda_ip);
+	}
+	
+	class MyOnPageChangeListener implements OnPageChangeListener{
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPageSelected(int arg0) {
+			// TODO Auto-generated method stub
+			tabHost.setCurrentTab(arg0);
+		}
+		
 	}
 }
