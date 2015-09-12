@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
@@ -26,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -83,6 +86,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	List<View> listViews;
 	TabHost tabHost;
 	ViewPager viewPager;
+	NetWorkSettingAdapter netWorkSettingAdapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,11 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(1);
             }  
         });
+        
+        netWorkSettingAdapter = new NetWorkSettingAdapter(getActivity());
+        ExpandableListView netExListView = (ExpandableListView)listViews.get(2).findViewById(R.id.network_setting_list);
+        netExListView.setAdapter(netWorkSettingAdapter);
+        netExListView.setGroupIndicator(null);
         
 		/*mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 		

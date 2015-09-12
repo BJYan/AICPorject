@@ -40,4 +40,12 @@
     <item>正序</item>
     <item>反序</item>	
  </string-array>
+ <string-array name="network_setting">
+    <item>本机信息</item>
+    <item>密码重置</item>
+    <item>推送设置</item>
+    <item>读卡器</item>
+    <item>存储设置</item>
+    <item>时间同步</item>
+ </string-array>
 </resources>
