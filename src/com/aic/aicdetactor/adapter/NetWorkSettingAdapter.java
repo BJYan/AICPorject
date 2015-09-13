@@ -37,7 +37,18 @@ public class NetWorkSettingAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
-		View childView = mInflater.inflate(R.layout.network_setting_item_machineinfo, null);
+		View childView = null ;
+		switch (arg0) {
+		case 0: childView = mInflater.inflate(R.layout.network_setting_item_machineinfo, null,false); break;
+		case 1: childView = mInflater.inflate(R.layout.network_setting_item_retpassword, null,false); break;
+		case 2: childView = mInflater.inflate(R.layout.network_setting_item_pushsetting, null,false); break;
+		case 3: childView = mInflater.inflate(R.layout.network_setting_item_cardreader, null,false); break;
+		case 4: childView = mInflater.inflate(R.layout.network_setting_item_storage, null,false); break;
+		case 5: childView = mInflater.inflate(R.layout.network_setting_item_timesync, null,false); break;
+		default:
+			break;
+		}
+		
 		return childView;
 	}
 

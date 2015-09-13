@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"  
+    android:gravity="center">
+	<TextView 
+	    android:layout_width="wrap_content"
+	    android:layout_height="38dip"
+	    android:text="与服务器时间同步"
+	    android:gravity="center"/>
+    <Button 
+        android:layout_width="100dip"
+        android:layout_height="35dip"
+        android:text="开始同步"/>
+</LinearLayout>

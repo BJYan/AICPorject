@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="46dip"
+    android:orientation="horizontal"
+    android:background="#cccccc" >
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="fill_parent"
+        android:id="@+id/network_setting_groupview"
+        android:text="network setting"
+        android:textSize="14dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="5dip"/>
+    <ImageView 
+        android:id="@+id/setting_arrow"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="5dip"
+        android:src="@drawable/network_setting_arrow_close"
+        android:gravity="center_vertical"/>
+
+</LinearLayout>
