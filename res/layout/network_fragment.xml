@@ -11,13 +11,15 @@
         <LinearLayout 
             android:orientation="vertical" 
             android:layout_width="fill_parent" 
-            android:layout_height="wrap_content">  
+            android:layout_height="wrap_content"
+            >  
             <!-- TabWidget的id属性必须为 @android:id/tabs-->              
             <TabWidget 
                 android:id="@android:id/tabs" 
                 android:orientation="horizontal" 
                 android:layout_width="fill_parent"  
-              	android:layout_height="wrap_content" />  
+              	android:layout_height="wrap_content" 
+              	/>  
             <!-- FrameLayout的id属性必须为 @android:id/tabcontent-->  
              <FrameLayout 
                  android:id="@android:id/tabcontent" 
@@ -26,15 +28,15 @@
                 <TextView 
                     android:id="@+id/view1" 
                     android:layout_width="fill_parent" 
-                    android:layout_height="fill_parent"/>  
+                    android:layout_height="1dip"/>  
                 <TextView 
                     android:id="@+id/view2" 
                     android:layout_width="fill_parent" 
-                    android:layout_height="fill_parent"/>  
+                    android:layout_height="1dip"/>  
                 <TextView 
                     android:id="@+id/view3" 
                     android:layout_width="fill_parent" 
-                    android:layout_height="fill_parent"/>  
+                    android:layout_height="1dip"/>  
              </FrameLayout>  
          </LinearLayout>  
     </TabHost>

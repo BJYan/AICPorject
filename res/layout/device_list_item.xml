@@ -1,47 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#cccccc" >
+    android:layout_height="35dip"
+    android:orientation="horizontal"
+    android:background="#55cccccc" 
+    android:gravity="center_vertical">
    
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-        
-        <ImageView
+       <ImageView
         	android:id="@+id/arrow"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_alignParentStart="true"
         	android:padding="5dip"/>
-         <LinearLayout
-             android:id="@+id/vline"
-             android:layout_width="1dp"
-             android:layout_height="30dp"
-             android:layout_centerVertical="true"
-             android:layout_toRightOf="@+id/arrow"
-             android:orientation="vertical"
-             android:background="@color/yellow" >
-         </LinearLayout>
-     
-         <TextView
+        <View 
+            android:layout_height="fill_parent"
+            android:layout_width="1dip"
+            android:background="#999999"
+            android:layout_marginTop="2dip"
+            android:layout_marginBottom="2dip"/>
+        <TextView
             android:id="@+id/pathname"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_height="wrap_content"           
             android:text="routeName" 
             android:textSize="@dimen/listview_group_text_size"
-            android:layout_toRightOf="@id/vline"
-            android:layout_centerInParent="true"
             android:textColor="@color/black"
-            android:gravity="center_vertical" />
-       <ImageView
+            android:gravity="center_vertical" 
+            android:paddingLeft="10dip"/>
+        <ImageView
         	android:id="@+id/deviceedit"
         	android:layout_width="wrap_content"
-        	android:background="@drawable/device_edit"
+        	android:src="@drawable/device_edit"
         	android:layout_height="wrap_content"
-        	android:layout_alignParentEnd="true"
         	android:padding="5dip"/>
-      </RelativeLayout>
-     
+ 
 </LinearLayout>

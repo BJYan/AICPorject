@@ -11,6 +11,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
@@ -173,6 +174,12 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 //						Intent i = new Intent();
 //						mActivity.startActivity(i);
 						Toast.makeText(context, "000", Toast.LENGTH_SHORT).show();
+						Intent intent = new Intent();
+						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
+						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
+						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
+						intent.setClass(mActivity, DeviceItemActivity.class);
+						mActivity.startActivity(intent); 
 					}
 					
 				});

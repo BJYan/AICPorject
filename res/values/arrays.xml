@@ -48,4 +48,12 @@
     <item>存储设置</item>
     <item>时间同步</item>
  </string-array>
+ <string-array name="month">  
+    <item>1日</item>  
+    <item>10日</item>  
+    <item>15日</item>  
+    <item>20日</item>  
+    <item>30日</item>
+    <item>35日</item>
+</string-array> 
 </resources>

@@ -365,8 +365,7 @@ public class StationActivity extends Activity {
 	                View v, int groupPosition, int childPosition,  
 	                long id) {  
 	            String str="parent id:"+String.valueOf(groupPosition)+",children id:"+String.valueOf(childPosition);  
-	            Toast.makeText(StationActivity.this, str, 300).show();  
-	              
+	            Toast.makeText(StationActivity.this, str, 300).show(); 
 	            return false;  
 	        }  
 	          

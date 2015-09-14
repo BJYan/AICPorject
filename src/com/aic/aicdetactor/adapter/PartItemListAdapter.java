@@ -6,10 +6,13 @@ import java.util.Map;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.check.DeviceItemActivity;
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemItem;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
