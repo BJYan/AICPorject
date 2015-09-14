@@ -2,6 +2,7 @@ package com.aic.aicdetactor;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -221,15 +222,23 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 	 @Override  
 	  public boolean onOptionsItemSelected(MenuItem item) {  
 	    switch (item.getItemId()) {  
-	    case R.id.action_modify_pwd: 
+	    case R.id.action_modify_pwd: {
 	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
 	        dialog.show();
+	        }
 	      break;  
 	    case R.id.action_changeWorker:
 	    //	initFragment();
 	    	break;
-	    case R.id.action_more:
+	    case R.id.action_more:{
+			}
 	    	break;
+	    case R.id.action_about:{
+	    	final Dialog dialog = new AboutDialog(this);
+			dialog.show();
+			}
+	    	break;
+	    	
 	    default:  
 	      break;  
 	    }  

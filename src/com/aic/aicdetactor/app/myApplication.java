@@ -16,6 +16,7 @@ import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class myApplication extends Application
@@ -84,12 +85,12 @@ public class myApplication extends Application
     	mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd,cv);
 		for (int i = 0; i < mFileList.size(); i++) {
 			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
-			Log.d(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
+			MLog.Logd(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
 		}
 		List<String> WorkerNumber = dao.queryWorkerNumber(mWorkerName, mWorkerPwd);
 		for(int n =0;n<WorkerNumber.size();n++){
 			mWorkerNumber = WorkerNumber.get(n);
-			Log.d(TAG,"setUserInfo() n=" + n + ","+ mWorkerNumber);
+			MLog.Logd(TAG,"setUserInfo() n=" + n + ","+ mWorkerNumber);
 		}
     }
     
@@ -193,7 +194,7 @@ public class myApplication extends Application
     public Object getPartItemObject(int stationIndex,int deviceIndex) throws JSONException {
     	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
     	for(int i =0;i<deviceItemList.size();i++){
-    		Log.d("testkey",deviceItemList.get(i).toString());
+    		MLog.Logd("testkey",deviceItemList.get(i).toString());
     	}
     	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
      return 	object;

@@ -17,6 +17,7 @@ import android.util.Log;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
+import com.google.gson.Gson;
 
 public class MyJSONParse {
 	String TAG = "luotest";
@@ -33,14 +34,15 @@ public class MyJSONParse {
 	private String mCurrentFileName = null;//当前巡检的文件名即guid
 	private String mSavePath = null;//检查路线数据存储的路径
 	private List<T_Route> mRouteList = null;
-
+	private final boolean isBstar=false;
+	private Gson mgson = null;
 	// partitemData split key word
 	public static String PARTITEMDATA_SPLIT_KEYWORD = "\\*";
 
 
 	private static MyJSONParse mMyJSONParse=null;
 		private MyJSONParse() {
-	
+			mgson = new Gson();
 		}
 	public static MyJSONParse getInstance(){
 		if(mMyJSONParse==null){
@@ -546,7 +548,7 @@ public class MyJSONParse {
 				Log.d(TAG, " getDeviceItem object i" + i);
 				JSONObject subObject = array.getJSONObject(i);
 				
-				genGUIDUnderDeviceItem(subObject);
+				//genGUIDUnderDeviceItem(subObject);
 				list.add(subObject);			
 			}
 
@@ -602,9 +604,9 @@ public class MyJSONParse {
 		try {
 			//每个stationItem
 			JSONObject stationItem = (JSONObject) getStationItem(mRouteIndex,mStationIndex);			
-			Log.d(TAG, " getDeviceItem  stationItem is " + stationItem.toString());
+			//Log.d(TAG, " getDeviceItem  stationItem is " + stationItem.toString());
 			JSONArray array = stationItem.getJSONArray(KEY.KEY_DEVICEITEM);
-			Log.d(TAG, " getDeviceItem  stationItem array " + array.toString());
+			//Log.d(TAG, " getDeviceItem  stationItem array " + array.toString());
 			for (int i = 0; i < array.length(); i++) {				
 				JSONObject subObject = array.getJSONObject(i);
 				list.add(subObject);
@@ -716,7 +718,9 @@ public class MyJSONParse {
 				Log.d(TAG, "getPartItemCheckUnitName " + " object is null");
 				return null;
 			}
-			String name = null;			
+			
+			String name = null;	
+			if(isBstar){
 			try {
 				JSONObject newObject = (JSONObject) partItemobject;
 
@@ -729,6 +733,10 @@ public class MyJSONParse {
 				Log.e(TAG,e.toString());;
 			}
 			Log.d(TAG, "getPartItemCheckUnitName name is "+name);
+			}else{
+				PartItemItem item=mgson.fromJson(partItemobject.toString(), PartItemItem.class);
+				name = item.getCheckContent();
+			}
 			return name;
 		}	
 	

@@ -157,7 +157,8 @@
      <string name="search_database">数据库查询</string>  
      <string name="menu_modify_pwd">修改密码</string>   
      <string name="menu_change_worker">切换账户</string>   
-     <string name="menu_more">更多</string>    
+     <string name="menu_more">更多</string>  
+     <string name="menu_about">关于</string>    
      <string name="check_name">巡检项名称:</string>  
      
       <string name="save_uinfo">保存登录信息</string>    

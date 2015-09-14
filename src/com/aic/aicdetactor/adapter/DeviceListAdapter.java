@@ -16,6 +16,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
 import com.aic.aicdetactor.fragment.Vibrate_fragment;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.view.GroupViewHolder;
 import com.google.gson.Gson;
 
@@ -56,6 +57,8 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	private int mDeviceIndex=0;
 	private myApplication app = null;
 	private Activity mActivity = null;
+	private Gson mGSon= null;
+	private final String TAG="luotest.DeviceListAdapter";
 	public DeviceListAdapter(Context context, Activity av,
 			int stationIndex,int deviceIndex){
 			//ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
@@ -68,6 +71,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		mActivity = av;
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) av.getApplication());
+		mGSon = new Gson();
 		InitData();
 	}
 	
@@ -228,13 +232,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 			holder = new GroupViewHolder();
 			holder.image = (ImageView) arg2.findViewById(R.id.arrow);
 			holder.NameText = (TextView) arg2.findViewById(R.id.pathname);
-		//	holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
-		//	holder.StausText = (TextView) arg2.findViewById(R.id.status);
-		//	holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
+			holder.DeadLineText = (TextView) arg2.findViewById(R.id.deadtime);
+			holder.ProcessText = (TextView) arg2.findViewById(R.id.progress);
 			arg2.setTag(holder);
 		}else{
 			holder=(GroupViewHolder) arg2.getTag();
-			
 		}
 		if(arg1){
 			holder.image.setBackgroundResource(R.drawable.arrow_ex);
@@ -265,28 +267,23 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	}
 	
 	void InitData() {
+		long g=System.currentTimeMillis();
+		MLog.Logd(TAG, "InitData>> ");
 		try {
-			//mStationItemList = app.getStationList(mrouteIndex);
 			mDeviceItemList = app.getDeviceItemList(mStationIndex);
 			CheckStatus status = null;
-			// int itemindex = mStationIndex;
-			int itemindex = 0;
 			mDataList.clear();
 			for (int i = 0; i < mDeviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
 				status = app.getNodeCount(mDeviceItemList.get(i), 2, 0);
 				status.setContext(this.context);
-				map.put(CommonDef.device_info.NAME,
-						app.getDeviceItemName(mDeviceItemList.get(i)));
-				Log.d(TAG,"name is"+
-						app.getDeviceItemName(mDeviceItemList.get(i)));
+				map.put(CommonDef.device_info.NAME,app.getDeviceItemName(mDeviceItemList.get(i)));
+				Log.d(TAG,"name is"+app.getDeviceItemName(mDeviceItemList.get(i)));
 				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.device_info.STATUS, status.getStatus());
-
-				map.put(CommonDef.device_info.PROGRESS, status.mCheckedCount
-						+ "/" + status.mSum);
+			
+				map.put(CommonDef.device_info.PROGRESS, status.mCheckedCount+ "/" + status.mSum);
+				MLog.Logd(TAG, "status is "+status.toString());
 				mDataList.add(map);
-				itemindex++;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,23 +293,26 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		for (int i = 0; i < mDeviceItemList.size(); i++) {
 			InitChidrenData(mStationIndex, i);
 		}
+		MLog.Logd(TAG, "InitData<< "+String.valueOf(System.currentTimeMillis()-g));
 	}
 
 
 	
-private final String TAG="luotest";
+
 	void InitChidrenData(int stationIndex, int itemIndexs) {
+		long gg=System.currentTimeMillis();
+		MLog.Logd(TAG, "InitChidrenData>> stationIndex="+stationIndex);
 		try {
 
 			Object object = mDeviceItemList.get(itemIndexs);
-			Log.d(TAG,"InitChidrenData() object is "+object.toString());
 			mPartItemList = app.getPartItemDataList(mStationIndex, itemIndexs);
 			Log.d(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
 			ArrayList<PartItemItem> childList = new ArrayList<PartItemItem>();
 			PartItemItem item =null;
+			
 			for (int i = 0; i < mPartItemList.size(); i++) {
-				Gson g = new Gson();
-				item = g.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
+				
+				item = mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
 //				Map<String, String> map = new HashMap<String, String>();
 //				Log.d(TAG,"InitChidrenData() PartItemData is "+mPartItemList.get(i).toString());
 //				map.put(CommonDef.device_info.NAME,	app.getDeviceItemName(mPartItemList.get(i)));
@@ -337,7 +337,9 @@ private final String TAG="luotest";
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}	
+		
+		MLog.Logd(TAG, "InitChidrenData<< stationIndex ="+stationIndex+","+String.valueOf(System.currentTimeMillis()-gg));
 	}
 
 }

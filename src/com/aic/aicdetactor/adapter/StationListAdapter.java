@@ -12,11 +12,13 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,7 +90,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
-		Log.d(TAG,"getChildView " + arg0 +" ,"+arg1);
+		MLog.Logd(TAG,"getChildView " + arg0 +" ,"+arg1);
 		/*final TextView indexText;
 		final TextView NameText;
 		final TextView CheckValueText;
@@ -153,7 +155,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public Object getGroup(int arg0) {
 		// TODO Auto-generated method stub
-		Log.d(TAG,"getGroup " + arg0 );
+		MLog.Logd(TAG,"getGroup " + arg0 );
 		return mDataList.get(arg0);
 	}
 
@@ -173,7 +175,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		
-		Log.d(TAG,"getGroupView " + arg0 );
+		MLog.Logd(TAG,"getGroupView " + arg0 );
 		GroupViewHolder holder =null;
 		HashMap<String, String> map = (HashMap<String, String>) mDataList
 				.get(arg0);
@@ -213,6 +215,9 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	}
 
 	void InitData() {
+
+		long g=System.currentTimeMillis();
+		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
 			mStationItemList = app.getStationList(mrouteIndex);
 
@@ -224,11 +229,9 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 				Map<String, String> map = new HashMap<String, String>();
 				status = app.getNodeCount(mStationItemList.get(i), 1, 0);
 				status.setContext(mContext);
-				map.put(CommonDef.station_info.NAME,
-						app.getDeviceItemName(mStationItemList.get(i)));
+				map.put(CommonDef.station_info.NAME,						app.getDeviceItemName(mStationItemList.get(i)));
 				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount
-						+ "/" + status.mSum);
+				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount						+ "/" + status.mSum);
 				mDataList.add(map);
 				itemindex++;
 			}
@@ -239,26 +242,31 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		for (int i = 0; i < mStationItemList.size(); i++) {
 			InitChidrenData(i, 0, false);
 		}
+		MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
+
 	}
 
 	void initeChild() {
-		Log.d(TAG,"initeChild() start ");
+		MLog.Logd(TAG,"initeChild() start ");
 		
-		Log.d(TAG,"initeChild() end ");
+		MLog.Logd(TAG,"initeChild() end ");
 	}
 
 	void InitChidrenData(int stationIndex, int itemIndexs, boolean updateAdapter) {
-		try {
 
+		long g=System.currentTimeMillis();
+		MLog.Logd(TAG, " InitChidrenData()>> stationIndex="+stationIndex +","+g);
+		try {
+			
 			Object object = mStationItemList.get(stationIndex);
-			Log.d(TAG,"InitChidrenData() object is "+object.toString());
+		//	MLog.Logd(TAG,"InitChidrenData() object is "+object.toString());
 			mDeviceItemList = app.getDeviceList(object);
-			Log.d(TAG,"InitChidrenData() mDeviceItemList size is "+mDeviceItemList.size());
+			//MLog.Logd(TAG,"InitChidrenData() mDeviceItemList size is "+mDeviceItemList.size());
 			ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
 		
 			for (int i = 0; i < mDeviceItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				Log.d(TAG,"InitChidrenData() PartItemData is "+mDeviceItemList.get(i).toString());
+				//MLog.Logd(TAG,"InitChidrenData() PartItemData is "+mDeviceItemList.get(i).toString());
 				map.put(CommonDef.device_info.NAME,	app.getDeviceItemName(mDeviceItemList.get(i)));
 //				map.put(CommonDef.check_item_info.DATA_TYPE,
 //						app.getPartItemCheckUnitName(mDeviceItemList.get(i),
@@ -281,7 +289,9 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}	
+
+		MLog.Logd(TAG, " InitChidrenData()<< stationIndex="+stationIndex +","+String.valueOf(System.currentTimeMillis()-g));
 	}
 
 	@Override

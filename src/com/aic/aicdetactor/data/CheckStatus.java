@@ -25,6 +25,10 @@ public class CheckStatus{
 	public void setContext(Context mContext){
 		this.mContext= mContext;
 	}
+	
+	public String toString(){
+		return "mSum:"+mSum +",mCheckedCount:"+mCheckedCount+",mLastTime:"+mLastTime;
+	}
 	/**
 	 * 
 	 * @return -1 标示未开始检测，0,标示正在巡检中但未完成，1表示已巡检完成

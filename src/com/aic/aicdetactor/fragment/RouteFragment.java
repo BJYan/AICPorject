@@ -9,6 +9,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 
@@ -61,7 +63,7 @@ public class RouteFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Log.d(TAG,"onCreateView()>>");
+		MLog.Logd(TAG,"onCreateView()>>");
 		// TODO Auto-generated method stub
 		app =(myApplication) RouteFragment.this.getActivity().getApplication();
 		View view = inflater.inflate(R.layout.route_activity, container, false);
@@ -105,14 +107,14 @@ public class RouteFragment extends Fragment {
 //						R.id.status, 
 						R.id.progress });
 		
-		Log.d(TAG,
+		MLog.Logd(TAG,
 				"in init() setAdapter"
 						+ SystemUtil
 								.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 		mListView.setAdapter(mListViewAdapter);
 		mListView.setDividerHeight(10);
 		mListView.setDivider(new ColorDrawable(0xffffff));
-		Log.d(TAG,
+		MLog.Logd(TAG,
 				"in init() after setAdapter"
 						+ SystemUtil
 								.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
@@ -123,7 +125,7 @@ public class RouteFragment extends Fragment {
 				// TODO Auto-generated method stub
 				HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
 						.getItemAtPosition(arg2));
-				Log.d(TAG,
+				MLog.Logd(TAG,
 						"MAPITEM is "
 								+ mapItem.toString()
 								+ " pathname is "
@@ -156,7 +158,7 @@ public class RouteFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
-		Log.d(TAG,"onCreateView()<<");
+		MLog.Logd(TAG,"onCreateView()<<");
 		return view;
 		}
 	
@@ -167,20 +169,20 @@ public class RouteFragment extends Fragment {
 	 */
 	void initListData(int types) {
 		final int type =types;
-		Log.d(TAG,"initListData()>>");
+		MLog.Logd(TAG,"initListData()>>");
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				if (type == ROUTE_XJ) {
-					Log.d(TAG,
+					MLog.Logd(TAG,
 							"in init() 1 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
 					int iRouteCount = app.InitData();
-					Log.d(TAG,
+					MLog.Logd(TAG,
 							"in init() 2 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
@@ -188,7 +190,7 @@ public class RouteFragment extends Fragment {
 					mItemDatas.clear();
 					for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
 						try {
-							Log.d(TAG,
+							MLog.Logd(TAG,
 									"in init() for start i="
 											+ routeIndex
 											+ ","
@@ -196,23 +198,20 @@ public class RouteFragment extends Fragment {
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
 							status = app.getNodeCount(null, 0, routeIndex);
-							status.setContext(RouteFragment.this.getActivity()
-									.getApplicationContext());
+							status.setContext(RouteFragment.this.getActivity().getApplicationContext());
 							map.put(CommonDef.route_info.NAME,
 									app.getRoutName(routeIndex));
 							map.put(CommonDef.route_info.DEADLINE,
 									status.mLastTime);
-//							map.put(CommonDef.route_info.STATUS,
-//									status.getStatus());
 
 							map.put(CommonDef.route_info.PROGRESS,
 									status.mCheckedCount + "/" + status.mSum);
-							// map.put("progress", "2/");
+						
 							String index = "" + (routeIndex + 1);
 							map.put(CommonDef.route_info.INDEX, index);
 
 							mItemDatas.add(map);
-							Log.d(TAG,
+							MLog.Logd(TAG,
 									"in init() for end i="
 											+ routeIndex
 											+ ","
@@ -227,7 +226,7 @@ public class RouteFragment extends Fragment {
 					mItemDatas.clear();
 				}
 				mHander.sendMessage(mHander.obtainMessage(MSG_UPDATE_LISTVIEW));
-				Log.d(TAG,"initListData()<<");
+				MLog.Logd(TAG,"initListData()<<");
 			}
 		}).start();
 

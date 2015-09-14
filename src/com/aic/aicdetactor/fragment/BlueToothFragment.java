@@ -79,10 +79,10 @@ public class BlueToothFragment extends Fragment implements OnClickListener{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(BlueToothFragment.this.getActivity(), btwifi_setting_activity.class);
-				startActivityForResult(intent, BlueToothFragment.this.getActivity().RESULT_OK);
-			}
+//				Intent intent = new Intent();
+//				intent.setClass(BlueToothFragment.this.getActivity(), btwifi_setting_activity.class);
+//				startActivityForResult(intent, BlueToothFragment.this.getActivity().RESULT_OK);
+				onBluetooth();}
 			
 		});
 		
@@ -223,5 +223,9 @@ public class BlueToothFragment extends Fragment implements OnClickListener{
 //		}
 //		super.onActivityResult(requestCode, resultCode, data);
 //	}
-	
+	private void onBluetooth() {
+		Intent settingsIntent = new Intent(
+		    android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+		startActivity(settingsIntent);
+	}
 }
