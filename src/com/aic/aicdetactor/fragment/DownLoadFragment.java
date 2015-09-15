@@ -140,8 +140,8 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
         netExListView.setAdapter(netWorkSettingAdapter);
         netExListView.setGroupIndicator(null);
         
-		/*mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-		
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+		/*
 		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
 		mUp_linearLayout = (LinearLayout)listViews.get(0).findViewById(R.id.up_linear);
 		mDown_linearLayout = (LinearLayout)view.findViewById(R.id.down_linear);
