@@ -56,4 +56,24 @@
     <item>30日</item>
     <item>35日</item>
 </string-array> 
+ <string-array name="msg_start_time">  
+    <item>2015.8.24</item>  
+    <item>2015.8.25</item>  
+    <item>2015.8.26</item>  
+    <item>2015.8.27</item>  
+    <item>2015.8.28</item>  
+    <item>2015.8.29</item>
+</string-array> 
+ <string-array name="msg_end_time">  
+    <item>2015.8.25</item>  
+    <item>2015.8.26</item>  
+    <item>2015.8.27</item>  
+    <item>2015.8.28</item>  
+    <item>2015.8.29</item>
+</string-array> 
+ <string-array name="msg_class">  
+    <item>全部</item>  
+    <item>今天</item> 
+    <item>未读</item>  
+</string-array> 
 </resources>
