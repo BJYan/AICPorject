@@ -32,6 +32,7 @@ import com.aic.aicdetactor.fragment.LoginFragment;
 import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
 import com.aic.aicdetactor.fragment.Message_Fragment;
 import com.aic.aicdetactor.fragment.RouteFragment;
+import com.aic.aicdetactor.fragment.SearchFragment;
 import com.aic.aicdetactor.fragment.Search_fragment;
 
 
@@ -95,7 +96,7 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 				{
 						FragmentManager fragmentManager = getFragmentManager();
 						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-						Fragment fragment = new Search_fragment();
+						Fragment fragment = new SearchFragment();
 						fragmentTransaction.replace(R.id.fragment_main,fragment);			
 						fragmentTransaction.commit();				
 				
