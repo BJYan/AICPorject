@@ -33,13 +33,14 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
-		return null;
+		View DBSearchChildItem = mInflater.inflate(R.layout.search_database_item_model, null);
+		return DBSearchChildItem;
 	}
 
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	@Override
