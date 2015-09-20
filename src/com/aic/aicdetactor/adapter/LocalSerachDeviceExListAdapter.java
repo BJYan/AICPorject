@@ -1,7 +1,5 @@
 package com.aic.aicdetactor.adapter;
 
-import java.util.List;
-
 import com.aic.aicdetactor.R;
 
 import android.content.Context;
@@ -10,18 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
-public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
-	Context context;
+public class LocalSerachDeviceExListAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater mInflater;
-	List<View> dBsearchItemList;
-	
-	public SearchDatabaseExListAdapter(Context context, List<View> dBsearchItemList) {
+	Context context;
+
+	public LocalSerachDeviceExListAdapter(Context context) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
-		this.dBsearchItemList = dBsearchItemList;
 	}
-
+	
 	@Override
 	public Object getChild(int arg0, int arg1) {
 		// TODO Auto-generated method stub
@@ -37,14 +33,13 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
-
-		return dBsearchItemList.get(arg0);
+		return null;
 	}
 
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		return 1;
+		return 0;
 	}
 
 	@Override
@@ -56,7 +51,7 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return dBsearchItemList.size();
+		return 5;
 	}
 
 	@Override
@@ -68,8 +63,10 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
-		View DBSearchGroupItem = mInflater.inflate(R.layout.search_database_group_item, null);
-		return DBSearchGroupItem;
+		if (arg2 == null) {			
+			arg2 = mInflater.inflate(R.layout.local_search_device_groupview_item, null);
+		}
+		return arg2;
 	}
 
 	@Override
@@ -81,7 +78,7 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public boolean isChildSelectable(int arg0, int arg1) {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 }

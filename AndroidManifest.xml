@@ -123,7 +123,12 @@
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
         </activity>
-        
+        <activity
+            android:name="com.aic.aicdetactor.check.LocalSerachActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>        
         <service android:name="com.aic.aicdetactor.service.DataService"> 
         <intent-filter> 
                 <action android:name="com.demo.SERVICE_DEMO" /> 

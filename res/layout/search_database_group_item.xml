@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="65dip"
+    android:layout_height="wrap_content"
     android:orientation="horizontal" >
-    <RadioButton 
+    <ImageView 
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="10dip"/>
+        android:layout_marginLeft="10dip"
+        android:src="@drawable/search_item_radiobutton_nocheck"
+        android:layout_gravity="center"
+        android:paddingTop="20dip"
+        android:paddingBottom="20dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"/>
     <TextView 
         android:layout_height="fill_parent"
         android:layout_width="wrap_content"
@@ -20,6 +26,6 @@
         android:gravity="center_vertical"
         android:text="仅限本账户权限内数据"
         android:textColor="#27beda"
-        android:layout_marginLeft="30dip"/>
+        android:layout_marginLeft="50dip"/>
     
 </LinearLayout>
