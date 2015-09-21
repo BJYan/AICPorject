@@ -30,6 +30,7 @@ import android.widget.AbsListView;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
@@ -78,11 +79,13 @@ public class SearchFragment extends Fragment implements OnClickListener{
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
         searchDBList.setAdapter(SearchDBExListAdapter);
         searchDBList.setGroupIndicator(null);
-        LinearLayout searchDBlayout = (LinearLayout) DBsearchItemList.get(0).findViewById(R.id.search_db_layout);
-        for(int i=0;i<searchDBlayout.getChildCount();i++){
-        	if(searchDBlayout.getChildAt(i) instanceof TextView) {
-        		searchDBlayout.getChildAt(i).setOnClickListener(this);
-        		options.put((TextView) searchDBlayout.getChildAt(i), false);
+        RelativeLayout optionsContainer = (RelativeLayout) DBsearchItemList.get(0).findViewById(R.id.options_item_container);
+        for(int i=0;i<optionsContainer.getChildCount();i++){
+        	if(optionsContainer.getChildAt(i).getTag()!=null&&
+        			((String)optionsContainer.getChildAt(i).getTag()).equals("options_name")) continue;
+        	else {
+        		optionsContainer.getChildAt(i).setOnClickListener(this);
+        		options.put((TextView) optionsContainer.getChildAt(i), false);
         	}
         }
         
@@ -129,13 +132,13 @@ public class SearchFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		if(arg0 instanceof TextView){
 			if(options.get(arg0)) options.put((TextView) arg0, false);
-			else options.put((TextView) arg0, false);
+			else options.put((TextView) arg0, true);
 			
 			Iterator<TextView> optionsIterator = options.keySet().iterator();
 			while(optionsIterator.hasNext()){
 				TextView tempTextView = optionsIterator.next();
-				if(options.get(tempTextView)) tempTextView.setBackgroundColor(color.holo_green_dark);
-				else tempTextView.setBackgroundColor(color.white);
+				if(options.get(tempTextView)) tempTextView.setBackgroundResource(R.drawable.search_database_itemshape_checked);
+				else tempTextView.setBackgroundResource(R.drawable.search_database_itemshape);
 			}
 		}
 	}
