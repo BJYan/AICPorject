@@ -1,7 +1,7 @@
 package com.aic.aicdetactor.adapter;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.check.LocalSerachActivity;
+import com.aic.aicdetactor.check.LocalSearchActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -49,7 +49,7 @@ public class SearchLocalListAdapter extends BaseAdapter{
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(context, LocalSerachActivity.class);
+				intent.setClass(context, LocalSearchActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(intent);
 			}

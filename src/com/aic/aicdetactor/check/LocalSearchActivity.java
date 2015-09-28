@@ -13,7 +13,7 @@ import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 
-public class LocalSerachActivity extends Activity{
+public class LocalSearchActivity extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

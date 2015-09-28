@@ -76,4 +76,9 @@
     <item>今天</item> 
     <item>未读</item>  
 </string-array> 
+ <string-array name="search_class">  
+    <item>正序</item>  
+    <item>正序</item> 
+    <item>正序</item>  
+</string-array>
 </resources>
