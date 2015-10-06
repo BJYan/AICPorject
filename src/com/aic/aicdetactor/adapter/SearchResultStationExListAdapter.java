@@ -15,11 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 
-public class LocalSearchStationExListAdapter extends BaseExpandableListAdapter {
+public class SearchResultStationExListAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater mInflater;
 	Context context;
 
-	public LocalSearchStationExListAdapter(Context context) {
+	public SearchResultStationExListAdapter(Context context) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
@@ -40,6 +40,7 @@ public class LocalSearchStationExListAdapter extends BaseExpandableListAdapter {
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView exListView = new ExpandableListView(context);
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		exListView.setPadding(50, 0, 0, 0);
 		exListView.setLayoutParams(lp);
 		return exListView;
 	}
@@ -48,7 +49,7 @@ public class LocalSearchStationExListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
 		final ExpandableListView expandableListView = getExpandableListView();
-		LocalSerachDeviceExListAdapter deviceExListAdapter = new LocalSerachDeviceExListAdapter(context);
+		SerachResultDeviceExListAdapter deviceExListAdapter = new SerachResultDeviceExListAdapter(context);
 		expandableListView.setAdapter(deviceExListAdapter);
 		
 		expandableListView.setOnGroupExpandListener(new OnGroupExpandListener() {
@@ -57,7 +58,7 @@ public class LocalSearchStationExListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						500);
+						525);
 				expandableListView.setLayoutParams(lp);
 			}
 		});
@@ -105,7 +106,7 @@ public class LocalSearchStationExListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		if (arg2 == null) {			
-			arg2 = mInflater.inflate(R.layout.local_search_station_groupview_item, null);
+			arg2 = mInflater.inflate(R.layout.search_result_station_groupview_item, null);
 		}
 		return arg2;
 	}

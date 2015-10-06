@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="35dip"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="#55cccccc" 
     android:gravity="center_vertical">
@@ -13,11 +13,12 @@
         	android:layout_alignParentStart="true"
         	/>
         <View 
-            android:layout_height="fill_parent"
+            android:layout_height="30dip"
             android:layout_width="1dip"
             android:background="#999999"
-            android:layout_marginTop="2dip"
-            android:layout_marginBottom="2dip"/>
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="5dip"
+            android:layout_marginLeft="10dip"/>
         <TextView
             android:id="@+id/pathname"
             android:layout_width="wrap_content"

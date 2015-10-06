@@ -5,7 +5,7 @@ import com.aic.aicdetactor.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class DBSearchActivity extends Activity{
+public class SearchResultConActivity extends Activity{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

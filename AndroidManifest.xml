@@ -124,13 +124,13 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.aic.aicdetactor.check.LocalSearchActivity"
+            android:name="com.aic.aicdetactor.check.SearchResultActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>  
         <activity
-            android:name="com.aic.aicdetactor.check.DBSearchActivity"
+            android:name="com.aic.aicdetactor.check.SearchResultConActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

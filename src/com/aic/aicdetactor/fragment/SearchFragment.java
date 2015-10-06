@@ -13,10 +13,12 @@ import com.aic.aicdetactor.adapter.MessageListViewAdapter;
 import com.aic.aicdetactor.adapter.SearchAdapter;
 import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
 import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
+import com.aic.aicdetactor.check.SearchResultConActivity;
 import com.aic.aicdetactor.fragment.Message_Fragment.MyOnPageChangeListener;
 
 import android.R.color;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -75,6 +77,9 @@ public class SearchFragment extends Fragment implements OnClickListener{
         DBsearchItemList = new ArrayList<View>();
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_searchmodel, null));
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_routemodel, null));
+        TextView SearchBtn = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_button_1);
+        SearchBtn.setOnClickListener(this);
+        
         ExpandableListView searchDBList = (ExpandableListView) listViews.get(1).findViewById(R.id.search_database_list);
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
         searchDBList.setAdapter(SearchDBExListAdapter);
@@ -130,7 +135,7 @@ public class SearchFragment extends Fragment implements OnClickListener{
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		if(arg0 instanceof TextView){
+		if(arg0 instanceof TextView && arg0.getTag()==null){
 			if(options.get(arg0)) options.put((TextView) arg0, false);
 			else options.put((TextView) arg0, true);
 			
@@ -140,6 +145,11 @@ public class SearchFragment extends Fragment implements OnClickListener{
 				if(options.get(tempTextView)) tempTextView.setBackgroundResource(R.drawable.search_database_itemshape_checked);
 				else tempTextView.setBackgroundResource(R.drawable.search_database_itemshape);
 			}
+		}
+		if(arg0.getId()==R.id.search_button_1) {
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), SearchResultConActivity.class);
+			getActivity().startActivity(intent);
 		}
 	}
 }
