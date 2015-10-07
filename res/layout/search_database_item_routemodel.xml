@@ -29,6 +29,7 @@
             android:layout_marginLeft="15dip"/>
     </LinearLayout>
 	<TextView 
+	    android:id="@+id/search_button_2"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:paddingTop="8dip"
@@ -37,5 +38,6 @@
 	    android:gravity="center"
 	    android:background="#aa666666"
 	    android:layout_marginTop="5dip"
-	    android:layout_marginBottom="5dip"/>
+	    android:layout_marginBottom="5dip"
+	    android:tag="search_button"/>
 </LinearLayout>

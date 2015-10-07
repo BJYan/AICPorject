@@ -5,18 +5,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.adapter.MessageAdapter;
-import com.aic.aicdetactor.adapter.MessageListViewAdapter;
 import com.aic.aicdetactor.adapter.SearchAdapter;
 import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
 import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
+import com.aic.aicdetactor.check.SearchResultActivity;
 import com.aic.aicdetactor.check.SearchResultConActivity;
-import com.aic.aicdetactor.fragment.Message_Fragment.MyOnPageChangeListener;
-
-import android.R.color;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,10 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
-import android.widget.AbsListView;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -77,8 +68,10 @@ public class SearchFragment extends Fragment implements OnClickListener{
         DBsearchItemList = new ArrayList<View>();
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_searchmodel, null));
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_routemodel, null));
-        TextView SearchBtn = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_button_1);
-        SearchBtn.setOnClickListener(this);
+        TextView SearchBtn_1 = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_button_1);
+        SearchBtn_1.setOnClickListener(this);
+        TextView SearchBtn_2 = (TextView) DBsearchItemList.get(1).findViewById(R.id.search_button_2);
+        SearchBtn_2.setOnClickListener(this);
         
         ExpandableListView searchDBList = (ExpandableListView) listViews.get(1).findViewById(R.id.search_database_list);
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
@@ -149,6 +142,11 @@ public class SearchFragment extends Fragment implements OnClickListener{
 		if(arg0.getId()==R.id.search_button_1) {
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), SearchResultConActivity.class);
+			getActivity().startActivity(intent);
+		}
+		if(arg0.getId()==R.id.search_button_2) {
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), SearchResultActivity.class);
 			getActivity().startActivity(intent);
 		}
 	}

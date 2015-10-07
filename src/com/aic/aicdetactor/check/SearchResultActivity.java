@@ -6,7 +6,6 @@ import com.aic.aicdetactor.adapter.SearchResultStationExListAdapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 
 public class SearchResultActivity extends Activity{
 	

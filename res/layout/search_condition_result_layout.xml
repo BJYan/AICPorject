@@ -14,23 +14,23 @@
         android:gravity="center">
         <TextView 
             android:layout_height="fill_parent"
-            android:layout_width="wrap_content"
+            android:layout_width="60dip"
             android:gravity="center"
             android:text="上传时间"
             android:textColor="#99ccff"
             android:textSize="14dp" />
         <Spinner 
             android:layout_height="fill_parent"
-            android:layout_width="wrap_content"
+            android:layout_width="50dip"
             android:entries="@array/search_class"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:layout_marginLeft="5dip"
             android:background="#55999999"
             android:layout_marginTop="3dip"
             android:layout_marginBottom="3dip"/>
         <TextView 
             android:layout_height="fill_parent"
-            android:layout_width="wrap_content"
+            android:layout_width="60dip"
             android:gravity="center"
             android:text="上传时间"
             android:textColor="#99ccff"
@@ -38,9 +38,9 @@
             android:layout_marginLeft="15dip"/>
         <Spinner 
             android:layout_height="fill_parent"
-            android:layout_width="wrap_content"
+            android:layout_width="50dip"
             android:entries="@array/search_class"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:layout_marginLeft="5dip"
             android:background="#55999999"
             android:layout_marginTop="3dip"
@@ -53,9 +53,10 @@
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"/>
     <ExpandableListView 
-        android:id="@+id/dbsearch_list"
+        android:id="@+id/search_con_result_list"
         android:paddingLeft="15dip"
-        
+        android:dividerHeight="3dip"
+        android:divider="#ffffff"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent">
     </ExpandableListView>
