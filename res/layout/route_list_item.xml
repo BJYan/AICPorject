@@ -36,7 +36,7 @@
              android:layout_centerVertical="true"
              android:layout_toLeftOf="@+id/arrow"
              android:orientation="vertical"
-             android:background="@color/yellow"
+             android:background="#999999"
                >
          </LinearLayout>
           <ImageView
@@ -64,7 +64,7 @@
              android:layout_height="1dp"
              android:layout_centerVertical="true"
              android:orientation="vertical"
-             android:background="@color/yellow" 
+             android:background="#999999" 
              android:layout_marginLeft="@dimen/listview_in_line_left_right_padding"
              android:layout_marginRight="@dimen/listview_in_line_left_right_padding">
          </LinearLayout>
