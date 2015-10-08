@@ -57,6 +57,7 @@ public class myApplication extends Application
     public String mTurnEndTime = null;
       
 	private List<String> mFileList = null;	
+	private List<String> mTMPRouteFileList = null;
 	private MyJSONParse json = null;
 	private RouteDao dao = null;
 	
@@ -84,7 +85,7 @@ public class myApplication extends Application
     	ContentValues cv = new ContentValues();
     	mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd,cv);
 		for (int i = 0; i < mFileList.size(); i++) {
-			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this);
+			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this,false);
 			MLog.Logd(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
 		}
 		List<String> WorkerNumber = dao.queryWorkerNumber(mWorkerName, mWorkerPwd);
@@ -151,8 +152,8 @@ public class myApplication extends Application
      * @param context
      * @return
      */
-    public int insertNewRouteInfo(String fileName,String path,Context context){
-    	json.insertNewRouteInfo(fileName, path,context);
+    public int insertNewRouteInfo(String fileName,String path,Context context,boolean bTempRoute){
+    	json.insertNewRouteInfo(fileName, path,context,bTempRoute);
     	return 1;
     }
     

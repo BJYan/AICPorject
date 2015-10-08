@@ -36,7 +36,7 @@ import com.aic.aicdetactor.fragment.SearchFragment;
 import com.aic.aicdetactor.fragment.Search_fragment;
 
 
-public class Main extends Activity implements OnClickListener,LoginListener,BlueToothListener,ClickListenerInterface {
+public class Main extends Activity implements BlueToothListener,ClickListenerInterface {
 
 	
 
@@ -58,12 +58,12 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 		mIsLogin=intent.getExtras().getBoolean("isLog");
 		String Name=intent.getExtras().getString("name");
 		String pwd=intent.getExtras().getString("pwd");
-		 ActionBar actionBar = getActionBar();  
-		    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
+		
+		ActionBar actionBar = getActionBar();		
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
 		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);  
 		mGroup = (RadioGroup)findViewById(R.id.group);
 		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
 			@Override
 			public void onCheckedChanged(RadioGroup arg0, int arg1) {
 				// TODO Auto-generated method stub
@@ -156,43 +156,43 @@ public class Main extends Activity implements OnClickListener,LoginListener,Blue
 	
 	
 
-	@Override
-	public void onClick(View arg0) {
-		// TODO Auto-generated method stub
-		switch(arg0.getId()){
-			case R.id.login:
-			
-				break;
-		}
-	}
+//	@Override
+//	public void onClick(View arg0) {
+//		// TODO Auto-generated method stub
+//		switch(arg0.getId()){
+//			case R.id.login:
+//			
+//				break;
+//		}
+//	}
 	 
 	String TAG = "luotest";
 	
-	@Override
-	public void Click(boolean logIn,String Name,String pwd,String error) {
-		// TODO Auto-generated method stub
-		if(logIn){
-			mIsLogin = true;
-			app.mWorkerName = Name;
-			app.mWorkerPwd = pwd;
-			app.gBLogIn = true;
-			app.setUserInfo(Name, pwd);
-			//跳转到巡检项页面
-			FragmentManager fragmentManager = getFragmentManager();
-			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-			Fragment fragment = new RouteFragment();
-			Bundle args = new Bundle();
-			args.putString("name", Name);
-			args.putString("pwd", pwd);
-			fragment.setArguments(args);
-			fragmentTransaction.replace(R.id.fragment_main,fragment);			
-			fragmentTransaction.commit();
-			
-		}else{
-			Toast.makeText(this.getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();	
-//			Toast.makeText(this.getApplicationContext(), "用户名或密码有误，请再次确认重试！", Toast.LENGTH_LONG).show();	
-		}
-	}
+//	@Override
+//	public void Click(boolean logIn,String Name,String pwd,String error) {
+//		// TODO Auto-generated method stub
+//		if(logIn){
+//			mIsLogin = true;
+//			app.mWorkerName = Name;
+//			app.mWorkerPwd = pwd;
+//			app.gBLogIn = true;
+//			app.setUserInfo(Name, pwd);
+//			//跳转到巡检项页面
+//			FragmentManager fragmentManager = getFragmentManager();
+//			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//			Fragment fragment = new RouteFragment();
+//			Bundle args = new Bundle();
+//			args.putString("name", Name);
+//			args.putString("pwd", pwd);
+//			fragment.setArguments(args);
+//			fragmentTransaction.replace(R.id.fragment_main,fragment);			
+//			fragmentTransaction.commit();
+//			
+//		}else{
+//			Toast.makeText(this.getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();	
+////			Toast.makeText(this.getApplicationContext(), "用户名或密码有误，请再次确认重试！", Toast.LENGTH_LONG).show();	
+//		}
+//	}
 	@Override
 	public void Click(boolean logIn) {
 		// TODO Auto-generated method stub

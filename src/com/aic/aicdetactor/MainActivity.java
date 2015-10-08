@@ -38,6 +38,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	String TAG = "luotest.mainActivity";
 	private SharedPreferences mSharedPreferences = null;
 	private boolean bSaveUInfo = false;
+	public myApplication app = null;
 	TestSetting testControl = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		 ContentValues a= new ContentValues() ;
 		 a.put("Start", false);
 		testa(a);
+		
+		app = (myApplication) getApplication();
 		Log.d(TAG,"teat a ="+a.getAsBoolean("Start"));
 		mSaveUInfoCheckBox = (CheckBox) findViewById(R.id.checkBox1);
 		mNoLogModeCheckBox = (CheckBox) findViewById(R.id.checkBox2);
@@ -101,6 +104,11 @@ public class MainActivity extends Activity implements OnClickListener {
 				if(mSaveUInfoCheckBox.isChecked()){
 				saveUInfo();
 				}
+				app.mWorkerName = mLogName;
+				app.mWorkerPwd = mLogPwd;
+				app.gBLogIn = true;
+				app.setUserInfo(mLogName, mLogPwd);
+				
 				Intent intent = new Intent();
 				intent.putExtra("isLog", true);
 				intent.putExtra("name", mLogName);
@@ -123,9 +131,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		List<String> testlist = test.getTestFile();
 
 		if (testlist != null) {
+			boolean bTempRoute=false;
 			for (int testi = 0; testi < testlist.size(); testi++) {
 				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext());
+				if(testlist.get(testi).contains("Temp")){
+					bTempRoute=true;
+				}
+				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext(),bTempRoute);
 			}
 		} 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());

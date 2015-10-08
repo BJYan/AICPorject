@@ -7,7 +7,7 @@ import android.content.ContentValues;
 import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.T_Period;
 import com.aic.aicdetactor.data.TurnInfo;
-
+//条件判断函数
 public class ConditionalJudgement {
 	/**
 	 * bool GetUploadJsonFile(JSON周期数组,轮次数组， 当前APP时间, T_Line_Guid，m_CurPeriod，m_FileName);// 

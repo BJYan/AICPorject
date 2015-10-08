@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+      <TabHost 
+      android:id="@+id/route_tabhost" 
+      android:layout_width="fill_parent" 
+      android:layout_height="wrap_content">  
+        <LinearLayout 
+            android:orientation="vertical" 
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            >  
+            <!-- TabWidget的id属性必须为 @android:id/tabs-->              
+            <TabWidget 
+                android:id="@android:id/tabs" 
+                android:orientation="horizontal" 
+                android:layout_width="fill_parent"  
+              	android:layout_height="wrap_content" 
+              	/>  
+            <!-- FrameLayout的id属性必须为 @android:id/tabcontent-->  
+             <FrameLayout 
+                 android:id="@android:id/tabcontent" 
+                 android:layout_width="fill_parent" 
+                 android:layout_height="wrap_content">  
+                <TextView 
+                    android:id="@+id/view1" 
+                    android:layout_width="fill_parent" 
+                    android:layout_height="1dip"/>  
+                <TextView 
+                    android:id="@+id/view2" 
+                    android:layout_width="fill_parent" 
+                    android:layout_height="1dip"/>  
+                    <TextView 
+                    android:id="@+id/view3" 
+                    android:layout_width="fill_parent" 
+                    android:layout_height="1dip"/> 
+             </FrameLayout>  
+         </LinearLayout>  
+    </TabHost>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/route_vPager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:background="#000000"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
+
+</LinearLayout>

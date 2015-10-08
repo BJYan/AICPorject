@@ -8,6 +8,15 @@ public class CommonDef {
 	public static String TAG = "luotest";	
 	public static String ROUTE_CLASS_NAME = "route_Class";	
 	public static String GUID = "guid";
+	public enum RouteType{
+		//正常巡检
+		Route_Normal,
+		//特殊巡检
+		Route_Spec,
+		//临时巡检
+		Route_Tmp
+	}
+	
 	/*
 	 * 巡检文件存储位置目录
 	 */

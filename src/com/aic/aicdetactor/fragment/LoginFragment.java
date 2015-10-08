@@ -99,9 +99,13 @@ public class LoginFragment extends Fragment implements OnClickListener{
 		List<String> testlist = test.getTestFile();
 
 		if (testlist != null) {
+			boolean bTempRoute=false;
 			for (int testi = 0; testi < testlist.size(); testi++) {
 				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-				((myApplication) this.getActivity().getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getActivity());
+				if(testlist.get(testi).contains("Temp")){
+					bTempRoute=true;
+				}
+				((myApplication) this.getActivity().getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getActivity(),bTempRoute);
 			}
 		} 
 		RouteDao dao = RouteDao.getInstance(this.getActivity().getApplicationContext());

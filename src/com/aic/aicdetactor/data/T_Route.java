@@ -12,8 +12,7 @@ import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.util.Log;
-
-public class T_Route {
+public class T_Route extends Route {
 	//巡检名称，在ListView 中显示的巡检路径名称
 	 public  String Name="";
 	 //巡检GUID,同时是JSON的文件名称
@@ -37,7 +36,33 @@ public class T_Route {
 	 public List<TurnInfo> mTurnList = null;
 	 public List<WorkerInfo> mWorkerList = null;
      public JSONArray mT_PeriodArray = null;
-	public void parseBaseInfo() {
+     @Override
+     public void setPath(String path){
+    	 Path=path;
+     }
+     @Override
+	public boolean isTempRoute() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+     @Override
+     public void ParseData(Object obj){
+    	 JSONObject object=(JSONObject) obj;
+    	 try {
+    		 mGloableObject = object.getJSONObject(GlobalInfo.NodeName);
+			mLineObject = object.getJSONObject(T_Line.RootNodeName);
+			mStationArrary= (JSONArray) object.getJSONArray(KEY.KEY_STATIONINFO);
+			mTurnArrary= (JSONArray) object.getJSONArray(T_Turn.RootNodeName);
+			mWorkerArrary= (JSONArray) object.getJSONArray(T_Worker.RootNodeName);
+			JSONObject sub_object = object.getJSONObject(T_Period.RootNodeName);
+			mT_PeriodArray = sub_object.getJSONArray(T_Period.ArrayName);
+			mOrganizationObject = object.getJSONObject(T_Organization.NodeName);
+    	 } catch (Exception e) {
+				e.printStackTrace();
+			}
+     }
+	@Override
+     public void parseBaseInfo() {
 		if (mWorkerArrary != null) {
 			try {
 
@@ -91,6 +116,7 @@ public class T_Route {
 	private final String JSON_T_Turn="T_Turn";
 	private final String JSON_T_Worker="T_Worker";
 	
+	@Override
 	public void SaveData(String fileName) throws JSONException{
 		
 		//Auxiliary information node

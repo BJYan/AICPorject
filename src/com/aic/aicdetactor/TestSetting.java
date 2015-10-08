@@ -30,7 +30,7 @@ public class TestSetting {
 		SharedPreferences.Editor editor = mSharedPreferences.edit();
 		// 用putString的方法保存数据
 		if (isTest) {
-		editor.putString("file1", "/sdcard/AICNormal.txt");
+		editor.putString("file1", "/sdcard/AICTemp.txt");
 		editor.putString("file",  "/sdcard/AICNormal.txt");
 		}
 		editor.putBoolean("isTest", isTest);
@@ -56,7 +56,7 @@ public class TestSetting {
 			}
 		    File f = new File(file1);
 		    if(f!=null &&f.exists()){
-			list.add(file);
+			list.add(file1);
 		    }else{
 		    	Log.e(TAG, "getTestFile() "+ file1+" not exist");
 		    }

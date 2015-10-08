@@ -79,7 +79,7 @@ public class DataService extends Service {
             //InitDataHandler.post(update_thread);
         	switch(msg.what){
         	case INIT_DATA:
-        		init();
+        		init(msg.arg1>0?true:false);
         		break;
         	}
            
@@ -103,12 +103,12 @@ public class DataService extends Service {
     	return mRouteList;
     	}
     }
-	void init() {
+	void init(boolean bTempRoute) {
 		String name = SystemUtil.createGUID();
 		name = "AICNormal.txt";
 		mNewRouteFileStr = "/sdcard/"+name;
 		((myApplication) getApplication()).insertNewRouteInfo(name,
-				mNewRouteFileStr, this);		
+				mNewRouteFileStr, this,bTempRoute);		
 		
 		if (mRouteList == null) {
 			mRouteList = new ArrayList<Map<String, String>>();

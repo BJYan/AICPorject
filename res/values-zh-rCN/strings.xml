@@ -184,5 +184,10 @@
       <string name="station_menu_about_sto">关于振动存储</string>  
      <string name="station_menu_pic_auto">谱图自动</string> 
      
-     
+     <string name="route_temp_add">添加</string>  
+     <string name="route_temp_measure">测量</string> 
+     <string name="route_temp_device_name_hint">请输入设备名称</string>  
+     <string name="route_temp_device_code_hint">请输入设备编号</string> 
+     <string name="route_temp_checkitem_name_hint">请输入测点名称</string>  
+     <string name="route_temp_checkitem_code_hint">请输入测点编号</string> 
 </resources>

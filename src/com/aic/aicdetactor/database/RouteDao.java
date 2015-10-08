@@ -9,10 +9,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.OrganizationInfo;
+import com.aic.aicdetactor.data.Route;
 import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.T_Route;
+import com.aic.aicdetactor.data.T_Temporary_Line;
+import com.aic.aicdetactor.data.TmporaryRouteParse;
 import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.data.WorkerInfo;
 import com.aic.aicdetactor.data.upLoadInfo;
@@ -25,7 +29,7 @@ public class RouteDao {
 	private String RouteTableName = DBHelper.TABLE_SOURCE_FILE;
 	private String WorkerTableName = DBHelper.TABLE_WORKERS;
 	private String TurnTableName = DBHelper.TABLE_TURN;
-	
+	private String TempRouteTableName = DBHelper.TABLE_TEMPORARY;
 	private SQLiteDatabase mDB = null;
 
 	private RouteDao(Context cxt) {
@@ -51,19 +55,9 @@ public class RouteDao {
 		mDB = helper.getWritableDatabase();
 	}
 
-	
-	/**
-	 * 根据JSON全路径，解析插入数据库
-	 * @param filePath:JSON的全路径文件
-	 * @return
-	 */
-	public int insertNewRouteInfo(String filePath) {	
-	
-		T_Route info = 	MyJSONParse.getPlanInfo(filePath);
-		info.parseBaseInfo();
-		
-
+	private void insertNormalRouteInfo(Route infos){
 		Cursor cursor = null;		
+		T_Route info = (T_Route) infos;
 		//查数据表中是否存在已有的GUID，如果没有的话 ，直接插入
 		cursor = mDB.query(RouteTableName,
 					null,
@@ -220,6 +214,91 @@ public class RouteDao {
 					});
 			}
 			if(cursor != null){cursor.close();}
+		}
+		
+	}
+	
+	private void insertTempRouteInfo(T_Temporary_Line info) {
+		Cursor cursor = mDB.query(DBHelper.TABLE_TEMPORARY,
+				null, DBHelper.Temporary_Table.T_Temporary_Line_Guid + "=?",
+				new String[] { info.T_Temporary_Line_Guid }, null, null, null);
+		if (cursor == null || cursor.getCount() < 1) {
+
+			String sql = "insert into " + TempRouteTableName + "("
+					+ DBHelper.Temporary_Table.Title + ","
+					+ DBHelper.Temporary_Table.Content + ","
+					+ DBHelper.Temporary_Table.GroupName + ","
+					+ DBHelper.Temporary_Table.CorporationName + ","
+					+ DBHelper.Temporary_Table.WorkShopName + ","
+					+ DBHelper.Temporary_Table.DevName + ","
+					+ DBHelper.Temporary_Table.DevSN + ","
+					+ DBHelper.Temporary_Table.Task_Mode + ","
+					+ DBHelper.Temporary_Table.T_Worker_R_Name + ","
+					+ DBHelper.Temporary_Table.T_Worker_R_Mumber + ","
+					+ DBHelper.Temporary_Table.Create_Time + ","
+					+ DBHelper.Temporary_Table.Receive_Time + ","
+					+ DBHelper.Temporary_Table.Feedback_Time + ","
+					+ DBHelper.Temporary_Table.Execution_Time + ","
+					+ DBHelper.Temporary_Table.Finish_Time + ","
+					+ DBHelper.Temporary_Table.Result + ","
+					+ DBHelper.Temporary_Table.Remarks + ","
+					+ DBHelper.Temporary_Table.Unit + ","
+					+ DBHelper.Temporary_Table.T_Measure_Type_Id + ","
+					+ DBHelper.Temporary_Table.T_Measure_Type_Code + ","
+					+ DBHelper.Temporary_Table.T_Item_Abnormal_Grade_Id + ","
+					+ DBHelper.Temporary_Table.T_Item_Abnormal_Grade_Code + ","
+					+ DBHelper.Temporary_Table.UpLimit + ","
+					+ DBHelper.Temporary_Table.Middle_Limit + ","
+					+ DBHelper.Temporary_Table.DownLimit + ","
+					+ DBHelper.Temporary_Table.T_Temporary_Line_Guid + ","
+					+ DBHelper.Temporary_Table.Guid + ","
+					+ DBHelper.Temporary_Table.Is_Original_Line + ","
+					+ DBHelper.Temporary_Table.Is_Readed + ")values(?,?,?,?,?,"
+					+ "?,?,?,?,?," + "?,?,?,?,?," + "?,?,?,?,?," + "?,?,?,?,?,"
+					+ "?,?,?,?" + ")";
+
+			// SQLiteDatabase db = helper.getWritableDatabase();
+			mDB.execSQL(sql, new Object[] { info.Title, info.Content,
+					info.GroupName, info.CorporationName, info.WorkShopName,
+					info.DevName, info.DevSN, info.Task_Mode,
+					info.T_Worker_R_Name, info.T_Worker_R_Mumber,
+					info.Create_Time, info.Receive_Time, info.Feedback_Time,
+					info.Execution_Time, info.Finish_Time, info.Result,
+					info.Remarks, info.Unit, info.T_Measure_Type_Id,
+					info.T_Measure_Type_Code, info.T_Item_Abnormal_Grade_Id,
+					info.T_Item_Abnormal_Grade_Code, info.UpLimit,
+					info.Middle_Limit, info.DownLimit,
+					info.T_Temporary_Line_Guid, info.Data_Exist_Guid,
+					info.Is_Original_Line, info.Is_Readed
+
+			});
+
+		}
+		if (cursor != null) {
+			cursor.close();
+		}
+	}
+	/**
+	 * 根据JSON全路径，解析插入数据库
+	 * @param filePath:JSON的全路径文件
+	 * @return
+	 */
+	public int insertNewRouteInfo(String filePath,boolean bTempRoute) {	
+	
+		Route info = 	 MyJSONParse.getPlanInfo(filePath,bTempRoute);
+		info.parseBaseInfo();
+		info.setPath(filePath);
+		if(!bTempRoute){
+		insertNormalRouteInfo(info);
+		}else{
+			TmporaryRouteParse rp=(TmporaryRouteParse) info;
+			List<T_Temporary_Line>list =rp.getList();
+			if(list!=null){
+				for(int i=0;i<list.size();i++){
+				insertTempRouteInfo(list.get(i));
+				}
+			}
+			
 		}
 		
 		return 1;
@@ -431,6 +510,100 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 		return guidList;
 }
 
+
+private void queryNormalRoute(List<String> guidList,List<String> fileNameList,String name,String pwsd,ContentValues cv){
+	String error = "";
+	//查询工人信息
+	Cursor cur = mDB.query(WorkerTableName, null,
+			DBHelper.Plan_Worker_Table.Name + "=?" + " and "
+					+ DBHelper.Plan_Worker_Table.newPwd + "=? and "
+					+ DBHelper.Plan_Worker_Table.IsModifyPwd + "=?",
+			new String[] { name, pwsd, "1" }, null, null, null);
+	if (cur != null && cur.getCount() > 0) {
+		Log.d("luotest",
+				"queryLogIn()  cur != null cur.count =" + cur.getCount());
+		cur.moveToFirst();
+		for (int n = 0; n < cur.getCount(); n++) {
+			String GUID = cur
+					.getString(cur
+							.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+			guidList.add(GUID);
+			cur.moveToNext();
+			Log.d("luotest", "queryLogIn()  searvher worker table GUID is"
+					+ GUID);
+		}
+		cur.close();
+		cur = null;
+	} else {
+		if(cur !=null){
+			cur.close();
+			cur = null;
+		}
+		cur = mDB.query(WorkerTableName, null,
+				DBHelper.Plan_Worker_Table.Name + "=?" + " and "
+						+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
+				new String[] { name, pwsd}, null, null, null);
+		if (cur != null && cur.getCount() > 0) {
+			Log.d("luotest",
+					"queryLogIn()  cur != null cur.count ="
+							+ cur.getCount());
+			cur.moveToFirst();
+			for (int n = 0; n < cur.getCount(); n++) {
+				String GUID = cur
+						.getString(cur
+								.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+				guidList.add(GUID);
+				cur.moveToNext();
+				Log.d("luotest",
+						"queryLogIn()  searvher worker table GUID is"
+								+ GUID);
+			}
+			cur.close();
+			cur = null;
+		} else {
+			Log.d("luotest",
+					"queryLogIn() searvher worker table cur is null");
+			error = "没有您的信息，请核实再登录";
+		}
+	}
+
+	if (cur != null) {
+		cur.close();
+	}
+
+	
+
+	for (int k = 0; k < guidList.size(); k++) {
+		Log.d("luotest", " queryLogIn() search worker table " + k);
+		Cursor cursor2 = mDB.query(RouteTableName,
+				new String[] { DBHelper.SourceTable.Path },
+				DBHelper.SourceTable.PLANGUID + "=?",
+				new String[] { guidList.get(k) }, null, null, null);
+		if (cursor2 != null && cursor2.getCount() > 0) {
+			cursor2.moveToFirst();
+			for (int i = 0; i < cursor2.getCount(); i++) {
+				String path = cursor2.getString(0);
+				fileNameList.add(path);
+				cursor2.moveToNext();
+				Log.d("luotest",
+						" queryLogIn() search route table  result path is "
+								+ path);
+			}
+			cursor2.close();
+			cursor2 = null;
+		} else {
+			Log.d("luotest",
+					" queryLogIn() search route table cursor2 is null");
+			error = "没有您对应的巡检任务";
+		}
+
+		if (cursor2 != null) {
+			cursor2.close();
+		}
+	}
+	Log.d("luotest", "queryLogIn() end  error=" + error);
+	cv.put("error", error);
+}
 /**
  * 查询工人信息，如果工人信息正确，调用GetUploadJsonFile 函数，
  * @param name
@@ -441,100 +614,38 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 	public List<String> queryLogIn(String name, String pwsd, ContentValues cv) {
 		Log.d("luotest", "queryLogIn()  name is" + name + ",pwsd is " + pwsd);
 		List<String> guidList = new ArrayList<String>();
-		String error = "";
-		//查询工人信息
-		Cursor cur = mDB.query(WorkerTableName, null,
-				DBHelper.Plan_Worker_Table.Name + "=?" + " and "
-						+ DBHelper.Plan_Worker_Table.newPwd + "=? and "
-						+ DBHelper.Plan_Worker_Table.IsModifyPwd + "=?",
-				new String[] { name, pwsd, "1" }, null, null, null);
+		List<String> fileNameList = new ArrayList<String>();
+		CommonDef.RouteType type=CommonDef.RouteType.Route_Normal;
+		if(type==CommonDef.RouteType.Route_Normal||type==CommonDef.RouteType.Route_Spec){
+		queryNormalRoute(guidList,fileNameList,name,pwsd,cv);
+		}else if(type==CommonDef.RouteType.Route_Tmp){
+			queryTempRouteInfo(fileNameList);
+		}
+		return fileNameList;
+	}
+	//查询临时路线
+	private void queryTempRouteInfo(List<String> fileNameList){
+		Cursor cur = mDB.query(TempRouteTableName, 
+				new String[]{DBHelper.Temporary_Table.Title,DBHelper.Temporary_Table.Content},
+				null,null, null, null, null);
 		if (cur != null && cur.getCount() > 0) {
 			Log.d("luotest",
-					"queryLogIn()  cur != null cur.count =" + cur.getCount());
+					"queryTempRouteInfo()  cur != null cur.count =" + cur.getCount());
 			cur.moveToFirst();
 			for (int n = 0; n < cur.getCount(); n++) {
-				String GUID = cur
+				String title = cur
 						.getString(cur
-								.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
-				guidList.add(GUID);
+								.getColumnIndex(DBHelper.Temporary_Table.Title));
+				fileNameList.add(title);
 				cur.moveToNext();
-				Log.d("luotest", "queryLogIn()  searvher worker table GUID is"
-						+ GUID);
+				Log.d("luotest", "queryTempRouteInfo()  title is"
+						+ title);
 			}
 			cur.close();
 			cur = null;
-		} else {
-			if(cur !=null){
-				cur.close();
-				cur = null;
-			}
-			cur = mDB.query(WorkerTableName, null,
-					DBHelper.Plan_Worker_Table.Name + "=?" + " and "
-							+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
-					new String[] { name, pwsd}, null, null, null);
-			if (cur != null && cur.getCount() > 0) {
-				Log.d("luotest",
-						"queryLogIn()  cur != null cur.count ="
-								+ cur.getCount());
-				cur.moveToFirst();
-				for (int n = 0; n < cur.getCount(); n++) {
-					String GUID = cur
-							.getString(cur
-									.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
-					guidList.add(GUID);
-					cur.moveToNext();
-					Log.d("luotest",
-							"queryLogIn()  searvher worker table GUID is"
-									+ GUID);
-				}
-				cur.close();
-				cur = null;
-			} else {
-				Log.d("luotest",
-						"queryLogIn() searvher worker table cur is null");
-				error = "没有您的信息，请核实再登录";
-			}
 		}
-
-		if (cur != null) {
-			cur.close();
-		}
-
-		List<String> fileNameList = new ArrayList<String>();
-
-		for (int k = 0; k < guidList.size(); k++) {
-			Log.d("luotest", " queryLogIn() search worker table " + k);
-			Cursor cursor2 = mDB.query(RouteTableName,
-					new String[] { DBHelper.SourceTable.Path },
-					DBHelper.SourceTable.PLANGUID + "=?",
-					new String[] { guidList.get(k) }, null, null, null);
-			if (cursor2 != null && cursor2.getCount() > 0) {
-				cursor2.moveToFirst();
-				for (int i = 0; i < cursor2.getCount(); i++) {
-					String path = cursor2.getString(0);
-					fileNameList.add(path);
-					cursor2.moveToNext();
-					Log.d("luotest",
-							" queryLogIn() search route table  result path is "
-									+ path);
-				}
-				cursor2.close();
-				cursor2 = null;
-			} else {
-				Log.d("luotest",
-						" queryLogIn() search route table cursor2 is null");
-				error = "没有您对应的巡检任务";
-			}
-
-			if (cursor2 != null) {
-				cursor2.close();
-			}
-		}
-		Log.d("luotest", "queryLogIn() end  error=" + error);
-		cv.put("error", error);
-		return fileNameList;
+		if(cur != null){cur.close();}
 	}
-	
 	/**
 	 * 根据传入的文件路径 解析路线信息
 	 * @param filelist

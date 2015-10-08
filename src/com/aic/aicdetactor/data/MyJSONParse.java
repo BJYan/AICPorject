@@ -56,22 +56,22 @@ public class MyJSONParse {
 	 */
 	public void SaveCheckStatus(ContentValues cv ){			
 		
-		// 实例化SharedPreferences对象（第一步）
-		if(mSharedPreferences ==null){
-			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-		}
-		// 实例化SharedPreferences.Editor对象（第二步）
-		SharedPreferences.Editor editor = mSharedPreferences.edit();
-		// 用putString的方法保存数据
-		editor.putLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX));
-		editor.putLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX));
-		editor.putLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX));
-		editor.putLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX));
-		editor.putLong(CommonDef.check_item_info.IS_REVERSE_CHECKING, cv.getAsLong(CommonDef.check_item_info.IS_REVERSE_CHECKING));
-		editor.putString(CommonDef.GUID, cv.getAsString(CommonDef.GUID));
-		editor.putString(CommonDef.PATH_DIRECTOR, cv.getAsString(CommonDef.PATH_DIRECTOR));
-		// 提交当前数据
-		editor.commit();
+//		// 实例化SharedPreferences对象（第一步）
+//		if(mSharedPreferences ==null){
+//			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//		}
+//		// 实例化SharedPreferences.Editor对象（第二步）
+//		SharedPreferences.Editor editor = mSharedPreferences.edit();
+//		// 用putString的方法保存数据
+//		editor.putLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX));
+//		editor.putLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX));
+//		editor.putLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX));
+//		editor.putLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX, cv.getAsLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX));
+//		editor.putLong(CommonDef.check_item_info.IS_REVERSE_CHECKING, cv.getAsLong(CommonDef.check_item_info.IS_REVERSE_CHECKING));
+//		editor.putString(CommonDef.GUID, cv.getAsString(CommonDef.GUID));
+//		editor.putString(CommonDef.PATH_DIRECTOR, cv.getAsString(CommonDef.PATH_DIRECTOR));
+//		// 提交当前数据
+//		editor.commit();
 	}
 	
 	/**
@@ -101,24 +101,23 @@ public class MyJSONParse {
 		if(mRouteDao== null){
 		mRouteDao = RouteDao.getInstance(mContext);}
 		
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-		// 实例化SharedPreferences.Editor对象（第二步）
-		
-		//获取当前巡检的索引信息
-		mRouteIndex = (int) mSharedPreferences.getLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX,0);
-		mStationIndex = (int) mSharedPreferences.getLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX,0);
-		mDeviceIndex = (int) mSharedPreferences.getLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX,0);
-		mPartItemIndex = (int) mSharedPreferences.getLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX,0);
-		mIsReverseChecking = (int) mSharedPreferences.getLong(CommonDef.check_item_info.IS_REVERSE_CHECKING,0);
-		mCurrentFileName = mSharedPreferences.getString(CommonDef.GUID,null);
-		mSavePath = mSharedPreferences.getString(CommonDef.PATH_DIRECTOR,null);		
+//		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//		// 实例化SharedPreferences.Editor对象（第二步）
+//		
+//		//获取当前巡检的索引信息
+//		mRouteIndex = (int) mSharedPreferences.getLong(CommonDef.route_info.LISTVIEW_ITEM_INDEX,0);
+//		mStationIndex = (int) mSharedPreferences.getLong(CommonDef.station_info.LISTVIEW_ITEM_INDEX,0);
+//		mDeviceIndex = (int) mSharedPreferences.getLong(CommonDef.device_info.LISTVIEW_ITEM_INDEX,0);
+//		mPartItemIndex = (int) mSharedPreferences.getLong(CommonDef.check_item_info.LISTVIEW_ITEM_INDEX,0);
+//		mIsReverseChecking = (int) mSharedPreferences.getLong(CommonDef.check_item_info.IS_REVERSE_CHECKING,0);
+//		mCurrentFileName = mSharedPreferences.getString(CommonDef.GUID,null);
+//		mSavePath = mSharedPreferences.getString(CommonDef.PATH_DIRECTOR,null);		
 		
 		//再查数据库中是否有完成的巡检路线，加载到mRouteList中
 		mRouteList = mRouteDao.getRouteInfoByFilePath(list);
 		
 		for(int index =0;index <mRouteList.size();index++){
 			String path = mRouteList.get(index).Path;
-			
 			//从此开始关联各个RouteInfo相关项
 			parseData(index,path);
 		}
@@ -129,7 +128,7 @@ public class MyJSONParse {
 	/*
 	 * 插入新的巡检计划，返回数值是未完成的巡检计划数量,并刷新mRouteList
 	 */
-	public int insertNewRouteInfo(String fileName,String path,Context context){
+	public int insertNewRouteInfo(String fileName,String path,Context context,boolean bTempRoute){
 		if(fileName == null || path == null){
 			return 0;
 		}
@@ -140,7 +139,7 @@ public class MyJSONParse {
 			mRouteDao = RouteDao.getInstance(mContext);
 			}
 		//if(mRouteDao.getCount()<12){		
-		mRouteDao.insertNewRouteInfo(path);
+		mRouteDao.insertNewRouteInfo(path,bTempRoute);
 		//}
 		return 1;
 	}
@@ -173,28 +172,29 @@ public class MyJSONParse {
 		mRouteDao.insertUploadFile(up);
 		return 1;
 	}
-	public static T_Route getPlanInfo(String Routepath){
-		T_Route route = new T_Route();
+	public static Route getPlanInfo(String Routepath,boolean isTempRoute){
+		Route route =null;
+		
 		String data = SystemUtil.openFile(Routepath);	
-		route.Path = Routepath;
+		
 		if (data != null) {
 			
 			try {
+				if(!isTempRoute){
+					route = new T_Route();
+				}else{
+					route = new TmporaryRouteParse();
+				}
+				//route.setPath(Routepath);
 				JSONTokener jsonTokener = new JSONTokener(data);		
 				JSONObject object = (JSONObject) jsonTokener.nextValue();
-				
-				route.mGloableObject = object.getJSONObject(GlobalInfo.NodeName);
-				route.mLineObject = object.getJSONObject(T_Line.RootNodeName);
-				route.mStationArrary= (JSONArray) object.getJSONArray(KEY.KEY_STATIONINFO);
-				route.mTurnArrary= (JSONArray) object.getJSONArray(T_Turn.RootNodeName);
-				route.mWorkerArrary= (JSONArray) object.getJSONArray(T_Worker.RootNodeName);
-				JSONObject sub_object = object.getJSONObject(T_Period.RootNodeName);
-				route.mT_PeriodArray = sub_object.getJSONArray(T_Period.ArrayName);
-				route.mOrganizationObject = object.getJSONObject(T_Organization.NodeName);
+				route.ParseData(object);				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
+		}else{
+			Log.e("luotest", "getPlanInfo() data is null, Routepath is "+Routepath);
 		}		
 		return route;
 	}
