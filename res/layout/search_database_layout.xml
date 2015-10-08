@@ -8,7 +8,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/search_database_list"
-        android:dividerHeight="5dip"
-        android:paddingTop="5dip"></ExpandableListView>
+        android:dividerHeight="5dip" ></ExpandableListView>
 
 </LinearLayout>

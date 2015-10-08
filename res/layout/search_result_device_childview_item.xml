@@ -6,17 +6,10 @@
     android:paddingLeft="40dip"
     android:paddingRight="20dip">
     <View 
-        android:id="@+id/search_result_line"
-        android:layout_height="1dip"
-        android:layout_width="fill_parent"
-        android:background="#000000"
-        android:padding="5dip"/>
-    <View 
         android:layout_width="3dip"
         android:layout_height="150dip"
         android:background="#ffffff"
         android:id="@+id/search_result_middle_line"
-        android:layout_below="@id/search_result_line"
         android:layout_centerHorizontal="true"/>
 	<LinearLayout 
 	    android:layout_width="fill_parent"

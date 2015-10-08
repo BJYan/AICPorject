@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
-    <ImageView 
+    <RadioButton 
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginLeft="10dip"
-        android:src="@drawable/search_item_radiobutton_nocheck"
         android:layout_gravity="center"
-        android:paddingTop="15dip"
-        android:paddingBottom="15dip"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"/>
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:focusable="false"/>
     <TextView 
         android:layout_height="fill_parent"
         android:layout_width="wrap_content"

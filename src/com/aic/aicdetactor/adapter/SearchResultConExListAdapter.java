@@ -34,7 +34,7 @@ public class SearchResultConExListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
 		if (arg3 == null) {			
-			arg3 = inflater.inflate(R.layout.search_result_device_childview_item, null);
+			arg3 = inflater.inflate(R.layout.search_condition_result_child_item, null);
 		}
 		return arg3;
 	}
