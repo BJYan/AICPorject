@@ -100,8 +100,8 @@ public class RouteFragment extends Fragment {
         TabWidget tabWidget =tabHost.getTabWidget();
         for (int i =0; i < tabWidget.getChildCount(); i++) {  
             //修改Tabhost高度和宽度
-            tabWidget.getChildAt(i).getLayoutParams().height = 60;  
-            tabWidget.getChildAt(i).getLayoutParams().width = 65;
+            //tabWidget.getChildAt(i).getLayoutParams().height = 60;  
+            //tabWidget.getChildAt(i).getLayoutParams().width = 65;
             //修改显示字体大小
             TextView tv = (TextView) tabWidget.getChildAt(i).findViewById(android.R.id.title);
             tv.setTextSize(15);

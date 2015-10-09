@@ -86,56 +86,10 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		// TODO Auto-generated method stub
 		return arg1;
 	}
-
-	public ExpandableListView getExpandableListView(){
-		ExpandableListView ExListView = new ExpandableListView(context);
-		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ExListView.setPadding(40, 5, 10, 0);
-		ExListView.setLayoutParams(lp);
-		LayoutParams params = new LayoutParams();
-		params.height=LayoutParams.MATCH_PARENT;
-		params.width=LayoutParams.MATCH_PARENT;
-		ExListView.setLayoutParams(params);
-		ExListView.setGroupIndicator(null);
-		return ExListView;
-	}
-	//是否三级list
-	final boolean LEVEL3=true;
+	
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
-		if(!LEVEL3){
-		final ExpandableListView thrGroupView = getExpandableListView();
-		final PartItemListAdapter thrExListAdapter = new PartItemListAdapter(context, mActivity,mChildrenList.get(arg0));
-		
-		thrGroupView.setOnGroupExpandListener(new OnGroupExpandListener() {
-
-			@Override
-			public void onGroupExpand(int arg0) {
-				// TODO Auto-generated method stub
-				thrGroupView.removeAllViewsInLayout();
-				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						CommonDef.LISTITEM_HEIGHT*mChildrenList.size());
-				thrGroupView.setLayoutParams(lp);
-			}
-		});
-		
-		thrGroupView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-
-			@Override
-			public void onGroupCollapse(int arg0) {
-				// TODO Auto-generated method stub
-				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						LayoutParams.WRAP_CONTENT);
-				thrGroupView.setLayoutParams(lp);
-			}
-			
-		});
-		thrGroupView.setAdapter(thrExListAdapter);
-		thrGroupView.setSelectedGroup(arg1);
-		return thrGroupView;
-		} else {
-
 				GroupViewHolder holder = null;
 
 				if (arg3 == null) {
@@ -190,7 +144,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 				holder.NameText.setText(mChildrenList.get(arg0).get(arg1)
 						.getCheckContent());
 			return arg3;
-		}
 	}
 
 	@Override

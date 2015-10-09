@@ -81,7 +81,7 @@ public class StationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 			setContentView(R.layout.station_activity);
@@ -96,11 +96,12 @@ public class StationActivity extends Activity {
 			
 			TextView planNameTextView  =(TextView)findViewById(R.id.route_type_name);
 			planNameTextView.setText(routeName);	
-			
-			ActionBar bar=getActionBar();
+			TextView title_bar_noback_name = (TextView) findViewById(R.id.title_bar_noback_name);
+			title_bar_noback_name.setText(oneCatalog);
+			/*ActionBar bar=getActionBar();
 			bar.setLogo(null);;
 			bar.setDisplayUseLogoEnabled(false);
-			bar.setTitle(oneCatalog);
+			bar.setTitle(oneCatalog);*/
 			
 			//打卡
 			ImageView imageViewka = (ImageView)findViewById(R.id.ka);
@@ -132,7 +133,6 @@ public class StationActivity extends Activity {
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
-			mListView.setDividerHeight(20);
 			//mListView.setGroupIndicator(this.getResources().getDrawable(R.drawable.arrow));
 			mListView.setGroupIndicator(null);
 			//mListView.setChildIndicator(null);

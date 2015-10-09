@@ -4,189 +4,232 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" 
     android:background="@color/white"
-    android:paddingTop="15dip"
-    android:paddingLeft="10dip"
-    android:paddingRight="10dip">
-           <TextView
-           android:id="@+id/textView1"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:text="@string/up_base_info"
-           android:textSize="@dimen/normal_one_text_size" />
-       <!-- 服务器IP -->
-		 <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear1" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">
-		        <TextView
-		           android:id="@+id/textView2"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_service_ip"
-		           android:textSize="@dimen/normal_two_text_size" />
-		
-		     <TextView
-		           android:id="@+id/textView_up_ip"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		         
-		           android:textSize="@dimen/normal_two_text_size" />		
-        </LinearLayout>
-        
-        <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear2" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">
-		        <TextView
-		           android:id="@+id/textView4"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_pda_code"
-		           android:textSize="@dimen/normal_two_text_size" />
-		
-		     <TextView
-		           android:id="@+id/textView_up_pda_code"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		          
-		           android:textSize="@dimen/normal_two_text_size" />		
-        </LinearLayout>
-        <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear3" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">
-		        <TextView
-		           android:id="@+id/textView6"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_pda_ip"
-		           android:textSize="@dimen/normal_two_text_size" />
-		
-		     <TextView
-		           android:id="@+id/textView_up_pda_ip"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		          
-		           android:textSize="@dimen/normal_two_text_size" />		
-        </LinearLayout>
-        <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear4" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">
-		        <TextView
-		           android:id="@+id/textView8"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_pda_mac"
-		           android:textSize="@dimen/normal_two_text_size" />
-		
-		     <TextView
-		           android:id="@+id/textView_up_pda_mac"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		          
-		           android:textSize="@dimen/normal_two_text_size" />		
-        </LinearLayout>
-         <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear5" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">		     
-		     <CheckBox
-		           android:id="@+id/checkbox_up_auto_up"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_auto_up"
-		          
-		           android:textSize="@dimen/normal_two_text_size" />		
-        </LinearLayout>
-        <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:id="@+id/up_linear15" 
-	       android:orientation="horizontal"
-	       android:layout_marginLeft="40dp">		     
-		     <CheckBox
-		           android:id="@+id/uped_delete_checkbox1"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_uped_delete"
-		          
-		           android:textSize="@dimen/normal_two_text_size"/>		
-        </LinearLayout>
-          <TextView
-		           android:id="@+id/textView10"
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:text="@string/up_type"
-		           android:textSize="@dimen/normal_one_text_size" />
-		 <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"	       
-	       android:orientation="vertical"
-	        android:layout_marginLeft="40dp"
-	      >		     
-		    <RadioGroup
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:orientation="vertical" 
-		        android:id="@+id/up_group"		        
-		        android:gravity="left"
-		        android:padding="1dp">
-		        <RadioButton
-		            android:id="@+id/up_radioButton1"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		            android:text="@string/up_type_xj"
-		            android:textSize="@dimen/normal_two_text_size"
-		            />
-		
-		        <RadioButton
-		            android:id="@+id/up_radioButton2"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"		           
-		            android:text="@string/up_type_temp"
-		            android:textSize="@dimen/normal_two_text_size"
-		           />
-		
-		        <RadioButton
-		            android:id="@+id/up_radioButton3"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"		           
-		           android:text="@string/up_type_id"
-		           android:textSize="@dimen/normal_two_text_size"
-		            />
-		         <RadioButton
-		            android:id="@+id/up_radioButton4"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"		           
-		           android:text="@string/up_type_pda_info"
-		           android:textSize="@dimen/normal_two_text_size"
-		            />
-		</RadioGroup> 	
-        </LinearLayout>
-         <LinearLayout
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"	       
-	       android:orientation="vertical"
-	        android:layout_marginLeft="40dp"
-	        android:gravity="center"
-	      >	
-	      <Button 
-	          android:id="@+id/up_up"
-	          android:layout_width="wrap_content"
-		      android:layout_height="wrap_content"
-		      android:text="@string/up_up"
-		      android:textSize="@dimen/button_text_size"	/>	  
-	       </LinearLayout>
-
+    android:paddingTop="10dip"
+    android:paddingLeft="5dip"
+    android:paddingRight="5dip"
+    android:paddingBottom="5dip">
+	<RelativeLayout 
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:background="#55999999">
+	    <TextView 
+	        android:id="@+id/network_upload_ip"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="上传目标地址"
+	        android:layout_marginLeft="5dip"
+	        android:layout_marginTop="5dip"/>
+	    <EditText 
+	        android:id="@+id/network_upload_ip_4"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="000"
+	        android:layout_alignParentRight="true"
+	        android:background="#ffffff"
+	        android:layout_below="@id/network_upload_ip"
+	        android:layout_marginRight="5dip"
+	        android:layout_marginTop="5dip" />
+	    <EditText 
+	        android:id="@+id/network_upload_ip_3"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="000"
+	        android:background="#ffffff"
+	        android:layout_toLeftOf="@id/network_upload_ip_4"
+	        android:layout_below="@id/network_upload_ip"
+	        android:layout_marginRight="5dip"
+	        android:layout_marginTop="5dip" />
+	    <EditText 
+	        android:id="@+id/network_upload_ip_2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="000"
+	        android:background="#ffffff"
+	        android:layout_toLeftOf="@id/network_upload_ip_3"
+	        android:layout_below="@id/network_upload_ip"
+	        android:layout_marginRight="5dip"
+	        android:layout_marginTop="5dip" />
+	    <EditText 
+	        android:id="@+id/network_upload_ip_1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="000"
+	        android:background="#ffffff"
+	        android:layout_toLeftOf="@id/network_upload_ip_2"
+	        android:layout_below="@id/network_upload_ip"
+	        android:layout_marginRight="5dip"
+	        android:layout_marginTop="5dip" />
+	    <TextView 
+	        android:id="@+id/network_upload_ip_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content" 
+	        android:text="服务器IP："
+	        android:layout_toLeftOf="@id/network_upload_ip_1"
+	        android:layout_below="@id/network_upload_ip"
+	        android:layout_marginRight="5dip"
+	        android:layout_marginTop="5dip" />
+	</RelativeLayout>
+	<LinearLayout 
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:background="#55999999"
+	    android:layout_marginTop="5dip"
+		android:orientation="vertical">
+	    <TextView 
+	        android:id="@+id/network_upload_data_type"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="上传数据类型"
+	        android:layout_marginLeft="5dip"
+	        android:layout_marginTop="5dip"
+	        android:layout_marginBottom="5dip"/>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <CheckBox
+	        	android:id="@+id/network_upload_data_type_cb1" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_data_type_1" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="日常巡检计划数据" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <CheckBox
+	        	android:id="@+id/network_upload_data_type_cb2" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_data_type_2" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="特殊巡检计划数据" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <CheckBox
+	        	android:id="@+id/network_upload_data_type_cb3" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_data_type_3" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="临时测量数据" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <CheckBox
+	        	android:id="@+id/network_upload_data_type_cb4" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_data_type_4" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="任务执行数据" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <CheckBox
+	        	android:id="@+id/network_upload_data_type_cb5" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_data_type_5" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="本机信息" />
+	    </LinearLayout>
+	</LinearLayout>
+	<LinearLayout 
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:background="#55999999"
+	    android:layout_marginTop="5dip"
+		android:orientation="vertical">
+	    <RelativeLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:gravity="center_vertical">
+	        <TextView 
+	        	android:id="@+id/network_upload_type"
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="上传数据方式"
+	        	android:layout_marginLeft="5dip"
+	        	android:layout_marginTop="5dip"
+	        	android:layout_marginBottom="5dip"/>
+	        <Switch
+	            android:layout_height="wrap_content"
+	            android:layout_width="wrap_content"
+	            android:textOn="自动"
+	            android:textOff="手动"
+	            android:layout_alignParentRight="true"
+	            android:layout_marginRight="10dip"></Switch>
+	    </RelativeLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <RadioButton
+	        	android:id="@+id/network_upload_type_rb1" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_type_1" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="仅WIFI情况下自动上传" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <RadioButton
+	        	android:id="@+id/network_upload_type_rb2" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_type_2" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="仅USB情况下自动上传" />
+	    </LinearLayout>
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:orientation="horizontal"
+	        android:layout_marginLeft="50dip">
+	        <RadioButton
+	        	android:id="@+id/network_upload_type_rb3" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content" />
+	        <TextView
+	        	android:id="@+id/network_upload_type_3" 
+	        	android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:text="只要通讯连接就自动上传" />
+	    </LinearLayout>
+	 </LinearLayout>
 </LinearLayout>

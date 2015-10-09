@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    <include 
+        layout="@layout/common_title_bar_noback"></include>"
     <FrameLayout 
         android:id="@+id/fragment_main"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        />"
-<include 
-    layout="@layout/bbar"
-    />
+        />
+	<include 
+    	layout="@layout/button_bar" />
 </LinearLayout>

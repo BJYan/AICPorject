@@ -2,44 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom|center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:background="#ff0fefff" >
+    android:background="@drawable/login_shadow_background" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="223dp"
-        android:layout_height="wrap_content"
-        android:src="@drawable/xunjian_lost" />
-
+	<FrameLayout 
+	    android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="100dip">
+	    <ImageView
+        	android:id="@+id/imageView1"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/cloud_logo" />
+	    <TextView 
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:text="AIC"
+	        android:textSize="56dp"
+	        android:layout_gravity="center"/>
+	</FrameLayout>
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/devicename"
-        android:layout_gravity="center"
-        android:layout_margin="20dp"
+        android:layout_gravity="center" 
         android:textSize="@dimen/normal_one_text_size" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="clip_vertical"
-        android:orientation="vertical">"
+        android:orientation="vertical"
+        android:layout_marginTop="10dip">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:padding="1dp" 
-            android:weightSum="3">
+            android:weightSum="3"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip">
             <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/user_name"
             android:layout_weight="1"
-           android:textSize="@dimen/normal_text_size"/>
+           android:textSize="@dimen/normal_text_size"
+           android:textColor="#ffffff"/>
              <EditText
             android:id="@+id/editText1"
             android:layout_width="wrap_content"
@@ -47,26 +59,28 @@
             android:layout_weight="2"
             android:singleLine="true"  
             android:ems="10" 
-             android:hint="请输入..."  
-             android:background="@drawable/edittextbackgroud"
+            android:hint="请输入..."  
+            android:background="@drawable/edittextbackgroud"
             android:text="@string/default_username">
-
-            <requestFocus />
-        </EditText>
+            	<requestFocus />
+        	</EditText>
         </LinearLayout>
-<LinearLayout
+	<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:padding="1dp" 
-            android:weightSum="3">
+            android:weightSum="3"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="5dip">
             <TextView
             android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/user_pswd"
             android:layout_weight="1"
-           android:textSize="@dimen/normal_text_size"/>
+           android:textSize="@dimen/normal_text_size"
+           android:textColor="#ffffff"/>
              <EditText
             android:id="@+id/editText2"
             android:layout_width="wrap_content"
@@ -115,7 +129,6 @@
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_margin="10dp"
         android:orientation="horizontal">"
     <Button
         android:id="@+id/button1"
@@ -124,8 +137,7 @@
         android:text="@string/login"
         android:layout_gravity="center" 
         android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:layout_margin="20dp"/>
+        android:paddingRight="20dp"/>
 </LinearLayout>
    
         <TextView
@@ -135,6 +147,7 @@
             android:text="@string/infors"
             android:gravity="center"
             android:textSize="@dimen/normal_text_size"
-            android:layout_margin="10dp" />
+            android:textColor="#ffffff"
+            android:layout_margin="20dp" />
 
 </LinearLayout>

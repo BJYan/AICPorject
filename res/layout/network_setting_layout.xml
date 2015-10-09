@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@color/white"
-    android:paddingTop="15dip"
-    android:paddingLeft="10dip"
-    android:paddingRight="10dip">
+    android:paddingTop="5dip"
+    android:paddingLeft="5dip"
+    android:paddingRight="5dip">
         <ExpandableListView 
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
-        	android:dividerHeight="10dip"
+        	android:dividerHeight="2dip"
+        	android:divider="#ffffff"
         	android:id="@+id/network_setting_list"></ExpandableListView>
 
 </LinearLayout>

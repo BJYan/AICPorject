@@ -26,7 +26,7 @@
 <dimen name="navigation_bar_device_text_size">20sp</dimen>
 
 <!-- 一般一级字体大小 -->
-<dimen name="normal_one_text_size">18sp</dimen>
+<dimen name="normal_one_text_size">26sp</dimen>
 <!-- 一般二级字体大小 -->
 <dimen name="normal_two_text_size">16sp</dimen>
 

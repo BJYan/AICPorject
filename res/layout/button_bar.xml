@@ -4,13 +4,19 @@
     android:layout_height="wrap_content"
     android:layout_weight="0.01"
     android:gravity="center"
-    android:background="@drawable/top_item_selected">
-
+    android:background="@drawable/button_shadow_background"
+    android:orientation="vertical">
+	<View 
+	    android:layout_width="fill_parent"
+	    android:layout_height="1dip"
+	    android:background="#55999999"/>
     <RadioGroup
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal"
-        android:id="@+id/group">
+        android:id="@+id/group"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="5dip">
 
         <RadioButton
             android:id="@+id/btnA"

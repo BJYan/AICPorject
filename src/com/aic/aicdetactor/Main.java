@@ -1,44 +1,32 @@
 package com.aic.aicdetactor;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.fragment.BlueToothFragment;
 import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
-import com.aic.aicdetactor.fragment.LoginFragment;
-import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
 import com.aic.aicdetactor.fragment.Message_Fragment;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.fragment.SearchFragment;
-import com.aic.aicdetactor.fragment.Search_fragment;
 
 
-public class Main extends Activity implements BlueToothListener,ClickListenerInterface {
-
-	
+public class Main extends Activity implements BlueToothListener,ClickListenerInterface,
+	OnClickListener{
 
 	private boolean mIsLogin = false;
 	private RadioGroup mGroup = null; 
@@ -47,7 +35,7 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.main);	
@@ -59,9 +47,11 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 		String Name=intent.getExtras().getString("name");
 		String pwd=intent.getExtras().getString("pwd");
 		
-		ActionBar actionBar = getActionBar();		
+		ImageView settingBtn = (ImageView) findViewById(R.id.title_bar_noback_more);
+		settingBtn.setOnClickListener(this);
+		/*ActionBar actionBar = getActionBar();		
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
-		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);  
+		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM); */ 
 		mGroup = (RadioGroup)findViewById(R.id.group);
 		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
@@ -215,7 +205,7 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
          return super.onKeyDown(keyCode, event);
 	 }
 	 
-	 @Override  
+	 /*@Override  
 	  public boolean onCreateOptionsMenu(Menu menu) {  
 	    getMenuInflater().inflate(R.menu.main, menu);  
 	    return true;  
@@ -244,11 +234,23 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 	      break;  
 	    }  
 	    return true;  
-	  }
+	  }*/
 	@Override
 	public void doConfirm(String oldPwd, String newPwd, String surePwd) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.title_bar_noback_more:
+			
+			break;
+
+		default:
+			break;
+		}
 	}  
 	 
 	

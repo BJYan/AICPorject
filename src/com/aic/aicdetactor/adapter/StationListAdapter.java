@@ -77,12 +77,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView ExListView = new ExpandableListView(mContext);
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ExListView.setPadding(40, 5, 20, 5);
+		ExListView.setPadding(30, 0, 10, 0);
 		ExListView.setLayoutParams(lp);
-		LayoutParams params = new LayoutParams();
-		params.height=LayoutParams.MATCH_PARENT;
-		params.width=LayoutParams.MATCH_PARENT;
-		ExListView.setLayoutParams(params);
 		ExListView.setGroupIndicator(null);
 		return ExListView;
 	}
@@ -91,30 +87,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
 		MLog.Logd(TAG,"getChildView " + arg0 +" ,"+arg1);
-		/*final TextView indexText;
-		final TextView NameText;
-		final TextView CheckValueText;
-		final TextView DeadLineText;
-		
-		if (arg3 == null) {			
-			arg3 = mInflater.inflate(R.layout.checkunit, null);
-		}
-		HashMap<String, String> map = (HashMap<String, String>) mChildrenList
-				.get(arg0).get(arg1);
 
-		
-		indexText = (TextView) arg3.findViewById(R.id.index);
-		NameText = (TextView) arg3.findViewById(R.id.pathname);
-		CheckValueText = (TextView) arg3.findViewById(R.id.checkvalue);
-		DeadLineText = (TextView) arg3.findViewById(R.id.deadtime);
-		
-		
-		NameText.setText(map.get(CommonDef.device_info.NAME));
-		//CheckValueText.setText(map.get(CommonDef.device_info.VALUE));	
-		DeadLineText.setText(map.get(CommonDef.device_info.DEADLINE));	
-		
-		//NameText.setTextColor(Color.RED);	
-		return arg3;*/
 		final ExpandableListView secGroupView = getExpandableListView();
 		final DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1);
 		secGroupView.setAdapter(secExListAdapter);
