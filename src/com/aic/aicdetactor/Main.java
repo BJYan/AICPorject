@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
@@ -257,14 +259,58 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.title_bar_noback_more:
-			
+			PopupMenu popup = new PopupMenu(this, arg0);
+            //Inflating the Popup using xml file
+            popup.getMenuInflater()
+                .inflate(R.menu.main, popup.getMenu());
+
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener(new SettingMenuListener(getApplicationContext()));
+
+            popup.show(); //showing popup menu 
 			break;
 
 		default:
 			break;
 		}
 	}  
-	 
+	
+	class SettingMenuListener implements PopupMenu.OnMenuItemClickListener{
+		Context context;
+
+		public SettingMenuListener(Context context) {
+			// TODO Auto-generated constructor stub
+			this.context = context;
+		}
+		
+		@Override
+		public boolean onMenuItemClick(MenuItem arg0) {
+			// TODO Auto-generated method stub
+			switch (arg0.getItemId()) {  
+    	    case R.id.action_modify_pwd: {
+    	    	CustomDialog dialog=new CustomDialog(Main.this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
+    	        dialog.show();
+    	        }
+    	      break;  
+    	    case R.id.action_changeWorker:
+    	    //	initFragment();
+    	    	break;
+    	    case R.id.action_more:{
+    			}
+    	    	break;
+    	    case R.id.action_about:{
+    	    	final Dialog dialog = new AboutDialog(Main.this);
+    			dialog.show();
+    			}
+    	    	break;
+    	    	
+    	    default:  
+    	      break;  
+    	    }  
+			return true;
+		}
+		
+	}
 	
 }
 

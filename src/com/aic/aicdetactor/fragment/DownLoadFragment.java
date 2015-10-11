@@ -78,7 +78,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	private String mStr_Down_Pda_code="";
 	private String mStr_Down_Pda_ip="";
 	private String mStr_Down_Pda_mac="";
-	private Button mDown_Button = null;
+	private TextView mDown_Button = null;
 	private int mDown_RadioGroup_Index =-1;
 	private boolean mbDown_auto_down = false;
 	//设置配置
@@ -161,9 +161,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
         ExpandableListView netExListView = (ExpandableListView)listViews.get(2).findViewById(R.id.network_setting_list);
         netExListView.setAdapter(netWorkSettingAdapter);
         netExListView.setGroupIndicator(null);
-        mDown_Button = (Button)listViews.get(1).findViewById(R.id.down_down);
+        mDown_Button = (TextView)listViews.get(1).findViewById(R.id.network_download_button);
         mDown_Button.setOnClickListener(this);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+		
 		/*
 		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
 		mUp_linearLayout = (LinearLayout)listViews.get(0).findViewById(R.id.up_linear);
@@ -371,7 +372,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		switch(arg0.getId()){
 		case R.id.up_up:
 			break;
-		case R.id.down_down:
+		case R.id.network_download_button:
 			Event.QueryCommand_Event(arg0,getActivity(),getAddress(WifiMacType.MAcAddr),mHandler);
 			break;
 		}

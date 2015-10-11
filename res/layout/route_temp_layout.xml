@@ -8,31 +8,40 @@
     <Spinner
         android:id="@+id/spinner1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
- <View
+        android:layout_height="wrap_content"
+        android:padding="5dip" />
+	 <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/gray" />
+        android:background="#999999" 
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="10dip"/>
     <Spinner
         android:id="@+id/spinner2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
- <View
+        android:layout_height="wrap_content"
+        android:padding="5dip" />
+	 <View
         android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/gray" />
+        android:background="#999999" 
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="10dip"/>
     <Spinner
         android:id="@+id/spinner3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="5dip" />
 
-    <View
+	 <View
         android:id="@+id/view3"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/gray" />
+        android:background="#999999" 
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="10dip"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,69 +51,70 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">"
+            android:orientation="horizontal"
+            android:padding="5dip">
             <EditText
-        android:id="@+id/editText1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10" 
-        android:layout_weight="1"
-        android:hint="@string/route_temp_device_name_hint"/>
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_weight="1"
-        android:hint="@string/route_temp_device_code_hint" />
-
+        		android:id="@+id/editText1"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:ems="10" 
+        		android:layout_weight="1"
+        		android:hint="@string/route_temp_device_name_hint"/>
+ 			<EditText
+        		android:id="@+id/editText2"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:ems="10"
+        		android:layout_weight="1"
+        		android:hint="@string/route_temp_device_code_hint" 
+        		android:layout_marginLeft="10dip"/>
         </LinearLayout>
-<LinearLayout
+		<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="5dip">
             <EditText
-        android:id="@+id/editText3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10" 
-        android:layout_weight="1"
-        android:hint="@string/route_temp_checkitem_name_hint"/>
-
-    <EditText
-        android:id="@+id/editText4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_weight="1"
-        android:hint="@string/route_temp_checkitem_code_hint" />
-
+        		android:id="@+id/editText3"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:ems="10" 
+        		android:layout_weight="1"
+        		android:hint="@string/route_temp_checkitem_name_hint"/>
+ 			<EditText
+        		android:id="@+id/editText4"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:ems="10"
+        		android:layout_weight="1"
+        		android:hint="@string/route_temp_checkitem_code_hint"
+        		android:layout_marginLeft="10dip" />
         </LinearLayout>
     </LinearLayout>
- <View
+ 	<View
         android:id="@+id/view4"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/gray" />
     
-<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">"
-<Button
-    android:id="@+id/button1"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/route_temp_add" />
-<Button
-    android:id="@+id/button2"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/route_temp_measure" />
-</LinearLayout>
-
-
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="5dip">
+		<Button
+    		android:id="@+id/button1"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="@string/route_temp_add"
+    		android:layout_weight="1" />
+		<Button
+    		android:id="@+id/button2"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="@string/route_temp_measure"
+    		android:layout_weight="1" />
+	</LinearLayout>
 
 </LinearLayout>

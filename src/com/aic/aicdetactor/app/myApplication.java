@@ -84,10 +84,10 @@ public class myApplication extends Application
     	dao = RouteDao.getInstance(this.getApplicationContext());
     	ContentValues cv = new ContentValues();
     	mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd,cv);
-		for (int i = 0; i < mFileList.size(); i++) {
+		/*for (int i = 0; i < mFileList.size(); i++) {
 			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this,false);
 			MLog.Logd(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
-		}
+		}*/
 		List<String> WorkerNumber = dao.queryWorkerNumber(mWorkerName, mWorkerPwd);
 		for(int n =0;n<WorkerNumber.size();n++){
 			mWorkerNumber = WorkerNumber.get(n);
