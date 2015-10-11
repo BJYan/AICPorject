@@ -9,9 +9,12 @@ import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +28,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends CommonActivity implements OnClickListener {
 
 	private Button mLogInButton = null;
 	private CheckBox mSaveUInfoCheckBox =null;
@@ -40,6 +43,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private boolean bSaveUInfo = false;
 	public myApplication app = null;
 	//TestSetting testControl = null;
+	MainHandler mainHandler;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -48,6 +52,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		              WindowManager.LayoutParams.FLAG_FULLSCREEN); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mainactivity);
+		
+		mainHandler = new MainHandler(this);
 		mEditTextUserName = (EditText)findViewById(R.id.editText1);
 		mEditTextUserPwd = (EditText)findViewById(R.id.editText2);
 		mLogInButton = (Button) findViewById(R.id.button1);
@@ -84,8 +90,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View arg0) {
-		// TODO Auto-generated method stub
-		switch(arg0.getId()){
+		// TODO Auto-generated method stub 
+		switch(arg0.getId()){ 
 		case R.id.button1:
 			if(mNoLogModeCheckBox.isChecked()){
 				Intent intent = new Intent();
@@ -96,25 +102,9 @@ public class MainActivity extends Activity implements OnClickListener {
 						Main.class);
 				startActivity(intent);
 				finish();
-			}else if(Login()){
-				if(mSaveUInfoCheckBox.isChecked()){
-				saveUInfo();
-				}
-				app.mWorkerName = mLogName;
-				app.mWorkerPwd = mLogPwd;
-				app.gBLogIn = true;
-				app.setUserInfo(mLogName, mLogPwd);
-				
-				Intent intent = new Intent();
-				intent.putExtra("isLog", true);
-				intent.putExtra("name", mLogName);
-				intent.putExtra("pwd", mLogPwd);
-				intent.setClass(getApplicationContext(),
-						Main.class);
-				startActivity(intent);
-				finish();
-			}else{
-				Toast.makeText(this.getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();	
+			}else {
+				showLoadingDialog("正在登录，请稍后……");
+				new LoginThread().start();
 			}
 			break;
 		}
@@ -178,6 +168,55 @@ public class MainActivity extends Activity implements OnClickListener {
 			mSaveUInfoCheckBox.setChecked(true);
 		}
 		
+	}
+	
+	class MainHandler extends Handler{
+		Context context;
+		
+		public MainHandler(Context context) {
+			// TODO Auto-generated constructor stub
+			this.context = context;
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			boolean LoginResult = (Boolean) msg.obj;
+			dismissLoadingDialog();
+			if(LoginResult){
+				if(mSaveUInfoCheckBox.isChecked()){
+				saveUInfo();
+				}
+				app.mWorkerName = mLogName;
+				app.mWorkerPwd = mLogPwd;
+				app.gBLogIn = true;
+				app.setUserInfo(mLogName, mLogPwd);
+				
+				Intent intent = new Intent();
+				intent.putExtra("isLog", true);
+				intent.putExtra("name", mLogName);
+				intent.putExtra("pwd", mLogPwd);
+				intent.setClass(getApplicationContext(),
+						Main.class);
+				startActivity(intent);
+				finish();
+			}else{
+				Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();	
+			}
+		}
+	}
+	
+	class LoginThread extends Thread {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			boolean LoginResult = Login();
+			Message msg = Message.obtain();
+			msg.obj = LoginResult;
+			//mainHandler.sendMessage(msg);
+			mainHandler.sendMessageDelayed(msg, 2000);
+		}
 	}
 	
 }

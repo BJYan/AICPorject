@@ -39,7 +39,7 @@ import com.aic.aicdetactor.fragment.SearchFragment;
 import com.aic.aicdetactor.fragment.Search_fragment;
 
 
-public class Main extends Activity implements BlueToothListener,ClickListenerInterface,
+public class Main extends CommonActivity implements BlueToothListener,ClickListenerInterface,
 	OnClickListener{
 
 	private boolean mIsLogin = false;
