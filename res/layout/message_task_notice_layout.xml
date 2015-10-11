@@ -10,7 +10,7 @@
         android:orientation="horizontal"
         android:gravity="center">
         <TextView 
-            android:id="@+id/message_notice_start_date"
+            android:id="@+id/message_task_notice_start_date"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:text="2015-10-11"
@@ -23,7 +23,7 @@
             android:gravity="center_vertical"
             />
         <TextView 
-            android:id="@+id/message_notice_end_date"
+            android:id="@+id/message_task_notice_end_date"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:text="2015-10-11"

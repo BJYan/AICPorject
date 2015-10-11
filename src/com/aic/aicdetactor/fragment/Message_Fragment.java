@@ -28,34 +28,45 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.CalendarView.OnDateChangeListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TextView;
 import android.widget.TabHost;
 import android.widget.Toast;
 
-public class Message_Fragment extends Fragment {
+public class Message_Fragment extends Fragment implements OnClickListener{
 	ListView mListView = null;
 	private RadioGroup mRadioGroup = null; 
 	private int mRadioIndex = 0;
 	private RadioButton mRadioButton_left = null;
 	private List<Map<String, String>> mItemDatas = null;
-	private final String TAG = "luotest";
+	private final String TAG = "Message_Fragment";
 	private SimpleAdapter mListViewAdapter = null;
 	private myApplication app = null;
 	//GridView mGridView = null;
 	TabHost tabHost;
 	ViewPager viewPager;
+	LayoutInflater inflater;
+	ArrayList<View> listViews;
+	TextView MsgTaskStartTime,MsgTaskEndTime;
+	TextView MsgStartTime,MsgEndTime;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -67,6 +78,7 @@ public class Message_Fragment extends Fragment {
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
+		this.inflater = inflater;
 		app =(myApplication) Message_Fragment.this.getActivity().getApplication();
 		View view = inflater.inflate(R.layout.message_fragment_layout, container, false);
 		
@@ -82,9 +94,18 @@ public class Message_Fragment extends Fragment {
                 .setContent(R.id.view2)); 
         
         viewPager = (ViewPager)view.findViewById(R.id.msg_vPager); 
-        ArrayList<View> listViews = new ArrayList<View>();
+        listViews = new ArrayList<View>();
+        listViews.add(inflater.inflate(R.layout.message_task_notice_layout, null));
         listViews.add(inflater.inflate(R.layout.message_notice_layout, null));
-        listViews.add(inflater.inflate(R.layout.message_notice_layout, null));
+        
+        MsgTaskStartTime = (TextView) listViews.get(0).findViewById(R.id.message_task_notice_start_date);
+        MsgTaskStartTime.setOnClickListener(this);
+        MsgTaskEndTime = (TextView) listViews.get(0).findViewById(R.id.message_task_notice_end_date);
+        MsgTaskEndTime.setOnClickListener(this);
+        MsgStartTime = (TextView) listViews.get(1).findViewById(R.id.message_notice_start_date);
+        MsgStartTime.setOnClickListener(this);
+        MsgEndTime = (TextView) listViews.get(1).findViewById(R.id.message_notice_end_date);
+        MsgEndTime.setOnClickListener(this);
         
         MessageListViewAdapter msgListViewAdapter = new MessageListViewAdapter(getActivity().getApplicationContext());
         for(int i=0;i<listViews.size();i++){
@@ -235,5 +256,94 @@ public class Message_Fragment extends Fragment {
 			tabHost.setCurrentTab(arg0);
 		}
 		
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.message_task_notice_start_date:
+			final PopupWindow taskstartTimePop = new PopupWindow(listViews.get(0),
+	                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+			View PopupWindowview_task_start = inflater.inflate(R.layout.calendar_view_layout, null);
+			CalendarView calendarView_task_start = (CalendarView) PopupWindowview_task_start.findViewById(R.id.calendar);
+			calendarView_task_start.setOnDateChangeListener(new OnDateChangeListener() {  
+	        	  
+	            @Override  
+	            public void onSelectedDayChange(CalendarView arg0, int arg1,  
+	                    int arg2, int arg3) {  
+	                arg2 = arg2 + 1;  
+	                Log.i(TAG, "-------------" + arg1 + "-" + arg2 + "-"  
+	                        + arg3); 
+	                MsgTaskStartTime.setText(arg1 + "-" + arg2 + "-"+ arg3);
+	                taskstartTimePop.dismiss();
+	            }  
+	        });
+			taskstartTimePop.setContentView(PopupWindowview_task_start);
+			taskstartTimePop.showAsDropDown(arg0);
+			break;
+		case R.id.message_task_notice_end_date:
+			final PopupWindow taskendTimePop = new PopupWindow(listViews.get(0),
+	                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true); 
+			View PopupWindowview_task_end = inflater.inflate(R.layout.calendar_view_layout, null);
+			CalendarView calendarView_task_end = (CalendarView) PopupWindowview_task_end.findViewById(R.id.calendar);
+			calendarView_task_end.setOnDateChangeListener(new OnDateChangeListener() {  
+	        	  
+	            @Override  
+	            public void onSelectedDayChange(CalendarView arg0, int arg1,  
+	                    int arg2, int arg3) {  
+	                arg2 = arg2 + 1;  
+	                Log.i(TAG, "-------------" + arg1 + "-" + arg2 + "-"  
+	                        + arg3); 
+	                MsgTaskEndTime.setText(arg1 + "-" + arg2 + "-"+ arg3);
+	                taskendTimePop.dismiss();
+	            }  
+	        });
+			taskendTimePop.setContentView(PopupWindowview_task_end);
+			taskendTimePop.showAsDropDown(arg0);
+			break;
+		case R.id.message_notice_start_date:
+			final PopupWindow startTimePop = new PopupWindow(listViews.get(0),
+	                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+			View PopupWindowview_start = inflater.inflate(R.layout.calendar_view_layout, null);
+			CalendarView calendarView_start = (CalendarView) PopupWindowview_start.findViewById(R.id.calendar);
+			calendarView_start.setOnDateChangeListener(new OnDateChangeListener() {  
+	        	  
+	            @Override  
+	            public void onSelectedDayChange(CalendarView arg0, int arg1,  
+	                    int arg2, int arg3) {  
+	                arg2 = arg2 + 1;  
+	                Log.i(TAG, "-------------" + arg1 + "-" + arg2 + "-"  
+	                        + arg3); 
+	                MsgStartTime.setText(arg1 + "-" + arg2 + "-"+ arg3);
+	                startTimePop.dismiss();
+	            }  
+	        });
+			startTimePop.setContentView(PopupWindowview_start);
+			startTimePop.showAsDropDown(arg0);
+			break;
+		case R.id.message_notice_end_date:
+			final PopupWindow endTimePop = new PopupWindow(listViews.get(0),
+	                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true); 
+			View PopupWindowview_end = inflater.inflate(R.layout.calendar_view_layout, null);
+			CalendarView calendarView_end = (CalendarView) PopupWindowview_end.findViewById(R.id.calendar);
+			calendarView_end.setOnDateChangeListener(new OnDateChangeListener() {  
+	        	  
+	            @Override  
+	            public void onSelectedDayChange(CalendarView arg0, int arg1,  
+	                    int arg2, int arg3) {  
+	                arg2 = arg2 + 1;  
+	                Log.i(TAG, "-------------" + arg1 + "-" + arg2 + "-"  
+	                        + arg3); 
+	                MsgEndTime.setText(arg1 + "-" + arg2 + "-"+ arg3);
+	                endTimePop.dismiss();
+	            }  
+	        });
+			endTimePop.setContentView(PopupWindowview_end);
+			endTimePop.showAsDropDown(arg0);
+			break;
+		default:
+			break;
+		}
 	}
 }
