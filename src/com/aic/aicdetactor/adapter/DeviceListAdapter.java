@@ -149,7 +149,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		Log.d(TAG,"getChildrenCount "+mChildrenList.get(arg0).size());
+		MLog.Logd(TAG,"getChildrenCount "+mChildrenList.get(arg0).size());
 		return mChildrenList.get(arg0).size();
 	}
 
@@ -179,7 +179,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		
 		GroupViewHolder holder =null;
 		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(arg0);
-		Log.i(TAG, "getGroupView groupPosition = "+arg0);
+		MLog.Logi(TAG, "getGroupView groupPosition = "+arg0);
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.device_list_item, null);
 			holder = new GroupViewHolder();
@@ -231,7 +231,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 				status = app.getNodeCount(mDeviceItemList.get(i), 2, 0);
 				status.setContext(this.context);
 				map.put(CommonDef.device_info.NAME,app.getDeviceItemName(mDeviceItemList.get(i)));
-				Log.d(TAG,"name is"+app.getDeviceItemName(mDeviceItemList.get(i)));
+				MLog.Logd(TAG,"name is"+app.getDeviceItemName(mDeviceItemList.get(i)));
 				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
 			
 				map.put(CommonDef.device_info.PROGRESS, status.mCheckedCount+ "/" + status.mSum);
@@ -259,7 +259,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 
 			Object object = mDeviceItemList.get(itemIndexs);
 			mPartItemList = app.getPartItemDataList(mStationIndex, itemIndexs);
-			Log.d(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
+			MLog.Logd(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
 			ArrayList<PartItemItem> childList = new ArrayList<PartItemItem>();
 			PartItemItem item =null;
 			
