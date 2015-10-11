@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
@@ -30,6 +31,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.fragment.BlueToothFragment;
 import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
+import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
 import com.aic.aicdetactor.fragment.LoginFragment;
 import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
@@ -46,6 +48,8 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 	private RadioGroup mGroup = null; 
 	//TestSetting testControl = null;
 	public myApplication app = null;
+	ImageView settingBtn;
+	TextView titleBarName;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,8 +65,9 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 		String Name=intent.getExtras().getString("name");
 		String pwd=intent.getExtras().getString("pwd");
 		
-		ImageView settingBtn = (ImageView) findViewById(R.id.title_bar_noback_more);
+		settingBtn = (ImageView) findViewById(R.id.title_bar_noback_more);
 		settingBtn.setOnClickListener(this);
+		titleBarName = (TextView) findViewById(R.id.title_bar_noback_name);
 		/*ActionBar actionBar = getActionBar();		
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
 		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM); */ 
@@ -76,9 +81,10 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 				{
 					FragmentManager fragmentManager = getFragmentManager();
 					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-					Fragment fragment = new BlueToothFragment();	
+					Fragment fragment = new BlueTooth_Fragment();	
 					fragmentTransaction.replace(R.id.fragment_main,fragment);		
 					fragmentTransaction.commit();
+					titleBarName.setText("AIC传感器设置");
 				}
 					break;
 				case R.id.btnB://巡检
@@ -90,6 +96,7 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 					Fragment fragment = new RouteFragment();
 					fragmentTransaction.replace(R.id.fragment_main,fragment);			
 					fragmentTransaction.commit();
+					titleBarName.setText("AIC巡检操作");
 					}else{
 						//Toast.makeText(getApplicationContext(), "巡检：您还没登录", Toast.LENGTH_LONG).show();
 						//initFragment();
@@ -103,7 +110,7 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 						Fragment fragment = new SearchFragment();
 						fragmentTransaction.replace(R.id.fragment_main,fragment);			
 						fragmentTransaction.commit();				
-				
+						titleBarName.setText("AIC数据查询");
 				}
 					break;
 				case R.id.btnD://通知
@@ -113,6 +120,7 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 						Fragment fragment = new Message_Fragment();
 						fragmentTransaction.replace(R.id.fragment_main,fragment);			
 						fragmentTransaction.commit();
+						titleBarName.setText("AIC任务消息");
 					}else{
 						Toast.makeText(getApplicationContext(), "通知：您还没登录", Toast.LENGTH_LONG).show();
 						//initFragment();
@@ -126,6 +134,7 @@ public class Main extends CommonActivity implements BlueToothListener,ClickListe
 					Fragment fragment = new DownLoadFragment();
 					fragmentTransaction.replace(R.id.fragment_main,fragment);			
 					fragmentTransaction.commit();
+					titleBarName.setText("AIC通讯管理");
 				}
 					
 					break;

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#55cccccc" >
+   
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="38dip"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical" 
+            android:padding="5dip"
+            android:src="@drawable/bluetooth_device_icon"/>
+        <TextView
+            android:id="@+id/bluetooth_device_name"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"           
+            android:text="AIC3608" 
+            android:textSize="@dimen/listview_group_text_size"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" 
+            android:paddingLeft="10dip"/>
+         <TextView
+            android:id="@+id/bluetooth_device_status"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"           
+            android:text="未链接" 
+            android:textSize="@dimen/listview_group_text_size"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" 
+            android:paddingLeft="10dip"/>
+        <View 
+            android:layout_height="fill_parent"
+            android:layout_width="1dip"
+            android:background="#999999"
+            android:layout_marginTop="2dip"
+            android:layout_marginBottom="2dip"/>
+        <ImageView
+        	android:id="@+id/arrow"
+        	android:layout_width="38dip"
+        	android:layout_height="fill_parent"
+        	android:layout_alignParentStart="true"
+        	android:src="@drawable/arrow"
+        	android:padding="5dip"/>
+    </LinearLayout>
+    <View 
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#999999"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"/>
+
+</LinearLayout>

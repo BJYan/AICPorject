@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -77,6 +79,24 @@ public class SearchFragment extends Fragment implements OnClickListener{
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
         searchDBList.setAdapter(SearchDBExListAdapter);
         searchDBList.setGroupIndicator(null);
+        searchDBList.setOnGroupClickListener(new OnGroupClickListener() {
+			
+			@Override
+			public boolean onGroupClick(ExpandableListView arg0, View arg1, int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				
+				return false;
+			}
+		});
+        searchDBList.setOnGroupExpandListener(new OnGroupExpandListener() {
+			
+			@Override
+			public void onGroupExpand(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
         RelativeLayout optionsContainer = (RelativeLayout) DBsearchItemList.get(0).findViewById(R.id.options_item_container);
         for(int i=0;i<optionsContainer.getChildCount();i++){
         	if(optionsContainer.getChildAt(i).getTag()!=null&&

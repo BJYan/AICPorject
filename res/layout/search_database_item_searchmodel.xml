@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" 
-    android:background="#55cccc99" 
+    android:background="#55999999" 
     android:id="@+id/search_db_layout">
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -246,7 +246,7 @@
 	    android:paddingBottom="8dip"
 	    android:text="搜索"
 	    android:gravity="center"
-	    android:background="#aa666666"
+	    android:background="#aa999999"
 	    android:layout_marginTop="5dip"
 	    android:layout_marginBottom="5dip"
 	    android:tag="search_button"/>
