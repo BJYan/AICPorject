@@ -17,6 +17,7 @@ import android.widget.Spinner;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.media.SoundRecordActivity;
+import com.aic.aicdetactor.util.MLog;
 
 public class TempPlanActivity extends Activity implements OnClickListener {
 
@@ -61,7 +62,7 @@ public class TempPlanActivity extends Activity implements OnClickListener {
              values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
              values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
              Uri imageFilePath = TempPlanActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
-             Log.d("test","main_media imageFilePath is "+imageFilePath);
+             MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
              intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
                
              

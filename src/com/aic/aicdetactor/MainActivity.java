@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private SharedPreferences mSharedPreferences = null;
 	private boolean bSaveUInfo = false;
 	public myApplication app = null;
-	TestSetting testControl = null;
+	//TestSetting testControl = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -52,12 +52,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		mEditTextUserPwd = (EditText)findViewById(R.id.editText2);
 		mLogInButton = (Button) findViewById(R.id.button1);
 		mLogInButton.setOnClickListener(this);
-		 ContentValues a= new ContentValues() ;
-		 a.put("Start", false);
-		testa(a);
 		
 		app = (myApplication) getApplication();
-		Log.d(TAG,"teat a ="+a.getAsBoolean("Start"));
 		mSaveUInfoCheckBox = (CheckBox) findViewById(R.id.checkBox1);
 		mNoLogModeCheckBox = (CheckBox) findViewById(R.id.checkBox2);
 		mNoLogModeCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -76,8 +72,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		getUInfo();
 		
-		testControl = new TestSetting(this.getApplicationContext());
-		testControl.setAppTestKey(true);	
+		//testControl = new TestSetting(this.getApplicationContext());
+		//testControl.setAppTestKey(true);	
 	}
 
 	@Override
@@ -127,19 +123,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		mLogName = mEditTextUserName.getText().toString();
 		mLogPwd = mEditTextUserPwd.getText().toString();
 		//search table 
-		TestSetting test = new TestSetting(this.getApplicationContext());
-		List<String> testlist = test.getTestFile();
+	//	TestSetting test = new TestSetting(this.getApplicationContext());
+		//List<String> testlist = test.getTestFile();
 
-		if (testlist != null) {
-			boolean bTempRoute=false;
-			for (int testi = 0; testi < testlist.size(); testi++) {
-				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-				if(testlist.get(testi).contains("Temp")){
-					bTempRoute=true;
-				}
-				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext(),bTempRoute);
-			}
-		} 
+//		if (testlist != null) {
+//			boolean bTempRoute=false;
+//			for (int testi = 0; testi < testlist.size(); testi++) {
+//				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
+//				if(testlist.get(testi).contains("Temp")){
+//					bTempRoute=true;
+//				}
+//				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext(),bTempRoute);
+//			}
+//		} 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
 		List<String>fileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);
@@ -184,8 +180,4 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 	}
 	
-	boolean testa(ContentValues a){
-		a.put("Start", true);
-		return true;
-	}
 }

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.util.Log;
@@ -100,7 +101,7 @@ public class T_Route extends Route {
 			mOrganizationInfo.GroupName= mOrganizationObject.optString(T_Organization.GroupName);
 			mOrganizationInfo.WorkShopName = mOrganizationObject.optString(T_Organization.WorkShopName);
 			
-			Log.d(TAG,"mOrganizationInfo.CorporationName is "+mOrganizationInfo.CorporationName
+			MLog.Logd(TAG,"mOrganizationInfo.CorporationName is "+mOrganizationInfo.CorporationName
 					+ " mOrganizationInfo.GroupName is "+mOrganizationInfo.GroupName
 					+" mOrganizationInfo.WorkShopName is "+mOrganizationInfo.WorkShopName);
 		}

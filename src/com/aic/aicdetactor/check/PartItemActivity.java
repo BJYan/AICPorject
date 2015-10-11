@@ -74,6 +74,7 @@ import com.aic.aicdetactor.fragment.measurement_fragment;
 import com.aic.aicdetactor.fragment.measurement_fragment.OnMeasureMeasureListener;
 import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.media.SoundRecordActivity;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
@@ -161,7 +162,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
-		Log.d(TAG,"PartItemActivity:onCreate() ");
+		MLog.Logd(TAG,"PartItemActivity:onCreate() ");
 		setContentView(R.layout.unitcheck);
 		app =((myApplication) getApplication());
 		//Intent intent = getIntent();
@@ -189,7 +190,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void onClick(View arg0) {
-				Log.d(TAG,"imageView.setOnClickListener");
+				MLog.Logd(TAG,"imageView.setOnClickListener");
 				// TODO Auto-generated method stub
 				finish();
 			}
@@ -224,7 +225,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
-		Log.d(TAG, "switchFragment() type is " +type+",mCurPartItemobject is "+mCurPartItemobject.toString() );
+		MLog.Logd(TAG, "switchFragment() type is " +type+",mCurPartItemobject is "+mCurPartItemobject.toString() );
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		
@@ -345,9 +346,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		
 		if(mPartItemList != null){
 			mCurPartItemobject = (JSONObject) mPartItemList.get(mCheckIndex);
-			Log.d(TAG,"getPatItemType() mPartItemList size ="+mPartItemList.size() +" object is " +mCurPartItemobject.toString());
+			MLog.Logd(TAG,"getPatItemType() mPartItemList size ="+mPartItemList.size() +" object is " +mCurPartItemobject.toString());
 		}else{
-			Log.d(TAG,"getPatItemType() mPartItemList IS NULL");
+			MLog.Logd(TAG,"getPatItemType() mPartItemList IS NULL");
 		}
 		 mCheckUnit_DataType=Integer.parseInt(app
 		.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
@@ -359,16 +360,16 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	//初始化数据PartItemData,并获取第一个PartItemData的测量类型
    void InitPartItemData(){
 	   try {
-		   Log.d(TAG, "InitPartItemData() start mStationIndex =" +mStationIndex +",mDeviceIndex ="+mDeviceIndex );
+		   MLog.Logd(TAG, "InitPartItemData() start mStationIndex =" +mStationIndex +",mDeviceIndex ="+mDeviceIndex );
 		   mPartItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
 		  
 		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
 		   
 		   mCurrentDeviceItem = deviceItemList.get(mDeviceIndex);
-		   Log.d(TAG, "mCurrentDeviceItem IS " + mCurrentDeviceItem.toString());
+		   MLog.Logd(TAG, "mCurrentDeviceItem IS " + mCurrentDeviceItem.toString());
 		   
 		   mPartItemList = app.getPartItem(mPartItemObject,-1);
-		   Log.d(TAG, "InitPartItemData() mPartItemList size ="+mPartItemList.size());
+		   MLog.Logd(TAG, "InitPartItemData() mPartItemList size ="+mPartItemList.size());
 		   mPartItemCounts = mPartItemList.size();
 		   getPatItemType();// Integer.valueOf(app.getPartItemCheckUnitName(mPartItemList.get(0),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
 		
@@ -457,7 +458,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
 			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
 			mNewArrayJSON.put(object);
-			Log.d(TAG, "addAPartItemData() mJSONArray.size ="+mJSONArray.length());
+			MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+mJSONArray.length());
 			//mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
@@ -511,7 +512,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 								mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
 						object.put(KEY.KEY_PARTITEMDATA,addUpdata(data, array[i], guid));
 						mNewArrayJSON.put(object);
-						Log.d(TAG, "addAPartItemData() mJSONArray.size ="+ mJSONArray.length());
+						MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+ mJSONArray.length());
 					} catch (JSONException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -557,7 +558,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 				mJSONArray.put(mNewArrayJSON.get(i));
 			}
 			object.put(T_Device_Item.Device_Array_Item_Const.Key_PartItem, mJSONArray);
-			Log.d(TAG, "saveDeviceItem() object is "+object.toString());
+			MLog.Logd(TAG, "saveDeviceItem() object is "+object.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -572,9 +573,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	void saveCheckedItemNode() {
 		mEndTime = SystemUtil.getSystemTime(0);
 		// 先保存当前测试项的数据
-		Log.d(TAG, "mPartItemList size is ," + mPartItemList.size());
+		MLog.Logd(TAG, "mPartItemList size is ," + mPartItemList.size());
 		JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
-		Log.d(TAG, "saveCheckedItemNode()," + json);
+		MLog.Logd(TAG, "saveCheckedItemNode()," + json);
 		String partItemData = "";
 		try {
 			partItemData = json.getString(KEY.KEY_PARTITEMDATA);
@@ -595,10 +596,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			}
 			// json =
 			// app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-			Log.d(TAG, "saveCheckedItemNode() result is," + json);
+			MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
 			mJSONArray.put(json);
 		} else {
-			Log.d(TAG, "saveCheckedItemNode() mCheckValue," + mCheckValue+",mZhouCounts="+mZhouCounts);
+			MLog.Logd(TAG, "saveCheckedItemNode() mCheckValue," + mCheckValue+",mZhouCounts="+mZhouCounts);
 			String[] value = mCheckValue.split(",");
 			String guid = SystemUtil.createGUID();
 			for (int i = 0; i < mZhouCounts&&i <value.length; i++) {
@@ -609,7 +610,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Log.d(TAG, "saveCheckedItemNode() result is," + json);
+				MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
 				mJSONArray.put(json);
 			}
 		}
@@ -759,7 +760,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 						});
 						builder.create().show();
 					}
-					Log.d(TAG, "nextCheckItem(),mCheckUnit_DataType =" + mCheckUnit_DataType
+					MLog.Logd(TAG, "nextCheckItem(),mCheckUnit_DataType =" + mCheckUnit_DataType
 							+ ",mCheckIndex =" + mCheckIndex +",mCurPartItemobject is "+mCurPartItemobject.toString());
 				} else {
 					// 保存当前DeviceItem数据
@@ -808,7 +809,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 				values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
 				imageFilePath = getContentResolver().insert(
 						MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-				Log.d("test", "main_media imageFilePath is " + imageFilePath);
+				MLog.Logd("test", "main_media imageFilePath is " + imageFilePath);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); // 这样就将文件的存储方式和uri指定到了Camera应用中
 
 				startActivityForResult(intent, PartItem_Contact.PARTITEM_CAMERA_RESULT);
@@ -880,7 +881,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
     }
     @Override  
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("test", "onActivityResult() 00" + requestCode + ",resultCode= "
+		MLog.Logd("test", "onActivityResult() 00" + requestCode + ",resultCode= "
 				+ resultCode);
 		if (requestCode == PartItem_Contact.PARTITEM_CAMERA_RESULT) {
 			mCheckValue = imageFilePath.toString();
@@ -927,7 +928,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	@Override
 	public void OnClick(String value) {
 		// TODO Auto-generated method stub
-		Log.d(TAG,"OnClick()IndexButton = "+value);
+		MLog.Logd(TAG,"OnClick()IndexButton = "+value);
 		mCheckValue = value;
 	} 
 	
@@ -995,10 +996,10 @@ private int mZhouCounts=0;
 //		if(genPartItemDataCounts==1){
 //			mCheckValue = String.valueOf(xValue);
 //		}
-		Log.d(TAG, "OnClick() "+genPartItemDataCounts+","+xValue+","+yValue+","+zValue);
+		MLog.Logd(TAG, "OnClick() "+genPartItemDataCounts+","+xValue+","+yValue+","+zValue);
 		mCheckValue=String.valueOf(xValue)+","+String.valueOf(yValue)+","+String.valueOf(zValue);
 		mZhouCounts = genPartItemDataCounts;
-		Log.d(TAG, "OnClick() mCheckValue"+mCheckValue);
+		MLog.Logd(TAG, "OnClick() mCheckValue"+mCheckValue);
 		//if(genPartItemDataCounts>1){
 			//Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
 			//msg.arg1 = TEXT_ZHOU_TYPE;

@@ -48,6 +48,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
@@ -109,7 +110,7 @@ public class StationActivity extends Activity {
 
 				@Override
 				public void onClick(View arg0) {
-					Log.d(TAG,"imageView.setOnClickListener");
+					MLog.Logd(TAG,"imageView.setOnClickListener");
 					// TODO Auto-generated method stub
 					//全屏幕显示一个图片 及 去掉字样的button
 					//finish();
@@ -122,7 +123,7 @@ public class StationActivity extends Activity {
 
 				@Override
 				public void onClick(View arg0) {
-					Log.d(TAG,"imageView.setOnClickListener");
+					MLog.Logd(TAG,"imageView.setOnClickListener");
 					// TODO Auto-generated method stub
 					//弹出菜单
 					//finish();
@@ -133,6 +134,7 @@ public class StationActivity extends Activity {
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
+			mListView.setDividerHeight(20);
 			//mListView.setGroupIndicator(this.getResources().getDrawable(R.drawable.arrow));
 			mListView.setGroupIndicator(null);
 			//mListView.setChildIndicator(null);
@@ -157,7 +159,7 @@ public class StationActivity extends Activity {
 //					// TODO Auto-generated method stub
 //					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
 //							.getItemAtPosition(arg2));
-//					Log.d(TAG,
+//					MLog.Logd(TAG,
 //							"stationActivit StationName is "
 //									+ (String) mapItem.get(CommonDef.station_info.NAME));
 //					
@@ -193,7 +195,7 @@ public class StationActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Log.d(TAG, " idtest myid is " + myid);
+				MLog.Logd(TAG, " idtest myid is " + myid);
 				
 				// test getpartitemsub,TEST pass
 				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
@@ -203,12 +205,12 @@ public class StationActivity extends Activity {
 
 					String str = app
 							.getPartItemSubStr(teststr, n);
-					Log.d(TAG,"teststr is "	+ str);
+					MLog.Logd(TAG,"teststr is "	+ str);
 				}
 				float f1 = SystemUtil.getTemperature("42700000");
-				Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
-				Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42b40000"));
-				//Log.d(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
+				MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
+				MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42b40000"));
+				//MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
 				///
 				
 			}
@@ -224,7 +226,7 @@ public class StationActivity extends Activity {
 
 
 	private void initListViewData(){
-		Log.d(TAG,"initListViewData()");
+		MLog.Logd(TAG,"initListViewData()");
 		try {
 
 			List<Object> stationItemList = app
@@ -317,7 +319,7 @@ public class StationActivity extends Activity {
 				
 				long a = System.currentTimeMillis();
 				PartItemItem item =g.fromJson(mPartItemList.get(k).toString(), PartItemItem.class);
-				Log.d(TAG,"release ms="+String.valueOf(System.currentTimeMillis()-a)+","+item.getCheckContent());
+				MLog.Logd(TAG,"release ms="+String.valueOf(System.currentTimeMillis()-a)+","+item.getCheckContent());
 				mPartItemNameList.add(item.getCheckContent());
 				}
 			//}

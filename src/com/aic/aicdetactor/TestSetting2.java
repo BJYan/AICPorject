@@ -11,13 +11,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class TestSetting {
+public class TestSetting2 {
 	private final String TAG = "luotest";
 	/**
 	 * 
 	 */
 	Context mContext;
-	public TestSetting(Context context){
+	public TestSetting2(Context context){
 		mContext = context;
 	}
 

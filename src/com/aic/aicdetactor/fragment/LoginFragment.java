@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.TestSetting;
+import com.aic.aicdetactor.TestSetting2;
 import com.aic.aicdetactor.app.myApplication;
 
 import com.aic.aicdetactor.database.RouteDao;
@@ -95,19 +95,19 @@ public class LoginFragment extends Fragment implements OnClickListener{
 		mLogName = mEditTextUserName.getText().toString();
 		mLogPwd = mEditTextUserPwd.getText().toString();
 		//search table 
-		TestSetting test = new TestSetting(this.getActivity().getApplicationContext());
-		List<String> testlist = test.getTestFile();
+		//TestSetting test = new TestSetting(this.getActivity().getApplicationContext());
+		//List<String> testlist = test.getTestFile();
 
-		if (testlist != null) {
-			boolean bTempRoute=false;
-			for (int testi = 0; testi < testlist.size(); testi++) {
-				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-				if(testlist.get(testi).contains("Temp")){
-					bTempRoute=true;
-				}
-				((myApplication) this.getActivity().getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getActivity(),bTempRoute);
-			}
-		} 
+//		if (testlist != null) {
+//			boolean bTempRoute=false;
+//			for (int testi = 0; testi < testlist.size(); testi++) {
+//				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
+//				if(testlist.get(testi).contains("Temp")){
+//					bTempRoute=true;
+//				}
+//				((myApplication) this.getActivity().getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getActivity(),bTempRoute);
+//			}
+//		} 
 		RouteDao dao = RouteDao.getInstance(this.getActivity().getApplicationContext());
 		ContentValues cv = new ContentValues();
 		List<String>fileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);

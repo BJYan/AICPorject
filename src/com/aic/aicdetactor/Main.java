@@ -1,14 +1,22 @@
 package com.aic.aicdetactor;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -17,12 +25,16 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.fragment.BlueToothFragment;
 import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
+import com.aic.aicdetactor.fragment.LoginFragment;
+import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
 import com.aic.aicdetactor.fragment.Message_Fragment;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.fragment.SearchFragment;
+import com.aic.aicdetactor.fragment.Search_fragment;
 
 
 public class Main extends Activity implements BlueToothListener,ClickListenerInterface,
@@ -30,7 +42,7 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 
 	private boolean mIsLogin = false;
 	private RadioGroup mGroup = null; 
-	TestSetting testControl = null;
+	//TestSetting testControl = null;
 	public myApplication app = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,8 +52,8 @@ public class Main extends Activity implements BlueToothListener,ClickListenerInt
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.main);	
 		app = (myApplication) getApplication();
-		testControl = new TestSetting(this.getApplicationContext());
-		testControl.setAppTestKey(true);	
+	//	testControl = new TestSetting(this.getApplicationContext());
+	//	testControl.setAppTestKey(true);	
 		Intent intent = getIntent();
 		mIsLogin=intent.getExtras().getBoolean("isLog");
 		String Name=intent.getExtras().getString("name");

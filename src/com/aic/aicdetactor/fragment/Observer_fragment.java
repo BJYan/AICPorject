@@ -19,6 +19,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.util.MLog;
 
 
 public class Observer_fragment extends Fragment implements OnButtonListener{
@@ -96,7 +97,7 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 			 try {  
 		           // Bundle extra = data.getExtras(); 
 		          //  Bitmap bmp = (Bitmap)data.getExtras().get("data");
-		            Log.d("test", "onActivityResult()  1"); 
+		            MLog.Logd("test", "onActivityResult()  1"); 
 		            /** 
 		             * 然而为了节约内存的消耗，这里返回的图片是一个121*162的缩略图。 
 		             * 那么如何返回我们需要的大图呢？看上面 
@@ -125,7 +126,7 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		             * 当我们设置这个值的时候，我们接着就可以从BitmapFactory.Options的outWidth和outHeight中获取到值 
 		             */  
 		            BitmapFactory.Options op = new BitmapFactory.Options(); 
-		            Log.d("test", "onActivityResult()  2"); 
+		            MLog.Logd("test", "onActivityResult()  2"); 
 		            //op.inSampleSize = 8;  
 		            op.inJustDecodeBounds = true;  
 		            //Bitmap pic = BitmapFactory.decodeFile(imageFilePath, op);//调用这个方法以后，op中的outWidth和outHeight就有值了  
@@ -135,8 +136,8 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		                    null, op);  
 		            int wRatio = (int) Math.ceil(op.outWidth / (float) dw); //计算宽度比例  
 		            int hRatio = (int) Math.ceil(op.outHeight / (float) dh); //计算高度比例  
-		            Log.d("test", wRatio + "wRatio");  
-		            Log.d("test", hRatio + "hRatio");  
+		            MLog.Logd("test", wRatio + "wRatio");  
+		            MLog.Logd("test", hRatio + "hRatio");  
 		            /** 
 		             * 接下来，我们就需要判断是否需要缩放以及到底对宽还是高进行缩放。 
 		             * 如果高和宽不是全都超出了屏幕，那么无需缩放。 
@@ -145,7 +146,7 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		             * 大的一个将被缩放，因为缩放大的时，小的应该自动进行同比率缩放。 
 		             * 缩放使用的还是inSampleSize变量 
 		             */  
-		            Log.d("test", "onActivityResult()  3"); 
+		            MLog.Logd("test", "onActivityResult()  3"); 
 		            if (wRatio > 1 && hRatio > 1) {  
 		                if (wRatio > hRatio) {  
 		                    op.inSampleSize = wRatio;  
@@ -159,7 +160,7 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		          
 		            mImageView.setImageBitmap(pic);  
 		        } catch (Exception e) {  
-		        	Log.d("test","main_media Exception "+e.toString());
+		        	MLog.Logd("test","main_media Exception "+e.toString());
 		            e.printStackTrace();  
 		        }  
 			 

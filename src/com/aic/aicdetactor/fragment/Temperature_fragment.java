@@ -22,6 +22,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 
@@ -46,7 +47,7 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onCreate()");
+		MLog.Logd(TAG," Temperature_fragment:onCreate()");
 		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
 		mMapList = new ArrayList<Map<String, Object>>();
 		//初始化ListVew 数据项
@@ -69,41 +70,41 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onDestroy()");
+		MLog.Logd(TAG," Temperature_fragment:onDestroy()");
 		super.onDestroy();
 	}
 
 	@Override
 	public void onDestroyOptionsMenu() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onDestroyOptionsMenu()");
+		MLog.Logd(TAG," Temperature_fragment:onDestroyOptionsMenu()");
 		super.onDestroyOptionsMenu();
 	}
 
 	@Override
 	public void onDestroyView() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onDestroyView()");
+		MLog.Logd(TAG," Temperature_fragment:onDestroyView()");
 		super.onDestroyView();
 	}
 
 	@Override
 	public void onDetach() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onDetach()");
+		MLog.Logd(TAG," Temperature_fragment:onDetach()");
 		super.onDetach();
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onResume()");
+		MLog.Logd(TAG," Temperature_fragment:onResume()");
 		super.onResume();
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		Log.d(TAG," Temperature_fragment:onSaveInstanceState()");
+		MLog.Logd(TAG," Temperature_fragment:onSaveInstanceState()");
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
@@ -111,7 +112,7 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 	@Override
 	public void onStop() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onStop()");
+		MLog.Logd(TAG," Temperature_fragment:onStop()");
 		super.onStop();
 	}
 
@@ -129,14 +130,14 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 		mTemeratureResultStr =(TextView)view.findViewById(R.id.temperature);
 		mDeviceNameTextView.setText(parStr);
 		parseExternalInfo();
-		Log.d(TAG," Temperature_fragment:onCreateView()");
+		MLog.Logd(TAG," Temperature_fragment:onCreateView()");
 		return view;
 	}
 
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
-		Log.d(TAG," Temperature_fragment:onPause()");
+		MLog.Logd(TAG," Temperature_fragment:onPause()");
 		super.onPause();
 	}
 	void parseExternalInfo(){
@@ -178,7 +179,7 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
     @Override
 	public void onStart() {
 		// TODO Auto-generated method stub
-    	Log.d(TAG," Temperature_fragment:onStart()");
+    	MLog.Logd(TAG," Temperature_fragment:onStart()");
 		super.onStart();
 	}
 
@@ -187,7 +188,7 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 		// TODO Auto-generated method stub
 	
 		super.onViewCreated(view, savedInstanceState);
-		Log.d(TAG," Temperature_fragment:onViewCreated()");
+		MLog.Logd(TAG," Temperature_fragment:onViewCreated()");
 		
 		//handler.postDelayed(runnable, 500);
 	
@@ -208,7 +209,7 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.d(TAG," Temperature_fragment:onAttach()");
+        MLog.Logd(TAG," Temperature_fragment:onAttach()");
         // 这是为了保证Activity容器实现了用以回调的接口。如果没有，它会抛出一个异常。
         try {
             mCallback = (OnTemperatureMeasureListener) activity;

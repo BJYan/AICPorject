@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
@@ -83,7 +84,7 @@ public class MyJSONParse {
 		
 		try {
 			json.put(KEY.KEY_Data_Exist_Guid, SystemUtil.createGUID());
-			Log.d(TAG, "genGUIDUnderDeviceItem() object is "+json.toString());
+			MLog.Logd(TAG, "genGUIDUnderDeviceItem() object is "+json.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -194,7 +195,7 @@ public class MyJSONParse {
 			}
 
 		}else{
-			Log.e("luotest", "getPlanInfo() data is null, Routepath is "+Routepath);
+			MLog.Loge("luotest", "getPlanInfo() data is null, Routepath is "+Routepath);
 		}		
 		return route;
 	}
@@ -237,7 +238,7 @@ public class MyJSONParse {
 		String data = SystemUtil.openFile(path);	
 	
 		if (data != null) {
-			Log.d(TAG, "data is not null");
+			MLog.Logd(TAG, "data is not null");
 			try {
 				JSONTokener jsonTokener = new JSONTokener(data);		
 				JSONObject object = (JSONObject) jsonTokener.nextValue();
@@ -257,7 +258,7 @@ public class MyJSONParse {
 					try {
 
 						mRouteList.get(routeIndex).mWorkerList = parseWorkerNode(mRouteList.get(routeIndex).mWorkerArrary);
-						Log.e("luotest", "parseBaseInfo() mWorkerList is" + mRouteList.get(routeIndex).mWorkerList.toString());
+						MLog.Loge("luotest", "parseBaseInfo() mWorkerList is" + mRouteList.get(routeIndex).mWorkerList.toString());
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -275,7 +276,7 @@ public class MyJSONParse {
 				if (mRouteList.get(routeIndex).mTurnArrary != null) {
 					try {
 						mRouteList.get(routeIndex).mTurnList = parseTurnNode(mRouteList.get(routeIndex).mTurnArrary);
-						Log.e("luotest", "parseBaseInfo() mTurnList is" + mRouteList.get(routeIndex).mTurnList.toString());
+						MLog.Loge("luotest", "parseBaseInfo() mTurnList is" + mRouteList.get(routeIndex).mTurnList.toString());
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -307,7 +308,7 @@ public class MyJSONParse {
 			String[] arrayOld = Oldvalue.split(PARTITEMDATA_SPLIT_KEYWORD);
 			
 			String[] array2 = Value.split(PARTITEMDATA_SPLIT_KEYWORD);
-			Log.d(TAG, "setPartItem_ItemDef() old length ="+arrayOld.length + ",new Length ="+array2.length);
+			MLog.Logd(TAG, "setPartItem_ItemDef() old length ="+arrayOld.length + ",new Length ="+array2.length);
 			Oldvalue = null;
 			if(arrayOld.length<partItemDefaultLenth){
 				for(int i = 0;i<arrayOld.length;i++){
@@ -321,7 +322,7 @@ public class MyJSONParse {
 					}
 					Oldvalue = Oldvalue + Value;
 			}
-			Log.d(TAG, "setPartItem_ItemDef() Oldvalue is "+Oldvalue);
+			MLog.Logd(TAG, "setPartItem_ItemDef() Oldvalue is "+Oldvalue);
 			json.put(KEY.KEY_PARTITEMDATA, Oldvalue);
 		
 		} catch (JSONException e) {
@@ -413,7 +414,7 @@ public class MyJSONParse {
 //				status.mCheckedCount++;
 //			}
 			for (int k = 0; k < partlist.size(); k++) {
-				Log.d(TAG, " getDevicePartItemCount k=" + k + "," + partlist.get(k));
+				MLog.Logd(TAG, " getDevicePartItemCount k=" + k + "," + partlist.get(k));
 				itemObject = (JSONObject) partlist.get(k);	
 				
 				checkTimeStr = this.getPartItemCheckUnitName(itemObject, CommonDef.partItemData_Index.PARTITEM_ADD_END_DATE_20);
@@ -441,14 +442,14 @@ public class MyJSONParse {
 		ContentValues va = new ContentValues();
 		int index =-1;
 		String name ="";
-		Log.d(TAG, "getNeedCheckDeviceItemIndex() ");
+		MLog.Logd(TAG, "getNeedCheckDeviceItemIndex() ");
 		try {
 			List<Object> deviceItemList = getDeviceItem(mStationIndex);
 			for ( int i = 0; i < deviceItemList.size(); i++) {
 				JSONObject object = (JSONObject) deviceItemList.get(i);
-				Log.d(TAG, "getNeedCheckDeviceItemIndex() "+i + ",object is "+object.toString());
+				MLog.Logd(TAG, "getNeedCheckDeviceItemIndex() "+i + ",object is "+object.toString());
 				int b =object.optInt(T_Device_Item.Device_Array_Item_Const.Key_Is_Device_Checked);
-				Log.d(TAG, "getNeedCheckDeviceItemIndex() b ="+b);
+				MLog.Logd(TAG, "getNeedCheckDeviceItemIndex() b ="+b);
 				if(b==0){
 					index = i;
 					name = object.optString(T_Device_Item.Device_Array_Item_Const.Key_Name);
@@ -475,7 +476,7 @@ public class MyJSONParse {
 	public String getRoutName(int routeIndex) throws JSONException {
 		String name = null;
 		if (mRouteList.get(routeIndex).mLineObject == null) {
-			Log.e(TAG, "getRoutName mPlanName_Root_Object is null");
+			MLog.Loge(TAG, "getRoutName mPlanName_Root_Object is null");
 			return null;
 		}
 		name = mRouteList.get(routeIndex).Name;		
@@ -535,7 +536,7 @@ public class MyJSONParse {
 	public List<Object> getDeviceList(Object StationItemobject)
 			throws JSONException {
 		if (StationItemobject == null) {
-			Log.d(TAG, " object is null");
+			MLog.Logd(TAG, " object is null");
 			return null;
 		}
 		List<Object> list = new ArrayList<Object>();
@@ -543,9 +544,9 @@ public class MyJSONParse {
 			JSONObject object2 = (JSONObject) StationItemobject;
 
 			JSONArray array = object2.getJSONArray(KEY.KEY_DEVICEITEM);
-			Log.d(TAG, " object is not null array.size is " + array.length());
+			MLog.Logd(TAG, " object is not null array.size is " + array.length());
 			for (int i = 0; i < array.length(); i++) {
-				Log.d(TAG, " getDeviceItem object i" + i);
+				MLog.Logd(TAG, " getDeviceItem object i" + i);
 				JSONObject subObject = array.getJSONObject(i);
 				
 				//genGUIDUnderDeviceItem(subObject);
@@ -604,9 +605,9 @@ public class MyJSONParse {
 		try {
 			//每个stationItem
 			JSONObject stationItem = (JSONObject) getStationItem(mRouteIndex,mStationIndex);			
-			//Log.d(TAG, " getDeviceItem  stationItem is " + stationItem.toString());
+			//MLog.Logd(TAG, " getDeviceItem  stationItem is " + stationItem.toString());
 			JSONArray array = stationItem.getJSONArray(KEY.KEY_DEVICEITEM);
-			//Log.d(TAG, " getDeviceItem  stationItem array " + array.toString());
+			//MLog.Logd(TAG, " getDeviceItem  stationItem array " + array.toString());
 			for (int i = 0; i < array.length(); i++) {				
 				JSONObject subObject = array.getJSONObject(i);
 				list.add(subObject);
@@ -623,21 +624,21 @@ public class MyJSONParse {
 	public List<Object> getIDInfo(Object StationItemobject)
 			throws JSONException {
 		if (StationItemobject == null) {
-			Log.d(TAG, "getIDInfo object is null");
+			MLog.Logd(TAG, "getIDInfo object is null");
 			return null;
 		}
 		List<Object> list = new ArrayList<Object>();
 		try {
 			JSONObject object2 = (JSONObject) StationItemobject;
 			JSONArray array = object2.getJSONArray(KEY.KEY_DEVICEITEM);
-			Log.d(TAG, "getIDInfo object ");
+			MLog.Logd(TAG, "getIDInfo object ");
 			for (int i = 0; i < array.length(); i++) {
-				Log.d(TAG, "getIDInfo object i =" + i);
+				MLog.Logd(TAG, "getIDInfo object i =" + i);
 				JSONObject subObject = array.getJSONObject(i);				
 					JSONArray sub_Array = subObject.getJSONArray(KEY.KEY_IDINFO);
 					for (int k = 0; k < sub_Array.length(); k++) {
 						list.add(sub_Array.getJSONObject(k));
-						Log.d(TAG, "getIDInfo object k =" + k);
+						MLog.Logd(TAG, "getIDInfo object k =" + k);
 					}				
 			}
 
@@ -667,7 +668,7 @@ public class MyJSONParse {
 
 	public int getStationItemIndexByID(int routeIndex,String strIdCode) throws JSONException {
 		if (strIdCode == null) {
-			Log.d(TAG, "getStationItemIndexByID strIdCode is null");
+			MLog.Logd(TAG, "getStationItemIndexByID strIdCode is null");
 			return -1;
 		}
 		int index = 0;
@@ -682,7 +683,7 @@ public class MyJSONParse {
 				index = i;
 				break;
 			}
-			Log.d(TAG, "getStationItemIndexByID i = " + i + ",object is "
+			MLog.Logd(TAG, "getStationItemIndexByID i = " + i + ",object is "
 					+ object.toString());
 			
 		}
@@ -695,17 +696,17 @@ public class MyJSONParse {
 	 */
 	public String getPartItemSubStr(String partItemDataStr, int index) {
 		if (partItemDataStr == null) {
-			Log.d(TAG, "getPartItemSubStr partItemDataStr is null");
+			MLog.Logd(TAG, "getPartItemSubStr partItemDataStr is null");
 			return null;
 		}
 
 		String[] array = partItemDataStr.split(PARTITEMDATA_SPLIT_KEYWORD);
 		if (index < 0 || index >= array.length) {
-			Log.d(TAG, "getPartItemSubStr index out of array size");
+			MLog.Logd(TAG, "getPartItemSubStr index out of array size");
 			return null;
 		}
 //		for(int i =0;i<array.length;i++){
-//		Log.d(TAG, "getPartItemSubStr array is "+array[i]);
+//		MLog.Logd(TAG, "getPartItemSubStr array is "+array[i]);
 //		}
 
 		return array[index];
@@ -715,7 +716,7 @@ public class MyJSONParse {
 	// input params must be partItem sub
 		public String getPartItemCheckUnitName(Object partItemobject,int index) {
 			if (partItemobject == null) {
-				Log.d(TAG, "getPartItemCheckUnitName " + " object is null");
+				MLog.Logd(TAG, "getPartItemCheckUnitName " + " object is null");
 				return null;
 			}
 			
@@ -725,14 +726,14 @@ public class MyJSONParse {
 				JSONObject newObject = (JSONObject) partItemobject;
 
 				name = newObject.getString(KEY.KEY_PARTITEMDATA);
-				Log.d(TAG, "getPartItemName 3 name is " +name);
+				MLog.Logd(TAG, "getPartItemName 3 name is " +name);
 				name = getPartItemSubStr(name,index);
-				Log.d(TAG, "getPartItemName 4 name is " +name);
+				MLog.Logd(TAG, "getPartItemName 4 name is " +name);
 
 			} catch (Exception e) {
-				Log.e(TAG,e.toString());;
+				MLog.Loge(TAG,e.toString());;
 			}
-			Log.d(TAG, "getPartItemCheckUnitName name is "+name);
+			MLog.Logd(TAG, "getPartItemCheckUnitName name is "+name);
 			}else{
 				PartItemItem item=mgson.fromJson(partItemobject.toString(), PartItemItem.class);
 				name = item.getCheckContent();
@@ -763,7 +764,7 @@ public class MyJSONParse {
 
 	public Temperature getPartItemTemperatrue(Object object){
 		if (object == null) {
-			Log.d(TAG, "getPartItemTemperatrue " + " object is null");
+			MLog.Logd(TAG, "getPartItemTemperatrue " + " object is null");
 			return null;
 		}
 		Temperature info = new Temperature();
@@ -777,9 +778,9 @@ public class MyJSONParse {
 	}
 	// input params must be partItem sub
 	public String getPartItemName(Object partItemobject) {
-		//Log.d(TAG, "getPartItemName 0");
+		//MLog.Logd(TAG, "getPartItemName 0");
 		if (partItemobject == null) {
-			Log.d(TAG, "getPartItemName " + " object is null");
+			MLog.Logd(TAG, "getPartItemName " + " object is null");
 			return null;
 		}
 		String name = null;	
@@ -787,9 +788,9 @@ public class MyJSONParse {
 			JSONObject newObject = (JSONObject) partItemobject;			
 			name = newObject.getString(KEY.KEY_PARTITEMDATA);	
 		} catch (Exception e) {
-			Log.e(TAG,e.toString());;
+			MLog.Loge(TAG,e.toString());;
 		}
-		Log.d(TAG, "getPartItemName name is "+name);
+		MLog.Logd(TAG, "getPartItemName name is "+name);
 		return name;
 	}
 
@@ -821,11 +822,11 @@ public static List<WorkerInfo> parseWorkerNode(JSONArray WorkerObject) throws JS
 			
 			info.T_Organization_Guid = jsonObject.getString(T_Worker.Worker_Const.Key_T_Organization_Guid);
 			workerList.add(info);
-			//Log.d("luotest","parseWorkerNode()info "+info.GroupName);
+			//MLog.Logd("luotest","parseWorkerNode()info "+info.GroupName);
 			
 			
 		}	
-		Log.d("luotest","parseWorkerNode()"+workerList.toString());
+		MLog.Logd("luotest","parseWorkerNode()"+workerList.toString());
 		return workerList;
 	}
 	
@@ -884,7 +885,7 @@ public static List<TurnInfo> parseTurnNode(JSONArray TurnObject) throws JSONExce
 	}
 
 	public Object getStationItem(int routeIndex,int index) {
-		Log.d(TAG, "getStationItem routeIndex ="+routeIndex +",index="+index +",mRouteIndex ="+mRouteIndex +",mStationIndex = "+mStationIndex);
+		MLog.Logd(TAG, "getStationItem routeIndex ="+routeIndex +",index="+index +",mRouteIndex ="+mRouteIndex +",mStationIndex = "+mStationIndex);
 		return mRouteList.get(mRouteIndex).mStationList.get(mStationIndex);
 
 	}

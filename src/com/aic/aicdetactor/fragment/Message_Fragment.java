@@ -17,6 +17,7 @@ import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.TemporaryDataBean;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
 import com.aic.aicdetactor.fragment.DownLoadFragment.MyOnPageChangeListener;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Fragment;
@@ -98,7 +99,7 @@ public class Message_Fragment extends Fragment {
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
+                MLog.Logi("DownLoadFragment--tabId--=", tabId);  
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(1);

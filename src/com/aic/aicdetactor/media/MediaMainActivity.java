@@ -3,6 +3,7 @@ package com.aic.aicdetactor.media;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.check.TempPlanActivity;
+import com.aic.aicdetactor.util.MLog;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -66,16 +67,16 @@ public class MediaMainActivity extends Activity implements OnClickListener{
 
 	 @Override  
 	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
-		 Log.d("test", "onActivityResult() 00" + requestCode + ",resultCode= "+resultCode); 
+		 MLog.Logd("test", "onActivityResult() 00" + requestCode + ",resultCode= "+resultCode); 
 		  if(requestCode == RESULT_CODE){  
-			  Log.d("test", "onActivityResult() "); 
+			  MLog.Logd("test", "onActivityResult() "); 
 	            //说明是由Camera返回的数据  
 	            //由Camera应用返回的图片数据是一个Camera对象，存储在一个名为data的extra域  
 	            //然后将获取到的图片存储显示在ImageView中  
 	        try {  
                // Bundle extra = data.getExtras(); 
               //  Bitmap bmp = (Bitmap)data.getExtras().get("data");
-                Log.d("test", "onActivityResult()  1"); 
+                MLog.Logd("test", "onActivityResult()  1"); 
                 /** 
                  * 然而为了节约内存的消耗，这里返回的图片是一个121*162的缩略图。 
                  * 那么如何返回我们需要的大图呢？看上面 
@@ -104,7 +105,7 @@ public class MediaMainActivity extends Activity implements OnClickListener{
                  * 当我们设置这个值的时候，我们接着就可以从BitmapFactory.Options的outWidth和outHeight中获取到值 
                  */  
                 BitmapFactory.Options op = new BitmapFactory.Options(); 
-                Log.d("test", "onActivityResult()  2"); 
+                MLog.Logd("test", "onActivityResult()  2"); 
                 //op.inSampleSize = 8;  
                 op.inJustDecodeBounds = true;  
                 //Bitmap pic = BitmapFactory.decodeFile(imageFilePath, op);//调用这个方法以后，op中的outWidth和outHeight就有值了  
@@ -114,8 +115,8 @@ public class MediaMainActivity extends Activity implements OnClickListener{
                         null, op);  
                 int wRatio = (int) Math.ceil(op.outWidth / (float) dw); //计算宽度比例  
                 int hRatio = (int) Math.ceil(op.outHeight / (float) dh); //计算高度比例  
-                Log.d("test", wRatio + "wRatio");  
-                Log.d("test", hRatio + "hRatio");  
+                MLog.Logd("test", wRatio + "wRatio");  
+                MLog.Logd("test", hRatio + "hRatio");  
                 /** 
                  * 接下来，我们就需要判断是否需要缩放以及到底对宽还是高进行缩放。 
                  * 如果高和宽不是全都超出了屏幕，那么无需缩放。 
@@ -124,7 +125,7 @@ public class MediaMainActivity extends Activity implements OnClickListener{
                  * 大的一个将被缩放，因为缩放大的时，小的应该自动进行同比率缩放。 
                  * 缩放使用的还是inSampleSize变量 
                  */  
-                Log.d("test", "onActivityResult()  3"); 
+                MLog.Logd("test", "onActivityResult()  3"); 
                 if (wRatio > 1 && hRatio > 1) {  
                     if (wRatio > hRatio) {  
                         op.inSampleSize = wRatio;  
@@ -137,7 +138,7 @@ public class MediaMainActivity extends Activity implements OnClickListener{
                         .openInputStream(imageFilePath), null, op);  
                 imageView.setImageBitmap(pic);  
             } catch (Exception e) {  
-            	Log.d("test","main_media Exception "+e.toString());
+            	MLog.Logd("test","main_media Exception "+e.toString());
                 e.printStackTrace();  
             }   
         }  
@@ -153,7 +154,7 @@ public class MediaMainActivity extends Activity implements OnClickListener{
              values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
              values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
              imageFilePath = MediaMainActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
-             Log.d("test","main_media imageFilePath is "+imageFilePath);
+             MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
              intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
                
              

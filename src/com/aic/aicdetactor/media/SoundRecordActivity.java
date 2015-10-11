@@ -23,6 +23,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.MediaDao;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class SoundRecordActivity extends Activity implements OnClickListener{
@@ -154,7 +155,7 @@ public class SoundRecordActivity extends Activity implements OnClickListener{
 		 
 		// mFileName = "adbcderewe124543234335435534534543543534543"+".amr";	
 		 mFilePath = SystemUtil.getDataMediaStoragePath(CommonDef.FILE_TYPE_AUDIO)+mFileName;		
-		 Log.d("luotest","initializeAudio()"+ mFilePath);
+		 MLog.Logd("luotest","initializeAudio()"+ mFilePath);
 		 bRecording = true;
 		 mMediaRecorder = new MediaRecorder();// new出MediaRecorder对象  
 		 mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);  

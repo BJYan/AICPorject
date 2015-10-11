@@ -3,11 +3,15 @@ package com.aic.aicdetactor.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import network.com.citizensoft.networkdemo.MainActivity;
+
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
+import com.aic.aicdetactor.util.MLog;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -15,6 +19,8 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
@@ -28,6 +34,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -87,11 +94,26 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	TabHost tabHost;
 	ViewPager viewPager;
 	NetWorkSettingAdapter netWorkSettingAdapter;
-	
+	private Handler mHandler=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		mHandler =new Handler(){
+
+			@Override
+			public void handleMessage(Message msg) {
+				// TODO Auto-generated method stub
+				switch (msg.what) {
+				case 0:
+					Toast.makeText(getActivity().getApplicationContext(), msg.obj.toString(),
+							Toast.LENGTH_SHORT).show();
+					break;
+				default:
+					break;
+				}
+				super.handleMessage(msg);
+			}};
 	}
 
 
@@ -128,7 +150,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
+                MLog.Logi("DownLoadFragment--tabId--=", tabId);  
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(1);
@@ -139,7 +161,8 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
         ExpandableListView netExListView = (ExpandableListView)listViews.get(2).findViewById(R.id.network_setting_list);
         netExListView.setAdapter(netWorkSettingAdapter);
         netExListView.setGroupIndicator(null);
-        
+        mDown_Button = (Button)listViews.get(1).findViewById(R.id.down_down);
+        mDown_Button.setOnClickListener(this);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 		/*
 		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
@@ -349,8 +372,32 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		case R.id.up_up:
 			break;
 		case R.id.down_down:
+			Event.QueryCommand_Event(arg0,getActivity(),getAddress(WifiMacType.MAcAddr),mHandler);
 			break;
 		}
+	}
+	
+	enum WifiMacType{
+		MAcAddr,WifiAddr
+	}
+
+	private String getAddress(WifiMacType type){
+		WifiManager wifiMan = (WifiManager) this.getActivity().getSystemService(Context.WIFI_SERVICE);  
+		WifiInfo info = wifiMan.getConnectionInfo(); 
+		if(type == WifiMacType.MAcAddr){
+			//return info.getMacAddress();
+			return "F9-2C-15-00-12-FC";
+		}
+		
+		if(type == WifiMacType.WifiAddr){
+			int ipAddress = info.getIpAddress();  
+			if (ipAddress != 0) {  
+				return ((ipAddress & 0xff) + "." + (ipAddress >> 8 & 0xff) + "."   
+			        + (ipAddress >> 16 & 0xff) + "." + (ipAddress >> 24 & 0xff));  
+			}  
+		}
+		
+		return null;
 	}
 	
 	void displayMacAndIPAddress(){
@@ -358,9 +405,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		WifiInfo info = wifiMan.getConnectionInfo();  
 		mPda_mac = info.getMacAddress();// 获得本机的MAC地址  
 		String ssid = info.getSSID();// 获得本机所链接的WIFI名称  
-		  
 		int ipAddress = info.getIpAddress();  
-		  
 		// 获得IP地址的方法一：  
 		if (ipAddress != 0) {  
 			mStr_Up_Pda_ip = ((ipAddress & 0xff) + "." + (ipAddress >> 8 & 0xff) + "."   

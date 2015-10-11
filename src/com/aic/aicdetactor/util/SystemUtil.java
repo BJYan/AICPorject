@@ -1,9 +1,11 @@
 package com.aic.aicdetactor.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +47,7 @@ public class  SystemUtil {
 		if(type ==TIME_FORMAT_YYMMDDHHMM){
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		str = df.format(new Date());
-		Log.d(TAG, "getSystemTime time is " + str);
+		MLog.Logd(TAG, "getSystemTime time is " + str);
 		}else if (type ==TIME_FORMAT_HHMM){
 			Time t=new Time(); // or Time t=new Time("GMT+8"); 加上Time Zone资料。  
 			t.setToNow(); // 取得系统时间。  
@@ -71,7 +73,7 @@ public class  SystemUtil {
 		String str = null;
 		UUID uuid = UUID.randomUUID();		
 		str = uuid.toString();
-		Log.d(TAG, "createGUID create a new GUID is  " + str);
+		MLog.Logd(TAG, "createGUID create a new GUID is  " + str);
 		return str;
 	}
 	
@@ -183,10 +185,10 @@ public class  SystemUtil {
 	public static void writeFileToSD(String fileName, String StrContent)
 			throws IOException {
 		
-		Log.d("luotest", "writeFileToSD() StrContent is  "+StrContent);		
+		MLog.Logd("luotest", "writeFileToSD() StrContent is  "+StrContent);		
 		File file = new File(fileName);
 		;
-		Log.d("luotest", "writeFileToSD() name is "+file.getName());
+		MLog.Logd("luotest", "writeFileToSD() name is "+file.getName());
 
 		FileOutputStream outStream = new FileOutputStream(file);
 		outStream.write(StrContent.getBytes("GB2312"));
@@ -199,16 +201,16 @@ public class  SystemUtil {
 			return null;
 		}
 
-		Log.d("luotest", "path 1= " + path);
+		MLog.Logd("luotest", "path 1= " + path);
 		File file = new File(path);
 		if (file.exists()) {
-			Log.d("luotest", "path 2= " + path);
+			MLog.Logd("luotest", "path 2= " + path);
 			try {
 				StringBuffer sb = new StringBuffer();
 				// HttpEntity entity = response.getEntity();
 				InputStream is = new FileInputStream(path);// entity.getContent();
 				BufferedReader br = new BufferedReader(new InputStreamReader(
-						is, "GB2312"));
+						is, "utf-8"));
 				String data = "";
 
 				while ((data = br.readLine()) != null) {
@@ -219,11 +221,11 @@ public class  SystemUtil {
 				// return result.getBytes("UTF-8");
 				return result;
 			} catch (Exception e) {
-				Log.d("luotest", "read data exception " + e.toString());
+				MLog.Logd("luotest", "read data exception " + e.toString());
 				e.printStackTrace();
 			}
 		}
-		Log.d("luotest", "path 3 = " + path);
+		MLog.Logd("luotest", "path 3 = " + path);
 		return null;
 	}	
 	
@@ -301,5 +303,12 @@ public class  SystemUtil {
 
 		return ""+0;
 	}
-	
+	public static void writeFile(String canonicalFilename, String text) 
+			throws IOException
+			{
+			  File file = new File (canonicalFilename);
+			  BufferedWriter out = new BufferedWriter(new FileWriter(file)); 
+			  out.write(text);
+			  out.close();
+			}
 }

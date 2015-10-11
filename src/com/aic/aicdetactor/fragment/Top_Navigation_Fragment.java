@@ -2,6 +2,7 @@ package com.aic.aicdetactor.fragment;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.util.MLog;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class Top_Navigation_Fragment extends Fragment {
 
 			@Override
 			public void onClick(View arg0) {
-				Log.d(TAG, "imageView.setOnClickListener");
+				MLog.Logd(TAG, "imageView.setOnClickListener");
 				// TODO Auto-generated method stub
 				Top_Navigation_Fragment.this.getActivity().finish();
 			}

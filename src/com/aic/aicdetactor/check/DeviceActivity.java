@@ -38,6 +38,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.TurnInfo;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class DeviceActivity extends Activity implements OnClickListener{
@@ -87,13 +88,13 @@ public class DeviceActivity extends Activity implements OnClickListener{
 		mStationNameStr = intent.getExtras().getString(CommonDef.station_info.NAME);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
-		Log.d("test", "startDevideActivity:mRouteIndex=" +mRouteIndex +",mStationIndex="+mStationIndex+",mRouteNameStr is "+mRouteNameStr+",mCheckNameStr is "+mCheckNameStr);
+		MLog.Logd("test", "startDevideActivity:mRouteIndex=" +mRouteIndex +",mStationIndex="+mStationIndex+",mRouteNameStr is "+mRouteNameStr+",mCheckNameStr is "+mCheckNameStr);
 		
 		TextView RouteNameTextView = (TextView) findViewById(R.id.station_text_name);
 		
 		RouteNameTextView.setText(mRouteNameStr+">>"+mStationNameStr);
 
-		Log.d(TAG, "oncreate() index is " + mStationIndex);
+		MLog.Logd(TAG, "oncreate() index is " + mStationIndex);
 		mListView = (ExpandableListView) findViewById(R.id.listView);
 		mDataList = new ArrayList<Map<String, String>>();
 		
@@ -168,7 +169,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 
 			@Override
 			public void onClick(View arg0) {
-				Log.d(TAG, "imageView.setOnClickListener");
+				MLog.Logd(TAG, "imageView.setOnClickListener");
 				// TODO Auto-generated method stub
 				finish();
 			}
@@ -309,7 +310,7 @@ public class DeviceActivity extends Activity implements OnClickListener{
 				app.mTurnNumber=turnInfo.get(i).Number;
 				app.mTurnStartTime=turnInfo.get(i).Start_Time;
 				app.mTurnEndTime=turnInfo.get(i).End_Time;
-				Log.d(TAG,"IsInworkerTime() NUMBER is " + turnInfo.get(i).Number +
+				MLog.Logd(TAG,"IsInworkerTime() NUMBER is " + turnInfo.get(i).Number +
 						",startTime is " +turnInfo.get(i).Number
 						+",endTime is " +turnInfo.get(i).End_Time);
 				bok = true;

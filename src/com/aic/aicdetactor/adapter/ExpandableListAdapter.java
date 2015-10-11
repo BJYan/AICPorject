@@ -12,6 +12,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.util.MLog;
 
 import android.app.Activity;
 import android.content.Context;
@@ -211,12 +212,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	}
 
 	void initeChild() {
-		Log.d(TAG,"initeChild() start ");
+		MLog.Logd(TAG,"initeChild() start ");
 		mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
 		for (int deviceIndex = 0; deviceIndex < deviceItemList.size(); deviceIndex++) {
 			InitChidrenData(deviceIndex, 0, false);
 		}
-		Log.d(TAG,"initeChild() end ");
+		MLog.Logd(TAG,"initeChild() end ");
 	}
 
 	void InitChidrenData(int deviceIndex, int itemIndexs, boolean updateAdapter) {
@@ -224,19 +225,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 			//Partitem数组中的每一项，包括Fast_Record_Item_Name 及PartItemData
 			Object object = deviceItemList.get(deviceIndex);
-			Log.d(TAG,"InitChidrenData() object is "+object.toString());
+			MLog.Logd(TAG,"InitChidrenData() object is "+object.toString());
 			mPartItemList = app.getPartItem(object,-1);
-			Log.d(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
+			MLog.Logd(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
 			ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
 		
 			for (int i = 0; i < mPartItemList.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				Log.d(TAG,"InitChidrenData() PartItemData is "+mPartItemList.get(i).toString());
+				MLog.Logd(TAG,"InitChidrenData() PartItemData is "+mPartItemList.get(i).toString());
 				map.put(CommonDef.check_item_info.NAME,
 						app.getPartItemCheckUnitName(
 								mPartItemList.get(i),
 								CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME));
-				Log.d(TAG,"InitChidrenData() Name  is "+app.getPartItemCheckUnitName(
+				MLog.Logd(TAG,"InitChidrenData() Name  is "+app.getPartItemCheckUnitName(
 						mPartItemList.get(i),
 						CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME));
 				map.put(CommonDef.check_item_info.DATA_TYPE,

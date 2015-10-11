@@ -47,6 +47,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.AuxiliaryInfoNode;
 import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.media.MediaMainActivity;
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class DeviceItemActivity extends Activity implements OnClickListener {
@@ -134,7 +135,7 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 		mDeviceNameStr = intent.getExtras().getString(CommonDef.device_info.NAME);
 		String routeNameStr = intent.getExtras().getString(CommonDef.route_info.NAME);
 		String  stationName = intent.getExtras().getString(CommonDef.station_info.NAME);
-Log.d(TAG,"routeName is "+ routeNameStr);
+MLog.Logd(TAG,"routeName is "+ routeNameStr);
 		TextView planNameTextView = (TextView) findViewById(R.id.planname);
 		planNameTextView.setText(oneCatalog);
 		app.gRouteName =  oneCatalog;
@@ -152,7 +153,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 
 			@Override
 			public void onClick(View arg0) {
-				Log.d(TAG,"imageView.setOnClickListener");
+				MLog.Logd(TAG,"imageView.setOnClickListener");
 				// TODO Auto-generated method stub
 				finish();
 			}
@@ -160,7 +161,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		});
 		mUnitcheck_Vibrate = (LinearLayout)findViewById(R.id.unitcheck);
 		mUnitcheck_Vibrate.setVisibility(View.GONE);
-		Log.d(TAG, "ONcREATE stationIndex is " + mStationIndex + "deviceIndex"+ mDeviceIndex);
+		MLog.Logd(TAG, "ONcREATE stationIndex is " + mStationIndex + "deviceIndex"+ mDeviceIndex);
 		mListView = (ListView) findViewById(R.id.listView);
 		mMapList = new ArrayList<Map<String, Object>>();
 		
@@ -193,7 +194,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				 mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 				// mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
 				 mCheckUnit_DataType = Integer.parseInt(map.get(CommonDef.check_item_info.DATA_TYPE));
-				 Log.d(TAG,"partitemdata data type =" +mCheckUnit_DataType);
+				 MLog.Logd(TAG,"partitemdata data type =" +mCheckUnit_DataType);
 				// needVisible();
 				 
 				 app.mPartItemName = mCheckItemNameStr;
@@ -277,7 +278,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 				SystemUtil.reverseListData(mMapList);
 				
 				for(int i =0;i< mMapList.size();i++){
-					Log.d(TAG, "ListReverse " + i +","+mMapList.get(i).toString());
+					MLog.Logd(TAG, "ListReverse " + i +","+mMapList.get(i).toString());
 				}
 				mListViewAdapter.notifyDataSetChanged();
 			}});
@@ -370,7 +371,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
    void InitDataNeeded(int itemIndex,boolean updateAdapter){
 	   try {
 		   partItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
-		   Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
+		   MLog.Logd(TAG, "partItemDataList IS " + partItemObject.toString());
 		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
 		   
 		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
@@ -471,7 +472,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		   if(mCheckUnitNameStr != null && mCheckItemNameStr!=null){
 		   mItemDefTextView.setText(getString(R.string.checkitem_name) + mCheckUnitNameStr +":"+mCheckItemNameStr );
 		   }
-		   Log.d(TAG,"deviceItemActivity needVisible() mCheckUnitNameStr is " +mCheckUnitNameStr +",mCheckItemNameStr is "+mCheckItemNameStr);
+		   MLog.Logd(TAG,"deviceItemActivity needVisible() mCheckUnitNameStr is " +mCheckUnitNameStr +",mCheckItemNameStr is "+mCheckItemNameStr);
 		   
 	   }
    }
@@ -493,7 +494,7 @@ Log.d(TAG,"routeName is "+ routeNameStr);
 		node.set(AuxiliaryInfoNode.KEY_StartTime, app.mTurnStartTime);
 
 		node.set(AuxiliaryInfoNode.KEY_EndTime, app.mTurnEndTime);
-Log.d(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.mTurnStartTime
+MLog.Logd(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.mTurnStartTime
 		+",endTime is "+ app.mTurnEndTime);
 //		app.setAuxiliaryNode(mRouteIndex,
 //				node.getObject());
@@ -519,11 +520,11 @@ Log.d(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.
 		if((mCheckIndex < (mListView.getCount()))){
 			//先保存当前测试项的数据
 			JSONObject json = (JSONObject) mPartItemSelectedList.get(mCheckIndex);
-			Log.d(TAG, "saveCheckedItemNode(),"+json);
+			MLog.Logd(TAG, "saveCheckedItemNode(),"+json);
 			
 			//添加巡检结果到结果中，便于形成最后的结果。
 			json = app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-			Log.d(TAG, "saveCheckedItemNode() result is,"+json);			
+			MLog.Logd(TAG, "saveCheckedItemNode() result is,"+json);			
 			mJSONArray.put(json);
 			mBValue[mCheckIndex]= true;
 		}
@@ -550,7 +551,7 @@ Log.d(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.
 		}
 		mCheckItemNameStr = map.get(CommonDef.check_item_info.NAME);
 		//mCheckUnitNameStr = map.get(CommonDef.check_item_info.UNIT_NAME);
-		Log.d(TAG, "partitemdata data type =" + mCheckUnit_DataType);
+		MLog.Logd(TAG, "partitemdata data type =" + mCheckUnit_DataType);
 		
 		needVisible();
 		}
@@ -563,13 +564,13 @@ Log.d(TAG,"SaveData() turnNumber is " + app.mTurnNumber + ",startTime is "+ app.
 		//startCountDown();		
 		saveCheckedItemNode();
 		//iCheckedCount++;
-		Log.d(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
+		MLog.Logd(TAG, "nextCheckItem(),iCheckedCount ="+iCheckedCount +",mCurrentCheckIndex ="+mCheckIndex);
 		mCheckIndex++;
 		displayItemNode(mCheckIndex);
 		int count = 0 ;
 		for(int i = 0; i <mBValue.length;i++){
 			if(mBValue[i]){
-				Log.d(TAG, "nextCheckItem() i = "+i );
+				MLog.Logd(TAG, "nextCheckItem() i = "+i );
 				count++;	
 			}
 		}

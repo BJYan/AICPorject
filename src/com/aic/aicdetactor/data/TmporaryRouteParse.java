@@ -10,6 +10,7 @@ import org.json.JSONTokener;
 
 import android.util.Log;
 
+import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class TmporaryRouteParse extends Route {
@@ -87,7 +88,7 @@ public class TmporaryRouteParse extends Route {
 		String data = SystemUtil.openFile(path);	
 		
 		if (data != null) {
-			Log.d(TAG, "parseTemporaryRouteData() data is not null");
+			MLog.Logd(TAG, "parseTemporaryRouteData() data is not null");
 			try {
 				JSONTokener jsonTokener = new JSONTokener(data);		
 				JSONObject object = (JSONObject) jsonTokener.nextValue();
@@ -145,7 +146,7 @@ public class TmporaryRouteParse extends Route {
 
 			return list;
 		}
-		Log.d(TAG, "parseTemporaryRouteData() data is null");
+		MLog.Logd(TAG, "parseTemporaryRouteData() data is null");
 		return null;
 
 	}	
