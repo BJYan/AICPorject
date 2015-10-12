@@ -42,8 +42,7 @@
             android:background="#999999"
             android:layout_marginTop="2dip"
             android:layout_marginBottom="2dip"/>
-        <ImageView
-        	android:id="@+id/arrow"
+        <ImageView 
         	android:layout_width="38dip"
         	android:layout_height="fill_parent"
         	android:layout_alignParentStart="true"

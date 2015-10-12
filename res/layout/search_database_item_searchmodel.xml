@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" 
-    android:background="#55999999" 
-    android:id="@+id/search_db_layout">
+    android:background="#cccccc" 
+    android:id="@+id/search_db_layout"
+    android:padding="5dip">
     <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="38dip"

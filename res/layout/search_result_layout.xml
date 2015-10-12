@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:id="@+id/localSerach_container">
-    <include 
-        layout="@layout/common_title_bar"/>
+    android:id="@+id/localSerach_container"> 
 	<RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45dip"
@@ -32,10 +30,10 @@
              android:background="#999999" >
          </LinearLayout>
           <ImageView
-        	android:id="@+id/ka"
+        	android:id="@+id/search_button"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:src="@drawable/nfc_icon" 
+        	android:src="@drawable/search_button" 
         	android:layout_toLeftOf="@id/vline"
         	android:padding="5dip"
         	android:layout_centerVertical="true"/>

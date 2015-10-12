@@ -19,7 +19,7 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-         
+         <item name="android:actionBarStyle" >@style/myActionBarStyle</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
@@ -46,4 +46,13 @@
     </style>
 
     <style name="BaseDialog" parent="@android:style/Theme.Dialog" />
+    
+    <style name="myActionBarStyle" parent="android:Widget.ActionBar" >  
+        <item name="android:background">@drawable/title_shadow_background</item>  
+        <item name="android:titleTextStyle">@style/AcBar_titleStyle</item>  
+    </style>  
+    <style name="AcBar_titleStyle">  
+        <item name="android:textSize">18sp</item>  
+        <item name="android:textColor">#FFFFFF</item>  
+    </style>
 </resources>

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:background="@color/white">
+<LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:orientation="vertical" 
-    android:background="@color/white"
     android:paddingTop="10dip"
     android:paddingLeft="5dip"
-    android:paddingRight="5dip"
-    android:paddingBottom="5dip">
+    android:paddingRight="5dip" >
+
 	<RelativeLayout 
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
-	    android:background="#55999999">
+	    android:background="#55999999"
+	    android:paddingBottom="5dip">
 	    <TextView 
 	        android:id="@+id/network_upload_ip"
 	        android:layout_height="wrap_content"
@@ -22,7 +26,8 @@
 	    <EditText 
 	        android:id="@+id/network_upload_ip_4"
 	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
+	        android:layout_width="35dip"
+	        android:gravity="center"
 	        android:text="000"
 	        android:layout_alignParentRight="true"
 	        android:background="#ffffff"
@@ -32,7 +37,8 @@
 	    <EditText 
 	        android:id="@+id/network_upload_ip_3"
 	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
+	        android:layout_width="35dip"
+	        android:gravity="center"
 	        android:text="000"
 	        android:background="#ffffff"
 	        android:layout_toLeftOf="@id/network_upload_ip_4"
@@ -42,7 +48,8 @@
 	    <EditText 
 	        android:id="@+id/network_upload_ip_2"
 	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
+	        android:layout_width="35dip"
+	        android:gravity="center"
 	        android:text="000"
 	        android:background="#ffffff"
 	        android:layout_toLeftOf="@id/network_upload_ip_3"
@@ -52,7 +59,8 @@
 	    <EditText 
 	        android:id="@+id/network_upload_ip_1"
 	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
+	        android:layout_width="35dip"
+	        android:gravity="center"
 	        android:text="000"
 	        android:background="#ffffff"
 	        android:layout_toLeftOf="@id/network_upload_ip_2"
@@ -237,5 +245,6 @@
 	     	android:layout_width="150dip"
 	     	android:text="上传"
 	     	android:layout_gravity="center"/>
-	 </LinearLayout>
-</LinearLayout>
+	 </LinearLayout>	
+	</LinearLayout>
+</ScrollView>

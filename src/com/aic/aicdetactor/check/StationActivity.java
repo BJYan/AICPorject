@@ -97,8 +97,8 @@ public class StationActivity extends Activity {
 			
 			TextView planNameTextView  =(TextView)findViewById(R.id.route_type_name);
 			planNameTextView.setText(routeName);	
-			TextView title_bar_noback_name = (TextView) findViewById(R.id.title_bar_noback_name);
-			title_bar_noback_name.setText(oneCatalog);
+			/*TextView title_bar_noback_name = (TextView) findViewById(R.id.title_bar_noback_name);
+			title_bar_noback_name.setText(oneCatalog);*/
 			/*ActionBar bar=getActionBar();
 			bar.setLogo(null);;
 			bar.setDisplayUseLogoEnabled(false);

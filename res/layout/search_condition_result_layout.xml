@@ -3,9 +3,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="#ffffff">
-    <include 
-        layout="@layout/common_title_bar"/>
+    android:background="#ffffff"> 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dip"
+        android:id="@+id/relateve1"
+        android:background="@color/lightsteelblue"
+        android:gravity="center_vertical">
+         <TextView
+            android:id="@+id/route_type_name"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"           
+            android:text="备煤皮带路线" 
+            android:textSize="@dimen/listview_group_text_size"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dip"/>
+          <LinearLayout
+             android:id="@+id/vline"
+             android:layout_width="1dp"
+             android:layout_height="30dp"
+             android:layout_centerVertical="true"
+             android:layout_toLeftOf="@+id/menuimage"
+             android:orientation="vertical"
+             android:background="#999999" >
+         </LinearLayout>
+          <ImageView
+        	android:id="@+id/search_con_button"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/search_button" 
+        	android:layout_toLeftOf="@id/vline"
+        	android:padding="5dip"
+        	android:layout_centerVertical="true"/>
+         <ImageView
+        	android:id="@+id/menuimage"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/menu_icon2" 
+        	android:layout_alignParentEnd="true"
+        	android:padding="5dip"
+        	android:layout_centerVertical="true"/>
+      </RelativeLayout>
     <LinearLayout 
         android:layout_height="38dip"
         android:layout_width="fill_parent"

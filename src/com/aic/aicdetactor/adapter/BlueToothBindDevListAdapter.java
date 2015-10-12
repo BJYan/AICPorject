@@ -1,12 +1,16 @@
 package com.aic.aicdetactor.adapter;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.BlueToothRenameActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 
 public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	Context context;
@@ -65,6 +69,17 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		if(arg2==null) arg2 = mInflater.inflate(R.layout.bluetooth_binded_devlist_group_item, null);
+		ImageView GroupItemArror = (ImageView) arg2.findViewById(R.id.bluetooth_bind_dev_arrow);
+		GroupItemArror.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(context, BlueToothRenameActivity.class);
+				context.startActivity(intent);
+			}
+		});
 		return arg2;
 	}
 

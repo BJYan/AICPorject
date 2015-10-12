@@ -1,23 +1,15 @@
 package com.aic.aicdetactor;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -28,47 +20,33 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.fragment.BlueToothFragment;
 import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
 import com.aic.aicdetactor.fragment.Message_Fragment;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.fragment.SearchFragment;
-import com.aic.aicdetactor.fragment.Search_fragment;
 
 
 public class MainActivity extends CommonActivity implements BlueToothListener,ClickListenerInterface,
 	OnClickListener{
-
+	String TAG = "MainActivity";
 	private boolean mIsLogin = false;
 	private RadioGroup mGroup = null; 
-	//TestSetting testControl = null;
-	public myApplication app = null;
 	ImageView settingBtn;
 	TextView titleBarName;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
-//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
-//		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
+		  
 		setContentView(R.layout.main);	
 		app = (myApplication) getApplication();
-	//	testControl = new TestSetting(this.getApplicationContext());
-	//	testControl.setAppTestKey(true);	
+	 	
 		Intent intent = getIntent();
 		mIsLogin=intent.getExtras().getBoolean("isLog");
 		String Name=intent.getExtras().getString("name");
 		String pwd=intent.getExtras().getString("pwd");
-		
-		settingBtn = (ImageView) findViewById(R.id.title_bar_noback_more);
-		settingBtn.setOnClickListener(this);
-		titleBarName = (TextView) findViewById(R.id.title_bar_noback_name);
-		/*ActionBar actionBar = getActionBar();		
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
-		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM); */ 
+
 		mGroup = (RadioGroup)findViewById(R.id.group);
 		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
@@ -82,7 +60,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 					Fragment fragment = new BlueTooth_Fragment();	
 					fragmentTransaction.replace(R.id.fragment_main,fragment);		
 					fragmentTransaction.commit();
-					titleBarName.setText("AIC传感器设置");
+					setActionBar("AIC传感器设置",false);
 				}
 					break;
 				case R.id.btnB://巡检
@@ -93,8 +71,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 					Fragment fragment = new RouteFragment();
 					fragmentTransaction.replace(R.id.fragment_main,fragment);			
-					fragmentTransaction.commit();
-					titleBarName.setText("AIC巡检操作");
+					fragmentTransaction.commit(); 
+					setActionBar("AIC巡检操作",false);
 					}else{
 						//Toast.makeText(getApplicationContext(), "巡检：您还没登录", Toast.LENGTH_LONG).show();
 						//initFragment();
@@ -107,8 +85,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 						Fragment fragment = new SearchFragment();
 						fragmentTransaction.replace(R.id.fragment_main,fragment);			
-						fragmentTransaction.commit();				
-						titleBarName.setText("AIC数据查询");
+						fragmentTransaction.commit(); 
+						setActionBar("AIC数据查询",false);
 				}
 					break;
 				case R.id.btnD://通知
@@ -117,8 +95,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 						Fragment fragment = new Message_Fragment();
 						fragmentTransaction.replace(R.id.fragment_main,fragment);			
-						fragmentTransaction.commit();
-						titleBarName.setText("AIC任务消息");
+						fragmentTransaction.commit(); 
+						setActionBar("AIC任务消息",false);
 					}else{
 						Toast.makeText(getApplicationContext(), "通知：您还没登录", Toast.LENGTH_LONG).show();
 						//initFragment();
@@ -131,8 +109,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 					Fragment fragment = new DownLoadFragment();
 					fragmentTransaction.replace(R.id.fragment_main,fragment);			
-					fragmentTransaction.commit();
-					titleBarName.setText("AIC通讯管理");
+					fragmentTransaction.commit(); 
+					setActionBar("AIC通讯管理",false);
 				}
 					
 					break;
@@ -176,8 +154,6 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 //				break;
 //		}
 //	}
-	 
-	String TAG = "luotest";
 	
 //	@Override
 //	public void Click(boolean logIn,String Name,String pwd,String error) {
@@ -225,37 +201,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
          }
          return super.onKeyDown(keyCode, event);
 	 }
-	 
-	 /*@Override  
-	  public boolean onCreateOptionsMenu(Menu menu) {  
-	    getMenuInflater().inflate(R.menu.main, menu);  
-	    return true;  
-	  }  
-	 @Override  
-	  public boolean onOptionsItemSelected(MenuItem item) {  
-	    switch (item.getItemId()) {  
-	    case R.id.action_modify_pwd: {
-	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
-	        dialog.show();
-	        }
-	      break;  
-	    case R.id.action_changeWorker:
-	    //	initFragment();
-	    	break;
-	    case R.id.action_more:{
-			}
-	    	break;
-	    case R.id.action_about:{
-	    	final Dialog dialog = new AboutDialog(this);
-			dialog.show();
-			}
-	    	break;
-	    	
-	    default:  
-	      break;  
-	    }  
-	    return true;  
-	  }*/
+
 	@Override
 	public void doConfirm(String oldPwd, String newPwd, String surePwd) {
 		// TODO Auto-generated method stub
@@ -264,22 +210,6 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		switch (arg0.getId()) {
-		case R.id.title_bar_noback_more:
-			PopupMenu popup = new PopupMenu(this, arg0);
-            //Inflating the Popup using xml file
-            popup.getMenuInflater()
-                .inflate(R.menu.main, popup.getMenu());
-
-            //registering popup with OnMenuItemClickListener
-            popup.setOnMenuItemClickListener(new SettingMenuListener(getApplicationContext()));
-
-            popup.show(); //showing popup menu 
-			break;
-
-		default:
-			break;
-		}
 	}  
 	
 	class SettingMenuListener implements PopupMenu.OnMenuItemClickListener{

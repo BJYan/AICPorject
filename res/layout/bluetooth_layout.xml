@@ -51,6 +51,7 @@
     </LinearLayout>
 
     <TextView 
+        android:id="@+id/bt_search_btn"
         android:layout_width="fill_parent"
         android:layout_height="35dip" 
         android:text="搜索"

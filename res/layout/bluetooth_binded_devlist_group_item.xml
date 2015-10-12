@@ -44,7 +44,7 @@
             android:layout_marginBottom="2dip"
             android:layout_marginLeft="5dip"/>
         <ImageView
-        	android:id="@+id/arrow"
+        	android:id="@+id/bluetooth_bind_dev_arrow"
         	android:layout_width="38dip"
         	android:layout_height="fill_parent"
         	android:layout_alignParentStart="true"
