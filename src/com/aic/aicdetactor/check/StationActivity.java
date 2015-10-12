@@ -60,7 +60,7 @@ public class StationActivity extends Activity {
 	private  int mStationIndex =0;
 	private String mStationNameStr = null;
 	private boolean isStationClicked = false;
-	private boolean isTestInterface = true;
+	private boolean isTestInterface = false;
 	//
 	private int mRouteIndex =0;
 	private ExpandableListView mListView;
@@ -144,7 +144,6 @@ public class StationActivity extends Activity {
 //		        getStationList(mRouteIndex);
 //		        InitListViewData();
 			
-			initListViewData();
 //			mListViewAdapter = new SimpleAdapter(this, mListDatas,
 //					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
 //					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
@@ -225,39 +224,6 @@ public class StationActivity extends Activity {
 
 
 
-	private void initListViewData(){
-		MLog.Logd(TAG,"initListViewData()");
-		try {
-
-			List<Object> stationItemList = app
-					.getStationList(mRouteIndex);
-
-			CheckStatus status = null;
-			mListDatas.clear();
-			for (int i = 0; i < stationItemList.size(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				status = app
-						.getNodeCount(stationItemList.get(i),1,0);
-				status.setContext(getApplicationContext());
-				map.put(CommonDef.station_info.NAME, app
-						.getStationItemName(stationItemList.get(i)));
-				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-				//map.put(CommonDef.station_info.STATUS, status.getStatus());
-				
-				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount+"/"+status.mSum);
-				//String index = "" + (i + 1);
-				//map.put("index", index);
-
-				mListDatas.add(map);
-			} 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if(mListViewAdapter != null){
-			mListViewAdapter.notifyDataSetChanged();
-		}
-	}
 	public List<Object>mStationList =null;
 	public List<String>mStationNameList=null;
 	public List<Object>mDeviceList =null;

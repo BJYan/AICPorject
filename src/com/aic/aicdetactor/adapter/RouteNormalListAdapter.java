@@ -126,7 +126,7 @@ public class RouteNormalListAdapter extends BaseAdapter{
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
-					int iRouteCount = app.InitData();
+					int iRouteCount = app.mFileList !=null?app.mFileList.size():0;
 					MLog.Logd(TAG,
 							"in init() 2 start "
 									+ SystemUtil
@@ -142,15 +142,12 @@ public class RouteNormalListAdapter extends BaseAdapter{
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
-							status = app.getNodeCount(null, 0, routeIndex);
-							status.setContext(context);
-							map.put(CommonDef.route_info.NAME,
-									app.getRoutName(routeIndex));
-							map.put(CommonDef.route_info.DEADLINE,
-									status.mLastTime);
+							
+							map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get("LineName"));
+							map.put(CommonDef.route_info.DEADLINE,"2000-10-10");
 
 							map.put(CommonDef.route_info.PROGRESS,
-									status.mCheckedCount + "/" + status.mSum);
+									app.mFileList.get(routeIndex).get("LineCheckedCount") + "/" + app.mFileList.get(routeIndex).get("LineTotalCount"));
 						
 							String index = "" + (routeIndex + 1);
 							map.put(CommonDef.route_info.INDEX, index);

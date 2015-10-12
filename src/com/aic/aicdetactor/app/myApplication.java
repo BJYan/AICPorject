@@ -1,6 +1,7 @@
 package com.aic.aicdetactor.app;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.data.DownloadNormalData;
 import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.Temperature;
 import com.aic.aicdetactor.data.TurnInfo;
@@ -56,7 +58,8 @@ public class myApplication extends Application
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
       
-	private List<String> mFileList = null;	
+    public List<Map<String,String>> mFileList = null;	
+    public DownloadNormalData mNormalLineJsonData=null;
 	private List<String> mTMPRouteFileList = null;
 	private MyJSONParse json = null;
 	private RouteDao dao = null;
@@ -142,7 +145,8 @@ public class myApplication extends Application
      * @return
      */
     public int InitData(){
-    	return json.InitData(this.getApplicationContext(),mFileList);
+    	//return json.InitData(this.getApplicationContext(),mFileList);
+    	return 0;
     }
     
     /**

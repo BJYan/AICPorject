@@ -1,6 +1,7 @@
 package com.aic.aicdetactor;
 
 import java.util.List;
+import java.util.Map;
 
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -128,11 +129,11 @@ public class LoginActivity extends CommonActivity implements OnClickListener {
 //		} 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
-		List<String>fileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);
+		app.mFileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);
 		error=cv.getAsString("error");
 	Log.d(TAG," Login() error = "+ cv.get("error"));
 	
-	if(fileList.size()>0){	
+	if(app.mFileList.size()>0){	
 		ContentValues cverr = new ContentValues();
 //		dao.ModifyWorkerPwd(mLogName, mLogPwd, "11111111",cverr);
 //		Log.d(TAG," Login() modify error = "+ cverr.get("error"));

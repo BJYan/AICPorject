@@ -5,7 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
@@ -13,51 +23,19 @@ import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-import com.aic.aicdetactor.data.PartItemItem;
-import com.aic.aicdetactor.fragment.Vibrate_fragment;
+import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.view.GroupViewHolder;
-import com.google.gson.Gson;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Handler;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
-import android.widget.AbsListView;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.Toast;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
 
 public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	private Context context;
 	private LayoutInflater mInflater;
-	//PartItemNameList
-	ArrayList<ArrayList<PartItemItem>> mChildrenList;
-	//List<PartItemItem> mChildrenList;
-	//deviceNameList
+	ArrayList<ArrayList<PartItemJson>> mChildrenList;
 	private List<Map<String, String>> mDataList = null;
-	//deviceObjectList
-	private List<Object> mDeviceItemList = null;
-	//partItemObjectList
-	private List<Object> mPartItemList = null;
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
 	private myApplication app = null;
 	private Activity mActivity = null;
-	private Gson mGSon= null;
 	private final String TAG="luotest.DeviceListAdapter";
 	public DeviceListAdapter(Context context, Activity av,
 			int stationIndex,int deviceIndex){
@@ -71,7 +49,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		mActivity = av;
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) av.getApplication());
-		mGSon = new Gson();
 		InitData();
 	}
 	
@@ -141,15 +118,14 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 					}
 					
 				});
-				holder.NameText.setText(mChildrenList.get(arg0).get(arg1)
-						.getCheckContent());
+				holder.NameText.setText(mChildrenList.get(arg0).get(arg1).Check_Content);
 			return arg3;
 	}
 
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		MLog.Logd(TAG,"getChildrenCount "+mChildrenList.get(arg0).size());
+		//MLog.Logd(TAG,"getChildrenCount "+mChildrenList.get(arg0).size());
 		return mChildrenList.get(arg0).size();
 	}
 
@@ -171,7 +147,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		return arg0;
 	}
 
-	boolean bTest =false;
 	@Override
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
@@ -197,12 +172,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 			holder.image.setBackgroundResource(R.drawable.arrow);
 		}
 		holder.NameText.setText(map.get(CommonDef.device_info.NAME).toString());
-		//holder.DeadLineText.setText(map.get(CommonDef.device_info.DEADLINE));
-		//holder.StausText.setText(map.get(CommonDef.device_info.STATUS));
-		//holder.ProcessText.setText(map.get(CommonDef.device_info.PROGRESS));
-		//NameText.setTextColor(Color.RED);	
-		//NameText = (TextView) arg2.findViewById(R.id.pathname);
-		//NameText.setText("我是二级目录");
 		return arg2;
 	}
 
@@ -223,28 +192,20 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, "InitData>> ");
 		try {
-			mDeviceItemList = app.getDeviceItemList(mStationIndex);
-			CheckStatus status = null;
 			mDataList.clear();
-			for (int i = 0; i < mDeviceItemList.size(); i++) {
+			mChildrenList = new ArrayList<ArrayList<PartItemJson>>();
+			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				status = app.getNodeCount(mDeviceItemList.get(i), 2, 0);
-				status.setContext(this.context);
-				map.put(CommonDef.device_info.NAME,app.getDeviceItemName(mDeviceItemList.get(i)));
-				MLog.Logd(TAG,"name is"+app.getDeviceItemName(mDeviceItemList.get(i)));
-				map.put(CommonDef.device_info.DEADLINE, status.mLastTime);
+				map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+				MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+				map.put(CommonDef.device_info.DEADLINE, "2016");
 			
-				map.put(CommonDef.device_info.PROGRESS, status.mCheckedCount+ "/" + status.mSum);
-				MLog.Logd(TAG, "status is "+status.toString());
+				map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
 				mDataList.add(map);
+				InitChidrenData(mStationIndex, i);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		Log.d(TAG,"mDeviceItemList.size()="+mDeviceItemList.size());
-		mChildrenList = new ArrayList<ArrayList<PartItemItem>>();
-		for (int i = 0; i < mDeviceItemList.size(); i++) {
-			InitChidrenData(mStationIndex, i);
 		}
 		MLog.Logd(TAG, "InitData<< "+String.valueOf(System.currentTimeMillis()-g));
 	}
@@ -256,34 +217,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		long gg=System.currentTimeMillis();
 		MLog.Logd(TAG, "InitChidrenData>> stationIndex="+stationIndex);
 		try {
-
-			Object object = mDeviceItemList.get(itemIndexs);
-			mPartItemList = app.getPartItemDataList(mStationIndex, itemIndexs);
-			MLog.Logd(TAG,"InitChidrenData() mPartItemList size is "+mPartItemList.size());
-			ArrayList<PartItemItem> childList = new ArrayList<PartItemItem>();
-			PartItemItem item =null;
-			
-			for (int i = 0; i < mPartItemList.size(); i++) {
+			ArrayList<PartItemJson> childList = new ArrayList<PartItemJson>();
+			PartItemJson item =null;
+			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.size(); i++) {
 				
-				item = mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
-//				Map<String, String> map = new HashMap<String, String>();
-//				Log.d(TAG,"InitChidrenData() PartItemData is "+mPartItemList.get(i).toString());
-//				map.put(CommonDef.device_info.NAME,	app.getDeviceItemName(mPartItemList.get(i)));
-//				map.put(CommonDef.check_item_info.DATA_TYPE,
-//						app.getPartItemCheckUnitName(mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
-
-//				map.put(CommonDef.check_item_info.VALUE,
-//						app.getPartItemCheckUnitName(
-//								mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
-
-//				map.put(CommonDef.check_item_info.DEADLINE,
-//						app.getPartItemCheckUnitName(
-//								mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_ADD_END_DATE_20));
-
-			
+				item =  app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.get(i);//mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
 				childList.add(item);
 			}
 			mChildrenList.add(childList);

@@ -33,8 +33,6 @@ import com.aic.aicdetactor.fragment.BlueToothFragment;
 import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
-import com.aic.aicdetactor.fragment.LoginFragment;
-import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
 import com.aic.aicdetactor.fragment.Message_Fragment;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.fragment.SearchFragment;

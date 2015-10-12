@@ -5,35 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
-
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.view.GroupViewHolder;
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
-import android.widget.AbsoluteLayout;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.DownloadNormalData;
+import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.view.GroupViewHolder;
+import com.alibaba.fastjson.JSON;
 
 public class StationListAdapter extends BaseExpandableListAdapter {
 
@@ -43,12 +36,10 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private Activity mActivity = null;
 	private LayoutInflater mInflater;
 	private final String TAG = "luotest.StationListAdapter";
-	private List<Object> mDeviceItemList = null;
 	
 	// groupView data
 	private List<Map<String, String>> mDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
-	private List<Object> mStationItemList = null;
 
 	public StationListAdapter(Activity av, Context context, int routeIndex) {
 		mContext = context;
@@ -58,8 +49,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
 
-		InitData();
-		initeChild();
+		InitStationData();
 	}
 
 	@Override
@@ -187,75 +177,42 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	void InitData() {
+	void InitStationData() {
 
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
-			mStationItemList = app.getStationList(mrouteIndex);
-
-			CheckStatus status = null;
-			// int itemindex = mStationIndex;
-			int itemindex = 0;
+           String path= app.mFileList.get(mrouteIndex).get("LinePath");
+           String  planjson = SystemUtil.openFile(path);
+			 app.mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
 			mDataList.clear();
-			for (int i = 0; i < mStationItemList.size(); i++) {
+			mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
+			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				status = app.getNodeCount(mStationItemList.get(i), 1, 0);
-				status.setContext(mContext);
-				map.put(CommonDef.station_info.NAME,						app.getDeviceItemName(mStationItemList.get(i)));
-				map.put(CommonDef.station_info.DEADLINE, status.mLastTime);
-				map.put(CommonDef.station_info.PROGRESS, status.mCheckedCount						+ "/" + status.mSum);
+				map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
+				map.put(CommonDef.station_info.DEADLINE, "2015");
+				map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false));
 				mDataList.add(map);
-				itemindex++;
+				InitDeviceData(i, 0, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
-		for (int i = 0; i < mStationItemList.size(); i++) {
-			InitChidrenData(i, 0, false);
-		}
+		
 		MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
 
 	}
 
-	void initeChild() {
-		MLog.Logd(TAG,"initeChild() start ");
-		
-		MLog.Logd(TAG,"initeChild() end ");
-	}
-
-	void InitChidrenData(int stationIndex, int itemIndexs, boolean updateAdapter) {
+	
+	void InitDeviceData(int stationIndex, int itemIndexs, boolean updateAdapter) {
 
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, " InitChidrenData()>> stationIndex="+stationIndex +","+g);
 		try {
-			
-			Object object = mStationItemList.get(stationIndex);
-		//	MLog.Logd(TAG,"InitChidrenData() object is "+object.toString());
-			mDeviceItemList = app.getDeviceList(object);
-			//MLog.Logd(TAG,"InitChidrenData() mDeviceItemList size is "+mDeviceItemList.size());
 			ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
-		
-			for (int i = 0; i < mDeviceItemList.size(); i++) {
+			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.size(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
-				//MLog.Logd(TAG,"InitChidrenData() PartItemData is "+mDeviceItemList.get(i).toString());
-				map.put(CommonDef.device_info.NAME,	app.getDeviceItemName(mDeviceItemList.get(i)));
-//				map.put(CommonDef.check_item_info.DATA_TYPE,
-//						app.getPartItemCheckUnitName(mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
-
-//				map.put(CommonDef.check_item_info.VALUE,
-//						app.getPartItemCheckUnitName(
-//								mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
-
-//				map.put(CommonDef.check_item_info.DEADLINE,
-//						app.getPartItemCheckUnitName(
-//								mDeviceItemList.get(i),
-//								CommonDef.partItemData_Index.PARTITEM_ADD_END_DATE_20));
-
-			
+				map.put(CommonDef.device_info.NAME,	app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.get(i).Name);
 				childList.add(map);
 			}
 			mChildrenList.add(childList);
@@ -270,8 +227,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public void notifyDataSetChanged() {
 		// TODO Auto-generated method stub
-		InitData();
-		initeChild();
+		InitStationData();
 		super.notifyDataSetChanged();
 	}
 	

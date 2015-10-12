@@ -137,8 +137,8 @@ public class Event {
 								 //insert line information to correspondence databases
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 								 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-										 Normaldata.getItemAllCounts(),
-										 0,Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
+										 Normaldata.getItemCounts(0,0,false),
+										 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
 							}
 							else if(ci.Name.equals("DeliverTempPlan"))
 							{
@@ -184,8 +184,8 @@ public class Event {
 			 //insert line information to correspondence databases
 			 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 			 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-					 Normaldata.getItemAllCounts(),
-					 0,Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
+					 Normaldata.getItemCounts(0,0,false),
+					 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
 			 
 			 
 			 Message msg = new Message();

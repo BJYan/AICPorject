@@ -191,7 +191,7 @@ public class  SystemUtil {
 		MLog.Logd("luotest", "writeFileToSD() name is "+file.getName());
 
 		FileOutputStream outStream = new FileOutputStream(file);
-		outStream.write(StrContent.getBytes("GB2312"));
+		outStream.write(StrContent.getBytes("utf-8"));
 		outStream.close();
 	}  
 	

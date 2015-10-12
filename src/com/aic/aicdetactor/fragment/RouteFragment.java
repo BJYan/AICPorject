@@ -1,13 +1,10 @@
 package com.aic.aicdetactor.fragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Fragment;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,19 +13,12 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TabHost;
-import android.widget.RadioGroup.OnCheckedChangeListener;
-import android.widget.TabHost.OnTabChangeListener;
 import android.widget.SimpleAdapter;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
@@ -36,21 +26,12 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.RouteNormalListAdapter;
 import com.aic.aicdetactor.adapter.RoutePageAdapter;
 import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
-import com.aic.aicdetactor.adapter.SearchAdapter;
-import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
-import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.check.StationActivity;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
-import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
 import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.util.SystemUtil;
 
 
 public class RouteFragment extends Fragment {
 	//
-	private ListView mListView;
 	private final String TAG = "luotest";
 	private RadioGroup mRadioGroup = null; 
 
@@ -246,90 +227,7 @@ public class RouteFragment extends Fragment {
 //		return view;
 		}
 	
-	/**
-	 * 0:计划巡检
-	 * 1:临时任务
-	 * @param type
-	 */
-	void initListData(final CommonDef.RouteType type) {
-		//final int type =types;
-		MLog.Logd(TAG,"initListData()>>");
-		new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				if (type == CommonDef.RouteType.Route_Normal) {
-					MLog.Logd(TAG,
-							"in init() 1 start "
-									+ SystemUtil
-											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-
-					int iRouteCount = app.InitData();
-					MLog.Logd(TAG,
-							"in init() 2 start "
-									+ SystemUtil
-											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-					CheckStatus status = null;
-					mItemDatas.clear();
-					for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
-						try {
-							MLog.Logd(TAG,
-									"in init() for start i="
-											+ routeIndex
-											+ ","
-											+ SystemUtil
-													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-							Map<String, String> map = new HashMap<String, String>();
-							status = app.getNodeCount(null, 0, routeIndex);
-							status.setContext(RouteFragment.this.getActivity().getApplicationContext());
-							map.put(CommonDef.route_info.NAME,
-									app.getRoutName(routeIndex));
-							map.put(CommonDef.route_info.DEADLINE,
-									status.mLastTime);
-
-							map.put(CommonDef.route_info.PROGRESS,
-									status.mCheckedCount + "/" + status.mSum);
-						
-							String index = "" + (routeIndex + 1);
-							map.put(CommonDef.route_info.INDEX, index);
-
-							mItemDatas.add(map);
-							MLog.Logd(TAG,
-									"in init() for end i="
-											+ routeIndex
-											+ ","
-											+ SystemUtil
-													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				} else if (type == CommonDef.RouteType.Route_Spec) {
-					mItemDatas.clear();
-				}else if(type == CommonDef.RouteType.Route_Tmp){
-					mItemDatas.clear();
-				}
-				mHander.sendMessage(mHander.obtainMessage(MSG_UPDATE_LISTVIEW));
-				MLog.Logd(TAG,"initListData()<<");
-			}
-		}).start();
-
-	}
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-//		if (mSelectedRadioIndex == 0) {
-//			initListData(CommonDef.RouteType.Route_Normal);
-//		} else if (mSelectedRadioIndex == 1) {
-//			initListData(CommonDef.RouteType.Route_Spec);
-//		} else if (mSelectedRadioIndex == 2) {
-//			initListData(CommonDef.RouteType.Route_Tmp);
-//		}
-		super.onResume();
-	}
 	
 	private final int MSG_UPDATE_LISTVIEW =0;
 	Handler mHander= new Handler(){

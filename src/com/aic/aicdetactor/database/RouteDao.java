@@ -1,7 +1,9 @@
 package com.aic.aicdetactor.database;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -700,7 +702,7 @@ public List<String> queryWorkerNumber(String name,String pwsd) {
 }
 
 
-private void queryNormalRoute(List<String> guidList,List<String> fileNameList,String name,String pwsd,ContentValues cv){
+private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fileNameList,String name,String pwsd,ContentValues cv){
 	String error = "";
 	//查询工人信息
 	Cursor cur = mDB.query(WorkerTableName, null,
@@ -781,14 +783,22 @@ private void queryNormalRoute(List<String> guidList,List<String> fileNameList,St
 	for (int k = 0; k < guidList.size(); k++) {
 		MLog.Logd("luotest", " queryLogIn() search worker table " + k);
 		Cursor cursor2 = mDB.query(RouteTableName,
-				new String[] { DBHelper.SourceTable.Path },
+				null,
 				DBHelper.SourceTable.PLANGUID + "=?",
 				new String[] { guidList.get(k) }, null, null, null);
 		if (cursor2 != null && cursor2.getCount() > 0) {
 			cursor2.moveToFirst();
 			for (int i = 0; i < cursor2.getCount(); i++) {
-				String path = cursor2.getString(0);
-				fileNameList.add(path);
+				Map<String, String> map = new HashMap<String, String>();
+				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+				String totalCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.ItemCounts));
+				String lineName = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+				String checkedCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
+				map.put("LineName", lineName);
+				map.put("LinePath", path);
+				map.put("LineTotalCount", totalCount);
+				map.put("LineCheckedCount", checkedCount);
+				fileNameList.add(map);
 				cursor2.moveToNext();
 				MLog.Logd("luotest",
 						" queryLogIn() search route table  result path is "
@@ -816,20 +826,20 @@ private void queryNormalRoute(List<String> guidList,List<String> fileNameList,St
  * @param cv
  * @return 工人对应的JSON文件路径
  */
-	public List<String> queryLogIn(String name, String pwsd, ContentValues cv) {
+	public List<Map<String,String>> queryLogIn(String name, String pwsd, ContentValues cv) {
 		MLog.Logd("luotest", "queryLogIn()  name is" + name + ",pwsd is " + pwsd);
 		List<String> guidList = new ArrayList<String>();
-		List<String> fileNameList = new ArrayList<String>();
+		List<Map<String,String>> fileNameList = new ArrayList<Map<String,String>>();
 		CommonDef.RouteType type=CommonDef.RouteType.Route_Normal;
-		if(type==CommonDef.RouteType.Route_Normal||type==CommonDef.RouteType.Route_Spec){
+		//if(type==CommonDef.RouteType.Route_Normal||type==CommonDef.RouteType.Route_Spec){
 		queryNormalRoute(guidList,fileNameList,name,pwsd,cv);
-		}else if(type==CommonDef.RouteType.Route_Tmp){
-			queryTempRouteInfo(fileNameList);
-		}
+//		}else if(type==CommonDef.RouteType.Route_Tmp){
+//			queryTempRouteInfo(fileNameList);
+//		}
 		return fileNameList;
 	}
 	//查询临时路线
-	private void queryTempRouteInfo(List<String> fileNameList){
+	private void queryTempRouteInfo(List<Map<String,String>> fileNameList){
 		Cursor cur = mDB.query(TempRouteTableName, 
 				new String[]{DBHelper.Temporary_Table.Title,DBHelper.Temporary_Table.Content},
 				null,null, null, null, null);
@@ -838,10 +848,16 @@ private void queryNormalRoute(List<String> guidList,List<String> fileNameList,St
 					"queryTempRouteInfo()  cur != null cur.count =" + cur.getCount());
 			cur.moveToFirst();
 			for (int n = 0; n < cur.getCount(); n++) {
+				Map<String, String> map = new HashMap<String, String>();
 				String title = cur
 						.getString(cur
 								.getColumnIndex(DBHelper.Temporary_Table.Title));
-				fileNameList.add(title);
+				String Content = cur
+						.getString(cur
+								.getColumnIndex(DBHelper.Temporary_Table.Content));
+				map.put("TMPLineName", title);
+				map.put("TMPLineContent", Content);
+				fileNameList.add(map);
 				cur.moveToNext();
 				MLog.Logd("luotest", "queryTempRouteInfo()  title is"
 						+ title);
