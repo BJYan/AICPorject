@@ -1,222 +1,325 @@
 package com.aic.aicdetactor;
 
-import java.util.List;
-
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.util.SystemUtil;
-
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends CommonActivity implements OnClickListener {
+import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.fragment.BlueToothFragment;
+import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
+import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
+import com.aic.aicdetactor.fragment.DownLoadFragment;
+import com.aic.aicdetactor.fragment.LoginFragment;
+import com.aic.aicdetactor.fragment.LoginFragment.LoginListener;
+import com.aic.aicdetactor.fragment.Message_Fragment;
+import com.aic.aicdetactor.fragment.RouteFragment;
+import com.aic.aicdetactor.fragment.SearchFragment;
+import com.aic.aicdetactor.fragment.Search_fragment;
 
-	private Button mLogInButton = null;
-	private CheckBox mSaveUInfoCheckBox =null;
-	private CheckBox mNoLogModeCheckBox =null;
-	private String mLogName=null;
-	private String mLogPwd = null;
-	private String error= null;
-	private EditText mEditTextUserName = null;
-	private EditText mEditTextUserPwd = null;
-	String TAG = "luotest.mainActivity";
-	private SharedPreferences mSharedPreferences = null;
-	private boolean bSaveUInfo = false;
-	public myApplication app = null;
+
+public class MainActivity extends CommonActivity implements BlueToothListener,ClickListenerInterface,
+	OnClickListener{
+
+	private boolean mIsLogin = false;
+	private RadioGroup mGroup = null; 
 	//TestSetting testControl = null;
-	MainHandler mainHandler;
+	public myApplication app = null;
+	ImageView settingBtn;
+	TextView titleBarName;
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
-		              WindowManager.LayoutParams.FLAG_FULLSCREEN); 
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.mainactivity);
-		
-		mainHandler = new MainHandler(this);
-		mEditTextUserName = (EditText)findViewById(R.id.editText1);
-		mEditTextUserPwd = (EditText)findViewById(R.id.editText2);
-		mLogInButton = (Button) findViewById(R.id.button1);
-		mLogInButton.setOnClickListener(this);
-		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+//		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
+		setContentView(R.layout.main);	
 		app = (myApplication) getApplication();
-		mSaveUInfoCheckBox = (CheckBox) findViewById(R.id.checkBox1);
-		mNoLogModeCheckBox = (CheckBox) findViewById(R.id.checkBox2);
-		mNoLogModeCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
+	//	testControl = new TestSetting(this.getApplicationContext());
+	//	testControl.setAppTestKey(true);	
+		Intent intent = getIntent();
+		mIsLogin=intent.getExtras().getBoolean("isLog");
+		String Name=intent.getExtras().getString("name");
+		String pwd=intent.getExtras().getString("pwd");
+		
+		settingBtn = (ImageView) findViewById(R.id.title_bar_noback_more);
+		settingBtn.setOnClickListener(this);
+		titleBarName = (TextView) findViewById(R.id.title_bar_noback_name);
+		/*ActionBar actionBar = getActionBar();		
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME  
+		        | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM); */ 
+		mGroup = (RadioGroup)findViewById(R.id.group);
+		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+			public void onCheckedChanged(RadioGroup arg0, int arg1) {
 				// TODO Auto-generated method stub
-				if(arg1){
-					mEditTextUserName.setEnabled(false);
-					mEditTextUserPwd.setEnabled(false);
-				}else{
-					mEditTextUserName.setEnabled(true);
-					mEditTextUserPwd.setEnabled(true);
+				switch(arg0.getCheckedRadioButtonId()){
+				case R.id.btnA://BlueTooth
+				{
+					FragmentManager fragmentManager = getFragmentManager();
+					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+					Fragment fragment = new BlueTooth_Fragment();	
+					fragmentTransaction.replace(R.id.fragment_main,fragment);		
+					fragmentTransaction.commit();
+					titleBarName.setText("AIC传感器设置");
 				}
-			}});
-		
-		getUInfo();
-		
-		//testControl = new TestSetting(this.getApplicationContext());
-		//testControl.setAppTestKey(true);	
+					break;
+				case R.id.btnB://巡检
+				{
+					if(mIsLogin){
+					//跳转到巡检项页面
+					FragmentManager fragmentManager = getFragmentManager();
+					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+					Fragment fragment = new RouteFragment();
+					fragmentTransaction.replace(R.id.fragment_main,fragment);			
+					fragmentTransaction.commit();
+					titleBarName.setText("AIC巡检操作");
+					}else{
+						//Toast.makeText(getApplicationContext(), "巡检：您还没登录", Toast.LENGTH_LONG).show();
+						//initFragment();
+					}
+				}
+					break;
+				case R.id.btnC://查询
+				{
+						FragmentManager fragmentManager = getFragmentManager();
+						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+						Fragment fragment = new SearchFragment();
+						fragmentTransaction.replace(R.id.fragment_main,fragment);			
+						fragmentTransaction.commit();				
+						titleBarName.setText("AIC数据查询");
+				}
+					break;
+				case R.id.btnD://通知
+					{	if(mIsLogin){	
+						FragmentManager fragmentManager = getFragmentManager();
+						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+						Fragment fragment = new Message_Fragment();
+						fragmentTransaction.replace(R.id.fragment_main,fragment);			
+						fragmentTransaction.commit();
+						titleBarName.setText("AIC任务消息");
+					}else{
+						Toast.makeText(getApplicationContext(), "通知：您还没登录", Toast.LENGTH_LONG).show();
+						//initFragment();
+					}
+					}
+					break;
+				case R.id.btnE://云端
+				{
+					FragmentManager fragmentManager = getFragmentManager();
+					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+					Fragment fragment = new DownLoadFragment();
+					fragmentTransaction.replace(R.id.fragment_main,fragment);			
+					fragmentTransaction.commit();
+					titleBarName.setText("AIC通讯管理");
+				}
+					
+					break;
+				}
+			}
+			
+		});
+		initFragment(Name,pwd);
 	}
+	void initFragment(String Name,String pwd){		
+//		FragmentManager fragmentManager = getFragmentManager();
+//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//		Fragment fragment = new LoginFragment();	
+//		fragmentTransaction.replace(R.id.fragment_main,fragment);		
+//		fragmentTransaction.commit();
+		mIsLogin = true;
+		app.mWorkerName = Name;
+		app.mWorkerPwd = pwd;
+		app.gBLogIn = true;
+		app.setUserInfo(Name, pwd);
+		//跳转到巡检项页面
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		Fragment fragment = new RouteFragment();
+		Bundle args = new Bundle();
+		args.putString("name", Name);
+		args.putString("pwd", pwd);
+		fragment.setArguments(args);
+		fragmentTransaction.replace(R.id.fragment_main,fragment);			
+		fragmentTransaction.commit();
+	}
+	
+	
 
+//	@Override
+//	public void onClick(View arg0) {
+//		// TODO Auto-generated method stub
+//		switch(arg0.getId()){
+//			case R.id.login:
+//			
+//				break;
+//		}
+//	}
+	 
+	String TAG = "luotest";
+	
+//	@Override
+//	public void Click(boolean logIn,String Name,String pwd,String error) {
+//		// TODO Auto-generated method stub
+//		if(logIn){
+//			mIsLogin = true;
+//			app.mWorkerName = Name;
+//			app.mWorkerPwd = pwd;
+//			app.gBLogIn = true;
+//			app.setUserInfo(Name, pwd);
+//			//跳转到巡检项页面
+//			FragmentManager fragmentManager = getFragmentManager();
+//			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//			Fragment fragment = new RouteFragment();
+//			Bundle args = new Bundle();
+//			args.putString("name", Name);
+//			args.putString("pwd", pwd);
+//			fragment.setArguments(args);
+//			fragmentTransaction.replace(R.id.fragment_main,fragment);			
+//			fragmentTransaction.commit();
+//			
+//		}else{
+//			Toast.makeText(this.getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();	
+////			Toast.makeText(this.getApplicationContext(), "用户名或密码有误，请再次确认重试！", Toast.LENGTH_LONG).show();	
+//		}
+//	}
 	@Override
-	protected void onDestroy() {
+	public void Click(boolean logIn) {
 		// TODO Auto-generated method stub
-		super.onDestroy();
+		
 	}
+	 private long mExitTime;
+	 @Override  
+	 public boolean onKeyDown(int keyCode, KeyEvent event) {
+         if (keyCode == KeyEvent.KEYCODE_BACK) {
+                 if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                         Object mHelperUtils;
+                         Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                         mExitTime = System.currentTimeMillis();
 
+                 } else {
+                         finish();
+                 }
+                 return true;
+         }
+         return super.onKeyDown(keyCode, event);
+	 }
+	 
+	 /*@Override  
+	  public boolean onCreateOptionsMenu(Menu menu) {  
+	    getMenuInflater().inflate(R.menu.main, menu);  
+	    return true;  
+	  }  
+	 @Override  
+	  public boolean onOptionsItemSelected(MenuItem item) {  
+	    switch (item.getItemId()) {  
+	    case R.id.action_modify_pwd: {
+	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
+	        dialog.show();
+	        }
+	      break;  
+	    case R.id.action_changeWorker:
+	    //	initFragment();
+	    	break;
+	    case R.id.action_more:{
+			}
+	    	break;
+	    case R.id.action_about:{
+	    	final Dialog dialog = new AboutDialog(this);
+			dialog.show();
+			}
+	    	break;
+	    	
+	    default:  
+	      break;  
+	    }  
+	    return true;  
+	  }*/
+	@Override
+	public void doConfirm(String oldPwd, String newPwd, String surePwd) {
+		// TODO Auto-generated method stub
+		
+	}
 	@Override
 	public void onClick(View arg0) {
-		// TODO Auto-generated method stub 
-		switch(arg0.getId()){ 
-		case R.id.button1:
-			if(mNoLogModeCheckBox.isChecked()){
-				Intent intent = new Intent();
-				intent.putExtra("isLog", false);
-				intent.putExtra("name", "");
-				intent.putExtra("pwd", "");
-				intent.setClass(getApplicationContext(),
-						Main.class);
-				startActivity(intent);
-				finish();
-			}else {
-				showLoadingDialog("正在登录，请稍后……");
-				new LoginThread().start();
-			}
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.title_bar_noback_more:
+			PopupMenu popup = new PopupMenu(this, arg0);
+            //Inflating the Popup using xml file
+            popup.getMenuInflater()
+                .inflate(R.menu.main, popup.getMenu());
+
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener(new SettingMenuListener(getApplicationContext()));
+
+            popup.show(); //showing popup menu 
+			break;
+
+		default:
 			break;
 		}
-	}
-	boolean Login(){
-		mLogName = mEditTextUserName.getText().toString();
-		mLogPwd = mEditTextUserPwd.getText().toString();
-		//search table 
-	//	TestSetting test = new TestSetting(this.getApplicationContext());
-		//List<String> testlist = test.getTestFile();
-
-//		if (testlist != null) {
-//			boolean bTempRoute=false;
-//			for (int testi = 0; testi < testlist.size(); testi++) {
-//				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-//				if(testlist.get(testi).contains("Temp")){
-//					bTempRoute=true;
-//				}
-//				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext(),bTempRoute);
-//			}
-//		} 
-		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
-		ContentValues cv = new ContentValues();
-		List<String>fileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);
-		error=cv.getAsString("error");
-	Log.d(TAG," Login() error = "+ cv.get("error"));
+	}  
 	
-	if(fileList.size()>0){	
-		ContentValues cverr = new ContentValues();
-//		dao.ModifyWorkerPwd(mLogName, mLogPwd, "11111111",cverr);
-//		Log.d(TAG," Login() modify error = "+ cverr.get("error"));
-		return true;
-	}
-	return false;
-	}
-	
-	void saveUInfo(){
-		if(mSharedPreferences ==null){
-			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-		}
-		// 实例化SharedPreferences.Editor对象（第二步）
-		SharedPreferences.Editor editor = mSharedPreferences.edit();
-		// 用putString的方法保存数据
-		editor.putString("name", mEditTextUserName.getText().toString());
-		editor.putString("name2", mEditTextUserPwd.getText().toString());
-		editor.putBoolean("SaveU", mSaveUInfoCheckBox.isChecked());
-		editor.putBoolean("noLogM", mNoLogModeCheckBox.isChecked());
-		// 提交当前数据
-		editor.commit();
-	}
-	void getUInfo(){
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-		mLogName =  mSharedPreferences.getString("name",null);
-		mLogPwd =  mSharedPreferences.getString("name2",null);
-		bSaveUInfo =  mSharedPreferences.getBoolean("SaveU",false);
-		//mLogName =  mSharedPreferences.getBoolean("noLogM",null);
-		
-		if(bSaveUInfo){
-			mEditTextUserName.setText(mLogName);
-			mEditTextUserPwd.setText(mLogPwd);
-			mSaveUInfoCheckBox.setChecked(true);
-		}
-		
-	}
-	
-	class MainHandler extends Handler{
+	class SettingMenuListener implements PopupMenu.OnMenuItemClickListener{
 		Context context;
-		
-		public MainHandler(Context context) {
+
+		public SettingMenuListener(Context context) {
 			// TODO Auto-generated constructor stub
 			this.context = context;
 		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			boolean LoginResult = (Boolean) msg.obj;
-			dismissLoadingDialog();
-			if(LoginResult){
-				if(mSaveUInfoCheckBox.isChecked()){
-				saveUInfo();
-				}
-				app.mWorkerName = mLogName;
-				app.mWorkerPwd = mLogPwd;
-				app.gBLogIn = true;
-				app.setUserInfo(mLogName, mLogPwd);
-				
-				Intent intent = new Intent();
-				intent.putExtra("isLog", true);
-				intent.putExtra("name", mLogName);
-				intent.putExtra("pwd", mLogPwd);
-				intent.setClass(getApplicationContext(),
-						Main.class);
-				startActivity(intent);
-				finish();
-			}else{
-				Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();	
-			}
-		}
-	}
-	
-	class LoginThread extends Thread {
 		
 		@Override
-		public void run() {
+		public boolean onMenuItemClick(MenuItem arg0) {
 			// TODO Auto-generated method stub
-			boolean LoginResult = Login();
-			Message msg = Message.obtain();
-			msg.obj = LoginResult;
-			//mainHandler.sendMessage(msg);
-			mainHandler.sendMessageDelayed(msg, 2000);
+			switch (arg0.getItemId()) {  
+    	    case R.id.action_modify_pwd: {
+    	    	CustomDialog dialog=new CustomDialog(MainActivity.this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
+    	        dialog.show();
+    	        }
+    	      break;  
+    	    case R.id.action_changeWorker:
+    	    //	initFragment();
+    	    	break;
+    	    case R.id.action_more:{
+    			}
+    	    	break;
+    	    case R.id.action_about:{
+    	    	final Dialog dialog = new AboutDialog(MainActivity.this);
+    			dialog.show();
+    			}
+    	    	break;
+    	    	
+    	    default:  
+    	      break;  
+    	    }  
+			return true;
 		}
+		
 	}
 	
 }
+
