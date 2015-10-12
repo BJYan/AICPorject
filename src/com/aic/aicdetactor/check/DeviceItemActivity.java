@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,12 +17,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -41,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -50,7 +47,7 @@ import com.aic.aicdetactor.media.MediaMainActivity;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
-public class DeviceItemActivity extends Activity implements OnClickListener {
+public class DeviceItemActivity extends CommonActivity implements OnClickListener {
 
 	private ListView mListView = null;
 	String TAG = "luotest";
@@ -125,6 +122,8 @@ public class DeviceItemActivity extends Activity implements OnClickListener {
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.deviceitem_activity_ex);
+		
+		setActionBar("日常巡检",true);
         app = (myApplication) getApplication();
 		Intent intent = getIntent();
 		mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);

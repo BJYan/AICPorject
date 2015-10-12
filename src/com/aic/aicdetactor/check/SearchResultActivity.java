@@ -22,7 +22,7 @@ public class SearchResultActivity extends CommonActivity implements OnClickListe
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		setActionBar("±¾µØ²éÑ¯",true);
+		setActionBar("æœ¬åœ°æŸ¥è¯¢",true);
 		inflater = getLayoutInflater();
 		setContentView(R.layout.search_result_layout);
 		ExpandableListView localSearchExListView = (ExpandableListView) findViewById(R.id.local_search_listview);

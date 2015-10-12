@@ -25,7 +25,7 @@ public class SearchResultConActivity extends CommonActivity implements OnClickLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_condition_result_layout);
 		
-		setActionBar("Êı¾İ¿â²éÑ¯",true);
+		setActionBar("æ•°æ®åº“æŸ¥è¯¢",true);
 		inflater = getLayoutInflater();
 		exList = (ExpandableListView) findViewById(R.id.search_con_result_list);
 		SearchResultConExListAdapter searchResConExListAdapter = new SearchResultConExListAdapter(getApplicationContext());

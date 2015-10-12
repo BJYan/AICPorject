@@ -39,6 +39,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.StationListAdapter;
 import com.aic.aicdetactor.adapter.SuperTreeViewAdapter;
@@ -52,7 +53,7 @@ import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
-public class StationActivity extends Activity {
+public class StationActivity extends CommonActivity {
 
 	private RadioGroup mRadioGroup = null;
 	private ViewPager mViewPager = null;
@@ -82,12 +83,12 @@ public class StationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 			setContentView(R.layout.station_activity);
 			
-			
+			setActionBar("日常巡检",true);
 			app = (myApplication) getApplication();
 			Intent intent =getIntent();
 			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
@@ -134,7 +135,6 @@ public class StationActivity extends Activity {
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
-			mListView.setDividerHeight(20);
 			//mListView.setGroupIndicator(this.getResources().getDrawable(R.drawable.arrow));
 			mListView.setGroupIndicator(null);
 			//mListView.setChildIndicator(null);
@@ -346,7 +346,7 @@ public class StationActivity extends Activity {
 			final View rootview = inflater.inflate(
 					R.layout.station_menu, null, false);
 
-			final PopupWindow pw_Left = new PopupWindow(rootview, LayoutParams.MATCH_PARENT,
+			final PopupWindow pw_Left = new PopupWindow(rootview, LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT, true);
 			pw_Left.setBackgroundDrawable(null);
 			
