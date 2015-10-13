@@ -169,7 +169,7 @@ public class Event {
 					e.printStackTrace();
 				}
       }else{
-    	 String  planjson = SystemUtil.openFile("/sdcard/AICNormal.txt");
+    	 String  planjson = SystemUtil.openFile("/sdcard/AICLine.txt");
 			 //parse json data for insert databases
 			 DownloadNormalData Normaldata=JSON.parseObject(planjson,DownloadNormalData.class);
 			 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
