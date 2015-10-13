@@ -1,44 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:background="@color/white">
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#ffffff" >
+    android:background="#ffffff" 
+    android:gravity="center_horizontal">
 
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dip" />
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:background="@drawable/blue_border_edittext_shape"
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginBottom="10dip">
+        <Spinner
+        	android:id="@+id/spinner1"
+        	android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	android:padding="5dip"
+        	android:entries="@array/route_temp_factory"
+			android:gravity="center"/>
+    </LinearLayout>
+
 	 <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dip"
         android:background="#999999" 
 		android:layout_marginLeft="10dip"
 		android:layout_marginRight="10dip"/>
-    <Spinner
-        android:id="@+id/spinner2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dip" />
+	<LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:background="@drawable/blue_border_edittext_shape"
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginBottom="10dip">
+    	<Spinner
+        	android:id="@+id/spinner2"
+        	android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	android:padding="5dip"
+        	android:entries="@array/route_temp_series"
+        	android:gravity="center" />
+    </LinearLayout>
+
 	 <View
         android:id="@+id/view2"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dip"
         android:background="#999999" 
 		android:layout_marginLeft="10dip"
 		android:layout_marginRight="10dip"/>
-    <Spinner
-        android:id="@+id/spinner3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dip" />
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:background="@drawable/blue_border_edittext_shape"
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginBottom="10dip">
+    	<Spinner
+        	android:id="@+id/spinner3"
+        	android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	android:padding="5dip"
+        	android:entries="@array/route_temp_plant"
+        	android:gravity="center" />
+    </LinearLayout>
+
 
 	 <View
         android:id="@+id/view3"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dip"
         android:background="#999999" 
 		android:layout_marginLeft="10dip"
 		android:layout_marginRight="10dip"/>
@@ -52,57 +93,75 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dip">
+            android:padding="5dip"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_marginTop="10dip">
             <EditText
         		android:id="@+id/editText1"
         		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
+        		android:layout_height="45dip"
+        		android:background="@drawable/blue_border_edittext_shape"
         		android:ems="10" 
         		android:layout_weight="1"
-        		android:hint="@string/route_temp_device_name_hint"/>
+        		android:hint="@string/route_temp_device_name_hint"
+        		android:padding="5dip"/>
  			<EditText
         		android:id="@+id/editText2"
         		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
+        		android:layout_height="45dip"
+        		android:background="@drawable/blue_border_edittext_shape"
         		android:ems="10"
         		android:layout_weight="1"
         		android:hint="@string/route_temp_device_code_hint" 
-        		android:layout_marginLeft="10dip"/>
+        		android:layout_marginLeft="10dip"
+        		android:padding="5dip"/>
         </LinearLayout>
 		<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dip">
+            android:padding="5dip" 
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_marginBottom="10dip">
             <EditText
         		android:id="@+id/editText3"
         		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
+        		android:layout_height="45dip"
+        		android:background="@drawable/blue_border_edittext_shape"
         		android:ems="10" 
         		android:layout_weight="1"
-        		android:hint="@string/route_temp_checkitem_name_hint"/>
+        		android:hint="@string/route_temp_checkitem_name_hint"
+        		android:padding="5dip"/>
  			<EditText
         		android:id="@+id/editText4"
         		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
+        		android:layout_height="45dip"
+        		android:background="@drawable/blue_border_edittext_shape"
         		android:ems="10"
         		android:layout_weight="1"
         		android:hint="@string/route_temp_checkitem_code_hint"
-        		android:layout_marginLeft="10dip" />
+        		android:layout_marginLeft="10dip" 
+        		android:padding="5dip"/>
         </LinearLayout>
     </LinearLayout>
  	<View
         android:id="@+id/view4"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/gray" />
+        android:layout_height="1dip"
+        android:background="@color/gray"
+        android:layout_marginLeft="10dip"
+		android:layout_marginRight="10dip" />
     
 	<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="5dip">
+        android:layout_marginTop="5dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip">
 		<Button
     		android:id="@+id/button1"
     		android:layout_width="wrap_content"
@@ -116,5 +175,5 @@
     		android:text="@string/route_temp_measure"
     		android:layout_weight="1" />
 	</LinearLayout>
-
 </LinearLayout>
+</ScrollView>

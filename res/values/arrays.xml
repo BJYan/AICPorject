@@ -81,4 +81,19 @@
     <item>正序</item> 
     <item>正序</item>  
 </string-array>
+ <string-array name="route_temp_factory">  
+    <item>中煤旭阳焦化厂</item>  
+    <item>中煤旭阳焦化厂</item> 
+    <item>中煤旭阳焦化厂</item>  
+</string-array>
+ <string-array name="route_temp_series">  
+    <item>化产一系</item>  
+    <item>化产一系</item> 
+    <item>化产一系</item>  
+</string-array>
+ <string-array name="route_temp_plant">  
+    <item>鼓冷车间</item>  
+    <item>鼓冷车间</item> 
+    <item>鼓冷车间</item>  
+</string-array>
 </resources>
