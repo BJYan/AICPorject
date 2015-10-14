@@ -37,8 +37,33 @@
         	android:src="@drawable/nfc_icon" 
         	android:layout_toLeftOf="@id/vline"
         	android:padding="5dip"
-        	android:layout_centerVertical="true" />
-          
+        	android:layout_centerVertical="true"
+        	android:visibility="gone" />
+          <LinearLayout 
+              android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:orientation="horizontal"
+              android:layout_toLeftOf="@id/vline"
+              android:layout_centerVertical="true"
+              android:layout_marginRight="5dip">
+              <ImageView
+        			android:id="@+id/station_record"
+        			android:layout_width="wrap_content"
+        			android:layout_height="fill_parent"
+        			android:src="@drawable/station_record" 
+        			android:padding="5dip"
+        			android:layout_centerVertical="true" 
+        			/>
+              <ImageView
+        			android:id="@+id/station_take_pic"
+        			android:layout_width="wrap_content"
+        			android:layout_height="fill_parent"
+        			android:src="@drawable/station_camera" 
+        			android:padding="5dip"
+        			android:layout_centerVertical="true"
+        			android:layout_marginLeft="5dip"
+        			/>
+          </LinearLayout>
          <ImageView
         	android:id="@+id/menuimage"
         	android:layout_width="wrap_content"

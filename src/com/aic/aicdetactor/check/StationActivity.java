@@ -1,8 +1,14 @@
 package com.aic.aicdetactor.check;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -11,11 +17,17 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager.OnActivityResultListener;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Media;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,8 +65,10 @@ import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
-public class StationActivity extends CommonActivity {
+public class StationActivity extends CommonActivity implements OnClickListener{
 
+	private static final int TAKE_PIC = 1;
+	private static final int RECORD = 2;
 	private RadioGroup mRadioGroup = null;
 	private ViewPager mViewPager = null;
 	private  List<View> mList_Views = null;
@@ -71,13 +85,6 @@ public class StationActivity extends CommonActivity {
 	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +111,11 @@ public class StationActivity extends CommonActivity {
 			bar.setLogo(null);;
 			bar.setDisplayUseLogoEnabled(false);
 			bar.setTitle(oneCatalog);*/
+			
+			ImageView recordBtn = (ImageView)findViewById(R.id.station_record);
+			recordBtn.setOnClickListener(this);
+			ImageView takepicBtn = (ImageView)findViewById(R.id.station_take_pic);
+			takepicBtn.setOnClickListener(this);
 			
 			//打卡
 			ImageView imageViewka = (ImageView)findViewById(R.id.ka);
@@ -381,5 +393,64 @@ public class StationActivity extends CommonActivity {
 			pw_Left.showAsDropDown(parent, Gravity.CENTER, 0);
 			pw_Left.update();
 
+		}
+
+	    @Override  
+	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
+	        // TODO Auto-generated method stub  
+	        super.onActivityResult(requestCode, resultCode, data);  
+	        if (resultCode == Activity.RESULT_OK && resultCode==TAKE_PIC) {  
+	            String sdStatus = Environment.getExternalStorageState();  
+	            if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用  
+	                Log.i("TestFile",  
+	                        "SD card is not avaiable/writeable right now.");  
+	                return;  
+	            }  
+	            String name = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
+	            Toast.makeText(this, name, Toast.LENGTH_LONG).show();  
+	            Bundle bundle = data.getExtras();  
+	            Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式  
+	          
+	            FileOutputStream b = null;  
+	           //???????????????????????????????为什么不能直接保存在系统相册位置呢？？？？？？？？？？？？  
+	            File file = new File("/sdcard/myImage/");  
+	            file.mkdirs();// 创建文件夹  
+	            String fileName = "/sdcard/myImage/"+name;  
+	  
+	            try {  
+	                b = new FileOutputStream(fileName);  
+	                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件  
+	            } catch (FileNotFoundException e) {  
+	                e.printStackTrace();  
+	            } finally {  
+	                try {  
+	                    b.flush();  
+	                    b.close();  
+	                } catch (IOException e) {  
+	                    e.printStackTrace();  
+	                }  
+	            }  
+	            
+	        }  
+	        if(resultCode == Activity.RESULT_OK && resultCode==RECORD){
+	        	Toast.makeText(this, "RECORD", Toast.LENGTH_LONG).show();
+	        }
+	    }  
+
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			switch (arg0.getId()) {
+			case R.id.station_record:
+				Intent intent_record = new Intent(Media.RECORD_SOUND_ACTION);
+				startActivity(intent_record);
+				break;
+			case R.id.station_take_pic:
+                Intent intent_takepic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
+                startActivityForResult(intent_takepic, TAKE_PIC);
+				break;
+			default:
+				break;
+			}
 		}
 }

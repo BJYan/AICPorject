@@ -105,6 +105,7 @@
         		android:ems="10" 
         		android:layout_weight="1"
         		android:hint="@string/route_temp_device_name_hint"
+        		android:layout_marginRight="5dip"
         		android:padding="5dip"/>
  			<EditText
         		android:id="@+id/editText2"
@@ -114,7 +115,7 @@
         		android:ems="10"
         		android:layout_weight="1"
         		android:hint="@string/route_temp_device_code_hint" 
-        		android:layout_marginLeft="10dip"
+        		android:layout_marginLeft="5dip"
         		android:padding="5dip"/>
         </LinearLayout>
 		<LinearLayout
@@ -133,6 +134,7 @@
         		android:ems="10" 
         		android:layout_weight="1"
         		android:hint="@string/route_temp_checkitem_name_hint"
+        		android:layout_marginRight="5dip"
         		android:padding="5dip"/>
  			<EditText
         		android:id="@+id/editText4"
@@ -142,7 +144,7 @@
         		android:ems="10"
         		android:layout_weight="1"
         		android:hint="@string/route_temp_checkitem_code_hint"
-        		android:layout_marginLeft="10dip" 
+        		android:layout_marginLeft="5dip" 
         		android:padding="5dip"/>
         </LinearLayout>
     </LinearLayout>

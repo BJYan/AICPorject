@@ -4,10 +4,14 @@ import java.lang.reflect.Field;
 
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +20,7 @@ import android.view.ViewConfiguration;
 public class CommonActivity extends Activity{
 	protected FlippingLoadingDialog mLoadingDialog;
 	public myApplication app = null;
+	CommonAlterDialog commonAlterDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,19 @@ public class CommonActivity extends Activity{
 			mLoadingDialog.dismiss();
 		}
 	}
-	 
+	
+	protected void showAlterDialog(Context context, String title, String content,
+			AltDialogOKListener okListener,AltDialogCancelListener cancelListener) {
+		commonAlterDialog = new CommonAlterDialog(context, title, content,
+			okListener, cancelListener);
+		commonAlterDialog.show();
+	}
+	
+	protected void dismissAlterDialog(){
+		if (commonAlterDialog!=null&&commonAlterDialog.isShowing()) {
+			commonAlterDialog.dismiss();
+		}
+	}
 	 @Override  
 	  public boolean onCreateOptionsMenu(Menu menu) {  
 	    getMenuInflater().inflate(R.menu.main, menu);  

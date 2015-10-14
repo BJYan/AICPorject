@@ -6,6 +6,9 @@ import java.util.Map;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
@@ -29,7 +32,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class LoginActivity extends CommonActivity implements OnClickListener {
+public class LoginActivity extends CommonActivity implements OnClickListener,
+		AltDialogOKListener,AltDialogCancelListener {
 
 	private Button mLogInButton = null;
 	private CheckBox mSaveUInfoCheckBox =null;
@@ -202,7 +206,8 @@ public class LoginActivity extends CommonActivity implements OnClickListener {
 				startActivity(intent);
 				finish();
 			}else{
-				Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();	
+				showAlterDialog(context,"用户不存在或密码错误！",error.toString(),LoginActivity.this,LoginActivity.this);
+				//Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();	
 			}
 		}
 	}
@@ -216,8 +221,20 @@ public class LoginActivity extends CommonActivity implements OnClickListener {
 			Message msg = Message.obtain();
 			msg.obj = LoginResult;
 			//mainHandler.sendMessage(msg);
-			mainHandler.sendMessageDelayed(msg, 2000);
+			mainHandler.sendMessageDelayed(msg, 1000);
 		}
+	}
+
+	@Override
+	public void onComDialogCancelListener(CommonAlterDialog dialog) {
+		// TODO Auto-generated method stub
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onComDialogOKListener(CommonAlterDialog dialog) {
+		// TODO Auto-generated method stub
+		dialog.dismiss();
 	}
 	
 }

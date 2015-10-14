@@ -55,4 +55,13 @@
         <item name="android:textSize">18sp</item>  
         <item name="android:textColor">#FFFFFF</item>  
     </style>
+    <style name="Common_Alter_Dialog" parent="@style/BaseDialog">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item> 
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+    </style>
 </resources>
