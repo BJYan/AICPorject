@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
@@ -123,22 +124,31 @@ public class Event {
 							
 							//zhengyangyong 2015-10-06
 							if(ci.Name.equals("DeliverNormalPlan"))
-							{
+							{ boolean isSpecialLine = false;
 								 //ci.Data
 								DeliverNormalPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverNormalPlanRequestArgs.class);
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								 //parse json data for insert databases
 								 DownloadNormalData Normaldata=JSON.parseObject(planjson,DownloadNormalData.class);
+								 for(int i=0;i< Normaldata.StationInfo.size();i++){
+									 if(isSpecialLine){break;}
+									 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
+										 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
+											 isSpecialLine=true;
+											 break;
+										 }
+									 }
+								 }
 								 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
 								//save data as local file
-								 String filePath = "/sdcard/"+Normaldata.T_Line.T_Line_Guid+".txt";
+								 String filePath = Environment.getExternalStorageDirectory()+"/"+Normaldata.T_Line.T_Line_Guid+".txt";
 								 SystemUtil.writeFileToSD(filePath, planjson);
 								 //insert line information to correspondence databases
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 								 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 										 Normaldata.getItemCounts(0,0,false),
-										 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
+										 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization,isSpecialLine);
 							}
 							else if(ci.Name.equals("DeliverTempPlan"))
 							{
@@ -169,12 +179,22 @@ public class Event {
 					e.printStackTrace();
 				}
       }else{
-    	 String  planjson = SystemUtil.openFile("/sdcard/AICLine.txt");
+    	 String  planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory()+"/AICLine.txt");
+    	 boolean isSpecialLine = false;
 			 //parse json data for insert databases
 			 DownloadNormalData Normaldata=JSON.parseObject(planjson,DownloadNormalData.class);
+			 for(int i=0;i< Normaldata.StationInfo.size();i++){
+				 if(isSpecialLine){break;}
+				 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
+					 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
+						 isSpecialLine=true;
+						 break;
+					 }
+				 }
+			 }
 			 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
 			//save data as local file
-			 String filePath = "/sdcard/"+Normaldata.T_Line.T_Line_Guid+".txt";
+			 String filePath = Environment.getExternalStorageDirectory()+"/"+Normaldata.T_Line.T_Line_Guid+".txt";
 			 try {
 				SystemUtil.writeFileToSD(filePath, planjson);
 			} catch (IOException e) {
@@ -185,7 +205,7 @@ public class Event {
 			 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 			 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 					 Normaldata.getItemCounts(0,0,false),
-					 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization);
+					 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization,isSpecialLine);
 			 
 			 
 			 Message msg = new Message();

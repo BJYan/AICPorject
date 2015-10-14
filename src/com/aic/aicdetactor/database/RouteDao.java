@@ -81,7 +81,8 @@ public class RouteDao {
 			int checkedItemCounts,
 			List<WorkerInfoJson>WorkerList,
 			List<TurnInfoJson>TurnList,
-			OrganizationInfoJson OrganizationInfo
+			OrganizationInfoJson OrganizationInfo,
+			boolean isSpecialLine
 			){
 		Cursor cursor = null;		
 		//T_Route info = (T_Route) infos;
@@ -98,9 +99,10 @@ public class RouteDao {
 				+ DBHelper.SourceTable.PLANNAME+","
 				+ DBHelper.SourceTable.PLANGUID+","
 				+DBHelper.SourceTable.Checked_Count+","
-				+DBHelper.SourceTable.ItemCounts +")values(?,?,?,?,?)";
+				+DBHelper.SourceTable.ItemCounts +","
+				+DBHelper.SourceTable.isSpecialLine +")values(?,?,?,?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,itemCounts});
+		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,itemCounts,isSpecialLine});
 		
 		}
 		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 8;//版本号
+	 private final static int VERSION = 9;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -23,6 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String Path ="Path";
 	 public static final String Checked_Count = "Checked_Count";
 	 public static final String ItemCounts = "ItemCounts";
+	 public static final String isSpecialLine = "isSpecialLine";
 	 
 	 }
 
@@ -96,6 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 
 		 public static final String Checked_Count = "Checked_Count";
 		 public static final String ItemCounts = "ItemCounts";
+		 public static final String isSpecialLine = "isSpecialLine";
 	 } 
 	 
 	 public static String TABLE_TEMPORARY = "T_Temporary_Line_Json";  
@@ -186,7 +188,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ SourceTable.PLANNAME +" varchar(256),"
 				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
 				+ SourceTable.Checked_Count +" INTEGER,"
-				+ SourceTable.ItemCounts +" INTEGER"
+				+ SourceTable.ItemCounts +" INTEGER,"
+				+ SourceTable.isSpecialLine +" BOOLEAN "
 				+")";
 
 		db.execSQL(jxchecksql);
@@ -254,7 +257,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Is_Uploaded +" BOOLEAN,"
 				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
 				+ Checking_Table.Checked_Count +" INTEGER,"
-				+ Checking_Table.ItemCounts +" INTEGER "	
+				+ Checking_Table.ItemCounts +" INTEGER ,"	
+				+ Checking_Table.isSpecialLine +" BOOLEAN "
 				+")";
 
 		db.execSQL(checkingsql);
