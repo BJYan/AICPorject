@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import com.aic.aicdetactor.CommonFragment;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.SearchAdapter;
 import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
@@ -30,11 +32,12 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 
-public class SearchFragment extends Fragment implements OnClickListener{
+public class SearchFragment extends CommonFragment implements OnClickListener{
 	TabHost tabHost;
 	ViewPager viewPager;
 	List<View> DBsearchItemList;
 	Map<TextView, Boolean> options;
+	LayoutInflater inflater;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class SearchFragment extends Fragment implements OnClickListener{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		this.inflater = inflater;
 		View searchView = inflater.inflate(R.layout.search_fragment_layout, container, false);
 		tabHost = (TabHost)searchView.findViewById(R.id.search_tabhost);  
         // 如果没有继承TabActivity时，通过该种方法加载启动tabHost  
@@ -74,6 +78,16 @@ public class SearchFragment extends Fragment implements OnClickListener{
         SearchBtn_1.setOnClickListener(this);
         TextView SearchBtn_2 = (TextView) DBsearchItemList.get(1).findViewById(R.id.search_button_2);
         SearchBtn_2.setOnClickListener(this);
+        TextView dbStartTime = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_db_start_time);
+        dbStartTime.setOnClickListener(this);
+        TextView dbEndTime = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_db_end_time);
+        dbEndTime.setOnClickListener(this);
+        TextView routeStartTime = (TextView) DBsearchItemList.get(1).findViewById(R.id.search_route_start_time);
+        routeStartTime.setOnClickListener(this);
+        TextView routeEndTime = (TextView) DBsearchItemList.get(1).findViewById(R.id.search_route_end_time);
+        routeEndTime.setOnClickListener(this);
+        
+        
         
         ExpandableListView searchDBList = (ExpandableListView) listViews.get(1).findViewById(R.id.search_database_list);
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
@@ -148,7 +162,7 @@ public class SearchFragment extends Fragment implements OnClickListener{
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		if(arg0 instanceof TextView && arg0.getTag()==null){
+		if(arg0.getTag()!=null && arg0.getTag().equals("options")){
 			if(options.get(arg0)) options.put((TextView) arg0, false);
 			else options.put((TextView) arg0, true);
 			
@@ -168,6 +182,9 @@ public class SearchFragment extends Fragment implements OnClickListener{
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), SearchResultActivity.class);
 			getActivity().startActivity(intent);
+		}
+		if(arg0.getTag()!=null && arg0.getTag().equals("calendar_button")){
+			CreatCalendarPopWin(arg0,inflater);
 		}
 	}
 }

@@ -11,11 +11,13 @@
         android:layout_height="38dip"
         android:layout_marginLeft="10dip"
         android:gravity="center" >
-        <Spinner 
+        <TextView 
+            android:id="@+id/search_db_start_time"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:entries="@array/msg_start_time"
-            android:gravity="center_vertical"/>
+            android:text="2015-10-15"
+            android:gravity="center_vertical"
+            android:tag="calendar_button" />
         <TextView 
             android:layout_height="fill_parent"
             android:layout_width="wrap_content"
@@ -23,12 +25,14 @@
             android:gravity="center_vertical"
             android:layout_marginLeft="15dip"
             android:textColor="#000000"/>
-        <Spinner 
+        <TextView 
+            android:id="@+id/search_db_end_time"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:entries="@array/msg_start_time"
+            android:text="2015-10-15"
             android:gravity="center_vertical"
-            android:layout_marginLeft="15dip"/>
+            android:layout_marginLeft="15dip"
+            android:tag="calendar_button"/>
     </LinearLayout>
     <RelativeLayout 
         android:layout_height="wrap_content"
@@ -51,7 +55,8 @@
             android:layout_toRightOf="@id/search_detection_type"
             android:layout_marginLeft="10dip"
             android:text="震动"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_detection_type_temp"
             android:layout_height="25dip"
@@ -60,7 +65,8 @@
             android:layout_toRightOf="@id/search_detection_type_shake"
             android:layout_marginLeft="15dip"
             android:text="温度"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_detection_type_rotate"
             android:layout_height="25dip"
@@ -69,7 +75,8 @@
             android:layout_toRightOf="@id/search_detection_type_temp"
             android:layout_marginLeft="15dip"
             android:text="转速"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_detection_type_logging"
             android:layout_height="25dip"
@@ -80,7 +87,8 @@
             android:layout_marginLeft="10dip"
             android:layout_marginTop="5dip"
             android:text="录入"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_detection_type_observe"
             android:layout_height="25dip"
@@ -91,7 +99,8 @@
             android:layout_marginLeft="15dip"
             android:layout_marginTop="5dip"
             android:text="观察"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_detection_type_default"
             android:layout_height="25dip"
@@ -102,7 +111,8 @@
             android:layout_marginLeft="15dip"
             android:layout_marginTop="5dip"
             android:text="预设"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_device_type"
             android:layout_height="wrap_content"
@@ -123,7 +133,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="10dip"
             android:text="A类"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_device_type_b"
             android:layout_height="25dip"
@@ -134,7 +145,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="15dip"
             android:text="B类"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_device_type_c"
             android:layout_height="25dip"
@@ -145,7 +157,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="15dip"
             android:text="C类"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_info_type"
             android:layout_height="wrap_content"
@@ -168,7 +181,8 @@
             android:text="日常巡检"
             android:gravity="center"
             android:paddingLeft="2dip"
-            android:paddingRight="2dip"/>
+            android:paddingRight="2dip"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_info_type_special"
             android:layout_height="25dip"
@@ -181,7 +195,8 @@
             android:text="特殊巡检"
             android:gravity="center"
             android:paddingLeft="2dip"
-            android:paddingRight="2dip"/>
+            android:paddingRight="2dip"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_info_type_temporary"
             android:layout_height="25dip"
@@ -194,7 +209,8 @@
             android:text="临时巡检"
             android:gravity="center"
             android:paddingLeft="2dip"
-            android:paddingRight="2dip"/>
+            android:paddingRight="2dip"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_abnormal_level"
             android:layout_height="wrap_content"
@@ -215,7 +231,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="10dip"
             android:text="正常"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_abnormal_level_warning"
             android:layout_height="25dip"
@@ -226,7 +243,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="15dip"
             android:text="警告"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
         <TextView 
             android:id="@+id/search_abnormal_level_danger"
             android:layout_height="25dip"
@@ -237,7 +255,8 @@
             android:layout_marginTop="10dip"
             android:layout_marginLeft="15dip"
             android:text="危险"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:tag="options"/>
     </RelativeLayout>
 	<TextView 
 	    android:id="@+id/search_button_1"
