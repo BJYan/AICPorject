@@ -110,6 +110,7 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 			}else {
 				showLoadingDialog("正在登录，请稍后……");
 				new LoginThread().start();
+				//showChartDialog(this);
 			}
 			break;
 		}

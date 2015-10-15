@@ -35,6 +35,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 	private RadioGroup mGroup = null; 
 	ImageView settingBtn;
 	TextView titleBarName;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

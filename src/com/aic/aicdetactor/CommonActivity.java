@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
+import com.aic.aicdetactor.dialog.SuperChartDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
@@ -21,6 +22,7 @@ public class CommonActivity extends Activity{
 	protected FlippingLoadingDialog mLoadingDialog;
 	public myApplication app = null;
 	CommonAlterDialog commonAlterDialog;
+	SuperChartDialog chartDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,17 @@ public class CommonActivity extends Activity{
 	protected void dismissLoadingDialog() {
 		if (mLoadingDialog.isShowing()) {
 			mLoadingDialog.dismiss();
+		}
+	}
+	
+	protected void showChartDialog(Context context){
+		chartDialog = new SuperChartDialog(context);
+		chartDialog.show();
+	}
+	
+	protected void dismissChartDialog(){
+		if (chartDialog!=null&&chartDialog.isShowing()) {
+			chartDialog.dismiss();
 		}
 	}
 	
