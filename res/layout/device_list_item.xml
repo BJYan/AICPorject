@@ -55,7 +55,8 @@
             android:entries="@array/check_data_type"
             android:layout_below="@id/device_item_line_2"
             android:layout_toRightOf="@id/device_item_line_1"
-            android:layout_marginLeft="25dip" />
+            android:layout_marginLeft="25dip"
+            android:visibility="gone" />
         <CheckBox
             android:id="@+id/device_check"
             android:focusable="false"

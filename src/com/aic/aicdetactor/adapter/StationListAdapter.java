@@ -90,7 +90,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size());
+						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size()+50);
 				secGroupView.setLayoutParams(lp);
 			}
 		});
