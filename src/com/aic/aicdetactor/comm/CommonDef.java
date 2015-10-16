@@ -147,6 +147,7 @@ public class CommonDef {
 		//public static final String STATUS = "Route_Check_Status";
 		public static final String PROGRESS = "Route_Progress";
 		public static final String JSON_INDEX = "7";
+		public static final String IsSpecilaLine = "Is_SpecilaLine";
 
 	}
 

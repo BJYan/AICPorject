@@ -85,6 +85,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
+private boolean mSpecial = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +100,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			app = (myApplication) getApplication();
 			Intent intent =getIntent();
 			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
-			
+			mSpecial = intent.getExtras().getBoolean(CommonDef.route_info.IsSpecilaLine);
 			String  oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);		
 			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
 			
@@ -147,52 +148,9 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
 			mListDatas = new ArrayList<Map<String, String>>();
-			//mListView.setGroupIndicator(this.getResources().getDrawable(R.drawable.arrow));
 			mListView.setGroupIndicator(null);
-			//mListView.setChildIndicator(null);
-//			 adapter=new TreeViewAdapter(this,TreeViewAdapter.PaddingLeft>>1);  
-//		        superAdapter=new SuperTreeViewAdapter(this,stvClickEvent);  
-//		        expandableList=(ExpandableListView) StationActivity.this.findViewById(R.id.listView);  
-//		        getStationList(mRouteIndex);
-//		        InitListViewData();
-			
-//			mListViewAdapter = new SimpleAdapter(this, mListDatas,
-//					R.layout.checkitem, new String[] { CommonDef.station_info.INDEX, CommonDef.station_info.NAME,
-//					CommonDef.station_info.DEADLINE, CommonDef.station_info.STATUS, CommonDef.station_info.PROGRESS }, new int[] {
-//							R.id.index, R.id.pathname, R.id.deadtime,
-//							R.id.status, R.id.progress });
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,mSpecial);
 			mListView.setAdapter(mListViewAdapter);
-//			mListView.setOnItemClickListener(new OnItemClickListener() {
-//				@Override
-//				public void onItemClick(AdapterView<?> arg0, View arg1,
-//						int arg2, long arg3) {
-//					// TODO Auto-generated method stub
-//					HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-//							.getItemAtPosition(arg2));
-//					MLog.Logd(TAG,
-//							"stationActivit StationName is "
-//									+ (String) mapItem.get(CommonDef.station_info.NAME));
-//					
-//					
-//					 
-//					 app.gStationName = routeName ;
-//					 app.mStationIndex = arg2;
-//					 
-//					 
-//					 
-//					Intent intent = new Intent();
-//					intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX , mRouteIndex);
-//					intent.putExtra(CommonDef.station_info.LISTVIEW_ITEM_INDEX, arg2);
-//					intent.putExtra(CommonDef.ROUTE_CLASS_NAME, "计划巡检");
-//					intent.putExtra(CommonDef.station_info.NAME,
-//							(String) mapItem.get(CommonDef.station_info.NAME));
-//					intent.putExtra(CommonDef.route_info.NAME, routeName);					
-//					intent.setClass(getApplicationContext(),
-//							DeviceActivity.class);
-//					startActivity(intent);
-//				}
-//			});
 
 			if (isTestInterface) {
 				// //test idinfo ,test pass

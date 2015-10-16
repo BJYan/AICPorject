@@ -36,19 +36,19 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private Activity mActivity = null;
 	private LayoutInflater mInflater;
 	private final String TAG = "luotest.StationListAdapter";
-	
+	private boolean mIsSpecial =false;
 	// groupView data
 	private List<Map<String, String>> mDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
 
-	public StationListAdapter(Activity av, Context context, int routeIndex) {
+	public StationListAdapter(Activity av, Context context, int routeIndex,boolean mIsSpecial) {
 		mContext = context;
 		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
-
+		this.mIsSpecial =mIsSpecial;
 		InitStationData();
 	}
 
@@ -193,7 +193,28 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 				map.put(CommonDef.station_info.DEADLINE, "2015");
 				map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false));
 				mDataList.add(map);
-				InitDeviceData(i, 0, false);
+				
+				try {
+					ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
+					for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+						if (mIsSpecial) {
+							if (Integer.valueOf(app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) > 0) {
+								Map<String, String> mapDevice = new HashMap<String, String>();
+								mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+								childList.add(mapDevice);
+							}
+						}else{											
+							Map<String, String> mapDevice = new HashMap<String, String>();
+							mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+							childList.add(mapDevice);
+						}
+					}
+					mChildrenList.add(childList);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}	
+				//InitDeviceData(i, 0, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -204,25 +225,25 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	}
 
 	
-	void InitDeviceData(int stationIndex, int itemIndexs, boolean updateAdapter) {
-
-		long g=System.currentTimeMillis();
-		MLog.Logd(TAG, " InitChidrenData()>> stationIndex="+stationIndex +","+g);
-		try {
-			ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
-			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.size(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put(CommonDef.device_info.NAME,	app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.get(i).Name);
-				childList.add(map);
-			}
-			mChildrenList.add(childList);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-
-		MLog.Logd(TAG, " InitChidrenData()<< stationIndex="+stationIndex +","+String.valueOf(System.currentTimeMillis()-g));
-	}
+//	void InitDeviceData(int stationIndex, int itemIndexs, boolean updateAdapter) {
+//
+//		long g=System.currentTimeMillis();
+//		MLog.Logd(TAG, " InitChidrenData()>> stationIndex="+stationIndex +","+g);
+//		try {
+//			ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
+//			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.size(); i++) {
+//				Map<String, String> map = new HashMap<String, String>();
+//				map.put(CommonDef.device_info.NAME,	app.mNormalLineJsonData.StationInfo.get(stationIndex).DeviceItem.get(i).Name);
+//				childList.add(map);
+//			}
+//			mChildrenList.add(childList);
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}	
+//
+//		MLog.Logd(TAG, " InitChidrenData()<< stationIndex="+stationIndex +","+String.valueOf(System.currentTimeMillis()-g));
+//	}
 
 	@Override
 	public void notifyDataSetChanged() {

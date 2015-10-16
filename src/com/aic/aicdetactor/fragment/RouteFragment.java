@@ -108,7 +108,7 @@ public class RouteFragment extends Fragment {
 //        	
 //        });
         ListView mSpecList = (ListView) listViews.get(1).findViewById(R.id.route_spec_list);
-        RouteSpecListAdapter mSpectListAdapter = new RouteSpecListAdapter(getActivity().getApplicationContext());
+        RouteSpecListAdapter mSpectListAdapter = new RouteSpecListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mSpecList.setAdapter(mSpectListAdapter);
         
         RoutePageAdapter mPageAdapter = new RoutePageAdapter(listViews);

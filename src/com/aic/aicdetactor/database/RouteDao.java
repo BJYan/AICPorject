@@ -800,6 +800,7 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 				map.put("LinePath", path);
 				map.put("LineTotalCount", totalCount);
 				map.put("LineCheckedCount", checkedCount);
+				map.put("LineIsSpecial", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.isSpecialLine)));
 				fileNameList.add(map);
 				cursor2.moveToNext();
 				MLog.Logd("luotest",
