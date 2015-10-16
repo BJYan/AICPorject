@@ -46,7 +46,27 @@
         android:layout_marginRight="10dip"
         android:layout_marginBottom="5dip"
         android:gravity="center">
-	    
+	    <include 
+	        layout="@layout/dialog_tabhost_layout"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="1"
+	        android:id="@+id/dialog_tabhost1" />
+	    <View
+	        android:id="@+id/dialog_tabhost_line"
+	        android:layout_height="30dip"
+	        android:layout_width="1dip"
+	        android:paddingTop="5dip"
+	        android:paddingBottom="5dip"
+	        android:layout_marginLeft="5dip"
+	        android:layout_marginRight="5dip"
+	        android:background="#ffffff"/>
+	    <include 
+	        layout="@layout/dialog_tabhost_layout"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="1"
+	        android:id="@+id/dialog_tabhost2" />"
 	</LinearLayout>
     <View 
         android:id="@+id/dialog_line_2"
