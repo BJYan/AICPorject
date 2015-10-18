@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="#55cccccc" 
+    android:background="@color/lisv_item_background"
     android:gravity="center_vertical" >
    
        <ImageView

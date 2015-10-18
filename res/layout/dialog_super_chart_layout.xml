@@ -6,7 +6,7 @@
 	android:background="@drawable/dialog_common_shape">
 	<LinearLayout 
 	    android:layout_height="wrap_content"
-	    android:layout_width="fill_parent"
+	    android:layout_width="300dip"
 	    android:layout_marginTop="15dip"
         android:layout_marginLeft="15dip"
         android:layout_marginRight="15dip"
@@ -27,7 +27,8 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:src="@drawable/dialog_close_btn"
-	        android:layout_marginLeft="10dip"/>
+	        android:layout_marginLeft="10dip"
+	        android:visibility="gone"/>
 	</LinearLayout>
 	<View 
         android:id="@+id/dialog_line_1"
@@ -51,7 +52,8 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:layout_weight="1"
-	        android:id="@+id/dialog_tabhost1" />
+	        android:id="@+id/dialog_tabhost1"
+	        android:visibility="gone" />
 	    <View
 	        android:id="@+id/dialog_tabhost_line"
 	        android:layout_height="30dip"
@@ -60,13 +62,15 @@
 	        android:paddingBottom="5dip"
 	        android:layout_marginLeft="5dip"
 	        android:layout_marginRight="5dip"
-	        android:background="#ffffff"/>
+	        android:background="#ffffff"
+	        android:visibility="gone"/>
 	    <include 
 	        layout="@layout/dialog_tabhost_layout"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:layout_weight="1"
-	        android:id="@+id/dialog_tabhost2" />"
+	        android:id="@+id/dialog_tabhost2"
+	        android:visibility="gone" />"
 	</LinearLayout>
     <View 
         android:id="@+id/dialog_line_2"
@@ -74,7 +78,8 @@
         android:layout_width="fill_parent"
         android:paddingTop="5dip"
         android:paddingBottom="5dip"
-        android:background="#ffffff"/>
+        android:background="#ffffff"
+        android:visibility="gone"/>
     <LinearLayout
 	    android:id="@+id/dialog_content_container" 
 	    android:layout_width="fill_parent"
@@ -110,7 +115,8 @@
             android:text="返回"
             android:textColor="#ffffff"
             android:layout_weight="1"
-            android:background="@drawable/dialog_button_selector"/>
+            android:background="@drawable/dialog_button_selector"
+            android:visibility="gone"/>
         <Button 
             android:id="@+id/dialog_btn2"
             android:layout_height="35dip"
@@ -118,8 +124,8 @@
             android:text="确定"
             android:textColor="#ffffff"
             android:layout_weight="1"
-            android:layout_marginLeft="35dip"
-            android:background="@drawable/dialog_button_selector"/>
+            android:background="@drawable/dialog_button_selector"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>

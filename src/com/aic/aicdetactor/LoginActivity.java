@@ -56,7 +56,7 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 		              WindowManager.LayoutParams.FLAG_FULLSCREEN); 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.mainactivity);
+		setContentView(R.layout.login_activity);
 		
 		mainHandler = new MainHandler(this);
 		mEditTextUserName = (EditText)findViewById(R.id.editText1);

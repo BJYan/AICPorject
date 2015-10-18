@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.CommonFragment;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.MessageAdapter;
@@ -108,11 +109,13 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
         MsgEndTime = (TextView) listViews.get(1).findViewById(R.id.message_notice_end_date);
         MsgEndTime.setOnClickListener(this);
         
-        MessageListViewAdapter msgListViewAdapter = new MessageListViewAdapter(getActivity().getApplicationContext());
-        for(int i=0;i<listViews.size();i++){
-        	ListView listView = (ListView) listViews.get(i).findViewById(R.id.msg_listView1);
-        	listView.setAdapter(msgListViewAdapter);
-        }
+        MessageListViewAdapter taskAdapter = new MessageListViewAdapter(getActivity());
+        MessageListViewAdapter msgAdapter = new MessageListViewAdapter(getActivity());
+        ListView tasklistView = (ListView) listViews.get(0).findViewById(R.id.msg_listView1);
+        ListView msglistView = (ListView) listViews.get(1).findViewById(R.id.msg_listView1);
+        tasklistView.setAdapter(taskAdapter);
+        msglistView.setAdapter(msgAdapter);
+        
         MessageAdapter messageAdapter = new MessageAdapter(listViews);
         viewPager.setAdapter(messageAdapter);
         viewPager.setCurrentItem(0);

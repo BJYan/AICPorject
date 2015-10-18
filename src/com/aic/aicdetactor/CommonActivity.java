@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
-import com.aic.aicdetactor.dialog.SuperChartDialog;
+import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
@@ -16,13 +16,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 public class CommonActivity extends Activity{
 	protected FlippingLoadingDialog mLoadingDialog;
 	public myApplication app = null;
 	CommonAlterDialog commonAlterDialog;
-	SuperChartDialog chartDialog;
+	CommonDialog chartDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,38 +55,39 @@ public class CommonActivity extends Activity{
         }
     }
 	
-	protected void showLoadingDialog(String text) {
+	public void showLoadingDialog(String text) {
 		if (text != null) {
 			mLoadingDialog.setText(text);
 		}
 		mLoadingDialog.show();
 	}
 
-	protected void dismissLoadingDialog() {
+	public void dismissLoadingDialog() {
 		if (mLoadingDialog.isShowing()) {
 			mLoadingDialog.dismiss();
 		}
 	}
 	
-	protected void showChartDialog(Context context){
-		chartDialog = new SuperChartDialog(context);
+	public void showChartDialog(Context context){
+		chartDialog = new CommonDialog(context);
+		chartDialog.setCloseBtnVisibility(View.VISIBLE);
 		chartDialog.show();
 	}
 	
-	protected void dismissChartDialog(){
+	public void dismissChartDialog(){
 		if (chartDialog!=null&&chartDialog.isShowing()) {
 			chartDialog.dismiss();
 		}
 	}
 	
-	protected void showAlterDialog(Context context, String title, String content,
+	public void showAlterDialog(Context context, String title, String content,
 			AltDialogOKListener okListener,AltDialogCancelListener cancelListener) {
 		commonAlterDialog = new CommonAlterDialog(context, title, content,
 			okListener, cancelListener);
 		commonAlterDialog.show();
 	}
 	
-	protected void dismissAlterDialog(){
+	public void dismissAlterDialog(){
 		if (commonAlterDialog!=null&&commonAlterDialog.isShowing()) {
 			commonAlterDialog.dismiss();
 		}

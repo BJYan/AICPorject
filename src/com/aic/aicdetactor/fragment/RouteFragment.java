@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,7 +14,9 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
@@ -23,6 +26,7 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.TempRouteActivity;
 import com.aic.aicdetactor.adapter.RouteNormalListAdapter;
 import com.aic.aicdetactor.adapter.RoutePageAdapter;
 import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
@@ -30,7 +34,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.util.MLog;
 
 
-public class RouteFragment extends Fragment {
+public class RouteFragment extends Fragment implements OnClickListener{
 	//
 	private final String TAG = "luotest";
 	private RadioGroup mRadioGroup = null; 
@@ -92,7 +96,10 @@ public class RouteFragment extends Fragment {
         ArrayList<View> listViews = new ArrayList<View>();
         listViews.add(inflater.inflate(R.layout.route_normal_layout, null));
         listViews.add(inflater.inflate(R.layout.route_spec_layout, null));
-        listViews.add(inflater.inflate(R.layout.route_temp_layout, null));
+        listViews.add(inflater.inflate(R.layout.route_temp_fragment_layout, null));
+        
+        Button routeTempMeasure = (Button) listViews.get(2).findViewById(R.id.route_temp_measure);
+        routeTempMeasure.setOnClickListener(this);
         
         ListView mNormalList = (ListView) listViews.get(0).findViewById(R.id.route_normal_list);
         RouteNormalListAdapter mNormalListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
@@ -268,5 +275,20 @@ public class RouteFragment extends Fragment {
 			tabHost.setCurrentTab(arg0);
 		}
 		
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.route_temp_measure:
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), TempRouteActivity.class);
+			getActivity().startActivity(intent);
+			break;
+
+		default:
+			break;
+		}
 	}
 }

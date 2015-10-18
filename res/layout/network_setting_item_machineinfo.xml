@@ -8,43 +8,54 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal" 
+        android:layout_marginTop="5dip">
         <TextView 
             android:layout_height="wrap_content"
-            android:layout_width="80dip"
-            android:text="本机名称："/>
+            android:layout_width="100dip"
+            android:text="本机名称："
+            android:textSize="16dp"/>
         <TextView 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="mac name"/>
-    </LinearLayout>
-        <LinearLayout 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
-        <TextView 
-            android:layout_height="wrap_content"
-            android:layout_width="80dip"
-            android:text="本机  IP："/>
-        <TextView 
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="mac name"/>
+            android:layout_width="120dip"
+            android:text="mac name"
+            android:drawableRight="@drawable/edit_icon"
+            android:drawablePadding="2dip"
+            android:textSize="16dp"/>
     </LinearLayout>
     <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:orientation="horizontal" 
+        android:layout_marginTop="5dip"
+        android:gravity="center_horizontal" >
         <TextView 
             android:layout_height="wrap_content"
-            android:layout_width="80dip"
-            android:text="本机MAC："/>
+            android:layout_width="100dip"
+            android:text="本机  IP："
+            android:textSize="16dp"/>
         <TextView 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="mac name"/>
+            android:layout_width="120dip"
+            android:text="mac name"
+            android:textSize="16dp"/>
+    </LinearLayout>
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" 
+        android:layout_marginTop="5dip"
+        android:gravity="center_horizontal" >
+        <TextView 
+            android:layout_height="wrap_content"
+            android:layout_width="100dip"
+            android:text="本机MAC："
+            android:textSize="16dp"/>
+        <TextView 
+            android:layout_height="wrap_content"
+            android:layout_width="120dip"
+            android:text="mac name"
+            android:textSize="16dp"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -45,23 +45,24 @@
             android:layout_marginLeft="15dip"
             android:layout_marginRight="15dip">
             <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/user_name"
-            android:layout_weight="1"
-           android:textSize="@dimen/normal_text_size"
-           android:textColor="#ffffff"/>
+            	android:id="@+id/textView3"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:text="@string/user_name"
+            	android:layout_weight="1"
+           		android:textSize="@dimen/normal_text_size"
+           		android:textColor="#ffffff"/>
              <EditText
-            android:id="@+id/editText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:singleLine="true"  
-            android:ems="10" 
-            android:hint="请输入..."  
-            android:background="@drawable/edittextbackgroud"
-            android:text="@string/default_username">
+            	android:id="@+id/editText1"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:layout_weight="2"
+            	android:singleLine="true"  
+            	android:ems="10" 
+            	android:hint="请输入..."  
+            	android:background="@drawable/edittextbackgroud"
+            	android:text="@string/default_username"
+            	android:padding="3dip">
             	<requestFocus />
         	</EditText>
         </LinearLayout>
@@ -74,32 +75,29 @@
             android:layout_marginRight="15dip"
             android:layout_marginTop="5dip">
             <TextView
-            android:id="@+id/textView13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/user_pswd"
-            android:layout_weight="1"
-           android:textSize="@dimen/normal_text_size"
-           android:textColor="#ffffff"/>
+            	android:id="@+id/textView13"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:text="@string/user_pswd"
+            	android:layout_weight="1"
+           		android:textSize="@dimen/normal_text_size"
+           		android:textColor="#ffffff"/>
              <EditText
-            android:id="@+id/editText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:singleLine="true"  
-            android:ems="10" 
-            android:password="true"
-             android:hint="请输入..."  
-             android:background="@drawable/edittextbackgroud"
-            android:text="@string/default_password">
-
-            <requestFocus />
-        </EditText>
+            	android:id="@+id/editText2"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:layout_weight="2"
+            	android:singleLine="true"  
+            	android:ems="10" 
+            	android:password="true"
+             	android:hint="请输入..."  
+             	android:background="@drawable/edittextbackgroud"
+            	android:text="@string/default_password"
+            	android:padding="3dip">
+            	<requestFocus />
+        	</EditText>
         </LinearLayout>
-       
-        
-
-        
+  
     </LinearLayout>
 
     <LinearLayout

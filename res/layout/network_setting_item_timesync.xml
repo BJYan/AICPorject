@@ -8,9 +8,10 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="38dip"
 	    android:text="与服务器时间同步"
-	    android:gravity="center"/>
+	    android:gravity="center"
+	    android:textSize="16dp"/>
     <Button 
-        android:layout_width="100dip"
+        android:layout_width="150dip"
         android:layout_height="35dip"
         android:text="开始同步"/>
 </LinearLayout>

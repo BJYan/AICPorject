@@ -40,7 +40,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		  
-		setContentView(R.layout.main);	
+		setContentView(R.layout.main_activity);	
 		app = (myApplication) getApplication();
 	 	
 		Intent intent = getIntent();

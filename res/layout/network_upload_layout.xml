@@ -33,7 +33,9 @@
 	        android:background="#ffffff"
 	        android:layout_below="@id/network_upload_ip"
 	        android:layout_marginRight="5dip"
-	        android:layout_marginTop="5dip" />
+	        android:layout_marginTop="5dip" 
+	        android:digits="0123456789"
+	        android:maxLength="3"/>
 	    <EditText 
 	        android:id="@+id/network_upload_ip_3"
 	        android:layout_height="wrap_content"
@@ -44,7 +46,9 @@
 	        android:layout_toLeftOf="@id/network_upload_ip_4"
 	        android:layout_below="@id/network_upload_ip"
 	        android:layout_marginRight="5dip"
-	        android:layout_marginTop="5dip" />
+	        android:layout_marginTop="5dip" 
+	        android:digits="0123456789"
+	        android:maxLength="3"/>
 	    <EditText 
 	        android:id="@+id/network_upload_ip_2"
 	        android:layout_height="wrap_content"
@@ -55,7 +59,9 @@
 	        android:layout_toLeftOf="@id/network_upload_ip_3"
 	        android:layout_below="@id/network_upload_ip"
 	        android:layout_marginRight="5dip"
-	        android:layout_marginTop="5dip" />
+	        android:layout_marginTop="5dip" 
+	        android:digits="0123456789"
+	        android:maxLength="3"/>
 	    <EditText 
 	        android:id="@+id/network_upload_ip_1"
 	        android:layout_height="wrap_content"
@@ -66,7 +72,9 @@
 	        android:layout_toLeftOf="@id/network_upload_ip_2"
 	        android:layout_below="@id/network_upload_ip"
 	        android:layout_marginRight="5dip"
-	        android:layout_marginTop="5dip" />
+	        android:layout_marginTop="5dip" 
+	        android:digits="0123456789"
+	        android:maxLength="3"/>
 	    <TextView 
 	        android:id="@+id/network_upload_ip_name"
 	        android:layout_height="wrap_content"

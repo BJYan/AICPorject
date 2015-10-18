@@ -29,7 +29,7 @@
         <ImageView 
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:src="@drawable/thradapter_graph"
+            android:src="@drawable/graph_icon"
             android:layout_marginRight="5dip"
             android:padding="5dip"
             android:id="@+id/history"/>"

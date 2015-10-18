@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
@@ -105,6 +106,15 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 				secGroupView.setLayoutParams(lp);
 			}
 			
+		});
+		
+		secGroupView.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 		});
 		return secGroupView;
 	}

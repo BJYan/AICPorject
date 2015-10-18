@@ -148,4 +148,5 @@
 <color name="navy">#000080</color><!--海军色 -->
 <color name="black">#000000</color><!--黑色 -->  
 <color name="transparent">#00000000</color><!--透明 --> 
+<color name="lisv_item_background">#55cccccc</color><!--半透明灰 -->
 </resources>

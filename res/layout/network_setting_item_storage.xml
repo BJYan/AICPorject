@@ -13,10 +13,10 @@
         android:background="#000000"/>
     <LinearLayout 
         android:layout_width="fill_parent"
-        android:layout_height="38dip"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        >
+        android:layout_marginTop="10dip" >
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="80dip"
@@ -30,10 +30,10 @@
     </LinearLayout>
     <LinearLayout 
         android:layout_width="fill_parent"
-        android:layout_height="38dip"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        >
+        android:layout_marginTop="10dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="80dip"
@@ -50,14 +50,14 @@
         android:layout_width="fill_parent"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
-        android:layout_marginTop="5dip"
+        android:layout_marginTop="10dip"
         android:background="#000000"/>
     <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        >
+        android:layout_marginTop="2dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -68,12 +68,12 @@
             android:textSize="14dp"
             android:entries="@array/month"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        >
+        android:layout_marginTop="2dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -84,12 +84,12 @@
             android:textSize="14dp"
             android:entries="@array/month"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        >
+        android:layout_marginTop="2dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -100,12 +100,12 @@
             android:textSize="14dp"
             android:entries="@array/month"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        >
+        android:layout_marginTop="2dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -121,7 +121,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        >
+        android:layout_marginTop="2dip">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
