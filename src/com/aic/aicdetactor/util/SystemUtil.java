@@ -35,6 +35,7 @@ public class  SystemUtil {
 	public static final int TIME_FORMAT_YYMMDDHHMM = 0;
 	public static final int TIME_FORMAT_HHMM = 1;
 	public static final int TIME_FORMAT_YYMMDD = 2;
+	public static final int TIME_FORMAT_YYMMDD2 = 3;
 	/**
 	 * 
 	 * @param type 0,yyyy-mm-dd hh:mm:ss;
@@ -60,6 +61,9 @@ public class  SystemUtil {
 			str  = (hour<10?("0"+hour):hour)+""+(minute<10?("0"+minute):minute);
 		}else if(type ==TIME_FORMAT_YYMMDD){
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			str = df.format(new Date());
+		}else if(type ==TIME_FORMAT_YYMMDD2){
+			DateFormat df = new SimpleDateFormat("yyyyMMdd");
 			str = df.format(new Date());
 		}
 		

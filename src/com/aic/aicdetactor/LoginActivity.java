@@ -115,36 +115,24 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 			break;
 		}
 	}
-	boolean Login(){
+
+	boolean Login() {
 		mLogName = mEditTextUserName.getText().toString();
 		mLogPwd = mEditTextUserPwd.getText().toString();
-		//search table 
-	//	TestSetting test = new TestSetting(this.getApplicationContext());
-		//List<String> testlist = test.getTestFile();
 
-//		if (testlist != null) {
-//			boolean bTempRoute=false;
-//			for (int testi = 0; testi < testlist.size(); testi++) {
-//				Log.d(TAG,"read file from test=" + testi + ","+ testlist.get(testi));
-//				if(testlist.get(testi).contains("Temp")){
-//					bTempRoute=true;
-//				}
-//				((myApplication) this.getApplication()).insertNewRouteInfo(SystemUtil.createGUID(), testlist.get(testi), this.getApplicationContext(),bTempRoute);
-//			}
-//		} 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
-		app.mFileList = 	dao.queryLogIn(mLogName, mLogPwd,cv);
-		error=cv.getAsString("error");
-	Log.d(TAG," Login() error = "+ cv.get("error"));
-	
-	if(app.mFileList.size()>0){	
-		ContentValues cverr = new ContentValues();
-//		dao.ModifyWorkerPwd(mLogName, mLogPwd, "11111111",cverr);
-//		Log.d(TAG," Login() modify error = "+ cverr.get("error"));
-		return true;
-	}
-	return false;
+		app.mFileList = dao.queryLogIn(mLogName, mLogPwd, cv);
+		error = cv.getAsString("error");
+		Log.d(TAG, " Login() error = " + cv.get("error"));
+
+		if (app.mFileList.size() > 0) {
+			ContentValues cverr = new ContentValues();
+			// dao.ModifyWorkerPwd(mLogName, mLogPwd, "11111111",cverr);
+			// Log.d(TAG," Login() modify error = "+ cverr.get("error"));
+			return true;
+		}
+		return false;
 	}
 	
 	void saveUInfo(){
