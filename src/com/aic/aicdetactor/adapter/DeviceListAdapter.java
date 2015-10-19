@@ -37,8 +37,9 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	private myApplication app = null;
 	private Activity mActivity = null;
 	private final String TAG="luotest.DeviceListAdapter";
+	private boolean mIsSpecial= false;
 	public DeviceListAdapter(Context context, Activity av,
-			int stationIndex,int deviceIndex){
+			int stationIndex,int deviceIndex,boolean mIsSpecial){
 			//ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
@@ -49,6 +50,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		mActivity = av;
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) av.getApplication());
+		this.mIsSpecial = mIsSpecial;
 		InitData();
 	}
 	
@@ -195,14 +197,29 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 			mDataList.clear();
 			mChildrenList = new ArrayList<ArrayList<PartItemJson>>();
 			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-				MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-				map.put(CommonDef.device_info.DEADLINE, "2016");
-			
-				map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
-				mDataList.add(map);
-				InitChidrenData(mStationIndex, i);
+				if(mIsSpecial){
+						if(app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
+					Map<String, String> map = new HashMap<String, String>();
+					map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					map.put(CommonDef.device_info.DEADLINE, "2016");
+				
+					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
+					mDataList.add(map);
+					InitChidrenData(mStationIndex, i);
+						}
+					}else{
+						if(app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection<=0){
+					Map<String, String> map = new HashMap<String, String>();
+					map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					map.put(CommonDef.device_info.DEADLINE, "2016");
+				
+					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
+					mDataList.add(map);
+					InitChidrenData(mStationIndex, i);
+						}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

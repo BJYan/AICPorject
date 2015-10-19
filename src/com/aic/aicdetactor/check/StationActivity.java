@@ -29,6 +29,10 @@ import android.provider.MediaStore.Audio.Media;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -147,6 +151,7 @@ private boolean mSpecial = false;
 			});
 		
 			mListView = (ExpandableListView) findViewById(R.id.listView);
+			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
 			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,mSpecial);
@@ -192,122 +197,6 @@ private boolean mSpecial = false;
 		super.onResume();
 	}
 
-
-
-	public List<Object>mStationList =null;
-	public List<String>mStationNameList=null;
-	public List<Object>mDeviceList =null;
-	public List<String>mDeviceNameList=null;
-	public List<Object>mPartItemList =null;
-	public List<String>mPartItemNameList=null;
-	
-	public List<Object>getStationList(int routeIndex){
-		try {
-			mStationList=	app.getStationList(routeIndex);
-			if(mStationNameList==null){
-				mStationNameList = new ArrayList<String>();
-			}else{
-				mStationNameList.clear();
-			}
-			for(int i=0;i<mStationList.size();i++){
-				mStationNameList.add(app.getStationItemName(mStationList.get(i)));
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return mStationList;
-	}
-	
-	public List<Object>getDeviceList(int stationIndex){
-		try {
-			//mStationList=	app.getStationList(routeIndex);
-			if(mDeviceNameList==null){
-				mDeviceNameList = new ArrayList<String>();
-			}else{
-				mDeviceNameList.clear();
-			}
-			
-			mDeviceList =app.getDeviceList(mStationList.get(stationIndex));
-			for(int i=0;i<mDeviceList.size();i++){
-				mDeviceNameList.add(app.getDeviceItemName(mDeviceList.get(i)));
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return mDeviceList;
-	}
-	
-	public List<String>getPartItemList(int stationIndex,int deviceIndex){
-		try {
-			if(mPartItemNameList==null){
-				mPartItemNameList = new ArrayList<String>();
-			}else{
-				mPartItemNameList.clear();
-			}
-			//getDeviceList(stationIndex);
-			mDeviceList =app.getDeviceList(mStationList.get(stationIndex));
-			Gson g= new Gson();
-			//for(int i=0;i<mDeviceList.size();i++){
-				mPartItemList = app.getPartItemDataList(stationIndex, deviceIndex);
-				for(int k=0;k<mPartItemList.size();k++){
-				
-				long a = System.currentTimeMillis();
-				PartItemItem item =g.fromJson(mPartItemList.get(k).toString(), PartItemItem.class);
-				MLog.Logd(TAG,"release ms="+String.valueOf(System.currentTimeMillis()-a)+","+item.getCheckContent());
-				mPartItemNameList.add(item.getCheckContent());
-				}
-			//}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return mPartItemNameList;
-	}
-	ExpandableListView expandableList;  
-    TreeViewAdapter adapter;  
-    SuperTreeViewAdapter superAdapter;  
-	void InitListViewData(){
-		  
-        List<SuperTreeViewAdapter.SuperTreeNode> superTreeNode = superAdapter.GetTreeNode();  
-        for(int i=0;i<mStationNameList.size();i++)//第一层  
-        {  
-            SuperTreeViewAdapter.SuperTreeNode superNode=new SuperTreeViewAdapter.SuperTreeNode();  
-            superNode.parent=mStationNameList.get(i);  
-            getDeviceList(i);
-            //第二层  
-            for(int ii=0;ii<mDeviceNameList.size();ii++)  
-            {  
-                TreeViewAdapter.TreeNode node=new TreeViewAdapter.TreeNode();  
-                node.parent=mDeviceNameList.get(ii);//第二级菜单的标题  
-                getPartItemList(i,ii); 
-                for(int iii=0;iii<mPartItemNameList.size();iii++)//第三级菜单  
-                {  
-                    node.childs.add(mPartItemNameList.get(iii));  
-                }  
-                superNode.childs.add(node);  
-            }  
-            superTreeNode.add(superNode);  
-              
-        }  
-        superAdapter.UpdateTreeNode(superTreeNode);  
-        expandableList.setAdapter(superAdapter);  
-    
-	}
-	
-	 OnChildClickListener stvClickEvent=new OnChildClickListener(){  
-		  
-	        @Override  
-	        public boolean onChildClick(ExpandableListView parent,  
-	                View v, int groupPosition, int childPosition,  
-	                long id) {  
-	            String str="parent id:"+String.valueOf(groupPosition)+",children id:"+String.valueOf(childPosition);  
-	            Toast.makeText(StationActivity.this, str, 300).show(); 
-	            return false;  
-	        }  
-	          
-	    };  
 	    void initPopupWindowFliter(View parent) {
 			LayoutInflater inflater = (LayoutInflater) this
 					.getApplicationContext()
@@ -411,4 +300,43 @@ private boolean mSpecial = false;
 				break;
 			}
 		}
+
+		@Override
+		public boolean onContextItemSelected(MenuItem item) {
+			// TODO Auto-generated method stub
+			return super.onContextItemSelected(item);
+		}
+
+		@Override
+		public void onContextMenuClosed(Menu menu) {
+			// TODO Auto-generated method stub
+			super.onContextMenuClosed(menu);
+		}
+
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v,
+				ContextMenuInfo menuInfo) {
+			// TODO Auto-generated method stub
+			super.onCreateContextMenu(menu, v, menuInfo);
+			
+			ExpandableListView.ExpandableListContextMenuInfo info =(ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+	        int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+	        if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD )
+	        {
+
+	        	int group = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+	        	int child = ExpandableListView.getPackedPositionChild(info.packedPosition);
+	        	menu.setHeaderTitle("设备选项");
+	               menu.add(0,Menu.FIRST,0,"反向巡检" );
+	               menu.setGroupCheckable(0, true, false);
+	              List<String>statusL= mListViewAdapter.getDeviceStatusArray(group,child);
+	               for(int i =0;i<statusL.size();i++){
+	               menu.add(1,Menu.FIRST+i,0,statusL.get(i) );
+	               }
+	               menu.setGroupCheckable(1, true, true);
+	               
+	        }
+
+	       }
+		
 }

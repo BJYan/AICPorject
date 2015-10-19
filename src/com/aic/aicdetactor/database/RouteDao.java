@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.data.AICData;
 import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.OrganizationInfo;
@@ -192,14 +193,14 @@ public class RouteDao {
 			////insert organization	
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_CorporationName,
 					null,
-					DBHelper.Organization_CorporationName_Table.CorporationName + "=?" , 
+					DBHelper.Organization_CorporationName_Table.Name + "=?" , 
 					new String[] { OrganizationInfo.CorporationName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_CorporationName
 			+"("
-			+ DBHelper.Organization_CorporationName_Table.CorporationName 
+			+ DBHelper.Organization_CorporationName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -211,14 +212,14 @@ public class RouteDao {
 			//GroupName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_GroupName,
 					null,
-					DBHelper.Organization_GroupName_Table.GroupName + "=?" , 
+					DBHelper.Organization_GroupName_Table.Name + "=?" , 
 					new String[] {OrganizationInfo.GroupName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_GroupName
 			+"("
-			+ DBHelper.Organization_GroupName_Table.GroupName 
+			+ DBHelper.Organization_GroupName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -230,14 +231,14 @@ public class RouteDao {
 			//WorkShopName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_WorkShopName,
 					null,
-					DBHelper.Organization_WorkShopName_Table.WorkShopName  + "=?" , 
+					DBHelper.Organization_WorkShopName_Table.Name  + "=?" , 
 					new String[] {OrganizationInfo.WorkShopName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_WorkShopName
 			+"("
-			+ DBHelper.Organization_WorkShopName_Table.WorkShopName 
+			+ DBHelper.Organization_WorkShopName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -353,14 +354,14 @@ public class RouteDao {
 			////insert organization	
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_CorporationName,
 					null,
-					DBHelper.Organization_CorporationName_Table.CorporationName + "=?" , 
+					DBHelper.Organization_CorporationName_Table.Name + "=?" , 
 					new String[] { info.mOrganizationInfo.CorporationName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_CorporationName
 			+"("
-			+ DBHelper.Organization_CorporationName_Table.CorporationName 
+			+ DBHelper.Organization_CorporationName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -372,14 +373,14 @@ public class RouteDao {
 			//GroupName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_GroupName,
 					null,
-					DBHelper.Organization_GroupName_Table.GroupName + "=?" , 
+					DBHelper.Organization_GroupName_Table.Name + "=?" , 
 					new String[] {info.mOrganizationInfo.GroupName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_GroupName
 			+"("
-			+ DBHelper.Organization_GroupName_Table.GroupName 
+			+ DBHelper.Organization_GroupName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -391,14 +392,14 @@ public class RouteDao {
 			//WorkShopName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_WorkShopName,
 					null,
-					DBHelper.Organization_WorkShopName_Table.WorkShopName  + "=?" , 
+					DBHelper.Organization_WorkShopName_Table.Name  + "=?" , 
 					new String[] {info.mOrganizationInfo.WorkShopName}, null, null,
 					null);
 			if(cursor== null || cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_WorkShopName
 			+"("
-			+ DBHelper.Organization_WorkShopName_Table.WorkShopName 
+			+ DBHelper.Organization_WorkShopName_Table.Name 
 			+")values(?)";					
 			
 			mDB.execSQL(sql, new Object[] {
@@ -957,5 +958,46 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 	boolean GetUploadJsonFile(Object object, String date, String filePath,RoutePeroid m_CurPeriod,ContentValues cv){
 		
 		return true;
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public List<String>getOrganizationList(OrganizationType type){
+		List<String> list = new ArrayList<String>();
+		Cursor cursor =null;
+		String tableName="";
+		if(type == OrganizationType.OrganizationCorporation){
+			tableName =DBHelper.TABLE_T_Organization_CorporationName;
+		}else if(type == OrganizationType.OrganizationGroup){
+			tableName =DBHelper.TABLE_T_Organization_GroupName;
+		}else if(type == OrganizationType.OrganizationWorkShop){
+			tableName =DBHelper.TABLE_T_Organization_WorkShopName;
+		}
+		if("".equals(tableName)){return null;}
+		try{
+		cursor =  mDB
+				.query(tableName,						
+						null,
+						null, 
+						null,
+						null, 
+						null, 
+						null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+			for(int i =0;i<cursor.getCount();i++){
+				list.add(cursor.getString(cursor.getColumnIndex("Name")));
+				cursor.moveToNext();
+			}
+		}
+		}catch(Exception e){}finally{
+			if(cursor != null){
+				cursor.close();
+			}
+		}
+		return list;
 	}
 }

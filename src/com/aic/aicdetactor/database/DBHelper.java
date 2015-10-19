@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 9;//版本号
+	 private final static int VERSION = 10;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -135,19 +135,19 @@ public class DBHelper extends SQLiteOpenHelper {
 	 //T_Organization
 	 public static String TABLE_T_Organization_CorporationName = "T_Organization_CorporationName";  
 	 public class Organization_CorporationName_Table{ 
-		 public static final String CorporationName = "CorporationName";
+		 public static final String Name = "Name";
 	 } 
 	 
 	 //GroupName
 	 public static String TABLE_T_Organization_GroupName = "T_Organization_GroupName";  
 	 public class Organization_GroupName_Table{ 
-		 public static final String GroupName = "GroupName";
+		 public static final String Name = "Name";
 	 } 
 	 
 	 //WorkShopName
 	 public static String TABLE_T_Organization_WorkShopName = "T_Organization_WorkShopName";  
 	 public class Organization_WorkShopName_Table{ 
-		 public static final String WorkShopName = "WorkShopName";
+		 public static final String Name = "Name";
 	 } 
 	 
 	//Periods
@@ -323,7 +323,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Oragniation_corpSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_CorporationName 
 				+ "(" 
-				+ Organization_CorporationName_Table.CorporationName+" varchar(256) PRIMARY KEY"				
+				+ Organization_CorporationName_Table.Name+" varchar(256) PRIMARY KEY"				
 				+")";
 		db.execSQL(Oragniation_corpSql);
 		
@@ -331,7 +331,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Organization_GrouSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_GroupName 
 				+ "(" 
-				+ Organization_GroupName_Table.GroupName+" varchar(256) PRIMARY KEY"				
+				+ Organization_GroupName_Table.Name+" varchar(256) PRIMARY KEY"				
 				+")";
 		db.execSQL(Organization_GrouSql);
 		
@@ -339,7 +339,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Organization_WorkShopNameSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_WorkShopName 
 				+ "(" 
-				+ Organization_WorkShopName_Table.WorkShopName+" varchar(256) PRIMARY KEY"				
+				+ Organization_WorkShopName_Table.Name+" varchar(256) PRIMARY KEY"				
 				+")";
 		db.execSQL(Organization_WorkShopNameSql);
 

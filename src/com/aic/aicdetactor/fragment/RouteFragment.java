@@ -12,15 +12,26 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.Toast;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -31,10 +42,12 @@ import com.aic.aicdetactor.adapter.RouteNormalListAdapter;
 import com.aic.aicdetactor.adapter.RoutePageAdapter;
 import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.OrganizationType;
+import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.MLog;
 
 
-public class RouteFragment extends Fragment implements OnClickListener{
+public class RouteFragment extends Fragment implements OnClickListener,OnItemSelectedListener,OnTouchListener{
 	//
 	private final String TAG = "luotest";
 	private RadioGroup mRadioGroup = null; 
@@ -42,18 +55,20 @@ public class RouteFragment extends Fragment implements OnClickListener{
 
 
 	private myApplication app = null;
-	private final int ROUTE_XJ =0;
-	private final int ROUTE_Temp= 1;
-	private final int ROUTE_Spec= 2;
-	private int mSelectedRadioIndex =0;
-	//private String name = null;
-	//private String pwd= null;
 	private List<Map<String, String>> mItemDatas = null;
 	private SimpleAdapter mListViewAdapter = null;
-	private String mRouteTypeName =null;
-	
-	TabHost tabHost;
-	ViewPager viewPager;
+	private Spinner mFactorySpinner;
+	private Spinner mSSpinner;
+	private Spinner mRoomSpinner;
+	private List<String>mFactoryList=null;
+	private List<String>mSList=null;
+	private List<String>mRoomList=null;
+	private ArrayList<View> listViews=null;
+	private ArrayAdapter<String> mFAdapter=null;
+	private ArrayAdapter<String> mSAdapter=null;
+	private ArrayAdapter<String> mRAdapter=null;
+	private TabHost tabHost;
+	private ViewPager viewPager;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +108,7 @@ public class RouteFragment extends Fragment implements OnClickListener{
             tv.setTextColor(this.getResources().getColorStateList(android.R.color.black));
            }
         
-        ArrayList<View> listViews = new ArrayList<View>();
+        listViews = new ArrayList<View>();
         listViews.add(inflater.inflate(R.layout.route_normal_layout, null));
         listViews.add(inflater.inflate(R.layout.route_spec_layout, null));
         listViews.add(inflater.inflate(R.layout.route_temp_fragment_layout, null));
@@ -101,7 +116,11 @@ public class RouteFragment extends Fragment implements OnClickListener{
         Button routeTempMeasure = (Button) listViews.get(2).findViewById(R.id.route_temp_measure);
         routeTempMeasure.setOnClickListener(this);
         
+        initSpinnerViewAndData();
+        
         ListView mNormalList = (ListView) listViews.get(0).findViewById(R.id.route_normal_list);
+        this.registerForContextMenu(mNormalList);
+        
         RouteNormalListAdapter mNormalListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mNormalList.setAdapter(mNormalListAdapter);
 //        mNormalList.setOnItemClickListener(new OnItemClickListener(){
@@ -133,108 +152,35 @@ public class RouteFragment extends Fragment implements OnClickListener{
             }  
         });
 		return searchView;
-		
-		
-		
-		
-//		
-//		View view = inflater.inflate(R.layout.route_activity, container, false);
-//	
-//		mListView = (ListView) view.findViewById(R.id.listView);	
-//
-//		mRadioGroup = (RadioGroup)view.findViewById(R.id.route_group);
-//		
-//		mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-//
-//			@Override
-//			public void onCheckedChanged(RadioGroup arg0, int arg1) {
-//				// TODO Auto-generated method stub
-//				switch(arg0.getCheckedRadioButtonId()){
-//				case R.id.route_radioButton1:					
-//					initListData(CommonDef.RouteType.Route_Normal);
-//					mSelectedRadioIndex =0;
-//					break;
-//				case R.id.route_radioButton2:
-//					initListData(CommonDef.RouteType.Route_Spec);
-//					mSelectedRadioIndex =1;
-//					break;
-//				case R.id.route_radioButton3:
-//					initListData(CommonDef.RouteType.Route_Tmp);
-//					mSelectedRadioIndex =2;
-//					break;
-//				}
-//			}
-//			
-//		});	
-//		mItemDatas = new ArrayList<Map<String, String>>();
-//		//initListData(ROUTE_XJ);
-//		mListViewAdapter = new SimpleAdapter(this.getActivity(), mItemDatas,
-//				R.layout.route_list_item, new String[] {
-//						CommonDef.route_info.INDEX,
-//						CommonDef.route_info.NAME,
-//						CommonDef.route_info.DEADLINE,
-//						//CommonDef.route_info.STATUS,
-//						CommonDef.route_info.PROGRESS }, new int[] {
-//						R.id.index, R.id.pathname, R.id.deadtime,
-////						R.id.status, 
-//						R.id.progress });
-//		
-//		MLog.Logd(TAG,
-//				"in init() setAdapter"
-//						+ SystemUtil
-//								.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-//		mListView.setAdapter(mListViewAdapter);
-//		mListView.setDividerHeight(10);
-//		mListView.setDivider(new ColorDrawable(0xffffff));
-//		MLog.Logd(TAG,
-//				"in init() after setAdapter"
-//						+ SystemUtil
-//								.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-//		mListView.setOnItemClickListener(new OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> arg0, View arg1,
-//					int arg2, long arg3) {
-//				// TODO Auto-generated method stub
-//				HashMap<String, String> mapItem = (HashMap<String, String>) (mListView
-//						.getItemAtPosition(arg2));
-//				MLog.Logd(TAG,
-//						"MAPITEM is "
-//								+ mapItem.toString()
-//								+ " pathname is "
-//								+ (String) mapItem
-//										.get(CommonDef.route_info.NAME));
-//				app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
-//				 app.mRouteIndex = arg2;
-//				Intent intent = new Intent();
-//				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
-//						arg2);
-//				app.setCurrentRouteIndex(arg2);
-//				switch(mSelectedRadioIndex){
-//				case 0:
-//					mRouteTypeName = getString(R.string.plancheck_name);
-//					break;
-//				case 2:
-//					mRouteTypeName = getString(R.string.tem_check);
-//					break;
-//				case 1:
-//					mRouteTypeName = getString(R.string.tem_spec);
-//					break;
-//				}
-//				intent.putExtra(CommonDef.ROUTE_CLASS_NAME, mRouteTypeName);
-//				intent.putExtra(CommonDef.route_info.NAME,
-//						(String) mapItem.get(CommonDef.route_info.NAME));
-//				intent.putExtra(CommonDef.route_info.INDEX,
-//						(String) mapItem.get(CommonDef.route_info.INDEX));
-//				intent.setClass(RouteFragment.this.getActivity().getApplicationContext(),
-//						StationActivity.class);
-//				startActivity(intent);
-//			}
-//		});
-//		MLog.Logd(TAG,"onCreateView()<<");
-//		return view;
 		}
 	
 
+	void initSpinnerViewAndData() {
+		RouteDao dao = RouteDao.getInstance(this.getActivity().getApplicationContext());
+		mFactoryList = dao.getOrganizationList(OrganizationType.OrganizationCorporation);
+		mFactorySpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner1);
+		mFAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mFactoryList);
+		mFAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mFactorySpinner.setAdapter(mFAdapter);
+		mFactorySpinner.setOnItemSelectedListener(this);
+		mFactorySpinner.setOnTouchListener(this);
+		
+		mSList = dao.getOrganizationList(OrganizationType.OrganizationGroup);
+		mSSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner2);
+		mSAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mSList);
+		mSAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSSpinner.setAdapter(mSAdapter);
+		mSSpinner.setOnItemSelectedListener(this);
+		mSSpinner.setOnTouchListener(this);
+		
+		mRoomList = dao.getOrganizationList(OrganizationType.OrganizationWorkShop);
+		mRoomSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner3);
+		mRAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mRoomList);
+		mRAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mRoomSpinner.setAdapter(mRAdapter);
+		mRoomSpinner.setOnItemSelectedListener(this);
+		mRoomSpinner.setOnTouchListener(this);
+	}
 	
 	private final int MSG_UPDATE_LISTVIEW =0;
 	Handler mHander= new Handler(){
@@ -255,6 +201,7 @@ public class RouteFragment extends Fragment implements OnClickListener{
 		
 	};
 	
+
 	class MyOnPageChangeListener implements OnPageChangeListener{
 
 		@Override
@@ -276,7 +223,6 @@ public class RouteFragment extends Fragment implements OnClickListener{
 		}
 		
 	}
-
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
@@ -290,5 +236,49 @@ public class RouteFragment extends Fragment implements OnClickListener{
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.spinner1:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selected"+arg2, Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.spinner2:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner2", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.spinner3:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner3", Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onTouch(View arg0, MotionEvent arg1) {
+		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case R.id.spinner1:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner1", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.spinner2:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner2", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.spinner3:
+			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner3", Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			break;
+		}
+		return false;
 	}
 }
