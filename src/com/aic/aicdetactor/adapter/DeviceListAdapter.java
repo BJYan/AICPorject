@@ -44,7 +44,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	private CommonActivity mActivity = null;
 	private final String TAG="luotest.DeviceListAdapter";
 	private boolean mIsSpecial= false;
-	public DeviceListAdapter(Context context, Activity av,
+	public DeviceListAdapter(Context context, CommonActivity av,
 			int stationIndex,int deviceIndex,boolean mIsSpecial){
 			//ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
 		// TODO Auto-generated constructor stub
