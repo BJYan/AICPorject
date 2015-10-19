@@ -16,7 +16,9 @@
             android:layout_height="fill_parent"
             android:text="2015-10-15"
             android:gravity="center_vertical"
-            android:tag="calendar_button"/>
+            android:tag="calendar_button"
+            android:drawableLeft="@drawable/calendar_icon"
+            android:drawablePadding="5dip"/>
         <TextView 
             android:layout_height="fill_parent"
             android:layout_width="wrap_content"
@@ -31,7 +33,9 @@
             android:text="2015-10-15"
             android:gravity="center_vertical"
             android:layout_marginLeft="15dip"
-            android:tag="calendar_button"/>
+            android:tag="calendar_button"
+            android:drawableLeft="@drawable/calendar_icon"
+            android:drawablePadding="5dip"/>
     </LinearLayout>
 	<TextView 
 	    android:id="@+id/search_button_2"

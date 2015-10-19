@@ -12,22 +12,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemJson;
+import com.aic.aicdetactor.dialog.CommonDialog;
+import com.aic.aicdetactor.dialog.CommonDialog.ChartDialogBtnListener;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
-public class DeviceListAdapter  extends BaseExpandableListAdapter {
+public class DeviceListAdapter  extends BaseExpandableListAdapter implements ChartDialogBtnListener{
 	private Context context;
 	private LayoutInflater mInflater;
 	ArrayList<ArrayList<PartItemJson>> mChildrenList;
@@ -35,7 +41,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
 	private myApplication app = null;
-	private Activity mActivity = null;
+	private CommonActivity mActivity = null;
 	private final String TAG="luotest.DeviceListAdapter";
 	private boolean mIsSpecial= false;
 	public DeviceListAdapter(Context context, Activity av,
@@ -82,13 +88,22 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 						@Override
 						public void onClick(View arg0) {
 							//添加拉起趋势图的操作
-							Intent intent = null;
+							/*Intent intent = null;
 							View v= (View) arg0.getParent();
 							TextView tv= (TextView) v.findViewById(R.id.pathname);
 							IDemoChart[] mCharts = new IDemoChart[] {
 									 new AverageTemperatureChart()};
 						      intent = mCharts[0].execute(context,tv.getText().toString());
-						      mActivity.startActivity(intent);
+						      mActivity.startActivity(intent);*/
+							CommonDialog chartDialog = new CommonDialog(mActivity);
+							chartDialog.setCloseBtnVisibility(View.VISIBLE);
+							chartDialog.setTitle("测试图谱");
+							chartDialog.setButtomBtn(DeviceListAdapter.this, "确定", "取消");
+							DataAnalysis dataAnalysis = new DataAnalysis();
+							View chartView = mActivity.getBlackLineChartView("测试数据", dataAnalysis.getData());
+
+							chartDialog.setChartView(chartView, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 520));
+							chartDialog.show();
 						}
 						
 					});
@@ -248,6 +263,18 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter {
 		}	
 		
 		MLog.Logd(TAG, "InitChidrenData<< stationIndex ="+stationIndex+","+String.valueOf(System.currentTimeMillis()-gg));
+	}
+
+	@Override
+	public void onClickBtn1Listener(CommonDialog dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClickBtn2Listener(CommonDialog dialog) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

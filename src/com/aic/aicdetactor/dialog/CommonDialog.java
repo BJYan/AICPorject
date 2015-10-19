@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -89,10 +90,10 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		}
 	}
 	
-	public void setChartView(View chartView){
+	public void setChartView(View chartView, ViewGroup.LayoutParams layoutParams){
 		LinearLayout ChartContainer = (LinearLayout) contentView.findViewById(R.id.dialog_content_container);
 		ChartContainer.removeAllViews();
-		ChartContainer.addView(chartView);
+		ChartContainer.addView(chartView,layoutParams);
 	}
 	
 	private void controllerInit(String[] tabname1,String[] tabname2){

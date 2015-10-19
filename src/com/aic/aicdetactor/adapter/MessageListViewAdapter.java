@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.BaseAdapter;
 
 public class MessageListViewAdapter extends BaseAdapter implements ChartDialogBtnListener{
@@ -51,9 +52,9 @@ public class MessageListViewAdapter extends BaseAdapter implements ChartDialogBt
 				View msgView = mInflater.inflate(R.layout.dialog_message_layout, null);
 				CommonDialog msgDialog = new CommonDialog(context);
 				msgDialog.setCloseBtnVisibility(View.VISIBLE);
-				msgDialog.setTitle("任务");
-				msgDialog.setChartView(msgView);
-				msgDialog.setButtomBtn(MessageListViewAdapter.this, "", "确定");
+				msgDialog.setTitle("浠诲姟");
+				msgDialog.setChartView(msgView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+				msgDialog.setButtomBtn(MessageListViewAdapter.this, "", "纭畾");
 				msgDialog.show();
 			}
 		});

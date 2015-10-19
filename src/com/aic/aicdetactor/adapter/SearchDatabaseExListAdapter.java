@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.RadioButton;
 
 public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	Context context;
@@ -69,6 +70,8 @@ public class SearchDatabaseExListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		View DBSearchGroupItem = mInflater.inflate(R.layout.search_database_group_item, null);
+		RadioButton radioButton = (RadioButton) DBSearchGroupItem.findViewById(R.id.search_db_radiobutton);
+		radioButton.setChecked(arg1);
 		return DBSearchGroupItem;
 	}
 

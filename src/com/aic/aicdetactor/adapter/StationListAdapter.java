@@ -20,6 +20,7 @@ import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -34,7 +35,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private myApplication app = null;
 	private Context mContext = null;
 	private int mrouteIndex = 0;
-	private Activity mActivity = null;
+	private CommonActivity mActivity = null;
 	private LayoutInflater mInflater;
 	private final String TAG = "luotest.StationListAdapter";
 	private boolean mIsSpecial =false;
@@ -42,7 +43,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private List<Map<String, String>> mDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
 
-	public StationListAdapter(Activity av, Context context, int routeIndex,boolean mIsSpecial) {
+	public StationListAdapter(CommonActivity av, Context context, int routeIndex,boolean mIsSpecial) {
 		mContext = context;
 		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
@@ -91,7 +92,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size()+50);
+						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size());
 				secGroupView.setLayoutParams(lp);
 			}
 		});
@@ -122,7 +123,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		return mChildrenList.get(arg0).size();
+		//return mChildrenList.get(arg0).size();
+		return 1;
 	}
 
 	@Override

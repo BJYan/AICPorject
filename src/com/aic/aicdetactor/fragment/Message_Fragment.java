@@ -267,16 +267,16 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.message_task_notice_start_date:
-			CreatCalendarPopWin(arg0,inflater);
+			CreatCalendarPopWin(arg0,inflater,getView());
 			break;
 		case R.id.message_task_notice_end_date:
-			CreatCalendarPopWin(arg0,inflater);
+			CreatCalendarPopWin(arg0,inflater,getView());
 			break;
 		case R.id.message_notice_start_date:
-			CreatCalendarPopWin(arg0,inflater);
+			CreatCalendarPopWin(arg0,inflater,getView());
 			break;
 		case R.id.message_notice_end_date:
-			CreatCalendarPopWin(arg0,inflater);
+			CreatCalendarPopWin(arg0,inflater,getView());
 			break;
 		default:
 			break;
