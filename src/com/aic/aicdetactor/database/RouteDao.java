@@ -29,6 +29,7 @@ import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.data.upLoadInfo;
 import com.aic.aicdetactor.database.DBHelper.SourceTable;
 import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
 
 
 public class RouteDao {
@@ -101,9 +102,10 @@ public class RouteDao {
 				+ DBHelper.SourceTable.PLANGUID+","
 				+DBHelper.SourceTable.Checked_Count+","
 				+DBHelper.SourceTable.ItemCounts +","
-				+DBHelper.SourceTable.isSpecialLine +")values(?,?,?,?,?,?)";
+				+DBHelper.SourceTable.isSpecialLine +","
+				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,itemCounts,isSpecialLine});
+		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,itemCounts,isSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
 		
 		}
 		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入
@@ -130,7 +132,6 @@ public class RouteDao {
 						 + DBHelper.Plan_Worker_Table.Alias_Name+","
 						 + DBHelper.Plan_Worker_Table.Class_Group+","
 						 + DBHelper.Plan_Worker_Table.Number+","
-						 //+ DBHelper.Plan_Worker_Table.T_Line_Content_Guid+","
 						 + DBHelper.Plan_Worker_Table.T_Line_Guid+ ","
 						 + DBHelper.Plan_Worker_Table.T_Organization_Guid +","
 						 + DBHelper.Plan_Worker_Table.Pwd

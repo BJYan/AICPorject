@@ -127,19 +127,21 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 //		Fragment fragment = new LoginFragment();	
 //		fragmentTransaction.replace(R.id.fragment_main,fragment);		
 //		fragmentTransaction.commit();
-		mIsLogin = true;
+		//mIsLogin = true;
+		if(mIsLogin){
 		app.mWorkerName = Name;
 		app.mWorkerPwd = pwd;
 		app.gBLogIn = true;
 		app.setUserInfo(Name, pwd);
+		}
 		//跳转到巡检项页面
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		Fragment fragment = new RouteFragment();
-		Bundle args = new Bundle();
-		args.putString("name", Name);
-		args.putString("pwd", pwd);
-		fragment.setArguments(args);
+	//	Bundle args = new Bundle();
+	//	args.putString("name", Name);
+	//	args.putString("pwd", pwd);
+	//	fragment.setArguments(args);
 		fragmentTransaction.replace(R.id.fragment_main,fragment);			
 		fragmentTransaction.commit();
 	}

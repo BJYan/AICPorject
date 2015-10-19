@@ -24,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String Checked_Count = "Checked_Count";
 	 public static final String ItemCounts = "ItemCounts";
 	 public static final String isSpecialLine = "isSpecialLine";
+	 public static final String DownLoadDate = "DownLoadDate";
 	 
 	 }
 
@@ -189,7 +190,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
 				+ SourceTable.Checked_Count +" INTEGER,"
 				+ SourceTable.ItemCounts +" INTEGER,"
-				+ SourceTable.isSpecialLine +" BOOLEAN "
+				+ SourceTable.isSpecialLine +" BOOLEAN ,"
+				+ SourceTable.DownLoadDate +" varchar(24) "
 				+")";
 
 		db.execSQL(jxchecksql);
@@ -362,7 +364,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	 //版本更新时调用
 	 public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	  String sql  = "DROP TABLE IF EXISTS jxcheck";
+	  String sql  = "DROP TABLE IF EXISTS "+TABLE_SOURCE_FILE;
 	  db.execSQL(sql);
 	  
 	  sql  = "DROP TABLE IF EXISTS "+TABLE_NAME_PICTRUE;
@@ -397,6 +399,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	  
 	  sql  = "DROP TABLE IF EXISTS "+TABLE_Periods;
 	  db.execSQL(sql);
+	  
+	  
+	  
+	  onCreate(db);
 	  
 	 }
 	 
