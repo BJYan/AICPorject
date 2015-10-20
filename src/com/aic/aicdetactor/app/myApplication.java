@@ -3,23 +3,10 @@ package com.aic.aicdetactor.app;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Application;
-import android.content.ContentValues;
-import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.DownloadNormalData;
-import com.aic.aicdetactor.data.MyJSONParse;
-import com.aic.aicdetactor.data.Temperature;
-import com.aic.aicdetactor.data.TurnInfo;
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.data.WorkerInfoJson;
 
 public class myApplication extends Application
 {
@@ -39,17 +26,17 @@ public class myApplication extends Application
     //当前路线名称
     public String gRouteName = "";
     //当前站点名称
-    public String gStationName ="";    
-    //当前设备名称
-    public String gDeviceName = "";
-    //当前巡检项名称
-    public String mPartItemName = "";
+//    public String gStationName ="";    
+//    //当前设备名称
+//    public String gDeviceName = "";
+//    //当前巡检项名称
+//    public String mPartItemName = "";
     
-    private String mStrGuid = null;
+//    private String mStrGuid = null;
     //登录的工人用户名
-    public String mWorkerName = null;
+    private String mWorkerName = null;
     //登录用户名对应的密码
-    public String mWorkerPwd = null;
+    private String mWorkerPwd = null;
     //登录工人的工号
     public String mWorkerNumber = null;
     //生成第六个节点用的信息
@@ -61,10 +48,8 @@ public class myApplication extends Application
     public List<Map<String,String>> mFileList = null;	
     public DownloadNormalData mNormalLineJsonData=null;
 	private List<String> mTMPRouteFileList = null;
-	private MyJSONParse json = null;
-	private RouteDao dao = null;
-	
-	public boolean gBLogIn = false;
+	public List<WorkerInfoJson> gWorkerInfoJsonList=null;
+	private boolean gBLogIn = false;
 
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
@@ -73,30 +58,9 @@ public class myApplication extends Application
 	 * 生成需要保存的JSON文件名字
 	 * @return
 	 */
-	public String genXJFileName(){
-		return Environment.getExternalStorageDirectory()+"/"+mStrGuid+mWorkerNumber +".txt";
-	}
-	/**
-	 * 根据传入的用户名及密码查询对应的巡检原文件及工人工号信息
-	 * @param name
-	 * @param pwsd
-	 */
-    public void setUserInfo(String name ,String pwsd){
-    	mWorkerName = name;
-    	mWorkerPwd = pwsd;
-    	dao = RouteDao.getInstance(this.getApplicationContext());
-    	ContentValues cv = new ContentValues();
-    	mFileList = dao.queryLogIn(mWorkerName, mWorkerPwd,cv);
-		/*for (int i = 0; i < mFileList.size(); i++) {
-			insertNewRouteInfo(SystemUtil.createGUID(), mFileList.get(i), this,false);
-			MLog.Logd(TAG,"setUserInfo() i=" + i + ","+ mFileList.get(i));
-		}*/
-		List<String> WorkerNumber = dao.queryWorkerNumber(mWorkerName, mWorkerPwd);
-		for(int n =0;n<WorkerNumber.size();n++){
-			mWorkerNumber = WorkerNumber.get(n);
-			MLog.Logd(TAG,"setUserInfo() n=" + n + ","+ mWorkerNumber);
-		}
-    }
+//	public String genXJFileName(){
+//		return Environment.getExternalStorageDirectory()+"/"+mStrGuid+mWorkerNumber +".txt";
+//	}
     
     /**
      * 设置当前的巡检路线的序号，指的是ListView里的序号，从0开始
@@ -115,29 +79,12 @@ public class myApplication extends Application
     }
     
     /**
-     * 设置当前原JSON文件对应的GUID信息到全局变量
-     * @param strGuid
-     */
-    public void setCurrentRoutePlanGuid(String strGuid){
-    	this.mStrGuid = strGuid;
-    }
-    
-    /**
-     * 获取当前的巡检路线原JSON文件对应的GUID
-     * @return
-     */
-    public String getCurrentRoutePlanGuid(){
-    	return this.mStrGuid;
-    }
-    
-    /**
      * 整个应用启动的第一个接口
      */
     @Override
     public void onCreate()
     {
         super.onCreate(); 
-        json = MyJSONParse.getInstance();
     }
     
     /**
@@ -145,111 +92,28 @@ public class myApplication extends Application
      * @return
      */
     public int InitData(){
-    	//return json.InitData(this.getApplicationContext(),mFileList);
     	return 0;
     }
     
-    /**
-     * 插入新的JSON文件数据到元数据库表
-     * @param fileName
-     * @param path
-     * @param context
-     * @return
-     */
-    public int insertNewRouteInfo(String fileName,String path,Context context,boolean bTempRoute){
-    	json.insertNewRouteInfo(fileName, path,context,bTempRoute);
-    	return 1;
+    public void setLogInStatus(boolean loginSuccess){
+    	this.gBLogIn=loginSuccess;
     }
     
-    public int insertUpLoadInfo(Context context){
-    	return json.insertUpLoadInfo(context);
-    }
-    /**
-     * 获取指定序号的巡检路线对应的站点集合
-     * @param routeIndex
-     * @return
-     * @throws JSONException
-     */
-    public List<Object> getStationList(int routeIndex) throws JSONException {
-     return	json.getStationList(routeIndex);
-    }
-
-    public String getStationItemName(Object object) throws JSONException {
-    	return json.getStationItemName(object);
-    }
-    public List<Object> getDeviceList(Object object) throws JSONException {
-    	return json.getDeviceList(object);
-    }
-    public List<Object> getDeviceItemList(int stationIndex) throws JSONException {
-    	return json.getDeviceItem(stationIndex);
-    }
-    public ContentValues getNeedCheckDeviceItemIndex(int stationIndex){
-    	return json.getNeedCheckDeviceItemIndex(stationIndex);
-    }
-    public CheckStatus getNodeCount(Object Object,int nodeType,int RouteIndex) throws JSONException{
-    	return json.getNodeCount(Object,nodeType,RouteIndex);
-    }
-
-    public List<Object> getPartItemDataList(int stationIndex,int deviceIndex) throws JSONException {
-    	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
-    	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
-     return 	json.getPartList(object);
+    public boolean isLogin(){
+    	return gBLogIn;
     }
     
-    public Object getPartItemObject(int stationIndex,int deviceIndex) throws JSONException {
-    	List<Object> deviceItemList = json.getDeviceItem(stationIndex);
-    	for(int i =0;i<deviceItemList.size();i++){
-    		MLog.Logd("testkey",deviceItemList.get(i).toString());
-    	}
-    	JSONObject object =  (JSONObject)deviceItemList.get(deviceIndex);
-     return 	object;
+    public void setLoginWorkerName(String name){
+    	mWorkerName=name;
     }
-    
-   
-    public String getDeviceItemName(Object object) {
-    	return json.getDeviceItemName(object);
+    public String getLoginWorkerName(){
+    	return mWorkerName;
     }
-    public String getPartItemName(Object object) {
-    	return json.getPartItemName(object);
+    public void setLoginWorkerPwd(String pwd){
+    	mWorkerPwd=pwd;
     }
-    public String getPartItemCheckUnitName(Object object,int index) {
-    	return json.getPartItemCheckUnitName(object,index);
-    }
-    public JSONObject setPartItem_ItemDef(JSONObject partItemDataJson,int deviceIndex,String Value){
-    	return json.setPartItem_ItemDef(partItemDataJson,deviceIndex,Value);
-    }
-    public int getStationItemIndexByID(int routeIndex,String strIdCode) throws JSONException {
-    	return json.getStationItemIndexByID(routeIndex,strIdCode);
-    }
-    public String getPartItemSubStr(String partItemDataStr,int index){
-    	return json.getPartItemSubStr(partItemDataStr,index);
-    }
-  
-    public String getRoutName(int routeIndex) throws JSONException{
-    	return json.getRoutName(routeIndex);
-    }
-
-    public Temperature getPartItemTemperatrue(Object object){
-    	return json.getPartItemTemperatrue(object);
-    }   
-   
-    public void SaveData(int RouteIndex,String fileName){
-    	 json.SaveData(RouteIndex,fileName);
-    }
-//    public void setAuxiliaryNode(int RouteIndex,Object object){
-//    	 json.setAuxiliaryNode(RouteIndex,object);
-//    }
-    
-    public List<TurnInfo>getRouteTurnInfoList() throws JSONException{
-    	return json.getTurnInfoItem(mRouteIndex);
-    }
-    /**
-     * 
-     * @param object:PartItem
-     * @return
-     */
-    public List<Object>getPartItem(Object object,int item_def_index){
-    	return json.getPartItem(object,item_def_index);
+    public String getLoginWorkerPwd(){
+    	return mWorkerPwd;
     }
 
 }

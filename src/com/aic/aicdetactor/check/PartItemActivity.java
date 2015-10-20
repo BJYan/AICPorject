@@ -1,3 +1,4 @@
+
 package com.aic.aicdetactor.check;
 
 import java.util.HashMap;
@@ -61,7 +62,6 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.data.AuxiliaryInfoNode;
 import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.data.MyJSONParse;
 import com.aic.aicdetactor.data.PartItemItem;
 import com.aic.aicdetactor.data.T_Device_Item;
 import com.aic.aicdetactor.fragment.Observer_fragment;
@@ -179,10 +179,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		RouteNameTextView.setText(app.gRouteName);
          //站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
-		stationTextView.setText(app.gStationName);
+		//stationTextView.setText(app.gStationName);
 		//设备名称
 		TextView deviceTextView = (TextView) findViewById(R.id.deviceName);		
-		deviceTextView.setText(app.gDeviceName);
+		//deviceTextView.setText(app.gDeviceName);
 
 		//返回图标
 		ImageView imageView = (ImageView)findViewById(R.id.backImage);
@@ -247,7 +247,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					Bundle bundle = new Bundle();  	
 					bundle.putParcelable("value", a);
 					bundle.putString(KEY.KEY_PARTITEMDATA, mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA)); 
-					bundle.putInt(KEY.KEY_ZHOU_COUNTS, Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_RELAX_COUNT)));  
+					//bundle.putInt(KEY.KEY_ZHOU_COUNTS, Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_RELAX_COUNT)));  
 					fragment.setArguments(bundle);  
 					if(bFirstInit){
 					fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -350,32 +350,32 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		}else{
 			MLog.Logd(TAG,"getPatItemType() mPartItemList IS NULL");
 		}
-		 mCheckUnit_DataType=Integer.parseInt(app
-		.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
-		 
-		return  Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_TIPS_FLAG));
-		
+//		 mCheckUnit_DataType=Integer.parseInt(app
+//		.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
+//		 
+//		return  Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_TIPS_FLAG));
+		return 0;
 	}
 	
 	//初始化数据PartItemData,并获取第一个PartItemData的测量类型
    void InitPartItemData(){
-	   try {
-		   MLog.Logd(TAG, "InitPartItemData() start mStationIndex =" +mStationIndex +",mDeviceIndex ="+mDeviceIndex );
-		   mPartItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
-		  
-		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
-		   
-		   mCurrentDeviceItem = deviceItemList.get(mDeviceIndex);
-		   MLog.Logd(TAG, "mCurrentDeviceItem IS " + mCurrentDeviceItem.toString());
-		   
-		   mPartItemList = app.getPartItem(mPartItemObject,-1);
-		   MLog.Logd(TAG, "InitPartItemData() mPartItemList size ="+mPartItemList.size());
-		   mPartItemCounts = mPartItemList.size();
-		   getPatItemType();// Integer.valueOf(app.getPartItemCheckUnitName(mPartItemList.get(0),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//	   try {
+//		   MLog.Logd(TAG, "InitPartItemData() start mStationIndex =" +mStationIndex +",mDeviceIndex ="+mDeviceIndex );
+//		   mPartItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
+//		  
+//		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
+//		   
+//		   mCurrentDeviceItem = deviceItemList.get(mDeviceIndex);
+//		   MLog.Logd(TAG, "mCurrentDeviceItem IS " + mCurrentDeviceItem.toString());
+//		   
+//		   mPartItemList = app.getPartItem(mPartItemObject,-1);
+//		   MLog.Logd(TAG, "InitPartItemData() mPartItemList size ="+mPartItemList.size());
+//		   mPartItemCounts = mPartItemList.size();
+//		   getPatItemType();// Integer.valueOf(app.getPartItemCheckUnitName(mPartItemList.get(0),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
+//		
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
    }   
    
    private final int MSG_INIT_DATA =0;
@@ -430,25 +430,25 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
    void addAPartItemData(int type,int zhouCounts,Object msgobject){
 	   switch(type){
 	   case RF_TYPE:
-	   {
-		   JSONObject object = new JSONObject();
-		   String value = app.gDeviceName+ff
-				   +((JSONObject)mCurrentDeviceItem).optString(T_Device_Item.Device_Array_Item_Const.Key_Code)+ff
-				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-				   +"设备"+ff
-				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-				   +"2"+ff+"01"+ff+ff+ff;
-		   try {
-			object.put(KEY.KEY_PARTITEMDATA, value);
-			object.put(KEY.KEY_Fast_Record_Item_Name, "111111111");
-			mNewArrayJSON.put(object);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 //  mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
-	   }
+//	   {
+//		   JSONObject object = new JSONObject();
+//		   String value = app.gDeviceName+ff
+//				   +((JSONObject)mCurrentDeviceItem).optString(T_Device_Item.Device_Array_Item_Const.Key_Code)+ff
+//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
+//				   +"设备"+ff
+//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
+//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
+//				   +"2"+ff+"01"+ff+ff+ff;
+//		   try {
+//			object.put(KEY.KEY_PARTITEMDATA, value);
+//			object.put(KEY.KEY_Fast_Record_Item_Name, "111111111");
+//			mNewArrayJSON.put(object);
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		 //  mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
+//	   }
 		   break;
 	   case CAMERA_TYPE:
 	   {
@@ -564,7 +564,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			e.printStackTrace();
 		}
 		saveUpLoadData();
-		app.insertUpLoadInfo(this.getApplicationContext());
+	//	app.insertUpLoadInfo(this.getApplicationContext());
 		finish();
 	}
 	/**
@@ -841,8 +841,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			if(mButton_Measurement.getText().equals(getString(R.string.textrecord))){
 				Intent intent = new Intent();
 				JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
-				String value = app.getPartItemCheckUnitName(json, CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME);
-				intent.putExtra(CommonDef.check_unit_info.NAME, value);
+//				String value = app.getPartItemCheckUnitName(json, CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME);
+//				intent.putExtra(CommonDef.check_unit_info.NAME, value);
 				intent.setClass(PartItemActivity.this, NotepadActivity.class);
 				startActivityForResult(intent,PartItem_Contact.PARTITEM_NOTEPAD_RESULT);
 			}else{
@@ -951,7 +951,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	 */
 	void saveUpLoadData(){
 		String fileName = "/sdcard/0001.txt";
-		app.SaveData(mRouteIndex, fileName);
+	//	app.SaveData(mRouteIndex, fileName);
 	}
 	PopupWindow pw_Left = null;
 	void initPopupWindowFliter(View parent) {

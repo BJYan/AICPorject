@@ -31,7 +31,6 @@ import com.aic.aicdetactor.fragment.SearchFragment;
 public class MainActivity extends CommonActivity implements BlueToothListener,ClickListenerInterface,
 	OnClickListener{
 	String TAG = "MainActivity";
-	private boolean mIsLogin = false;
 	private RadioGroup mGroup = null; 
 	ImageView settingBtn;
 	TextView titleBarName;
@@ -44,9 +43,6 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 		app = (myApplication) getApplication();
 	 	
 		Intent intent = getIntent();
-		mIsLogin=intent.getExtras().getBoolean("isLog");
-		String Name=intent.getExtras().getString("name");
-		String pwd=intent.getExtras().getString("pwd");
 
 		mGroup = (RadioGroup)findViewById(R.id.group);
 		mGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -66,7 +62,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 					break;
 				case R.id.btnB://巡检
 				{
-					if(mIsLogin){
+					if(app.isLogin()){
 					//跳转到巡检项页面
 					FragmentManager fragmentManager = getFragmentManager();
 					FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -91,7 +87,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 				}
 					break;
 				case R.id.btnD://通知
-					{	if(mIsLogin){	
+					{	if(app.isLogin()){	
 						FragmentManager fragmentManager = getFragmentManager();
 						FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 						Fragment fragment = new Message_Fragment();
@@ -119,70 +115,17 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 			}
 			
 		});
-		initFragment(Name,pwd);
+		initFragment();
 	}
-	void initFragment(String Name,String pwd){		
-//		FragmentManager fragmentManager = getFragmentManager();
-//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//		Fragment fragment = new LoginFragment();	
-//		fragmentTransaction.replace(R.id.fragment_main,fragment);		
-//		fragmentTransaction.commit();
-		//mIsLogin = true;
-		if(mIsLogin){
-		app.mWorkerName = Name;
-		app.mWorkerPwd = pwd;
-		app.gBLogIn = true;
-		app.setUserInfo(Name, pwd);
-		}
+	void initFragment(){		
 		//跳转到巡检项页面
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		Fragment fragment = new RouteFragment();
-	//	Bundle args = new Bundle();
-	//	args.putString("name", Name);
-	//	args.putString("pwd", pwd);
-	//	fragment.setArguments(args);
 		fragmentTransaction.replace(R.id.fragment_main,fragment);			
 		fragmentTransaction.commit();
 	}
 	
-	
-
-//	@Override
-//	public void onClick(View arg0) {
-//		// TODO Auto-generated method stub
-//		switch(arg0.getId()){
-//			case R.id.login:
-//			
-//				break;
-//		}
-//	}
-	
-//	@Override
-//	public void Click(boolean logIn,String Name,String pwd,String error) {
-//		// TODO Auto-generated method stub
-//		if(logIn){
-//			mIsLogin = true;
-//			app.mWorkerName = Name;
-//			app.mWorkerPwd = pwd;
-//			app.gBLogIn = true;
-//			app.setUserInfo(Name, pwd);
-//			//跳转到巡检项页面
-//			FragmentManager fragmentManager = getFragmentManager();
-//			FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//			Fragment fragment = new RouteFragment();
-//			Bundle args = new Bundle();
-//			args.putString("name", Name);
-//			args.putString("pwd", pwd);
-//			fragment.setArguments(args);
-//			fragmentTransaction.replace(R.id.fragment_main,fragment);			
-//			fragmentTransaction.commit();
-//			
-//		}else{
-//			Toast.makeText(this.getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();	
-////			Toast.makeText(this.getApplicationContext(), "用户名或密码有误，请再次确认重试！", Toast.LENGTH_LONG).show();	
-//		}
-//	}
 	@Override
 	public void Click(boolean logIn) {
 		// TODO Auto-generated method stub
@@ -228,7 +171,7 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 			// TODO Auto-generated method stub
 			switch (arg0.getItemId()) {  
     	    case R.id.action_modify_pwd: {
-    	    	CustomDialog dialog=new CustomDialog(MainActivity.this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
+    	    	CustomDialog dialog=new CustomDialog(MainActivity.this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
     	        dialog.show();
     	        }
     	      break;  

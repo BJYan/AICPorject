@@ -116,7 +116,7 @@ public class CommonActivity extends Activity{
 	    	finish();
 	    	break;
 	    case R.id.action_modify_pwd: {
-	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.mWorkerName);
+	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
 	        dialog.show();
 	        }
 	      break;  

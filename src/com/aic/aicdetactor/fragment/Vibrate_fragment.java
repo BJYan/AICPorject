@@ -4,18 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
-
-
-
-
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -29,34 +17,20 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-
-
-
-
-
-
-
-
-
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
-import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.KEY;

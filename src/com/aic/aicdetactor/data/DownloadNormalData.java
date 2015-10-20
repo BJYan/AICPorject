@@ -24,7 +24,7 @@ public  class DownloadNormalData
      * @param isChecked
      * @return
      */
-	public int getItemCounts(int type, int index, boolean isChecked) {
+	public int getItemCounts(int type, int index, boolean isChecked,boolean bIncludeSpecial) {
 		int count = 0;
 		// for(StationInfoJson info:StationInfo){
 		for (int i = 0; i < StationInfo.size(); i++) {
@@ -33,7 +33,6 @@ public  class DownloadNormalData
 				List<DeviceItemJson> deviceList = info.DeviceItem;
 				for (int m = 0; m < deviceList.size(); m++) {
 					// for(DeviceItemJson deviceItem:deviceList){
-
 					DeviceItemJson deviceItem = deviceList.get(m);
 					if (isChecked) {
 						if (deviceItem.Is_RFID_Checked > 0) {

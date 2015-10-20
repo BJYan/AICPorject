@@ -62,50 +62,50 @@ public class T_Route extends Route {
 				e.printStackTrace();
 			}
      }
-	@Override
-     public void parseBaseInfo() {
-		if (mWorkerArrary != null) {
-			try {
-
-				mWorkerList = MyJSONParse.parseWorkerNode(mWorkerArrary);
-				//Log.e("luotest", "parseBaseInfo() mWorkerList is" + mWorkerList.toString());
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		 if(mLineObject != null){
-		 try {
-			 mLineInfo = MyJSONParse.parseRouteNameNode(mLineObject);
-			 Name = mLineInfo.Name;
-			// mLineInfo.T_Content_Guid;
-			 Guid=  mLineInfo.T_Line_Guid;
-		 } catch (JSONException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
-		 }
-		if (mTurnArrary != null) {
-			try {
-				mTurnList = MyJSONParse.parseTurnNode(mTurnArrary);
-				//Log.e("luotest", "parseBaseInfo() mTurnList is" + mTurnList.toString());
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if(mOrganizationObject != null){
-			mOrganizationInfo = new OrganizationInfo();
-			mOrganizationInfo.CorporationName = mOrganizationObject.optString(T_Organization.CorporationName);
-			mOrganizationInfo.GroupName= mOrganizationObject.optString(T_Organization.GroupName);
-			mOrganizationInfo.WorkShopName = mOrganizationObject.optString(T_Organization.WorkShopName);
-			
-			MLog.Logd(TAG,"mOrganizationInfo.CorporationName is "+mOrganizationInfo.CorporationName
-					+ " mOrganizationInfo.GroupName is "+mOrganizationInfo.GroupName
-					+" mOrganizationInfo.WorkShopName is "+mOrganizationInfo.WorkShopName);
-		}
-	}
+//	@Override
+//     public void parseBaseInfo() {
+//		if (mWorkerArrary != null) {
+//			try {
+//
+//				mWorkerList = MyJSONParse.parseWorkerNode(mWorkerArrary);
+//				//Log.e("luotest", "parseBaseInfo() mWorkerList is" + mWorkerList.toString());
+//			} catch (JSONException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		 if(mLineObject != null){
+//		 try {
+//			 mLineInfo = MyJSONParse.parseRouteNameNode(mLineObject);
+//			 Name = mLineInfo.Name;
+//			// mLineInfo.T_Content_Guid;
+//			 Guid=  mLineInfo.T_Line_Guid;
+//		 } catch (JSONException e) {
+//		 // TODO Auto-generated catch block
+//		 e.printStackTrace();
+//		 }
+//		 }
+//		if (mTurnArrary != null) {
+//			try {
+//				mTurnList = MyJSONParse.parseTurnNode(mTurnArrary);
+//				//Log.e("luotest", "parseBaseInfo() mTurnList is" + mTurnList.toString());
+//			} catch (JSONException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		if(mOrganizationObject != null){
+//			mOrganizationInfo = new OrganizationInfo();
+//			mOrganizationInfo.CorporationName = mOrganizationObject.optString(T_Organization.CorporationName);
+//			mOrganizationInfo.GroupName= mOrganizationObject.optString(T_Organization.GroupName);
+//			mOrganizationInfo.WorkShopName = mOrganizationObject.optString(T_Organization.WorkShopName);
+//			
+//			MLog.Logd(TAG,"mOrganizationInfo.CorporationName is "+mOrganizationInfo.CorporationName
+//					+ " mOrganizationInfo.GroupName is "+mOrganizationInfo.GroupName
+//					+" mOrganizationInfo.WorkShopName is "+mOrganizationInfo.WorkShopName);
+//		}
+//	}
 	
 	private final String JSON_GlobalInfo="GlobalInfo";
 	private final String JSON_StationInfo="StationInfo";

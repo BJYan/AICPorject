@@ -100,9 +100,6 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 		case R.id.button1:
 			if(mNoLogModeCheckBox.isChecked()){
 				Intent intent = new Intent();
-				intent.putExtra("isLog", false);
-				intent.putExtra("name", "");
-				intent.putExtra("pwd", "");
 				intent.setClass(getApplicationContext(),
 						MainActivity.class);
 				startActivity(intent);
@@ -122,14 +119,15 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
-		app.mFileList = dao.queryLogIn(mLogName, mLogPwd, cv);
+		app.mFileList = dao.queryLineInfoByWorker(mLogName, mLogPwd, cv);
 		error = cv.getAsString("error");
-		Log.d(TAG, " Login() error = " + cv.get("error"));
+		Log.i(TAG, " Login() error = " + error);
 
 		if (app.mFileList.size() > 0) {
-			ContentValues cverr = new ContentValues();
-			// dao.ModifyWorkerPwd(mLogName, mLogPwd, "11111111",cverr);
-			// Log.d(TAG," Login() modify error = "+ cverr.get("error"));
+			app.setLoginWorkerName(mLogName);
+			app.setLoginWorkerPwd(mLogPwd);
+			app.setLogInStatus(true);
+			app.gWorkerInfoJsonList=dao.getWorkerInfoListByNameAndPwd(mLogName,mLogPwd);
 			return true;
 		}
 		return false;
@@ -181,15 +179,7 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 				if(mSaveUInfoCheckBox.isChecked()){
 				saveUInfo();
 				}
-				app.mWorkerName = mLogName;
-				app.mWorkerPwd = mLogPwd;
-				app.gBLogIn = true;
-				app.setUserInfo(mLogName, mLogPwd);
-				
 				Intent intent = new Intent();
-				intent.putExtra("isLog", true);
-				intent.putExtra("name", mLogName);
-				intent.putExtra("pwd", mLogPwd);
 				intent.setClass(getApplicationContext(),
 						MainActivity.class);
 				startActivity(intent);

@@ -232,7 +232,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 							Map<String, String> map = new HashMap<String, String>();
 							map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
 							map.put(CommonDef.station_info.DEADLINE, "2015");
-							map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false));
+							map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
 							mDataList.add(map);
 						}else{
 							app.mNormalLineJsonData.StationInfo.remove(i);
@@ -241,7 +241,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 						Map<String, String> map = new HashMap<String, String>();
 						map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
 						map.put(CommonDef.station_info.DEADLINE, "2015");
-						map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false));
+						map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
 						mDataList.add(map);
 					}
 					

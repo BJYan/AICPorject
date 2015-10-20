@@ -187,9 +187,7 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
 	 * 默认查询未读的消息
 	 */
 	void initData(int type){
-		if(app.mWorkerName == null
-				&&app.mWorkerPwd ==null
-				){
+		if(!app.isLogin()){
 			Toast.makeText(this.getActivity(), "您还没登录", Toast.LENGTH_SHORT).show();
 			return;
 			
@@ -197,8 +195,8 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
 		TemporaryRouteDao info = new TemporaryRouteDao(this.getActivity().getApplicationContext());
 		
 		 List<TemporaryDataBean>  list=		info.queryTemporaryInfoList(type,
-				app.mWorkerName,
-				app.mWorkerPwd);
+				app.getLoginWorkerName(),
+				app.getLoginWorkerPwd());
 		 
 		 
 

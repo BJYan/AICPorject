@@ -37,8 +37,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.aic.aicdetactor.Config.Config;
-import com.aic.aicdetactor.data.AICData;
 import com.aic.aicdetactor.data.DownloadNormalData;
+import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -147,8 +147,9 @@ public class Event {
 								 //insert line information to correspondence databases
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 								 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-										 Normaldata.getItemCounts(0,0,false),
-										 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization,isSpecialLine);
+										 Normaldata.getItemCounts(0,0,false,true),
+										 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+										 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
 							}
 							else if(ci.Name.equals("DeliverTempPlan"))
 							{
@@ -157,7 +158,7 @@ public class Event {
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
-								 AICData.DownloadTemporaryData tempdata=JSON.parseObject(planjson,AICData.DownloadTemporaryData.class);
+								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
 							}
 							else
 							{
@@ -204,8 +205,9 @@ public class Event {
 			 //insert line information to correspondence databases
 			 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 			 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-					 Normaldata.getItemCounts(0,0,false),
-					 Normaldata.getItemCounts(0,0,true),Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Organization,isSpecialLine);
+					 Normaldata.getItemCounts(0,0,false,true),
+					 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+					 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
 			 
 			 
 			 Message msg = new Message();

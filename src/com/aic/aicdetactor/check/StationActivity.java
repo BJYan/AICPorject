@@ -157,37 +157,6 @@ private boolean mSpecial = false;
 			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,mSpecial);
 			mListView.setAdapter(mListViewAdapter);
 
-			if (isTestInterface) {
-				// //test idinfo ,test pass
-				int myid = 100;
-				String teststr = "AIC8E791D89B";
-				teststr = "AIC8C78BD09B";
-				try {
-					myid = app
-							.getStationItemIndexByID(0,teststr);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				MLog.Logd(TAG, " idtest myid is " + myid);
-				
-				// test getpartitemsub,TEST pass
-				teststr = "0102030405*B302皮带机电机*电机震动*00000005*mm/s*1*40E33333*40900000*3D23D70A*";
-				//"0102*F#测点*转速*00000007*r/min*129*461C4000*460CA000*459C4000*"
-
-				for (int n = 0; n < 10; n++) {
-
-					String str = app
-							.getPartItemSubStr(teststr, n);
-					MLog.Logd(TAG,"teststr is "	+ str);
-				}
-				float f1 = SystemUtil.getTemperature("42700000");
-				MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
-				MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42b40000"));
-				//MLog.Logd(TAG,"temperature is "	+ SystemUtil.getTemperature("42700000"));
-				///
-				
-			}
 		}
 	
 	@Override

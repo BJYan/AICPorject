@@ -3,31 +3,13 @@ package com.aic.aicdetactor.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.MyJSONParse;
-
-
-
-
-
-
-
-
-
-import com.aic.aicdetactor.data.TurnInfo;
-import com.aic.aicdetactor.data.WorkerInfo;
-import com.aic.aicdetactor.database.DBHelper.SourceTable;
-import com.aic.aicdetactor.util.SystemUtil;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.aic.aicdetactor.util.SystemUtil;
 
 public class TemporaryRouteDao {
 	DBHelper helper = null;

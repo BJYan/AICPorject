@@ -25,7 +25,7 @@ import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
-import com.aic.aicdetactor.check.DeviceItemActivity;
+import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.dialog.CommonDialog;
@@ -130,7 +130,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
 						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
 						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
-						intent.setClass(mActivity, DeviceItemActivity.class);
+						intent.setClass(mActivity, PartItemActivity.class);
 						mActivity.startActivity(intent); 
 					}
 					
@@ -219,7 +219,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
 					map.put(CommonDef.device_info.DEADLINE, "2016");
 				
-					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
+					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false,true));
 					mDataList.add(map);
 					InitChidrenData(mStationIndex, i);
 						}
@@ -230,7 +230,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
 					map.put(CommonDef.device_info.DEADLINE, "2016");
 				
-					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false));
+					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false,true));
 					mDataList.add(map);
 					InitChidrenData(mStationIndex, i);
 						}

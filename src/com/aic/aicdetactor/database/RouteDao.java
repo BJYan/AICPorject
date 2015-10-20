@@ -9,19 +9,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.OrganizationType;
-import com.aic.aicdetactor.data.AICData;
-import com.aic.aicdetactor.data.MyJSONParse;
-import com.aic.aicdetactor.data.OrganizationInfo;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
+import com.aic.aicdetactor.data.PeriodInfoJson;
+import com.aic.aicdetactor.data.PeriodJson;
 import com.aic.aicdetactor.data.Route;
 import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.T_Route;
 import com.aic.aicdetactor.data.T_Temporary_Line;
-import com.aic.aicdetactor.data.TmporaryRouteParse;
 import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfo;
@@ -38,6 +34,7 @@ public class RouteDao {
 	private String RouteTableName = DBHelper.TABLE_SOURCE_FILE;
 	private String WorkerTableName = DBHelper.TABLE_WORKERS;
 	private String TurnTableName = DBHelper.TABLE_TURN;
+	private String PeriodTableName = DBHelper.TABLE_Periods;
 	private String TempRouteTableName = DBHelper.TABLE_TEMPORARY;
 	private SQLiteDatabase mDB = null;
 
@@ -79,12 +76,14 @@ public class RouteDao {
 	public void insertNormalLineInfo(String lineName,
 			String Path,
 			String lineGuid,
-			int itemCounts,
+			int normalitemCounts,
+			int specialitemCounts,
 			int checkedItemCounts,
 			List<WorkerInfoJson>WorkerList,
 			List<TurnInfoJson>TurnList,
+			PeriodInfoJson peroid,			
 			OrganizationInfoJson OrganizationInfo,
-			boolean isSpecialLine
+			boolean hasSpecialLine
 			){
 		Cursor cursor = null;		
 		//T_Route info = (T_Route) infos;
@@ -101,11 +100,12 @@ public class RouteDao {
 				+ DBHelper.SourceTable.PLANNAME+","
 				+ DBHelper.SourceTable.PLANGUID+","
 				+DBHelper.SourceTable.Checked_Count+","
-				+DBHelper.SourceTable.ItemCounts +","
-				+DBHelper.SourceTable.isSpecialLine +","
-				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?)";
+				+DBHelper.SourceTable.NormalItemCounts +","
+				+DBHelper.SourceTable.SPecialItemCounts +","
+				+DBHelper.SourceTable.HasSpecialLine +","
+				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,itemCounts,isSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
+		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,normalitemCounts,specialitemCounts,hasSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
 		
 		}
 		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入
@@ -186,9 +186,34 @@ public class RouteDao {
 				}
 			if(cursor != null){cursor.close();}
 		}
-		
-		
+		//-----------------------------period start-------------------------------------------
+		PeriodJson peroid2	 = null;
+		for(int i = 0;i<peroid.Periods.size();i++){
+			peroid2 = (PeriodJson) peroid.Periods.get(i);
 			
+			 sql = "insert into "+PeriodTableName
+					 +"(" + DBHelper.Periods_Table.Is_Omission_Check +","				 
+					 + DBHelper.Periods_Table.Is_Permission_Timeout+","
+					 + DBHelper.Periods_Table.Span+","
+					 + DBHelper.Periods_Table.Start_Point+","
+					 + DBHelper.Periods_Table.T_Turn_Number_Array+","						
+					 + DBHelper.Periods_Table.Task_Mode + ","
+					  + DBHelper.Periods_Table.Line_Guid
+					 +")values(?,?,?,?,?,?,?)";
+					
+			mDB.execSQL(sql, new Object[] {
+					peroid2.Is_Omission_Check,
+					peroid2.Is_Permission_Timeout,
+					peroid2.Span,
+					peroid2.Start_Point,	
+					peroid2.T_Turn_Number_Array,		
+					peroid2.Task_Mode,
+					lineGuid
+					});
+			}
+		//-----------------------------period end-------------------------------------------
+			
+		//-----------------------------Organization_CorporationName Start-------------------------------------------
 		{
 			MLog.Logd(TAG," info.mOrganizationInfo.CorporationName = "+OrganizationInfo.CorporationName);
 			////insert organization	
@@ -204,12 +229,13 @@ public class RouteDao {
 			+ DBHelper.Organization_CorporationName_Table.Name 
 			+")values(?)";					
 			
-			mDB.execSQL(sql, new Object[] {
-					OrganizationInfo.CorporationName
-					});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.CorporationName});
 			}
 			if(cursor != null){cursor.close();}
+			//-----------------------------Organization_CorporationName End-------------------------------------------
 			
+			
+			//-----------------------------Organization_GroupName Start-------------------------------------------
 			//GroupName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_GroupName,
 					null,
@@ -223,12 +249,13 @@ public class RouteDao {
 			+ DBHelper.Organization_GroupName_Table.Name 
 			+")values(?)";					
 			
-			mDB.execSQL(sql, new Object[] {
-					OrganizationInfo.GroupName
-					});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.GroupName});
 			}
 			if(cursor != null){cursor.close();}
+			//-----------------------------Organization_GroupName End-------------------------------------------
 			
+			
+			//-----------------------------Organization_WorkShopName Start-------------------------------------------
 			//WorkShopName
 			cursor = mDB.query(DBHelper.TABLE_T_Organization_WorkShopName,
 					null,
@@ -242,12 +269,11 @@ public class RouteDao {
 			+ DBHelper.Organization_WorkShopName_Table.Name 
 			+")values(?)";					
 			
-			mDB.execSQL(sql, new Object[] {
-					OrganizationInfo.WorkShopName
-					});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.WorkShopName});
 			}
 			if(cursor != null){cursor.close();}
 		}
+		//-----------------------------Organization_WorkShopName End-------------------------------------------
 	}
 	private void insertNormalRouteInfo(Route infos){
 		Cursor cursor = null;		
@@ -474,32 +500,6 @@ public class RouteDao {
 	}
 	
 	/**
-	 * 根据JSON全路径，解析插入数据库
-	 * @param filePath:JSON的全路径文件
-	 * @return
-	 */
-	public int insertNewRouteInfo(String filePath,boolean bTempRoute) {	
-	
-		Route info = MyJSONParse.getPlanInfo(filePath,bTempRoute);
-		info.parseBaseInfo();
-		info.setPath(filePath);
-		if(!bTempRoute){
-		insertNormalRouteInfo(info);
-		}else{
-			TmporaryRouteParse rp=(TmporaryRouteParse) info;
-			List<T_Temporary_Line>list =rp.getList();
-			if(list!=null){
-				for(int i=0;i<list.size();i++){
-				insertTempRouteInfo(list.get(i));
-				}
-			}
-			
-		}
-		
-		return 1;
-		
-	}	
-	/**
 	 * 把巡检结果插入数据表中
 	 * @param info
 	 */
@@ -569,28 +569,7 @@ public class RouteDao {
 		String error = "";
 		boolean bok = true;
 		//first 查找 name  ismodify =1 and newpwd 
-		Cursor cursor = mDB.query(DBHelper.TABLE_WORKERS,
-				null,
-				DBHelper.Plan_Worker_Table.Name  + "=? and " +DBHelper.Plan_Worker_Table.newPwd +"=? and "+DBHelper.Plan_Worker_Table.IsModifyPwd +"=?" , 
-				new String[] {name,pwd,"1"}, null, null,
-				null);
-		if(cursor== null || cursor.getCount()>0){ 
-			String where  =  DBHelper.Plan_Worker_Table.Name+"=? and "+DBHelper.Plan_Worker_Table.newPwd +"=?";
-			String[] whereValue = {name,pwd};
-			
-			ContentValues cv = new ContentValues();			
-			cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
-			
-			mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
-			cursor.close();
-			cursor= null;
-		}else{
-			if(cursor !=null){
-				cursor.close();
-				cursor = null;
-			}
-			
-			cursor = mDB.query(DBHelper.TABLE_WORKERS,
+		Cursor cursor =  mDB.query(DBHelper.TABLE_WORKERS,
 					null,
 					DBHelper.Plan_Worker_Table.Name  + "=? and " +DBHelper.Plan_Worker_Table.Pwd +"=?  " , 
 					new String[] {name,pwd}, null, null,
@@ -600,8 +579,9 @@ public class RouteDao {
 				String[] whereValue = {name,pwd};
 				
 				ContentValues cv = new ContentValues();			
-				cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
+				cv.put(DBHelper.Plan_Worker_Table.Pwd, newPwd);
 				cv.put(DBHelper.Plan_Worker_Table.IsModifyPwd, true);
+				cv.put(DBHelper.Plan_Worker_Table.ModifyDate, SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 				mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
 				cursor.close();
 				cursor= null;
@@ -610,19 +590,8 @@ public class RouteDao {
 					bok = false;
 				}
 			if(cursor !=null)cursor.close();
-		}
 		
 		return bok;
-//		{
-//		String where  =  DBHelper.Plan_Worker_Table.Name+"=? and "+DBHelper.Plan_Worker_Table.Pwd +"=?";
-//		String[] whereValue = {name,pwd};
-//		
-//		ContentValues cv = new ContentValues();
-//		cv.put(DBHelper.Plan_Worker_Table.IsModifyPwd, true);
-//		cv.put(DBHelper.Plan_Worker_Table.newPwd, newPwd);
-//		
-//		mDB.update(DBHelper.TABLE_WORKERS, cv, where, whereValue);
-//		}
 	}
 	
 
@@ -682,59 +651,117 @@ public class RouteDao {
 
 		return cursor;
 	}
-
-public List<String> queryWorkerNumber(String name,String pwsd) {
-		
-		List<String>guidList = new ArrayList<String>();
-		Cursor cur = mDB
-				.query(WorkerTableName,						
+	
+	/**
+	 * 根据巡检路线的lineGuid获取轮次数组
+	 * @param strLineGuid
+	 * @return
+	 */
+	public List<TurnInfoJson>getTurnInfoListByGuid(String strLineGuid){
+		List<TurnInfoJson> list = new ArrayList<TurnInfoJson>();
+		Cursor cur = null;
+		try{
+		cur = mDB.query(DBHelper.TABLE_TURN, null, DBHelper.Plan_Turn_Table.T_Line_Guid +" =? ",new String[]{strLineGuid} , null, null, null);
+		if(cur!=null){
+			cur.moveToFirst();
+			for(int i=0;i<cur.getCount();i++){
+				TurnInfoJson turninfo = new TurnInfoJson();
+				turninfo.End_Time		= cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.End_Time));
+				turninfo.Name           = cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.Name));
+				turninfo.Number         = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.Number)));
+				turninfo.Start_Time     = cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.Start_Time));
+				turninfo.T_Line_Guid    = cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.T_Line_Guid));
+				turninfo.T_Line_Content_Guid= cur.getString(cur.getColumnIndex(DBHelper.Plan_Turn_Table.T_Line_Content_Guid));
+				list.add(turninfo);
+				cur.moveToNext();
+			}
+		}
+		}catch(Exception e){
+			
+		}finally{
+			if(cur!=null){cur.close();}
+		}
+		return list;
+	}
+	
+	/**
+	 * 根据巡检数据的LINEGuid获取周期的数组
+	 * @param strLineGuid
+	 * @return
+	 */
+	public List<PeriodJson>getPeriodJsonListByGuid(String strLineGuid){
+		List<PeriodJson> list = new ArrayList<PeriodJson>();
+		Cursor cur = null;
+		try{
+		cur = mDB.query(DBHelper.TABLE_Periods, null, DBHelper.Periods_Table.Line_Guid +" =? ",new String[]{strLineGuid} , null, null, null);
+		if(cur!=null){
+			cur.moveToFirst();
+			for(int i=0;i<cur.getCount();i++){
+				PeriodJson periofinfo = new PeriodJson();
+				periofinfo.Is_Omission_Check     = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Is_Omission_Check)));
+				periofinfo.Is_Permission_Timeout = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Is_Permission_Timeout)));
+				periofinfo.Span                  = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Span)));
+				periofinfo.Start_Point           = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Start_Point)));
+				periofinfo.T_Turn_Number_Array   = cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.T_Turn_Number_Array));				
+				periofinfo.Task_Mode             = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Task_Mode)));
+				periofinfo.Turn_Finish_Mode      = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Turn_Finish_Mode)));
+				list.add(periofinfo);
+				cur.moveToNext();
+			}
+		}
+		}catch(Exception e){
+			
+		}finally{
+			if(cur!=null){cur.close();}
+		}
+		return list;
+	}
+	/**
+	 * 根据worker信息 获取其其他属性
+	 * @param name
+	 * @param pwd
+	 * @return
+	 */
+	public List<WorkerInfoJson>getWorkerInfoListByNameAndPwd(String name,String pwd){
+		List<WorkerInfoJson>list = new ArrayList<WorkerInfoJson>();
+		Cursor cur = mDB.query(WorkerTableName,						
 						null,
-						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Number+ "=?", new String[] { name,pwsd }, 
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Number+ "=?", new String[] { name,pwd }, 
 						null,
 						null, null);
 		if (cur != null) {
 			cur.moveToFirst();
 			for(int n=0;n<cur.getCount();n++){
-			String number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
-			guidList.add(number);
-			cur.moveToNext();
-			MLog.Logd("luotest", "search worker table result  number is" +number);
+				WorkerInfoJson worker = new WorkerInfoJson();
+				worker.Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Name));
+				worker.Number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
+				worker.Alias_Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Alias_Name));
+				worker.Class_Group = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Class_Group));
+				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Content_Guid));
+				worker.T_Line_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+				worker.T_Organization_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Organization_Guid));
+				worker.Password = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Pwd));
+				cur.moveToNext();
+				list.add(worker);
 			}
 			cur.close();
 		}
-		return guidList;
+		return list;
 }
 
-
-private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fileNameList,String name,String pwsd,ContentValues cv){
+/**
+ * 查询工人信息，如果工人信息正确，调用GetUploadJsonFile 函数，
+ * @param name
+ * @param pwsd
+ * @param cv
+ * @return 工人对应的JSON文件路径
+ */
+public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,ContentValues cv){
 	String error = "";
+	List<String> guidList = new ArrayList<String>();
+	List<Map<String,String>> fileNameList = new ArrayList<Map<String,String>>();
 	//查询工人信息
-	Cursor cur = mDB.query(WorkerTableName, null,
-			DBHelper.Plan_Worker_Table.Name + "=?" + " and "
-					+ DBHelper.Plan_Worker_Table.newPwd + "=? and "
-					+ DBHelper.Plan_Worker_Table.IsModifyPwd + "=?",
-			new String[] { name, pwsd, "1" }, null, null, null);
-	if (cur != null && cur.getCount() > 0) {
-		MLog.Logd("luotest",
-				"queryLogIn()  cur != null cur.count =" + cur.getCount());
-		cur.moveToFirst();
-		for (int n = 0; n < cur.getCount(); n++) {
-			String GUID = cur
-					.getString(cur
-							.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
-			guidList.add(GUID);
-			cur.moveToNext();
-			MLog.Logd("luotest", "queryLogIn()  searvher worker table GUID is"
-					+ GUID);
-		}
-		cur.close();
-		cur = null;
-	} else {
-		if(cur !=null){
-			cur.close();
-			cur = null;
-		}
-		cur = mDB.query(WorkerTableName, null,
+	Cursor cur =  mDB.query(WorkerTableName, null,
 				DBHelper.Plan_Worker_Table.Name + "=?" + " and "
 						+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
 				new String[] { name, pwsd}, null, null, null);
@@ -757,26 +784,10 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 			cur = null;
 		} else {
 			
-			cur = mDB.query(WorkerTableName, null,
-					null,
-					null, null, null, null);
-			if(cur !=null && cur.getCount()>0){
-				cur.moveToFirst();
-				for(int i=0;i<cur.getCount();i++){
-				String Name =cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Name)); 
-				String Passwword =cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Pwd)); 
-				Log.d("luotest","Name:"+Name+","+"Passwword:"+Passwword);
-				cur.moveToNext();
-				}
-				cur.close();
-				cur = null;
-			}
-			
 			MLog.Logd("luotest",
 					"queryLogIn() searvher worker table cur is null");
 			error = "没有您的信息，请核实再登录";
 		}
-	}
 
 	if (cur != null) {
 		cur.close();
@@ -795,14 +806,15 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 			for (int i = 0; i < cursor2.getCount(); i++) {
 				Map<String, String> map = new HashMap<String, String>();
 				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
-				String totalCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.ItemCounts));
+				String totalCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts));
 				String lineName = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
 				String checkedCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
-				map.put("LineName", lineName);
-				map.put("LinePath", path);
-				map.put("LineTotalCount", totalCount);
+				map.put("LineName", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME)));
+				map.put("LinePath", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path)));
+				map.put("LineNormalTotalCount", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
+				map.put("LineSpecialTotalCount", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
 				map.put("LineCheckedCount", checkedCount);
-				map.put("LineIsSpecial", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.isSpecialLine)));
+				map.put("HasSpecialLine", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)));
 				fileNameList.add(map);
 				cursor2.moveToNext();
 				MLog.Logd("luotest",
@@ -823,27 +835,12 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 	}
 	MLog.Logd("luotest", "queryLogIn() end  error=" + error);
 	cv.put("error", error);
+	return fileNameList;
 }
-/**
- * 查询工人信息，如果工人信息正确，调用GetUploadJsonFile 函数，
- * @param name
- * @param pwsd
- * @param cv
- * @return 工人对应的JSON文件路径
- */
-	public List<Map<String,String>> queryLogIn(String name, String pwsd, ContentValues cv) {
-		MLog.Logd("luotest", "queryLogIn()  name is" + name + ",pwsd is " + pwsd);
-		List<String> guidList = new ArrayList<String>();
-		List<Map<String,String>> fileNameList = new ArrayList<Map<String,String>>();
-		CommonDef.RouteType type=CommonDef.RouteType.Route_Normal;
-		//if(type==CommonDef.RouteType.Route_Normal||type==CommonDef.RouteType.Route_Spec){
-		queryNormalRoute(guidList,fileNameList,name,pwsd,cv);
-//		}else if(type==CommonDef.RouteType.Route_Tmp){
-//			queryTempRouteInfo(fileNameList);
-//		}
-		return fileNameList;
-	}
-	//查询临时路线
+
+
+
+//查询临时路线
 	private void queryTempRouteInfo(List<Map<String,String>> fileNameList){
 		Cursor cur = mDB.query(TempRouteTableName, 
 				new String[]{DBHelper.Temporary_Table.Title,DBHelper.Temporary_Table.Content},
@@ -872,60 +869,60 @@ private void queryNormalRoute(List<String> guidList,List<Map<String,String>> fil
 		}
 		if(cur != null){cur.close();}
 	}
-	/**
-	 * 根据传入的文件路径 解析路线信息
-	 * @param filelist
-	 * @return
-	 */
-	public List<T_Route> getRouteInfoByFilePath(List<String >filelist) {
-		if(filelist ==null) return null;
-		
-		List<T_Route> list = new ArrayList<T_Route>();
-		for (int n = 0; n < filelist.size(); n++) {
-			Cursor cursor = queryRouteInfoByPath(filelist.get(n));
-			if (cursor != null) {
-				cursor.moveToFirst();
-				for (int i = 0; i < cursor.getCount(); i++) {
-					T_Route info = new T_Route();
-
-					info.Guid =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANGUID));
-					info.Name =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME));
-					info.Path =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.Path));
-					list.add(info);
-					cursor.moveToNext();
-				}
-
-			}
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
-		return list;
-	}
-
-	
-	public List<T_Route> getNoCheckFinishRouteInfo() {
-		List<T_Route> list = new ArrayList<T_Route>();
-		Cursor cursor = queryNotFinishRouteInfo();
-		if (cursor != null) {
-			cursor.moveToFirst();
-			for (int i = 0; i < cursor.getCount(); i++) {
-				T_Route info = new T_Route();
-
-				info.Name = cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.Path));
-				info.Guid = cursor.getString(cursor
-						.getColumnIndex(DBHelper.SourceTable.PLANGUID));
-				info.Name = cursor
-						.getString(cursor
-								.getColumnIndex(DBHelper.SourceTable.PLANNAME));
-				list.add(info);
-				cursor.moveToNext();
-			}
-
-		}
-		return list;
-	}
+//	/**
+//	 * 根据传入的文件路径 解析路线信息
+//	 * @param filelist
+//	 * @return
+//	 */
+//	public List<T_Route> getRouteInfoByFilePath(List<String >filelist) {
+//		if(filelist ==null) return null;
+//		
+//		List<T_Route> list = new ArrayList<T_Route>();
+//		for (int n = 0; n < filelist.size(); n++) {
+//			Cursor cursor = queryRouteInfoByPath(filelist.get(n));
+//			if (cursor != null) {
+//				cursor.moveToFirst();
+//				for (int i = 0; i < cursor.getCount(); i++) {
+//					T_Route info = new T_Route();
+//
+//					info.Guid =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+//					info.Name =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+//					info.Path =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.Path));
+//					list.add(info);
+//					cursor.moveToNext();
+//				}
+//
+//			}
+//			if (cursor != null) {
+//				cursor.close();
+//			}
+//		}
+//		return list;
+//	}
+//
+//	
+//	public List<T_Route> getNoCheckFinishRouteInfo() {
+//		List<T_Route> list = new ArrayList<T_Route>();
+//		Cursor cursor = queryNotFinishRouteInfo();
+//		if (cursor != null) {
+//			cursor.moveToFirst();
+//			for (int i = 0; i < cursor.getCount(); i++) {
+//				T_Route info = new T_Route();
+//
+//				info.Name = cursor.getString(cursor
+//						.getColumnIndex(DBHelper.SourceTable.Path));
+//				info.Guid = cursor.getString(cursor
+//						.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+//				info.Name = cursor
+//						.getString(cursor
+//								.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+//				list.add(info);
+//				cursor.moveToNext();
+//			}
+//
+//		}
+//		return list;
+//	}
 
 	public int getCount() {
 		int count = 0;

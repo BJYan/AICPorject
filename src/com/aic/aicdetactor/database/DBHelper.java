@@ -8,11 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 10;//版本号
+	 private final static int VERSION = 11;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
-	// public static String TABLE_SOURCE_FILE = "jxcheck";
 	 public static String TABLE_SOURCE_FILE = "T_Original_Json_File";
 	 public class SourceTable{	 
 	 //巡检名称，在ListView 中显示的巡检路径名称
@@ -22,8 +21,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	//文件的存储路径
 	 public static final String Path ="Path";
 	 public static final String Checked_Count = "Checked_Count";
-	 public static final String ItemCounts = "ItemCounts";
-	 public static final String isSpecialLine = "isSpecialLine";
+	 public static final String NormalItemCounts = "NormalItemCounts";
+	 public static final String SPecialItemCounts = "SPecialItemCounts";
+	 public static final String HasSpecialLine = "hasSpecialLine";
 	 public static final String DownLoadDate = "DownLoadDate";
 	 
 	 }
@@ -61,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final   String T_Organization_Guid  ="T_Organization_Guid";
 		public static final  String Pwd ="pwd";
 		public static final  String IsModifyPwd = "IsModifyPwd";
-		public static final  String newPwd = "newPwd";
+		public static final  String ModifyDate = "ModifyDate";
 	 }
 	 public static String TABLE_TURN = "TurnInfo";
 	 public class Plan_Turn_Table{
@@ -75,7 +75,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 }
 	 
 	 
-	// public static String TABLE_CHECKING = "checkFile";
 	 public static String TABLE_CHECKING = "T_Upload_Json_File";
 	 public class Checking_Table{ 
 		 public static final String T_Line_Guid = "T_Line_Guid";
@@ -189,8 +188,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ SourceTable.PLANNAME +" varchar(256),"
 				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
 				+ SourceTable.Checked_Count +" INTEGER,"
-				+ SourceTable.ItemCounts +" INTEGER,"
-				+ SourceTable.isSpecialLine +" BOOLEAN ,"
+				+ SourceTable.NormalItemCounts +" INTEGER,"
+				+ SourceTable.SPecialItemCounts +" INTEGER,"
+				+ SourceTable.HasSpecialLine +" BOOLEAN ,"
 				+ SourceTable.DownLoadDate +" varchar(24) "
 				+")";
 
@@ -231,7 +231,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Plan_Worker_Table.T_Organization_Guid + " varchar(256),"
 				+ Plan_Worker_Table.Pwd +" varchar(256),"
 				+ Plan_Worker_Table.IsModifyPwd +" BOOLEAN ,"
-				+ Plan_Worker_Table.newPwd +" varchar(256)"
+				+ Plan_Worker_Table.ModifyDate +" varchar(32)"
 				+")";
 
 		db.execSQL(workerSql);

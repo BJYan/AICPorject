@@ -107,31 +107,31 @@ public class DataService extends Service {
 		String name = SystemUtil.createGUID();
 		name = "AICNormal.txt";
 		mNewRouteFileStr = "/sdcard/"+name;
-		((myApplication) getApplication()).insertNewRouteInfo(name,
-				mNewRouteFileStr, this,bTempRoute);		
-		
-		if (mRouteList == null) {
-			mRouteList = new ArrayList<Map<String, String>>();
-			int iRouteCount = ((myApplication) getApplication()).InitData();
-			CheckStatus status = null;
-			for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
-				try {
-					Map<String, String> map = new HashMap<String, String>();
-					status = ((myApplication) getApplication())
-							.getNodeCount(null,0,routeIndex);
-					map.put(CommonDef.route_info.NAME,
-							((myApplication) getApplication()).getRoutName(routeIndex));
-					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
-					//map.put(CommonDef.route_info.STATUS, "已检查");
-					map.put(CommonDef.route_info.PROGRESS,status.mCheckedCount+"/"+status.mSum);					
-					String index = "" + (routeIndex + 1);
-					map.put(CommonDef.route_info.INDEX, index);
-					mRouteList.add(map);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+//		((myApplication) getApplication()).insertNewRouteInfo(name,
+//				mNewRouteFileStr, this,bTempRoute);		
+//		
+//		if (mRouteList == null) {
+//			mRouteList = new ArrayList<Map<String, String>>();
+//			int iRouteCount = ((myApplication) getApplication()).InitData();
+//			CheckStatus status = null;
+//			for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
+//				try {
+//					Map<String, String> map = new HashMap<String, String>();
+//					status = ((myApplication) getApplication())
+//							.getNodeCount(null,0,routeIndex);
+//					map.put(CommonDef.route_info.NAME,
+//							((myApplication) getApplication()).getRoutName(routeIndex));
+//					map.put(CommonDef.route_info.DEADLINE, status.mLastTime);
+//					//map.put(CommonDef.route_info.STATUS, "已检查");
+//					map.put(CommonDef.route_info.PROGRESS,status.mCheckedCount+"/"+status.mSum);					
+//					String index = "" + (routeIndex + 1);
+//					map.put(CommonDef.route_info.INDEX, index);
+//					mRouteList.add(map);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
 
 	}
 }

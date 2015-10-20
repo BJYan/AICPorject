@@ -1,7 +1,6 @@
 package com.aic.aicdetactor.media;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.check.DeviceItemActivity;
 import com.aic.aicdetactor.check.TempPlanActivity;
 import com.aic.aicdetactor.util.MLog;
 
