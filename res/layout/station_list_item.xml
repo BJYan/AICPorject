@@ -19,7 +19,7 @@
         <View 
             android:layout_height="fill_parent"
             android:layout_width="1dip"
-            android:background="#999999"
+            android:background="@color/listview_line_color"
             android:layout_marginTop="5dip"
             android:layout_marginBottom="5dip"/>
         <TextView
@@ -35,7 +35,7 @@
     <View 
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="#999999"
+        android:background="@color/listview_line_color"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"/>
     <RelativeLayout

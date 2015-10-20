@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+    
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">"
+
+ 			<TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="cmd:" />
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="text" 
+            android:hint="@string/defalt_hint">
+            <requestFocus />
+        </EditText>
+
+      </LinearLayout> 
+
+<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:orientation="horizontal">"
+      
+        <RadioGroup 
+            android:id="@+id/radiogroup1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <RadioButton 
+                android:id="@+id/radio1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="a"
+        />
+             <RadioButton 
+                android:id="@+id/radio2"
+                android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="@string/defalt_test"
+		        android:checked="true"
+        />
+              <RadioButton 
+                android:id="@+id/radio3"
+                android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="c"
+        />
+               <RadioButton 
+                android:id="@+id/radio4"
+                android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="d"
+        />
+                <RadioButton 
+                android:id="@+id/radio5"
+                android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="e"
+        />
+        </RadioGroup>
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send" 
+        android:layout_gravity="right"/>
+
+     </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:orientation="vertical">"
+         <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Receive Data:" />
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
+<TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Data:" />
+
+		<ScrollView 
+     	 android:id="@+id/scrollView_showMessages"
+         android:layout_width="fill_parent"
+         android:layout_height="310dp"
+         >
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
+        </ScrollView>
+        </LinearLayout>
+</LinearLayout>

@@ -18,9 +18,9 @@
         <View 
             android:layout_height="fill_parent"
             android:layout_width="1dip"
-            android:background="#999999"
-            android:layout_marginTop="2dip"
-            android:layout_marginBottom="2dip"
+            android:background="@color/listview_line_color"
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="5dip"
             android:layout_marginLeft="25dip"/>
         <TextView
             android:id="@+id/pathname"
@@ -35,7 +35,7 @@
     <View 
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="#999999"
+        android:background="@color/listview_line_color"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"/>
     <LinearLayout

@@ -1,9 +1,17 @@
 package com.aic.aicdetactor.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,23 +19,62 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class BlueToothBindDevListActivity extends CommonActivity{
 	ListView DevList;
 	LayoutInflater inflater;
+	BluetoothAdapter adapter;
+	List<BluetoothDevice> BtDevices;
+	ListAdapter listAdapter;
+	
+	BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+	            BtDevices.add(device);
+	            listAdapter.notifyDataSetChanged();
+	        }
+	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+	        	Toast.makeText(context, "搜索完成！", Toast.LENGTH_SHORT).show();
+	        }
+	    }
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bluetooth_bind_sensor_list_layout);
+		setActionBar("传感器设置",true); 
+		
+		adapter = BluetoothAdapter.getDefaultAdapter(); 
+		BtDevices = new ArrayList<BluetoothDevice>();
 		
 		inflater = getLayoutInflater();
 		DevList = (ListView) findViewById(R.id.bluetooth_bind_sensor_list);
-		ListAdapter listAdapter = new ListAdapter();
+		listAdapter = new ListAdapter();
 		DevList.setAdapter(listAdapter);
-		
-		setActionBar("传感器设置",true); 
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		// Register the BroadcastReceiver
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		registerReceiver(mReceiver, filter);
+		adapter.startDiscovery();
+	}
+	
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		unregisterReceiver(mReceiver);
 	}
 	
 	class ListAdapter extends BaseAdapter{
@@ -35,7 +82,7 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return 6;
+			return BtDevices.size();
 		}
 
 		@Override
@@ -64,6 +111,8 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 					BlueToothBindDevListActivity.this.startActivity(intent);
 				}
 			});
+			TextView DevName = (TextView) arg1.findViewById(R.id.bluetooth_device_name);
+			DevName.setText(BtDevices.get(arg0).getName());
 			return arg1;
 		}
 		

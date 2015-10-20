@@ -2,7 +2,10 @@ package com.aic.aicdetactor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
@@ -21,11 +24,14 @@ import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -138,17 +144,7 @@ public class CommonActivity extends Activity{
 	    return true;  
 	  }
 	 
-	 public View getBlackLineChartView(String title, float[] y){
-
-		    /*List<double[]> xValues = new ArrayList<double[]>();
-		    
-		    for (int i = 0; i < titles.length; i++) {
-		    	double[] x = new double[yValues.get(i).length];
-		    	for(int j=0;j<yValues.get(i).length;j++){
-		    		x[j] = j;
-		    	}
-		    	xValues.add(x);
-		    }*/
+	 public View getBlackLineChartView(String title, float[] y, String xyTitle){
 		    
 		 String[] titles = new String[]{title};
 		 List<float[]> yValues = new ArrayList<float[]>();
@@ -167,9 +163,9 @@ public class CommonActivity extends Activity{
 		    renderer.setShowGrid(true);
 		    renderer.setXLabelsAlign(Align.RIGHT);
 		    renderer.setYLabelsAlign(Align.RIGHT);
-		    renderer.setZoomButtonsVisible(false);
-		    renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
-		    renderer.setZoomLimits(new double[] { -10, 20, -10, 40 });
+		    renderer.setZoomButtonsVisible(true);
+		    //renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
+		    //renderer.setZoomLimits(new double[] { -10, 20, -10, 40 });
 		    renderer.setBackgroundColor(Color.WHITE);
 		    renderer.setMarginsColor(Color.WHITE);
 		    renderer.setApplyBackgroundColor(true);
@@ -177,13 +173,17 @@ public class CommonActivity extends Activity{
 		    renderer.setYAxisMax(1700);
 		    renderer.setXAxisMin(1);
 		    renderer.setXAxisMax(200);
-		    renderer.setLegendHeight(50);
+		    renderer.setLegendHeight(80);
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
-		    //renderer.setMargins(new int[] {20, 100, 10, 10});
+		    renderer.setMargins(new int[] {0, 25, 10, 0});
 		    renderer.setPanEnabled(true,true);
-		    
+		    if(xyTitle!=null){
+			    renderer.setAxisTitleTextSize(20);
+			    renderer.setXTitle(xyTitle);
+		    }
+
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
 		    XYrenderer.setColor(Color.RED);
 		    XYrenderer.setPointStyle(PointStyle.CIRCLE);

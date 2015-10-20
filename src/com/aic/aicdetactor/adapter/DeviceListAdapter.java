@@ -100,7 +100,14 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 							chartDialog.setTitle("测试图谱");
 							chartDialog.setButtomBtn(DeviceListAdapter.this, "确定", "取消");
 							DataAnalysis dataAnalysis = new DataAnalysis();
-							View chartView = mActivity.getBlackLineChartView("测试数据", dataAnalysis.getData());
+							float[] data = dataAnalysis.getData();
+							float[] MinMaxTemp = new float[]{data[0],data[0]};
+							for(int i=0;i<data.length;i++){
+								if(data[i]<=MinMaxTemp[0]) MinMaxTemp[0] = data[i];
+								if(data[i]>MinMaxTemp[1]) MinMaxTemp[1] = data[i];
+							}
+							String MinMax = "Min:"+MinMaxTemp[0]+"\nMax:"+MinMaxTemp[1];
+							View chartView = mActivity.getBlackLineChartView("测试数据", data,MinMax);
 
 							chartDialog.setChartView(chartView, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 520));
 							chartDialog.show();

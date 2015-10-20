@@ -1,8 +1,13 @@
 package com.aic.aicdetactor.adapter;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothRenameActivity;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -11,15 +16,18 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	Context context;
 	private LayoutInflater mInflater;
+	List<BluetoothDevice> bondedDevices;
 
-	public BlueToothBindDevListAdapter(Context context) {
+	public BlueToothBindDevListAdapter(Context context, List<BluetoothDevice> bondedDevices) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
+		this.bondedDevices = bondedDevices;
 	}
 	
 	@Override
@@ -38,6 +46,7 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
 		if(arg3==null) arg3 = mInflater.inflate(R.layout.bluetooth_binded_devlist_child_item, null);
+		
 		return arg3;
 	}
 
@@ -56,7 +65,7 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return 5;
+		return bondedDevices.size();
 	}
 
 	@Override
@@ -80,6 +89,8 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 				context.startActivity(intent);
 			}
 		});
+		TextView DevName = (TextView) arg2.findViewById(R.id.bluetooth_device_name);
+		DevName.setText(bondedDevices.get(arg0).getName());
 		return arg2;
 	}
 

@@ -1,8 +1,11 @@
 package com.aic.aicdetactor.adapter;
 
+import java.util.List;
+
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothRenameActivity;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -10,21 +13,24 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 public class BlueToothDevListAdapter extends BaseAdapter{
 	Context context;
 	private LayoutInflater mInflater;
+	List<BluetoothDevice> btDevices;
 
-	public BlueToothDevListAdapter(Context context) {
+	public BlueToothDevListAdapter(Context context, List<BluetoothDevice> btDevices) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
+		this.btDevices = btDevices;
 	}
 	
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return 3;
+		return btDevices.size();
 	}
 
 	@Override
@@ -53,6 +59,8 @@ public class BlueToothDevListAdapter extends BaseAdapter{
 				context.startActivity(intent);
 			}
 		});
+		TextView DevName = (TextView) arg1.findViewById(R.id.bluetooth_device_name);
+		DevName.setText(btDevices.get(arg0).getName());
 		return arg1;
 	}
 
