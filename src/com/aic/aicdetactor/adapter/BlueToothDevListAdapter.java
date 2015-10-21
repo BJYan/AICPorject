@@ -46,15 +46,16 @@ public class BlueToothDevListAdapter extends BaseAdapter{
 	}
 
 	@Override
-	public View getView(int arg0, View arg1, ViewGroup arg2) {
+	public View getView(final int arg0, View arg1, ViewGroup arg2) {
 		// TODO Auto-generated method stub
 		if(arg1==null) arg1 = mInflater.inflate(R.layout.bluetooth_device_list_item, null);
 		arg1.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
+				intent.putExtra("BluetoothDev", btDevices.get(arg0));
 				intent.setClass(context, BlueToothRenameActivity.class);
 				context.startActivity(intent);
 			}

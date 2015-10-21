@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
@@ -25,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,9 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	List<BluetoothDevice> BondedDevices;
 	List<BluetoothDevice> BtDevices;
 	BlueToothDevListAdapter blueToothDevListAdapter;
+	BlueToothBindDevListAdapter btBindDevListAdapter;
+	ProgressBar pbar;
+	TextView pbar_text;
 	
 	BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -44,7 +49,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	            blueToothDevListAdapter.notifyDataSetChanged();
 	        }
 	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-	        	Toast.makeText(getActivity(), "À—À˜ÕÍ≥…£°", Toast.LENGTH_SHORT).show();
+	        	dismissProgressBar();
+	        	Toast.makeText(getActivity(), "ÊêúÁ¥¢ÂÆåÊàêÔºÅ", Toast.LENGTH_SHORT).show();
 	        }
 	    }
 	};
@@ -66,7 +72,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		ExpandableListView DevBindedlist = (ExpandableListView) BlueToothView.findViewById(R.id.bluetooth_device_binded_list);
 		BondedDevices = getBondedDevices();
-		BlueToothBindDevListAdapter btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), BondedDevices);
+		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), BondedDevices);
 		DevBindedlist.setAdapter(btBindDevListAdapter);
 		DevBindedlist.setGroupIndicator(null);
 		
@@ -76,6 +82,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		TextView btSerachBtn = (TextView) BlueToothView.findViewById(R.id.bt_search_btn);
 		btSerachBtn.setOnClickListener(this);
+		pbar = (ProgressBar) BlueToothView.findViewById(R.id.bluetooth_pbar);
+		pbar_text = (TextView) BlueToothView.findViewById(R.id.bluetooth_pbar_text);
 		return BlueToothView;
 	}
 	
@@ -84,9 +92,11 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onResume();
 		// Register the BroadcastReceiver
+		btBindDevListAdapter.notifyDataSetChanged();
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		getActivity().registerReceiver(mReceiver, filter);
 		adapter.startDiscovery();
+		showProgressBar();
 	}
 	
 	@Override
@@ -129,5 +139,15 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		default:
 			break;
 		}
+	}
+	
+	private void showProgressBar(){
+		pbar_text.setVisibility(View.VISIBLE);
+		pbar.setVisibility(View.VISIBLE);
+	}
+	
+	private void dismissProgressBar(){
+		pbar_text.setVisibility(View.INVISIBLE);
+		pbar.setVisibility(View.INVISIBLE);		
 	}
 }

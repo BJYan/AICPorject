@@ -115,14 +115,16 @@ public class DataAnalysis {
 	//获取得实际加速度数值
 	float getVoValue(String StrHex){
 		float value =0f;
-		if(StrHex.compareTo(StrZearo)>=0 && StrHex.compareTo(Str7f)<=0){
+		/*if(StrHex.compareTo(StrZearo)>=0 && StrHex.compareTo(Str7f)<=0){
 			value=Integer.valueOf(StrHex,16)+mVmv;
 		}
 		
 		
 		if(StrHex.compareTo(Str80)>=0 && StrHex.compareTo(Str4f)<=0){
 			value=Integer.valueOf(StrHex,16)-mVmv;
-		}
+		}*/
+		value = (float)Integer.valueOf(StrHex,16);
+		if(value>50000) value = value-65536;
 		value= (value/65536)*5000;
 		
 		value = value*macceleratedSpeed/mstandardMv;

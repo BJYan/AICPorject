@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,8 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 	BluetoothAdapter adapter;
 	List<BluetoothDevice> BtDevices;
 	ListAdapter listAdapter;
+	ProgressBar pbar;
+	TextView pbar_text;
 	
 	BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -39,6 +42,7 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 	            listAdapter.notifyDataSetChanged();
 	        }
 	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+	        	dismissProgressBar();
 	        	Toast.makeText(context, "搜索完成！", Toast.LENGTH_SHORT).show();
 	        }
 	    }
@@ -58,6 +62,9 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 		DevList = (ListView) findViewById(R.id.bluetooth_bind_sensor_list);
 		listAdapter = new ListAdapter();
 		DevList.setAdapter(listAdapter);
+		
+		pbar = (ProgressBar) findViewById(R.id.bluetooth_bind_pbar);
+		pbar_text = (TextView)findViewById(R.id.bluetooth_bind_pbar_text);
 	}
 	
 	@Override
@@ -68,6 +75,7 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		registerReceiver(mReceiver, filter);
 		adapter.startDiscovery();
+		showProgressBar();
 	}
 	
 	@Override
@@ -98,15 +106,16 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 		}
 
 		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
+		public View getView(final int arg0, View arg1, ViewGroup arg2) {
 			// TODO Auto-generated method stub
 			if(arg1==null) arg1 = inflater.inflate(R.layout.bluetooth_device_list_item, null);
 			arg1.setOnClickListener(new OnClickListener() {
 				
 				@Override
-				public void onClick(View arg0) {
+				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					Intent intent = new Intent();
+					Intent intent = new Intent(); 
+					intent.putExtra("BluetoothDev", BtDevices.get(arg0));
 					intent.setClass(BlueToothBindDevListActivity.this, BlueToothRenameActivity.class);
 					BlueToothBindDevListActivity.this.startActivity(intent);
 				}
@@ -114,7 +123,16 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 			TextView DevName = (TextView) arg1.findViewById(R.id.bluetooth_device_name);
 			DevName.setText(BtDevices.get(arg0).getName());
 			return arg1;
-		}
-		
+		}	
+	}
+	
+	private void showProgressBar(){
+		pbar_text.setVisibility(View.VISIBLE);
+		pbar.setVisibility(View.VISIBLE);
+	}
+	
+	private void dismissProgressBar(){
+		pbar_text.setVisibility(View.INVISIBLE);
+		pbar.setVisibility(View.INVISIBLE);		
 	}
 }

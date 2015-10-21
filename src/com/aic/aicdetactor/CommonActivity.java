@@ -169,9 +169,9 @@ public class CommonActivity extends Activity{
 		    renderer.setBackgroundColor(Color.WHITE);
 		    renderer.setMarginsColor(Color.WHITE);
 		    renderer.setApplyBackgroundColor(true);
-		    renderer.setYAxisMin(0);
-		    renderer.setYAxisMax(1700);
-		    renderer.setXAxisMin(1);
+		    renderer.setYAxisMin(-500);
+		    renderer.setYAxisMax(500);
+		    renderer.setXAxisMin(0);
 		    renderer.setXAxisMax(200);
 		    renderer.setLegendHeight(80);
 		    //renderer.setXLabels(200);

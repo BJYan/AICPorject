@@ -75,16 +75,17 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
+	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		if(arg2==null) arg2 = mInflater.inflate(R.layout.bluetooth_binded_devlist_group_item, null);
 		ImageView GroupItemArror = (ImageView) arg2.findViewById(R.id.bluetooth_bind_dev_arrow);
 		GroupItemArror.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
+				intent.putExtra("BluetoothDev", bondedDevices.get(arg0));
 				intent.setClass(context, BlueToothRenameActivity.class);
 				context.startActivity(intent);
 			}

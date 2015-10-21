@@ -1,20 +1,67 @@
 package com.aic.aicdetactor.activity;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.UUID;
+
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class BlueToothRenameActivity extends CommonActivity implements OnClickListener,
 		AltDialogOKListener,AltDialogCancelListener{
+	protected static final String TAG = "BlueToothRenameActivity";
+	static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 	Button bindBtn;
-	boolean binded = false;
+	boolean isbinded = false;
+	Intent btDevIntent;
+	BluetoothDevice Dev;
+	BluetoothSocket btSocket; 
+	
+	private BroadcastReceiver searchDevices = new BroadcastReceiver() {  
+		  
+        public void onReceive(Context context, Intent intent) {  
+            String action = intent.getAction();  
+
+            BluetoothDevice device = null;  
+            // 搜索设备时，取得设备的MAC地址  
+            if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)){  
+                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
+                switch (device.getBondState()) {  
+                case BluetoothDevice.BOND_BONDING:  
+                    Log.d(TAG, "正在配对......");  
+                    break;  
+                case BluetoothDevice.BOND_BONDED:  
+                    Log.d(TAG, "完成配对");  
+                    //connect(device);//连接设备  
+                    break;  
+                case BluetoothDevice.BOND_NONE:  
+                    Log.d(TAG, "取消配对");  
+                default:  
+                    break;  
+                }  
+            }  
+              
+        }  
+    };  
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,23 +70,67 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 		setContentView(R.layout.bluetooth_sensor_rename);
 		
 		setActionBar("传感器设置",true); 
-		
+		btDevIntent = getIntent();
+		Dev = btDevIntent.getParcelableExtra("BluetoothDev");
 		bindBtn = (Button) findViewById(R.id.bluetooth_bind_btn);
 		bindBtn.setOnClickListener(this);
+		TextView DevName = (TextView) findViewById(R.id.bluetooth_dev_name);
+		DevName.setText(Dev.getName());
+		DevName.setOnClickListener(this);
+		if(Dev.getBondState()==BluetoothDevice.BOND_BONDED) {
+			isbinded = true;
+			bindBtn.setText("取消绑定");
+		}
+		if(Dev.getBondState()==BluetoothDevice.BOND_NONE) {
+			isbinded = false;
+			bindBtn.setText("绑定");
+		}
 	}
+	
+    private void connect(BluetoothDevice btDev) {  
+        UUID uuid = UUID.fromString(SPP_UUID);  
+        try {  
+            btSocket = btDev.createRfcommSocketToServiceRecord(uuid);  
+            Log.d("BlueToothTestActivity", "开始连接...");  
+            btSocket.connect();  
+        } catch (IOException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        }  
+    } 
 
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.bluetooth_bind_btn:
-			if(!binded) showAlterDialog(this,"是否绑定？","原传感器将解除绑定",this,this);
+			if(!isbinded) showAlterDialog(this,"是否绑定？","原传感器将解除绑定",this,this);
 			else showAlterDialog(this,"是否取消绑定？",null,this,this);
 			break;
-
+		case R.id.bluetooth_dev_name:
+			showReNameDialog();
+			break;
+			
 		default:
 			break;
 		}
+	}
+
+	private void showReNameDialog() {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		AlertDialog alertDialog = builder.create(); 
+		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		alertDialog.show();  
+		Window window = alertDialog.getWindow();  
+		window.setContentView(R.layout.dialog_rename_layout);
 	}
 
 	@Override
@@ -51,12 +142,58 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 	@Override
 	public void onComDialogOKListener(CommonAlterDialog dialog) {
 		// TODO Auto-generated method stub
-		if(binded) {
-			binded = false;
-			bindBtn.setText("绑定");
-		} else {
-			binded = true;
-			bindBtn.setText("取消绑定");
+		if(isbinded) { 
+            if (Dev.getBondState() == BluetoothDevice.BOND_BONDED) {  
+                //利用反射方法调用BluetoothDevice.createBond(BluetoothDevice remoteDevice);  
+                try {
+					Method createBondMethod = BluetoothDevice.class  
+					        .getMethod("removeBond");  
+					Log.d(TAG, "取消配对");  
+					isbinded = !(Boolean) createBondMethod.invoke(Dev);
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}  
+                  
+            }else if(Dev.getBondState() == BluetoothDevice.BOND_BONDED){  
+                //connect(Dev);  
+            }
+			if(!isbinded) bindBtn.setText("绑定");
+		} else {  
+            if (Dev.getBondState() == BluetoothDevice.BOND_NONE) {  
+                //利用反射方法调用BluetoothDevice.createBond(BluetoothDevice remoteDevice);  
+                try {
+					Method createBondMethod = BluetoothDevice.class  
+					        .getMethod("createBond");  
+					Log.d(TAG, "开始配对");  
+					isbinded = (Boolean) createBondMethod.invoke(Dev);
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}  
+                  
+            }else if(Dev.getBondState() == BluetoothDevice.BOND_BONDED){  
+                //connect(Dev);  
+            } 
+			if(isbinded) bindBtn.setText("取消绑定");
 		}
 		dialog.dismiss();
 	}

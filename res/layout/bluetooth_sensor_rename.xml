@@ -11,6 +11,7 @@
         android:layout_marginLeft="10dip"
         android:layout_marginTop="5dip"/>
     <TextView 
+        android:id="@+id/bluetooth_dev_name"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="AIC3608F"
