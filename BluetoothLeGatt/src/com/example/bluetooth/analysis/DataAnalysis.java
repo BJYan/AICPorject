@@ -79,14 +79,16 @@ public class DataAnalysis {
 	//获取得实际加速度数值
 	float getVoValue(String StrHex){
 		float value =0f;
-		if(StrHex.compareTo(StrZearo)>=0 && StrHex.compareTo(Str7f)<=0){
+		/*if(StrHex.compareTo(StrZearo)>=0 && StrHex.compareTo(Str7f)<=0){
 			value=Integer.valueOf(StrHex,16)+mVmv;
 		}
 		
 		
 		if(StrHex.compareTo(Str80)>=0 && StrHex.compareTo(Str4f)<=0){
 			value=Integer.valueOf(StrHex,16)-mVmv;
-		}
+		}*/
+		value = (float)Integer.valueOf(StrHex,16);
+		if(value>50000) value = value-65536;
 		value= (value/65536)*5000;
 		
 		value = value*macceleratedSpeed/mstandardMv;
@@ -111,7 +113,7 @@ public class DataAnalysis {
 		
 			//data[j] = ((float)Integer.valueOf(str.substring(i+20, i+24),16)/65536)*5000;
 			data[j] = getVoValue(str.substring(i+20, i+24));
-			stringdata[j] = Integer.valueOf(str.substring(i+20, i+24),16);
+			//stringdata[j] = Integer.valueOf(str.substring(i+20, i+24),16);
 			j=j+1;
 			//Log.i(TAG, "data["+j+"] = "+data[j] + ", 0X ="+str.substring(i+20, i+24));
 			
@@ -142,4 +144,7 @@ public class DataAnalysis {
 	public float[] getData() {
 		return data;
 	}	
+	public int getDataNum(){
+		return dataHead.dataNum;
+	}
 }

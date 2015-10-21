@@ -522,8 +522,9 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 						if(data[i]<=MinMaxTemp[0]) MinMaxTemp[0] = data[i];
 						if(data[i]>MinMaxTemp[1]) MinMaxTemp[1] = data[i];
 					}
-					String MinMax = "Min:"+MinMaxTemp[0]+"\nMax:"+MinMaxTemp[1];
-					 startActivity(getBlackLineChartView("Test", data, MinMax));
+					String XTitle = "测点序号\nMin:"+MinMaxTemp[0]+"\nMax:"+MinMaxTemp[1]+"\n测试点数："+dataAnalysis.getDataNum();
+					String YTitle = "m/s^2";
+					 startActivity(getBlackLineChartView("Test", data, new String[]{XTitle,YTitle}));
 				   }
 				break;
 			case MSG_RE_SEND_DATA:
@@ -541,7 +542,7 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 		 
 	 };
 	 
-	 public Intent getBlackLineChartView(String title, float[] y, String xyTitle){
+	 public Intent getBlackLineChartView(String title, float[] y, String[] xyTitle){
 		    
 		 String[] titles = new String[]{title};
 		 List<float[]> yValues = new ArrayList<float[]>();
@@ -566,19 +567,20 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 		    renderer.setBackgroundColor(Color.WHITE);
 		    renderer.setMarginsColor(Color.WHITE);
 		    renderer.setApplyBackgroundColor(true);
-		    renderer.setYAxisMin(0);
-		    renderer.setYAxisMax(1700);
-		    renderer.setXAxisMin(1);
+		    renderer.setYAxisMin(-300);
+		    renderer.setYAxisMax(300);
+		    renderer.setXAxisMin(0);
 		    renderer.setXAxisMax(200);
 		    renderer.setLegendHeight(150);
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
-		    renderer.setMargins(new int[] {20, 25, 10, 10});
+		    renderer.setMargins(new int[] {20, 35, 10, 10});
 		    renderer.setPanEnabled(true,true);
 		    if(xyTitle!=null){
 			    renderer.setAxisTitleTextSize(20);
-			    renderer.setXTitle(xyTitle);
+			    renderer.setXTitle(xyTitle[0]);
+			    renderer.setYTitle(xyTitle[1]);
 		    }
 
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
