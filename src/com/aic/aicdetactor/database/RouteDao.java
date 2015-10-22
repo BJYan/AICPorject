@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.aic.aicdetactor.comm.OrganizationType;
+import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
 import com.aic.aicdetactor.data.PeriodJson;
@@ -809,12 +810,12 @@ public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,Co
 				String totalCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts));
 				String lineName = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
 				String checkedCount = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
-				map.put("LineName", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME)));
-				map.put("LinePath", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path)));
-				map.put("LineNormalTotalCount", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
-				map.put("LineSpecialTotalCount", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
-				map.put("LineCheckedCount", checkedCount);
-				map.put("HasSpecialLine", cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)));
+				map.put(RouteDaoStationParams.LineName, cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME)));
+				map.put(RouteDaoStationParams.LinePath, cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path)));
+				map.put(RouteDaoStationParams.LineNormalTotalCount, cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
+				map.put(RouteDaoStationParams.LineSpecialTotalCount, cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
+				map.put(RouteDaoStationParams.LineCheckedCount, checkedCount);
+				map.put(RouteDaoStationParams.HasSpecialLine, cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)));
 				fileNameList.add(map);
 				cursor2.moveToNext();
 				MLog.Logd("luotest",
@@ -857,8 +858,8 @@ public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,Co
 				String Content = cur
 						.getString(cur
 								.getColumnIndex(DBHelper.Temporary_Table.Content));
-				map.put("TMPLineName", title);
-				map.put("TMPLineContent", Content);
+				map.put(RouteDaoStationParams.TMPLineName, title);
+				map.put(RouteDaoStationParams.TMPLineContent, Content);
 				fileNameList.add(map);
 				cur.moveToNext();
 				MLog.Logd("luotest", "queryTempRouteInfo()  title is"

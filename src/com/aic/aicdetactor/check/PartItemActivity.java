@@ -179,10 +179,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		RouteNameTextView.setText(app.gRouteName);
          //站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
-		//stationTextView.setText(app.gStationName);
+		stationTextView.setText(app.mLineJsonData.StationInfo.get(mStationIndex).Name);
 		//设备名称
 		TextView deviceTextView = (TextView) findViewById(R.id.deviceName);		
-		//deviceTextView.setText(app.gDeviceName);
+		deviceTextView.setText(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name);
 
 		//返回图标
 		ImageView imageView = (ImageView)findViewById(R.id.backImage);

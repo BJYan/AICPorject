@@ -218,26 +218,26 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		try {
 			mDataList.clear();
 			mChildrenList = new ArrayList<ArrayList<PartItemJson>>();
-			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
+			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				if(mIsSpecial){
-						if(app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
+						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
 					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					map.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
 					map.put(CommonDef.device_info.DEADLINE, "2016");
 				
-					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false,true));
+					map.put(CommonDef.device_info.PROGRESS, app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
 					mDataList.add(map);
 					InitChidrenData(mStationIndex, i);
 						}
 					}else{
-						if(app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection<=0){
+						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection<=0){
 					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					MLog.Logd(TAG,"name is"+app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					map.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
 					map.put(CommonDef.device_info.DEADLINE, "2016");
 				
-					map.put(CommonDef.device_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mNormalLineJsonData.getItemCounts(2, i, false,true));
+					map.put(CommonDef.device_info.PROGRESS, app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
 					mDataList.add(map);
 					InitChidrenData(mStationIndex, i);
 						}
@@ -258,9 +258,9 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		try {
 			ArrayList<PartItemJson> childList = new ArrayList<PartItemJson>();
 			PartItemJson item =null;
-			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.size(); i++) {
+			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.size(); i++) {
 				
-				item =  app.mNormalLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.get(i);//mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
+				item =  app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.get(i);//mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
 				childList.add(item);
 			}
 			mChildrenList.add(childList);

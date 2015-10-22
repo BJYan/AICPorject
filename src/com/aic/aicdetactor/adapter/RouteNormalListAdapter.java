@@ -9,6 +9,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.util.MLog;
@@ -142,24 +143,23 @@ public class RouteNormalListAdapter extends BaseAdapter{
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
+								map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineName));
+								map.put(CommonDef.route_info.DEADLINE,"2010-8-8");
+
+								map.put(CommonDef.route_info.PROGRESS,
+										app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineCheckedCount) + "/" + app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineNormalTotalCount));
 							
-							map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get("LineName"));
-							map.put(CommonDef.route_info.DEADLINE,"2000-10-10");
+								String index = "" + (routeIndex + 1);
+								map.put(CommonDef.route_info.INDEX, index);
 
-							map.put(CommonDef.route_info.PROGRESS,
-									app.mFileList.get(routeIndex).get("LineCheckedCount") + "/" + app.mFileList.get(routeIndex).get("LineTotalCount"));
-						
-							String index = "" + (routeIndex + 1);
-							map.put(CommonDef.route_info.INDEX, index);
-
-							mItemDatas.add(map);
+								mItemDatas.add(map);								
+							
 							MLog.Logd(TAG,
 									"in init() for end i="
 											+ routeIndex
 											+ ","
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

@@ -188,62 +188,36 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	
 
+	
 	void InitStationData() {
 
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
            String path= app.mFileList.get(mrouteIndex).get("LinePath");
-           String  planjson = SystemUtil.openFile(path);
-			app.mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
+           app.LineDataClassifyFromOneFile(path,mIsSpecial);
 			mDataList.clear();
 			mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
-			boolean bSpecial = false;
-			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
-				bSpecial = false;
+			for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 				try {
+					Map<String, String> map = new HashMap<String, String>();
+					map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
+					map.put(CommonDef.station_info.DEADLINE, "2015");
+					map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
+					mDataList.add(map);
+					
 					ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
-					for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-						if (mIsSpecial) {
-							if (Integer.valueOf(app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) > 0) {
-								Map<String, String> mapDevice = new HashMap<String, String>();
-								mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-								childList.add(mapDevice);
-								bSpecial=true;
+					for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+						Map<String, String> mapDevice = new HashMap<String, String>();
+						mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+						childList.add(mapDevice);
 								
-							}else{
-								app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
-							}
-						}else{		
-							if (Integer.valueOf(app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) <= 0) {
-								Map<String, String> mapDevice = new HashMap<String, String>();
-								mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-								childList.add(mapDevice);	
-							}else{
-								app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
-							}
-						}
 					}
 					mChildrenList.add(childList);
 					
-					if (mIsSpecial) {
-						if (bSpecial) {
-							Map<String, String> map = new HashMap<String, String>();
-							map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
-							map.put(CommonDef.station_info.DEADLINE, "2015");
-							map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-							mDataList.add(map);
-						}else{
-							app.mNormalLineJsonData.StationInfo.remove(i);
-						}
-					}else{
-						Map<String, String> map = new HashMap<String, String>();
-						map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
-						map.put(CommonDef.station_info.DEADLINE, "2015");
-						map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-						mDataList.add(map);
-					}
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -270,12 +244,12 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		List<String> statusList = new ArrayList<String>();
 		String str="";
 		boolean bFind = false;
-		for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
+		for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 			if(bFind) break;
 			try {
-				for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+				for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
 					if(i == station && deviceIndex == device){
-						str =app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
+						str =app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
 						bFind=true;
 						break;
 						}

@@ -9,6 +9,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.util.MLog;
@@ -143,12 +144,12 @@ public class RouteSpecListAdapter extends BaseAdapter{
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
-							if(Integer.valueOf(app.mFileList.get(routeIndex).get("LineIsSpecial"))>0){
-							map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get("LineName"));
+							if(Integer.valueOf(app.mFileList.get(routeIndex).get(RouteDaoStationParams.HasSpecialLine))>0){
+							map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineName));
 							map.put(CommonDef.route_info.DEADLINE,"2000-10-10");
 
 							map.put(CommonDef.route_info.PROGRESS,
-									app.mFileList.get(routeIndex).get("LineCheckedCount") + "/" + app.mFileList.get(routeIndex).get("LineTotalCount"));
+									app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineCheckedCount) + "/" + app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineSpecialTotalCount));
 						
 							String index = "" + (routeIndex + 1);
 							map.put(CommonDef.route_info.INDEX, index);

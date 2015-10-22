@@ -7,6 +7,8 @@ import android.app.Application;
 
 import com.aic.aicdetactor.data.DownloadNormalData;
 import com.aic.aicdetactor.data.WorkerInfoJson;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.alibaba.fastjson.JSON;
 
 public class myApplication extends Application
 {
@@ -45,8 +47,14 @@ public class myApplication extends Application
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
       
-    public List<Map<String,String>> mFileList = null;	
-    public DownloadNormalData mNormalLineJsonData=null;
+    public List<Map<String,String>> mFileList = null;
+    //当前日常巡检数据，不包括特巡数据
+    private DownloadNormalData mNormalLineJsonData=null;
+    //当前特巡数据，不包括日常巡检数据
+    private DownloadNormalData mSpecialLineJsonData=null;
+    //剔除后的当前巡检数据
+    public DownloadNormalData mLineJsonData=null;
+    //
 	private List<String> mTMPRouteFileList = null;
 	public List<WorkerInfoJson> gWorkerInfoJsonList=null;
 	private boolean gBLogIn = false;
@@ -115,5 +123,54 @@ public class myApplication extends Application
     public String getLoginWorkerPwd(){
     	return mWorkerPwd;
     }
-
+  //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离
+    public DownloadNormalData LineDataClassifyFromOneFile(String path,boolean IsSpecial){
+  		 String planjson = SystemUtil.openFile(path);
+  		mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);		
+  		mSpecialLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
+  		
+  		//剔除特殊巡检数据
+  		for (int i = 0; i < mNormalLineJsonData.StationInfo.size(); i++) {
+  			try {
+  				for (int deviceIndex = 0; deviceIndex < mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+  					if (Integer.valueOf(mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) > 0) {
+  						mNormalLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
+  					}
+  				}
+  				if(mNormalLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
+  					mNormalLineJsonData.StationInfo.remove(i);
+  				}
+  				
+  			} catch (Exception e) {
+  				e.printStackTrace();
+  			}	
+  		}
+  		
+  		
+  		//剔除日常巡检数据
+  		for (int i = 0; i < mSpecialLineJsonData.StationInfo.size(); i++) {
+  			try {
+  				for (int deviceIndex = 0; deviceIndex < mSpecialLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+  					if (Integer.valueOf(mSpecialLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) <= 0) {
+  						mSpecialLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
+  					}
+  						
+  				}
+  				if(mSpecialLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
+  					mSpecialLineJsonData.StationInfo.remove(i);
+  				}
+  				
+  			} catch (Exception e) {
+  				e.printStackTrace();
+  			}	
+  		}
+  			
+  		if(IsSpecial){
+  			mLineJsonData=mSpecialLineJsonData;
+  		}else{
+  			mLineJsonData= mNormalLineJsonData;
+  		}
+  		
+  		return mLineJsonData;
+  	}
 }
