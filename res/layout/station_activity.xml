@@ -77,8 +77,8 @@
 <!--  third line-->
     <ExpandableListView 
         android:id="@+id/listView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/relateve1"
         android:layout_weight="1"
        android:layout_marginLeft="5dip"

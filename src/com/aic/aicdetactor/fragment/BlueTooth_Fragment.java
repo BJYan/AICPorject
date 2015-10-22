@@ -38,6 +38,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	BlueToothBindDevListAdapter btBindDevListAdapter;
 	ProgressBar pbar;
 	TextView pbar_text;
+	ExpandableListView DevBindedlist;
 	
 	BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -70,10 +71,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		View BlueToothView = inflater.inflate(R.layout.bluetooth_layout, container, false);
 		
-		ExpandableListView DevBindedlist = (ExpandableListView) BlueToothView.findViewById(R.id.bluetooth_device_binded_list);
-		BondedDevices = getBondedDevices();
-		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), BondedDevices);
-		DevBindedlist.setAdapter(btBindDevListAdapter);
+		DevBindedlist = (ExpandableListView) BlueToothView.findViewById(R.id.bluetooth_device_binded_list);
+
 		DevBindedlist.setGroupIndicator(null);
 		
 		ListView Devlist = (ListView) BlueToothView.findViewById(R.id.bluetooth_device_list);
@@ -92,7 +91,12 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onResume();
 		// Register the BroadcastReceiver
-		btBindDevListAdapter.notifyDataSetChanged();
+		BondedDevices = getBondedDevices();
+		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), BondedDevices);
+		DevBindedlist.setAdapter(btBindDevListAdapter);
+		
+		BtDevices.clear();
+		blueToothDevListAdapter.notifyDataSetChanged();
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		getActivity().registerReceiver(mReceiver, filter);
 		adapter.startDiscovery();

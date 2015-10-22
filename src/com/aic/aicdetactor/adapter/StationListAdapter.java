@@ -34,7 +34,6 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 
 	private myApplication app = null;
 	private Context mContext = null;
-	private int mrouteIndex = 0;
 	private CommonActivity mActivity = null;
 	private LayoutInflater mInflater;
 	private final String TAG = "luotest.StationListAdapter";
@@ -42,16 +41,18 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	// groupView data
 	private List<Map<String, String>> mDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
+	ExpandableListView secGroupView;
 
-	public StationListAdapter(CommonActivity av, Context context, int routeIndex,boolean mIsSpecial) {
+	public StationListAdapter(CommonActivity av, Context context,boolean mIsSpecial,ExpandableListView secGroupView,
+			List<Map<String, String>> mDataList,ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
 		mContext = context;
-		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
+		this.secGroupView = secGroupView;
 		mActivity = av;
-		mDataList = new ArrayList<Map<String, String>>();
+		this.mDataList = mDataList;
+		this.mChildrenList = mChildrenList;
 		app = ((myApplication) mActivity.getApplication());
 		this.mIsSpecial =mIsSpecial;
-		InitStationData();
 	}
 
 	@Override
@@ -65,22 +66,13 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	public ExpandableListView getExpandableListView(){
-		ExpandableListView ExListView = new ExpandableListView(mContext);
-		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ExListView.setPadding(30, 0, 10, 0);
-		ExListView.setLayoutParams(lp);
-		ExListView.setGroupIndicator(null);
-		return ExListView;
-	}
 
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
 		MLog.Logd(TAG,"getChildView " + arg0 +" ,"+arg1);
 
-		final ExpandableListView secGroupView = getExpandableListView();
+		//final ExpandableListView secGroupView = getExpandableListView();
 		final DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1,mIsSpecial);
 		secGroupView.setAdapter(secExListAdapter);
 		
@@ -107,15 +99,6 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 				secGroupView.setLayoutParams(lp);
 			}
 			
-		});
-		
-		secGroupView.setOnLongClickListener(new OnLongClickListener() {
-			
-			@Override
-			public boolean onLongClick(View arg0) {
-				// TODO Auto-generated method stub
-				return false;
-			}
 		});
 		return secGroupView;
 	}
@@ -188,59 +171,15 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
-	
-
-	
-	void InitStationData() {
-
-		long g=System.currentTimeMillis();
-		MLog.Logd(TAG, " InitData()>> "+g);
-		try {
-           String path= app.mFileList.get(mrouteIndex).get("LinePath");
-           app.LineDataClassifyFromOneFile(path,mIsSpecial);
-			mDataList.clear();
-			mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
-			for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
-				try {
-					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
-					map.put(CommonDef.station_info.DEADLINE, "2015");
-					map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-					mDataList.add(map);
-					
-					ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
-					for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-						Map<String, String> mapDevice = new HashMap<String, String>();
-						mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-						childList.add(mapDevice);
-								
-					}
-					mChildrenList.add(childList);
-					
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}	
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
-
-	}
-
-	
 
 	@Override
 	public void notifyDataSetChanged() {
 		// TODO Auto-generated method stub
-		InitStationData();
+		//InitStationData();
 		super.notifyDataSetChanged();
 	}
 	
-	public List<String>getDeviceStatusArray(int station,int device){
+	public List<String> getDeviceStatusArray(int station,int device){
 		List<String> statusList = new ArrayList<String>();
 		String str="";
 		boolean bFind = false;

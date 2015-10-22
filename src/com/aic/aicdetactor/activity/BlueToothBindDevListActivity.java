@@ -72,6 +72,8 @@ public class BlueToothBindDevListActivity extends CommonActivity{
 		// TODO Auto-generated method stub
 		super.onResume();
 		// Register the BroadcastReceiver
+		BtDevices.clear();
+		listAdapter.notifyDataSetChanged();
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		registerReceiver(mReceiver, filter);
 		adapter.startDiscovery();

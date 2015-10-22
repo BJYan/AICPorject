@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class BlueToothRenameActivity extends CommonActivity implements OnClickListener,
@@ -119,7 +120,11 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 	private void showReNameDialog() {
 		// TODO Auto-generated method stub
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		AlertDialog alertDialog = builder.create(); 
+		builder.setTitle("设备重命名");
+		View renameDialog = getLayoutInflater().inflate(R.layout.dialog_rename_layout, null);
+		EditText DevRename = (EditText) renameDialog.findViewById(R.id.bluetooth_rename);
+		DevRename.setText(Dev.getName());
+		builder.setView(renameDialog);
 		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 			
 			@Override
@@ -128,9 +133,16 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 				
 			}
 		});
-		alertDialog.show();  
-		Window window = alertDialog.getWindow();  
-		window.setContentView(R.layout.dialog_rename_layout);
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		builder.show();
+		//window.setContentView(R.layout.dialog_rename_layout);
 	}
 
 	@Override
