@@ -60,6 +60,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
+import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.AuxiliaryInfoNode;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemItem;
@@ -108,7 +109,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	//partItem 数组，包含Fast_Record_Item_Name 及 PartItemData : 
 	private List<Object> mPartItemList=null;
 	private CheckBox mCheckbox = null;
-	private int mRouteIndex =0;
+	//private int mRouteIndex =0;
 	private int mStationIndex =0;
 	private int mDeviceIndex = 0;
 	private int mCheckIndex =0;
@@ -166,7 +167,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		setContentView(R.layout.unitcheck);
 		app =((myApplication) getApplication());
 		//Intent intent = getIntent();
-		mRouteIndex = app.mRouteIndex;
+		//mRouteIndex = app.mRouteIndex;
+		//=getIntent().getExtras().get(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
 		mStationIndex = app.mStationIndex;
 		mDeviceIndex = app.mDeviceIndex;
 	
@@ -176,7 +178,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 		//路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
-		RouteNameTextView.setText(app.gRouteName);
+		RouteNameTextView.setText(app.mFileList.get(app.mRouteIndex).get(RouteDaoStationParams.LineName));
          //站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
 		stationTextView.setText(app.mLineJsonData.StationInfo.get(mStationIndex).Name);

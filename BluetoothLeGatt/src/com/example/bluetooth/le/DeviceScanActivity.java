@@ -42,21 +42,27 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.zip.CRC32;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
@@ -66,13 +72,14 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import com.example.bluetooth.analysis.DataAnalysis;
+import com.example.bluetooth.analysis.MyCRC32;
 import com.example.bluetooth.le.BluetoothLeClass.OnDataAvailableListener;
 import com.example.bluetooth.le.BluetoothLeClass.OnServiceDiscoverListener;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
-public class DeviceScanActivity extends Activity implements OnClickListener {
+public class DeviceScanActivity extends Activity implements OnClickListener,OnItemSelectedListener {
 	private final static String TAG = "luotest.DeviceScanActivity";//DeviceScanActivity.class.getSimpleName();
 	private final static String UUID_KEY_WRITE_DATA = "00002a52-0000-1000-8000-00805f9b34fb";//0000ffe1-0000-1000-8000-00805f9b34fb";
 	private final static String UUID_KEY_READ_DATA = "00002a18-0000-1000-8000-00805f9b34fb";
@@ -82,13 +89,16 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
     /**读写BLE终端*/
     private BluetoothLeClass mBLE;
     private boolean mScanning;
+    String StrCMD[]= new String [23];
    // private Handler mHandler;
-   
-    private static final String fta="7F 14 0A 00 04 00 00 00 00 00 00 00 00 00 00 00 6f 14 f5 ca";
-    private static final String ftb="7f 14 D1 01 01 00 00 00 00 00 00 00 00 00 00 00 0c 6d 35 b9";
-    private static final String ftc="7F 14 D2 00 00 00 00 00 00 00 00 00 00 00 00 00 fd 02 d4 5e";
-    private static final String ftd="7F 14 D3 00 00 00 00 00 00 00 00 00 00 00 00 00 fd 25 85 69";
-    private static final String fte="7F 14 D4 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 15";
+    private static final String fta="7F 14 D5 0A 00 04 00 00 00 00 00 00 00 00 00 00";/////////下载参数命令包 5    6f 14 f5 ca
+    private static final String ftb="7f 14 D1 01 01 00 00 00 00 00 00 00 00 00 00 00";/////读实时数据    a2 63 66 77
+    private static final String ftc="7F 14 D2 00 00 00 00 00 00 00 00 00 00 00 00 00";//读传感器本身参数   fd 02 d4 5e
+    private static final String ftd="7F 14 D3 00 00 00 00 00 00 00 00 00 00 00 00 00";//采集转速    fd 25 85 69
+    private static final String fte="7F 14 D4 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16";//下载设备名称 17 18 19 15
+    
+    
+    
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
     private String strValue = "";
@@ -105,8 +115,22 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
     private long mtime=0;
     private int mTestType=R.id.radio2;
     DataAnalysis dataAnalysis;
+    private Spinner mCMDSpinner =null;
+    private Spinner m51Spinner =null;
+    private Spinner m52Spinner =null;
+    private Spinner m11Spinner =null;
+    private Spinner m12Spinner =null;
+    private EditText mDeviceNameEditText=null;
     
+    LinearLayout layoutcmd5;
+    LinearLayout layoutcmd1;
+    LinearLayout layoutcmd4;
     
+    ArrayAdapter<CharSequence> adapter;
+    ArrayAdapter<CharSequence> adapter51;
+    ArrayAdapter<CharSequence> adapter52;
+    ArrayAdapter<CharSequence> adapter11;
+    ArrayAdapter<CharSequence> adapter12;
 	String str ="7d7d7d7d0101040009e5ebf3f02cf4c4f9e6ff4b049f09c00e5312a61615187c19fb1a9f1a20189d15d212850e44097f046bf"
 			+ "f08f9d2f49af006ebc4e88ee619e512e42de54ae6d6e9c7ed7bf17ff66efbc000f206560b5e0fd513c816e719101a531a62198e"
 			+ "179814b111270c9507ad0284fd1bf7eef2d6eeabeab4e77ee56be4a4e496e58de7bdeae2eec1f318f836fd5702d808110cf5115"
@@ -157,11 +181,62 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
         getActionBar().setTitle(R.string.title_devices);
        
         setContentView(R.layout.main);
+        //CRC32 算法比对测试，调用算法及现成的Java
+        String testStr= "7f14D101010000000000000000000000";
+       // String test= Utils.getCRC32(testStr);
+        
+        
+        initCMDdata();
+       int cmd[]={0x7f, 0x14 ,0xD1 ,0x01, 0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00};
+    	
+        String test2= MyCRC32.getCRC32(testStr);
+        
+        mCMDSpinner = (Spinner) findViewById(R.id.DX); 
+        adapter = ArrayAdapter.createFromResource( 
+                this, R.array.cmd, 
+                android.R.layout.simple_spinner_dropdown_item); 
+        mCMDSpinner.setAdapter(adapter); 
+        mCMDSpinner.setOnItemSelectedListener(this);
+        
+        m51Spinner = (Spinner) findViewById(R.id.spinner51); 
+        adapter51 = ArrayAdapter.createFromResource( 
+                this, R.array.d5pinlv, 
+                android.R.layout.simple_spinner_dropdown_item); 
+        m51Spinner.setAdapter(adapter51);
+        m51Spinner.setOnItemSelectedListener(this);
+        
+        m52Spinner = (Spinner) findViewById(R.id.spinner52); 
+        adapter52 = ArrayAdapter.createFromResource( 
+                this, R.array.d5dianshu, 
+                android.R.layout.simple_spinner_dropdown_item); 
+        m52Spinner.setAdapter(adapter52);
+        m52Spinner.setOnItemSelectedListener(this);
+        
+        m11Spinner = (Spinner) findViewById(R.id.spinner11); 
+        adapter11 = ArrayAdapter.createFromResource( 
+                this, R.array.zhoushu, 
+                android.R.layout.simple_spinner_dropdown_item); 
+        m11Spinner.setAdapter(adapter11);
+        m11Spinner.setOnItemSelectedListener(this);
+        
+        m12Spinner = (Spinner) findViewById(R.id.spinner12); 
+        adapter12 = ArrayAdapter.createFromResource( 
+                this, R.array.jiasudutype, 
+                android.R.layout.simple_spinner_dropdown_item); 
+        m12Spinner.setAdapter(adapter12);
+        m12Spinner.setOnItemSelectedListener(this);
+        
+        mDeviceNameEditText =(EditText) findViewById(R.id.devicename);
+        
+        
+        layoutcmd5 = (LinearLayout)findViewById(R.id.cmd5); 
+        layoutcmd1 = (LinearLayout)findViewById(R.id.cmd1); 
+        layoutcmd4 = (LinearLayout)findViewById(R.id.cmd4); 
         
         dataAnalysis = new DataAnalysis();
         mListView = (ListView)findViewById(R.id.listView1);
         mListView.setOnItemClickListener(new OnItemClickListener(){
-
+        	
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
@@ -188,21 +263,6 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 			public void onCheckedChanged(RadioGroup arg0, int arg1) {
 				// TODO Auto-generated method stub
 				mTestType=	arg0.getCheckedRadioButtonId();
-//				switch(arg0.getCheckedRadioButtonId()){
-//				case R.id.radio1:
-//					mTestType=	;
-//					break;
-//				case R.id.radio2:
-//					break;
-//				case R.id.radio3:
-//					break;
-//				case R.id.radio4:
-//					break;
-//				case R.id.radio5:
-//					break;
-//					
-//				}
-				
 			}
         	
         });
@@ -329,6 +389,7 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 		@Override
 		public void onCharacteristicWrite(BluetoothGatt gatt,
 				BluetoothGattCharacteristic characteristic) {
+			byte[] byteData=characteristic.getValue();
 			String teStr= Utils.bytesToHexString(characteristic.getValue());
 			Log.e(TAG,"onCharWrite "+gatt.getDevice().getName()
 					+" write "
@@ -468,13 +529,63 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		Log.d(TAG,"luo onClick()");
+		
 		switch(arg0.getId()){
 		case R.id.button1:
-			if("".equals(mCmdText.getText().toString())){
-				Toast.makeText(getApplicationContext(), "命令不能为空", Toast.LENGTH_SHORT).show();
-			}else{
-				 ;
-				displayGattServices(mBLE.getSupportedGattServices(),mCmdText.getText().toString(),mTestType);
+			if(StrCMD[2].equals("D4")){
+				String deviceName = mDeviceNameEditText.getText().toString();
+				if("".equals(mCmdText.getText().toString())){
+					Toast.makeText(getApplicationContext(), "设备名不能为空", Toast.LENGTH_SHORT).show();
+					return;
+				}else{
+					
+				try {
+					String ss = new String(deviceName.getBytes(),"gb2312");
+					byte []abcd=ss.getBytes();
+					StrCMD[4]=Utils.byte2HexStr(abcd);
+					
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				}
+			};
+			
+			
+//			if("".equals(mCmdText.getText().toString())){
+//				Toast.makeText(getApplicationContext(), "命令不能为空", Toast.LENGTH_SHORT).show();
+//			}else
+			{
+				String strCMD="";
+				String abc = "";
+				boolean isD5 =StrCMD[2].equals("D5");
+				
+				for (int i = 0; i < StrCMD.length; i++) {
+					if (isD5) {
+						if (i == 3 || i == 4) {
+
+							int k = StrCMD[i].length();
+							if (k < 4) {
+								abc = "";
+								for (int n = 0; n < 4 - k; n++) {
+									abc = abc + "0";
+								}
+								StrCMD[i] = abc + StrCMD[i];
+							}
+
+						}
+					}
+					strCMD = strCMD + StrCMD[i];
+				}
+				
+				if(StrCMD[2].equals("D1")
+						||StrCMD[2].equals("D2")||StrCMD[2].equals("D3")||StrCMD[2].equals("D5")
+						){
+					strCMD=strCMD.substring(0, 20);
+				}else{
+					strCMD=strCMD.substring(0, 24);
+				}
+				displayGattServices(mBLE.getSupportedGattServices(),strCMD,mTestType);
 			}
 			
 			/*Message msg = mHandler.obtainMessage(1);
@@ -487,6 +598,8 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 			mHandler.sendMessage(msg);*/
 			
 		break;
+		
+	
 		
 		}
 	}
@@ -524,7 +637,7 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 					}
 					String XTitle = "测点序号\nMin:"+MinMaxTemp[0]+"\nMax:"+MinMaxTemp[1]+"\n测试点数："+dataAnalysis.getDataNum();
 					String YTitle = "m/s^2";
-					 startActivity(getBlackLineChartView("Test", data, new String[]{XTitle,YTitle}));
+					startActivity(getBlackLineChartView("Test", data, new String[]{XTitle,YTitle}));
 				   }
 				break;
 			case MSG_RE_SEND_DATA:
@@ -554,7 +667,6 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 		 }
 		 xValues.add(x);
 		 XYMultipleSeriesDataset dataset = buildDataset(titles, xValues, yValues);
-
 		 XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		    renderer.setXLabels(12);
 		    renderer.setYLabels(10);
@@ -570,13 +682,14 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 		    renderer.setYAxisMin(-300);
 		    renderer.setYAxisMax(300);
 		    renderer.setXAxisMin(0);
-		    renderer.setXAxisMax(200);
+		    renderer.setXAxisMax(y.length-1);
 		    renderer.setLegendHeight(150);
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
-		    renderer.setMargins(new int[] {20, 35, 10, 10});
-		    renderer.setPanEnabled(true,true);
+		    renderer.setMargins(new int[] {60, 35, 10, 10});
+		    renderer.setPanEnabled(true,false);
+		    renderer.setPointSize(0);
 		    if(xyTitle!=null){
 			    renderer.setAxisTitleTextSize(20);
 			    renderer.setXTitle(xyTitle[0]);
@@ -632,4 +745,109 @@ public class DeviceScanActivity extends Activity implements OnClickListener {
 	     dataset.addSeries(series);                        /* 将单条曲线数据存放到 图表数据集中 */
 	   }
 	 }
+
+	
+//	 StrCMD[0]="0X7F";
+//	 StrCMD[1]="0X14";
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		if(arg2==0)return;
+		// TODO Auto-generated method stub
+		switch(arg0.getId()){
+			case R.id.spinner51:
+			{
+				
+				String a = adapter51.getItem(arg2).toString();
+				int k=Integer.valueOf(a);
+				StrCMD[3] = Integer.toHexString(k).toUpperCase() ;
+				
+				}
+				break;
+				
+			case R.id.spinner52:
+			{
+				
+				String a = adapter52.getItem(arg2).toString();
+				int k=Integer.valueOf(a);
+				StrCMD[4] = Integer.toHexString(k).toUpperCase() ;
+				
+				}
+				break;
+				
+			case R.id.spinner11:
+			{
+				String a= adapter11.getItem(arg2).toString();
+				String b = StrCMD[3] =a.replace("0x", "");
+				}
+				break;
+				
+			case R.id.spinner12:
+			{
+				String a= adapter12.getItem(arg2).toString();
+				StrCMD[4] =a.replace("0x", "");
+				
+				}
+				break;
+				
+			case R.id.DX:
+				initCMDdata();
+				switch(arg2){
+				case 1:
+					layoutcmd5.setVisibility(View.GONE);
+					layoutcmd4.setVisibility(View.GONE);
+					layoutcmd1.setVisibility(View.VISIBLE);
+					StrCMD[1]="14";
+					StrCMD[2]="D1";
+					break;
+				case 2:
+					layoutcmd5.setVisibility(View.GONE);
+					layoutcmd4.setVisibility(View.GONE);
+					layoutcmd1.setVisibility(View.GONE);
+					StrCMD[1]="14";
+					StrCMD[2]="D2";
+					
+					break;
+				case 3:
+					layoutcmd5.setVisibility(View.GONE);
+					layoutcmd4.setVisibility(View.GONE);
+					layoutcmd1.setVisibility(View.GONE);
+					StrCMD[1]="14";
+					StrCMD[2]="D3";
+					break;
+				case 4:
+					layoutcmd5.setVisibility(View.GONE);
+					layoutcmd1.setVisibility(View.GONE);
+					layoutcmd4.setVisibility(View.VISIBLE);
+					StrCMD[1]="17";
+					StrCMD[2]="D4";					
+					break;
+				case 5:
+					layoutcmd5.setVisibility(View.VISIBLE);
+					layoutcmd1.setVisibility(View.GONE);
+					layoutcmd4.setVisibility(View.GONE);
+					StrCMD[1]="14";
+					StrCMD[2]="D5";
+					break;
+				}   
+				break;
+		}
+	}
+	
+	void initCMDdata(){
+		for(int i=0;i<StrCMD.length;i++){
+			StrCMD[i]="00";
+		}
+		StrCMD[0]="7F";
+		StrCMD[1]="14";
+	
+		
+	}
+
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

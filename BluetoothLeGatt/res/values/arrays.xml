@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="d5pinlv">
+    <item>请选择</item>
+	<item>256</item>
+	<item>512</item>
+	<item>1280</item>	
+	<item>2560</item>
+	<item>5120</item>
+	<item>12800</item>
+	<item>2560</item>
+</string-array>
+
+<string-array name="d5dianshu">
+     <item>请选择</item>
+	<item>256</item>
+	<item>512</item>
+	<item>1024</item>	
+	<item>2048</item>
+	<item>4096</item>
+	<item>8192</item>
+</string-array>
+
+<string-array name="cmd">
+     <item>请选择</item>
+	<item>0xD1</item>
+	<item>0xD2</item>
+	<item>0xD3</item>	
+	<item>0xD4</item>
+	<item>0xD5</item>
+</string-array>
+
+<string-array name="zhoushu">
+     <item>请选择</item>
+	<item>0x01</item>
+	<item>0x02</item>
+	<item>0x03</item>		
+</string-array>
+<string-array name="jiasudutype">
+     <item>请选择</item>
+	<item>0x01</item>
+	<item>0x02</item>
+	<item>0x03</item>		
+</string-array>
+
+<string-array name="check_data_type">
+	<item>温度</item>
+	<item>录入</item>
+	<item>测量</item>	
+	<item>加速度</item>
+	<item>速度</item>
+	<item>位移</item>	
+	<item>转速</item>
+	<item>预设状况</item>
+	<item>观察类</item>	
+	<item>观察类</item>	
+	<item>观察类</item>	
+</string-array>  
+ <string-array name="exception_msg">
+	<item>无效</item>
+	<item>正常</item>
+	<item>警告</item>	
+	<item>危险</item>
+	<item>失效</item>
+	<item>异常</item>	
+	<item>一般</item>
+	<item>轻微</item>
+	<item>严重</item>	
+	<item>紧急</item>	
+</string-array>  
+ <string-array name="groungding_spinner">
+	<item>良好</item>
+	<item>不良</item>
+	<item>断开</item>	
+</string-array> 
+
+<string-array name="spinnername">
+    <item>正序</item>
+    <item>反序</item>	
+ </string-array>
+ <string-array name="network_setting">
+    <item>本机信息</item>
+    <item>密码重置</item>
+    <item>推送设置</item>
+    <item>读卡器</item>
+    <item>存储设置</item>
+    <item>时间同步</item>
+ </string-array>
+ <string-array name="month">  
+    <item>1日</item>  
+    <item>10日</item>  
+    <item>15日</item>  
+    <item>20日</item>  
+    <item>30日</item>
+    <item>35日</item>
+</string-array> 
+ <string-array name="msg_start_time">  
+    <item>2015.8.24</item>  
+    <item>2015.8.25</item>  
+    <item>2015.8.26</item>  
+    <item>2015.8.27</item>  
+    <item>2015.8.28</item>  
+    <item>2015.8.29</item>
+</string-array> 
+ <string-array name="msg_end_time">  
+    <item>2015.8.25</item>  
+    <item>2015.8.26</item>  
+    <item>2015.8.27</item>  
+    <item>2015.8.28</item>  
+    <item>2015.8.29</item>
+</string-array> 
+ <string-array name="msg_class">  
+    <item>全部</item>  
+    <item>今天</item> 
+    <item>未读</item>  
+</string-array> 
+ <string-array name="search_class">  
+    <item>正序</item>  
+    <item>正序</item> 
+    <item>正序</item>  
+</string-array>
+ <string-array name="route_temp_factory">  
+    <item>中煤旭阳焦化厂</item>  
+    <item>中煤旭阳焦化厂</item> 
+    <item>中煤旭阳焦化厂</item>  
+</string-array>
+ <string-array name="route_temp_series">  
+    <item>化产一系</item>  
+    <item>化产一系</item> 
+    <item>化产一系</item>  
+</string-array>
+ <string-array name="route_temp_plant">  
+    <item>鼓冷车间</item>  
+    <item>鼓冷车间</item> 
+    <item>鼓冷车间</item>  
+</string-array>
+</resources>

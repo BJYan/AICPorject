@@ -19,6 +19,7 @@ package com.example.bluetooth.le;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -148,4 +149,56 @@ public class Utils {
         }  
         return stringBuilder.toString();  
     }  
+    
+    
+    public static  String getCRC32(String str){
+    	CRC32 crc32 = new CRC32(); 
+    	crc32.update(str.getBytes()); 
+    	
+    	return Long.toHexString(crc32.getValue());
+    	
+    }
+    
+    public static  String getCRC32(byte[] str){
+    	CRC32 crc32 = new CRC32(); 
+    	crc32.update(str); 
+    	
+    	return Long.toHexString(crc32.getValue());
+    	
+    }
+    
+    public static byte[] toByteArray(int iSource, int iArrayLen) {
+        byte[] bLocalArr = new byte[iArrayLen];
+        for (int i = 0; (i < 4) && (i < iArrayLen); i++) {
+            bLocalArr[i] = (byte) (iSource >> 8 * i & 0xFF);
+        }
+        return bLocalArr;
+    }
+    /** 
+     * 将int类型的数据转换为byte数组 
+     * 原理：将int数据中的四个byte取出，分别存储 
+     * @param n int数据 
+     * @return 生成的byte数组 
+     */  
+   public static byte[] intToBytes2(int n){  
+       byte[] b = new byte[4];  
+       for(int i = 0;i < 4;i++){  
+           b[i] = (byte)(n >> (24 - i * 8));   
+       }  
+       return b;  
+   }  
+   
+   
+   public static String byte2HexStr(byte[] b)    
+   {    
+       String stmp="";    
+       StringBuilder sb = new StringBuilder("");    
+       for (int n=0;n<b.length;n++)    
+       {    
+           stmp = Integer.toHexString(b[n] & 0xFF);    
+           sb.append((stmp.length()==1)? "0"+stmp : stmp);    
+           sb.append(" ");    
+       }    
+       return sb.toString().toUpperCase().trim();    
+   }    
 }

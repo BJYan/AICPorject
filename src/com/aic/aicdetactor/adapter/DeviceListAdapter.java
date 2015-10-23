@@ -51,7 +51,8 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
 		//this.mChildrenList = mChildrenList;
-		mStationIndex = stationIndex;
+		app =(myApplication) av.getApplication();
+		app.mStationIndex=mStationIndex = stationIndex;
 		mDeviceIndex = deviceIndex;
 		mActivity = av;
 		mDataList = new ArrayList<Map<String, String>>();
@@ -73,7 +74,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	}
 	
 	@Override
-	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
+	public View getChildView(final int arg0, final int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
 				GroupViewHolder holder = null;
 
@@ -120,7 +121,8 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 					
 				}
 				arg3.setOnClickListener(new OnClickListener(){
-
+					int deviceindex = arg0;
+					int partindex = arg1;
 					@Override
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
@@ -134,9 +136,10 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 //						mActivity.startActivity(i);
 						Toast.makeText(context, "000", Toast.LENGTH_SHORT).show();
 						Intent intent = new Intent();
-						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
-						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
-						intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX, 0);
+						app.mDeviceIndex=deviceindex;
+						app.mPartItemIndex = partindex;
+						//intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, deviceindex);
+						//intent.putExtra(CommonDef.check_unit_info.LISTVIEW_ITEM_INDEX, partindex);
 						intent.setClass(mActivity, PartItemActivity.class);
 						mActivity.startActivity(intent); 
 					}
