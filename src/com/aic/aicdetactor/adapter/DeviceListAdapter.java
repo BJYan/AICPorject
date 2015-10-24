@@ -132,16 +132,17 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 						//获取测试项的类型
 						//int itype = Integer.valueOf(typeT.getText().toString());
 						//根据类型选择显示不同的UI，调用界面类似于PartItemActivity:switchFragment函数
-//						Intent i = new Intent();
-//						mActivity.startActivity(i);
-						Toast.makeText(context, "000", Toast.LENGTH_SHORT).show();
+						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_In_Place!=1){
+						
 						Intent intent = new Intent();
 						app.mDeviceIndex=deviceindex;
 						app.mPartItemIndex = partindex;
-						//intent.putExtra(CommonDef.device_info.LISTVIEW_ITEM_INDEX, deviceindex);
-						//intent.putExtra(CommonDef.check_unit_info.LISTVIEW_ITEM_INDEX, partindex);
 						intent.setClass(mActivity, PartItemActivity.class);
 						mActivity.startActivity(intent); 
+						}else{
+							addIs_InPlacePartItem(deviceindex);
+							Toast.makeText(context, "到位管理完成", Toast.LENGTH_LONG).show();
+						}
 					}
 					
 				});
@@ -175,7 +176,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	}
 
 	@Override
-	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
+	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		
 		
@@ -199,6 +200,22 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 			holder.image.setBackgroundResource(R.drawable.arrow);
 		}
 		holder.NameText.setText(map.get(CommonDef.device_info.NAME).toString());
+//		arg2.setOnClickListener(new OnClickListener(){
+//			int deviceIndex = arg0;
+//			@Override
+//			public void onClick(View arg0) {
+//				// TODO Auto-generated method stub
+//				if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_In_Place==1){
+//			if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem ==null
+//					|| app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.size()==0){
+//				addIs_InPlacePartItem(deviceIndex);
+//			}
+//				}else{
+//				//	super.
+//				}
+//			}
+//			
+//		});
 		return arg2;
 	}
 
@@ -284,6 +301,24 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	@Override
 	public void onClickBtn2Listener(CommonDialog dialog) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	//如果是 在位管理的话 ，需要在partitem数组中新增添一项partitem
+	void addIs_InPlacePartItem(int deviceIndex){
+		PartItemJson partitem = new PartItemJson();
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Device_Checked=1;
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_RFID_Checked=1;
+		if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem !=null
+				&&app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.size()>0){
+			List<PartItemJson> PartItem = app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem;
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.removeAll(PartItem);
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.add(partitem);
+		}else{
+			List<PartItemJson>list = new ArrayList<PartItemJson>();
+			list.add(partitem);
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem=list;
+		}
 		
 	}
 

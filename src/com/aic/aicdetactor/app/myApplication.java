@@ -49,9 +49,9 @@ public class myApplication extends Application
       
     public List<Map<String,String>> mFileList = null;
     //当前日常巡检数据，不包括特巡数据
-    private DownloadNormalData mNormalLineJsonData=null;
+    public DownloadNormalData mNormalLineJsonData=null;
     //当前特巡数据，不包括日常巡检数据
-    private DownloadNormalData mSpecialLineJsonData=null;
+    public DownloadNormalData mSpecialLineJsonData=null;
     //剔除后的当前巡检数据
     public DownloadNormalData mLineJsonData=null;
     //

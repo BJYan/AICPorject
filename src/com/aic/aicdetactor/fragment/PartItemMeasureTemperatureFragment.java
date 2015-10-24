@@ -26,7 +26,7 @@ import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 
-public class Temperature_fragment extends Fragment  implements OnButtonListener{
+public class PartItemMeasureTemperatureFragment  extends PartItemMeasureBaseFragment  implements OnButtonListener{
 
 	//listview
 	private ListView mListview = null;
@@ -42,13 +42,13 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 	//之间的通信接口
 	private OnTemperatureMeasureListener mCallback = null;
 	private List<Map<String, Object>> mMapList = null;
-	String parStr = null;
+//	String parStr = null;
 	final String TAG = "luotest";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		MLog.Logd(TAG," Temperature_fragment:onCreate()");
-		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
+		
 		mMapList = new ArrayList<Map<String, Object>>();
 		//初始化ListVew 数据项
 		String [] arraryStr = new String[]{this.getString(R.string.electric_device_parameters),
@@ -65,6 +65,8 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 			
 		
 		super.onCreate(savedInstanceState);
+		int nindex = super.mPartItemIndex;
+		
 	}
 
 	@Override
@@ -128,8 +130,8 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 		mRadioButton = (RadioButton)view.findViewById(R.id.radioButton2);
 		mColorTextView = (TextView)view.findViewById(R.id.resultTips);
 		mTemeratureResultStr =(TextView)view.findViewById(R.id.temperature);
-		mDeviceNameTextView.setText(parStr);
-		parseExternalInfo();
+		mDeviceNameTextView.setText(getPartItemName());
+		//parseExternalInfo();
 		MLog.Logd(TAG," Temperature_fragment:onCreateView()");
 		return view;
 	}
@@ -140,40 +142,40 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 		MLog.Logd(TAG," Temperature_fragment:onPause()");
 		super.onPause();
 	}
-	void parseExternalInfo(){
-    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
-		mTemeratureResultStr.setText(newValue);
-    }
+//	void parseExternalInfo(){
+//    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+//		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
+//		mTemeratureResultStr.setText(newValue);
+//    }
 	  //临时生成随机的三维坐标数据及温度数据。
     void genRandom_temperation(){    
     	float max_temperation=300;
     	float MAX = 200;
     	float MID = 100;
     	float LOW = 0;
-    	String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		
-    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
-    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
-    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
-
-    	float temp = (int) (Math.random()*max_temperation);
-    	if((temp < MAX) && (temp>=MID) ){
-    		mRadioButton.setBackgroundColor(Color.YELLOW);
-    		mColorTextView.setText(getString(R.string.warning));
-    		
-    	}else if((temp >= LOW) && (temp<MID)){
-    		mRadioButton.setBackgroundColor(Color.BLACK);
-    		mColorTextView.setText(getString(R.string.normal));
-    	}else if(temp <LOW){
-    		mRadioButton.setBackgroundColor(Color.GRAY);
-    		mColorTextView.setText(getString(R.string.invalid));
-    	}else if(temp>=MAX){
-    		mRadioButton.setBackgroundColor(Color.RED);
-    		mColorTextView.setText(getString(R.string.dangerous));
-    	}
-    	mTemeratureResultStr.setText(temp + " C");
-    	mCallback.OnClick(temp + " C"+"*");
+//    	String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+//		
+//    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
+//    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
+//    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
+//
+//    	float temp = (int) (Math.random()*max_temperation);
+//    	if((temp < MAX) && (temp>=MID) ){
+//    		mRadioButton.setBackgroundColor(Color.YELLOW);
+//    		mColorTextView.setText(getString(R.string.warning));
+//    		
+//    	}else if((temp >= LOW) && (temp<MID)){
+//    		mRadioButton.setBackgroundColor(Color.BLACK);
+//    		mColorTextView.setText(getString(R.string.normal));
+//    	}else if(temp <LOW){
+//    		mRadioButton.setBackgroundColor(Color.GRAY);
+//    		mColorTextView.setText(getString(R.string.invalid));
+//    	}else if(temp>=MAX){
+//    		mRadioButton.setBackgroundColor(Color.RED);
+//    		mColorTextView.setText(getString(R.string.dangerous));
+//    	}
+//    	mTemeratureResultStr.setText(temp + " C");
+//    	mCallback.OnClick(temp + " C"+"*");
     }
 
     @Override
@@ -223,5 +225,12 @@ public class Temperature_fragment extends Fragment  implements OnButtonListener{
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
 		genRandom_temperation();
+	}
+
+	@Override
+	public void saveCheckValue() {
+		// TODO Auto-generated method stub
+		Log.d("atest", "温度2222   saveCheckValue()");
+		super.setPartItemData("温度2222");
 	}
 }

@@ -22,7 +22,7 @@ import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.MLog;
 
 
-public class Observer_fragment extends Fragment implements OnButtonListener{
+public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment implements OnButtonListener{
 
 	//listview
 	private ListView mListview = null;
@@ -40,14 +40,12 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 	
 	//之间的通信接口
 	private OnMediakListener mCallback = null;
-	String parStr = null;
 	EditText mExternalInfoEditText = null;
 	private TextView mDeviceNameTextView = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
 	}
 
 	@Override
@@ -59,9 +57,9 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		mListview = (ListView)view.findViewById(R.id.listView1);
 		mImageView = (ImageView)view.findViewById(R.id.imageView1);	
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
-		mDeviceNameTextView.setText(parStr);
-		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);	
-		parseExternalInfo();
+		mDeviceNameTextView.setText(getPartItemName());
+		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);
+		mExternalInfoEditText.setText(getPartItemName());
 		return view;
 	}
 
@@ -84,11 +82,7 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
         }
     }
 
-    void parseExternalInfo(){
-    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
-		mExternalInfoEditText.setText(newValue);
-    }
+  
 	@Override
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
@@ -170,4 +164,11 @@ public class Observer_fragment extends Fragment implements OnButtonListener{
 		}
 	}
 
+	@Override
+	public void saveCheckValue() {
+		// TODO Auto-generated method stub
+		Log.d("atest", "Observert   saveCheckValue()");
+		super.setPartItemData("Observert");
+	}
+	
 }

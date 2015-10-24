@@ -37,7 +37,7 @@ import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.SystemUtil;
 
 
-public class Vibrate_fragment extends Fragment  implements OnButtonListener{
+public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment  implements OnButtonListener{
 
 	private ListView mListView = null;
 	private ImageView mImageView = null;
@@ -56,7 +56,6 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	private TextView mDeviceNameTextView = null;
 	private String TAG = "luotest";
 	private ImageView mHistoryImageView = null;
-	String parStr = null;
 	private int mZhouCounts = 0;
 	private LinearLayout MYLinear = null;
 	private LinearLayout MZLinear = null;
@@ -65,7 +64,6 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
 		// TODO Auto-generated method stub
-		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
 		mZhouCounts =getArguments().getInt(KEY.KEY_ZHOU_COUNTS);
 		mMapList = new ArrayList<Map<String, Object>>();
 		//初始化ListVew 数据项
@@ -84,9 +82,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 			super.onCreate(savedInstanceState);
 	}
  
-	public Vibrate_fragment(){
-		mIndex = 0;
-	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -110,14 +106,14 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 				
 				if(arg2 == 0){
 					Intent intent = new Intent();					
-					 intent.setClass(Vibrate_fragment.this.getActivity(),ElectricParameteActivity.class);
+					 intent.setClass(PartItemMeasureVibrateFragment.this.getActivity(),ElectricParameteActivity.class);
 					 startActivity(intent);
 				}else{
 					Intent intent = null;
 					IDemoChart[] mCharts = new IDemoChart[] {
 							 new AverageTemperatureChart()};
 				     // intent = new Intent(this, TemperatureChart.class);
-				      intent = mCharts[0].execute(Vibrate_fragment.this.getActivity(),"test");
+				      intent = mCharts[0].execute(PartItemMeasureVibrateFragment.this.getActivity(),"test");
 				    startActivity(intent);
 				}
 				 
@@ -132,7 +128,7 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 		
 		mXTextView = (TextView)view.findViewById(R.id.x_value);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
-		mDeviceNameTextView.setText(parStr);
+		mDeviceNameTextView.setText(getPartItemName());
 		mYTextView = (TextView)view.findViewById(R.id.y_value);
 		mZTextView = (TextView)view.findViewById(R.id.z_value);
 		mTimeTextView = (TextView)view.findViewById(R.id.time_value);
@@ -208,11 +204,11 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	}; 
 	
 	void parseExternalInfo(){
-    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
-		mXTextView.setText(newValue);
-		mYTextView.setText(newValue);
-		mZTextView.setText(newValue);
+//    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+//		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
+//		mXTextView.setText(newValue);
+//		mYTextView.setText(newValue);
+//		mZTextView.setText(newValue);
 		
     }
 	void displayPic(Uri path){
@@ -280,51 +276,51 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
     	float MID = 100;
     	float LOW = 0;
     	
-		String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		
-    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
-    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
-    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
-
-		
-    	int x = (int) (Math.random()*max_xyz);
-    	int y = (int) (Math.random()*max_xyz);
-    	int z = (int) (Math.random()*max_xyz);
-    	float temp = (int) (Math.random()*max_temperation);
-    	
-    	mXTextView.setText(String.valueOf(x));
-    	mYTextView.setText(String.valueOf(y));
-    	mZTextView.setText(String.valueOf(z));
-    	switch(mZhouCounts){
-    	case 1:
-    		y=z=0;
-    		break;
-    	case 2:
-    		z=0;
-    		break;
-    	}
-   
-    	if((temp < MAX) && (temp>=MID) ){
-    		mRadioButton.setBackgroundColor(Color.YELLOW);
-    		if(mColorTextView !=null)
-    		mColorTextView.setText(getString(R.string.warning));
-    		
-    	}else if((temp >= LOW) && (temp<MID)){
-    		mRadioButton.setBackgroundColor(Color.BLACK);
-    		if(mColorTextView !=null)
-    		mColorTextView.setText(getString(R.string.normal));
-    	}else if(temp <LOW){
-    		mRadioButton.setBackgroundColor(Color.GRAY);
-    		if(mColorTextView !=null)
-    		mColorTextView.setText(getString(R.string.invalid));
-    	}else if(temp>=MAX){
-    		mRadioButton.setBackgroundColor(Color.RED);
-    		if(mColorTextView !=null)
-    		mColorTextView.setText(getString(R.string.dangerous));
-    	}
-    	
-    	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
-    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
+//		String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+//		
+//    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
+//    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
+//    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
+//
+//		
+//    	int x = (int) (Math.random()*max_xyz);
+//    	int y = (int) (Math.random()*max_xyz);
+//    	int z = (int) (Math.random()*max_xyz);
+//    	float temp = (int) (Math.random()*max_temperation);
+//    	
+//    	mXTextView.setText(String.valueOf(x));
+//    	mYTextView.setText(String.valueOf(y));
+//    	mZTextView.setText(String.valueOf(z));
+//    	switch(mZhouCounts){
+//    	case 1:
+//    		y=z=0;
+//    		break;
+//    	case 2:
+//    		z=0;
+//    		break;
+//    	}
+//   
+//    	if((temp < MAX) && (temp>=MID) ){
+//    		mRadioButton.setBackgroundColor(Color.YELLOW);
+//    		if(mColorTextView !=null)
+//    		mColorTextView.setText(getString(R.string.warning));
+//    		
+//    	}else if((temp >= LOW) && (temp<MID)){
+//    		mRadioButton.setBackgroundColor(Color.BLACK);
+//    		if(mColorTextView !=null)
+//    		mColorTextView.setText(getString(R.string.normal));
+//    	}else if(temp <LOW){
+//    		mRadioButton.setBackgroundColor(Color.GRAY);
+//    		if(mColorTextView !=null)
+//    		mColorTextView.setText(getString(R.string.invalid));
+//    	}else if(temp>=MAX){
+//    		mRadioButton.setBackgroundColor(Color.RED);
+//    		if(mColorTextView !=null)
+//    		mColorTextView.setText(getString(R.string.dangerous));
+//    	}
+//    	
+//    	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
+//    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
     }
 
 	
@@ -352,5 +348,13 @@ public class Vibrate_fragment extends Fragment  implements OnButtonListener{
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
 		genRandomXYZ();
+	}
+
+
+	@Override
+	public void saveCheckValue() {
+		// TODO Auto-generated method stub
+		Log.d("atest", "震动   saveCheckValue()");
+		super.setPartItemData("震动");
 	}
 }

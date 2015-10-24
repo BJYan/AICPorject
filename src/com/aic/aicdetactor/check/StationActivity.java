@@ -34,7 +34,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Gravity;
@@ -42,13 +41,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -93,9 +89,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
-	private boolean mSpecial = false;
-	private List<Map<String, String>> mDataList = null;
-	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
+private boolean mSpecial = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +116,6 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			bar.setLogo(null);;
 			bar.setDisplayUseLogoEnabled(false);
 			bar.setTitle(oneCatalog);*/
-			mDataList = new ArrayList<Map<String, String>>();
-			InitStationData();
 			
 			ImageView recordBtn = (ImageView)findViewById(R.id.station_record);
 			recordBtn.setOnClickListener(this);
@@ -162,48 +154,16 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
-			
-			final ExpandableListView secGroupView = getExpandableListView();
-			mListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-				
-				@Override
-				public void onGroupExpand(int arg0) {
-					// TODO Auto-generated method stub
-					/*AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-							LayoutParams.WRAP_CONTENT);
-					secGroupView.setLayoutParams(lp);*/
-				}
-			});
-			mListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-				
-				@Override
-				public void onGroupCollapse(int arg0) {
-					// TODO Auto-generated method stub
-					/*AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-							LayoutParams.WRAP_CONTENT);
-					secGroupView.setLayoutParams(lp);*/
-				}
-			});
-			
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mSpecial,secGroupView
-					,mDataList,mChildrenList);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,mSpecial);
 			mListView.setAdapter(mListViewAdapter);
+			
 
 		}
-	
-	public ExpandableListView getExpandableListView(){
-		ExpandableListView ExListView = new ExpandableListView(this);
-		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ExListView.setPadding(30, 0, 10, 0);
-		ExListView.setLayoutParams(lp);
-		ExListView.setGroupIndicator(null);
-		return ExListView;
-	}
 	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		//initListViewData();
+		mListViewAdapter.notifyDataSetChanged();
 		super.onResume();
 	}
 
@@ -349,42 +309,4 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 
 	       }
 		
-		void InitStationData() {
-
-			long g=System.currentTimeMillis();
-			MLog.Logd(TAG, " InitData()>> "+g);
-			try {
-	           String path= app.mFileList.get(mRouteIndex).get("LinePath");
-	           app.LineDataClassifyFromOneFile(path,mSpecial);
-				mDataList.clear();
-				mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
-				for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
-					try {
-						Map<String, String> map = new HashMap<String, String>();
-						map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
-						map.put(CommonDef.station_info.DEADLINE, "2015");
-						map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mSpecial));
-						mDataList.add(map);
-						
-						ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
-						for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-							Map<String, String> mapDevice = new HashMap<String, String>();
-							mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-							childList.add(mapDevice);
-									
-						}
-						mChildrenList.add(childList);
-						
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-					}	
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
-
-		}
 }

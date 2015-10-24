@@ -2,6 +2,7 @@ package com.aic.aicdetactor.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +13,21 @@ import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.data.KEY;
 
 
-public class measurement_fragment extends Fragment  implements OnButtonListener{
+public class PartItemMeasureMeasurementFragment  extends PartItemMeasureBaseFragment  implements OnButtonListener{
 
 	//测量温度结果对应的文字描述
 	private TextView mDeviceNameTextView = null;
 	//之间的通信接口
 	private OnMeasureMeasureListener mCallback = null;
-	String parStr = null;
 	final String TAG = "luotest";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
+		//parStr =getArguments().getString(KEY.KEY_PARTITEMDATA);
 			
 		
 		super.onCreate(savedInstanceState);
+		int i = super.mPartItemIndex;
 	}
 
 
@@ -45,7 +46,7 @@ public class measurement_fragment extends Fragment  implements OnButtonListener{
 		//return super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.measurement, container, false);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
-		mDeviceNameTextView.setText(parStr);
+		mDeviceNameTextView.setText(getPartItemName());
 		return view;
 	}
 
@@ -71,4 +72,14 @@ public class measurement_fragment extends Fragment  implements OnButtonListener{
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
 	}
+
+
+
+	@Override
+	public void saveCheckValue() {
+		Log.d("atest", "Measurement   saveCheckValue()");
+		// TODO Auto-generated method stub
+		super.setPartItemData("Measurement");
+	}
+
 }

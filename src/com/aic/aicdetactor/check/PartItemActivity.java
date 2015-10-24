@@ -1,9 +1,7 @@
 
 package com.aic.aicdetactor.check;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,30 +18,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -51,7 +41,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,23 +50,21 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
-import com.aic.aicdetactor.data.AuxiliaryInfoNode;
 import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.data.PartItemItem;
 import com.aic.aicdetactor.data.T_Device_Item;
-import com.aic.aicdetactor.fragment.Observer_fragment;
-import com.aic.aicdetactor.fragment.Observer_fragment.OnMediakListener;
-import com.aic.aicdetactor.fragment.Temperature_fragment;
-import com.aic.aicdetactor.fragment.Temperature_fragment.OnTemperatureMeasureListener;
-import com.aic.aicdetactor.fragment.Vibrate_fragment;
-import com.aic.aicdetactor.fragment.Vibrate_fragment.OnVibateListener;
-import com.aic.aicdetactor.fragment.measurement_fragment;
-import com.aic.aicdetactor.fragment.measurement_fragment.OnMeasureMeasureListener;
+import com.aic.aicdetactor.fragment.PartItemMeasureBaseFragment;
+import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment;
+import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment.OnMeasureMeasureListener;
+import com.aic.aicdetactor.fragment.PartItemMeasureObserverFragment;
+import com.aic.aicdetactor.fragment.PartItemMeasureObserverFragment.OnMediakListener;
+import com.aic.aicdetactor.fragment.PartItemMeasureTemperatureFragment;
+import com.aic.aicdetactor.fragment.PartItemMeasureTemperatureFragment.OnTemperatureMeasureListener;
+import com.aic.aicdetactor.fragment.PartItemMeasureVibrateFragment;
+import com.aic.aicdetactor.fragment.PartItemMeasureVibrateFragment.OnVibateListener;
 import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.media.SoundRecordActivity;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
-import com.google.gson.Gson;
 
 /**
  * 主题：根据Item_def 遍历PartItem数组中的PartItemData，一项一项的巡检，并按照格式保存数据及其一些flag。
@@ -156,6 +143,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private OnButtonListener mFragmentCallBack = null;
 	private String mFirstStartTime="";
 	private String mLastEndTime="";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -166,12 +154,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		MLog.Logd(TAG,"PartItemActivity:onCreate() ");
 		setContentView(R.layout.unitcheck);
 		app =((myApplication) getApplication());
-		//Intent intent = getIntent();
-		//mRouteIndex = app.mRouteIndex;
-		//=getIntent().getExtras().get(CommonDef.device_info.LISTVIEW_ITEM_INDEX);
 		mStationIndex = app.mStationIndex;
 		mDeviceIndex = app.mDeviceIndex;
-	
+	Log.d("atest"," atest mStationIndex =  "+mStationIndex +",mDeviceIndex="+mDeviceIndex);
+		mPartItemIndex =0;
 		//计划巡检还是特别巡检
 		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
 		planNameTextView.setText(app.gRouteClassName);
@@ -217,21 +203,47 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		//对应
         mJSONArray = new JSONArray();
         mNewArrayJSON= new JSONArray();
-        //mBValue = new boolean[mPartItemCounts];
         mHandler.sendMessage(mHandler.obtainMessage(MSG_INIT_DATA));
-        
-        
 	}
 
 	
-
+	int getCurrentPartItemType(){
+	long type =app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
+	return (int)type;
+	}
+	
+	int getPrevPartItemType(){
+		long type =-1;
+		mPartItemIndex--;
+		if(mPartItemIndex>=0){
+		type=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
+		}else{
+			MLog.Loge(TAG, "getPrevPartItemType() error:out of arrayList");
+		}
+		return (int)type;
+	}
+	
+	
+	int getNextPartItemType(){
+		long type =-1;
+		mPartItemIndex++;
+		if(mPartItemIndex<app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.size()){
+		type=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
+		}else{
+			MLog.Loge(TAG, "getNextPartItemType() error:out of arrayList");
+		}
+		return (int)type;
+	}
+	
+	private PartItemMeasureBaseFragment fragment  =null;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
-		MLog.Logd(TAG, "switchFragment() type is " +type+",mCurPartItemobject is "+mCurPartItemobject.toString() );
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		
-		//Toast.makeText(this.getApplicationContext(), " type ="+type, Toast.LENGTH_LONG).show();
+		Bundle bundle = new Bundle(); 
+		bundle.putInt("partItemIndex", mPartItemIndex);
+		
 		
 		  switch(type){
 		   case CommonDef.checkUnit_Type.ACCELERATION:
@@ -242,14 +254,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   mButton_Direction.setEnabled(true);
 			   mButton_Direction.setText(getString(R.string.direction));
 			   {
-					Fragment fragment = new Vibrate_fragment();
+					fragment = new PartItemMeasureVibrateFragment();
 					
-					Gson g= new Gson();
-					PartItemItem a=g.fromJson( mPartItemList.get(mCheckIndex).toString(), PartItemItem.class);
-					Bundle bundle = new Bundle();  	
-					bundle.putParcelable("value", a);
-					bundle.putString(KEY.KEY_PARTITEMDATA, mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA)); 
-					//bundle.putInt(KEY.KEY_ZHOU_COUNTS, Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_RELAX_COUNT)));  
 					fragment.setArguments(bundle);  
 					if(bFirstInit){
 					fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -268,9 +274,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   mButton_Direction.setEnabled(false);
 			  
 			   {
-					Fragment fragment = new Temperature_fragment();
-					Bundle bundle = new Bundle();  
-					bundle.putString(KEY.KEY_PARTITEMDATA, mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA));  
+					fragment = new PartItemMeasureTemperatureFragment();
 					fragment.setArguments(bundle);  
 					if(bFirstInit){
 					fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -286,9 +290,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		   case CommonDef.checkUnit_Type.RECORD:
 		   case CommonDef.checkUnit_Type.DEFAULT_CONDITION:
 		   {
-				Fragment fragment = new Observer_fragment();
-				Bundle bundle = new Bundle();  					
-				bundle.putString(KEY.KEY_PARTITEMDATA, mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA));  
+				fragment = new PartItemMeasureObserverFragment();
 				fragment.setArguments(bundle);  
 				if(bFirstInit){
 				fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -305,9 +307,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   break;
 		   case CommonDef.checkUnit_Type.MEASUREMENT:
 		   {
-			   Fragment fragment = new measurement_fragment();
-				Bundle bundle = new Bundle();  					
-				bundle.putString(KEY.KEY_PARTITEMDATA, mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA));  
+			   fragment = new PartItemMeasureMeasurementFragment();
 				fragment.setArguments(bundle);  
 				if(bFirstInit){
 				fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -359,26 +359,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		return 0;
 	}
 	
-	//初始化数据PartItemData,并获取第一个PartItemData的测量类型
-   void InitPartItemData(){
-//	   try {
-//		   MLog.Logd(TAG, "InitPartItemData() start mStationIndex =" +mStationIndex +",mDeviceIndex ="+mDeviceIndex );
-//		   mPartItemObject = app.getPartItemObject(mStationIndex,mDeviceIndex);
-//		  
-//		   List<Object> deviceItemList = app.getDeviceItemList(mStationIndex);
-//		   
-//		   mCurrentDeviceItem = deviceItemList.get(mDeviceIndex);
-//		   MLog.Logd(TAG, "mCurrentDeviceItem IS " + mCurrentDeviceItem.toString());
-//		   
-//		   mPartItemList = app.getPartItem(mPartItemObject,-1);
-//		   MLog.Logd(TAG, "InitPartItemData() mPartItemList size ="+mPartItemList.size());
-//		   mPartItemCounts = mPartItemList.size();
-//		   getPatItemType();// Integer.valueOf(app.getPartItemCheckUnitName(mPartItemList.get(0),CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO));
-//		
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-   }   
    
    private final int MSG_INIT_DATA =0;
    private final int MSG_NEXT =1;
@@ -393,8 +373,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	    public void handleMessage(Message msg) {
 		   switch(msg.what){
 		   case MSG_INIT_DATA:
-			   InitPartItemData();
-			   switchFragment(mCheckUnit_DataType,true);
+			   switchFragment(getCurrentPartItemType(),true);
 			   break;
 		   case MSG_NEXT:
 			   nextCheckItem();
@@ -408,7 +387,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   preCheckItem();
 			   break;
 		   case MSG_SAVE_PARTITEMDATA:
-			   saveCheckedItemNode();			  
+			  // saveCheckedItemNode();			  
 			   break;
 		   case MSG_SAVE_DEVICEITEM:
 			   saveDeviceItem();
@@ -530,19 +509,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	/**
 	 * 向前巡检或查看前一项巡检结果，同样要先获取巡检类型，并对应显示出来UI.
 	 */
-	void preCheckItem(){
-		if(mCheckIndex < (mPartItemCounts) && mCheckIndex>0){	
-			mCheckIndex--;
-		getPatItemType();
-		
+	void preCheckItem(){	
 		//显示数据
-		switchFragment(mCheckUnit_DataType, false);
-		
-
-		if(mCheckIndex==0){
-			mButton_Pre.setEnabled(false);
-		}
-		}
+		switchFragment(getPrevPartItemType(), false);		
 	}
 	/**
 	 * 保存当前的DeviceItem项的数据，添加一些flag and time information
@@ -731,54 +700,22 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
     */
 	private void nextCheckItem() {
 		if (!isTimeOut()) {
-			if (mCheckIndex < mPartItemCounts) {
-				if (mCheckIndex != (mPartItemCounts - 1)) {
-					mCheckIndex++;
-					mCheckValue="";
-					int flag =getPatItemType();
-					if(flag ==0){
-					// 显示数据
-					switchFragment(mCheckUnit_DataType, false);
-					}else if(flag==1){
-						//提示是否需要巡检，如果选择巡检，按正常巡检，否则不巡检
-						AlertDialog.Builder builder = new Builder(this.getApplicationContext());
-						builder.setMessage("确认退出吗？");
-						builder.setTitle("提示");
-						
-						builder.setPositiveButton("确认", new Dialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						switchFragment(mCheckUnit_DataType, false);
-						}
-						
-						});
-						
-						builder.setNegativeButton("取消", new Dialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						}
-						});
-						builder.create().show();
-					}
-					MLog.Logd(TAG, "nextCheckItem(),mCheckUnit_DataType =" + mCheckUnit_DataType
-							+ ",mCheckIndex =" + mCheckIndex +",mCurPartItemobject is "+mCurPartItemobject.toString());
-				} else {
-					// 保存当前DeviceItem数据
-
-					// 设置Button的文字描述，为退出做准备
-					mButton_Next.setText(getString(R.string.save_and_finish));
-
-				}
+			//保存当前的册数数据
+			fragment.saveCheckValue();
+			//判断是否是已经巡检完毕
+			if (!fragment.isCheckedFinish()) {
+				//获取下一点的 数据类型并进行fragment 切换显示数据							
+					switchFragment(getNextPartItemType(), false);	
 				if (mCheckIndex != 0 && !mButton_Pre.isEnabled()) {
 					mButton_Pre.setEnabled(true);
 				}
-
+			}else {
+				fragment.saveDataToFile();
+				Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
+				this.finish();
 			}
 		} else {
-			Toast.makeText(getApplicationContext(),
-					getString(R.string.time_out), Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(),	getString(R.string.time_out), Toast.LENGTH_LONG).show();
 			this.finish();
 		}
 

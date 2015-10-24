@@ -25,5 +25,25 @@ public class PartItemJson
     public String PartItemData ;
     //#endif
     //      
-
+   public  PartItemJson(){
+	     Check_Content="" ;
+	      T_Measure_Type_Id=-1 ;
+	      T_Measure_Type_Code="-1";
+	      Unit ="";
+	      Start_Stop_Flag=0 ;
+	      Up_Limit=0 ;
+	      Middle_Limit=0 ;
+	      Down_Limit=0 ;
+	      Emissivity=0 ;
+	      Hint_Status=0 ;
+	      Axle_Number=0 ;
+	      Check_Mode="" ;
+	      Extra_Information ="";
+	      T_Maintenance_Status_Id=0 ;
+	      Fault_Diagnosis="" ;
+	      Default_RPM=0 ;
+	    //#else
+	      PartItemData="" ;
+	    //#endif
+    }
 }
