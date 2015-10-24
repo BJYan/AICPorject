@@ -33,7 +33,7 @@ public class SearchResultConActivity extends CommonActivity implements OnClickLi
 		
 		setActionBar("数据库查询",true);
 		exList = (ExpandableListView) findViewById(R.id.search_con_result_list);
-		SearchResultConExListAdapter searchResConExListAdapter = new SearchResultConExListAdapter(getApplicationContext());
+		SearchResultConExListAdapter searchResConExListAdapter = new SearchResultConExListAdapter(getApplicationContext(), this);
 		exList.setAdapter(searchResConExListAdapter);
 		
 		SerachBtn = (ImageView) findViewById(R.id.search_con_button); 
@@ -61,7 +61,15 @@ public class SearchResultConActivity extends CommonActivity implements OnClickLi
 				}
 			});
 			break;
-
+		case R.id.search_con_result_spectrum: 
+			showChartDialog(this);
+			break;
+		case R.id.search_con_result_diagram:
+			showChartDialog(this);
+			break;
+		case R.id.search_con_result_more: 
+			showChartDialog(this);
+			break;
 		default:
 			break;
 		}

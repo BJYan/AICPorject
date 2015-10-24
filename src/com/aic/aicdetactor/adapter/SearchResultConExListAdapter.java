@@ -5,17 +5,21 @@ import com.aic.aicdetactor.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 
 public class SearchResultConExListAdapter extends BaseExpandableListAdapter {
 	Context context;
 	LayoutInflater inflater;
+	OnClickListener listener;
 
-	public SearchResultConExListAdapter(Context context) {
+	public SearchResultConExListAdapter(Context context,OnClickListener listener) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		inflater = LayoutInflater.from(context);
+		this.listener = listener;
 	}
 	
 	@Override
@@ -69,6 +73,12 @@ public class SearchResultConExListAdapter extends BaseExpandableListAdapter {
 		if (arg2 == null) {			
 			arg2 = inflater.inflate(R.layout.search_condition_result_group_item, null);
 		}
+		ImageView spectrum = (ImageView) arg2.findViewById(R.id.search_con_result_spectrum);
+		spectrum.setOnClickListener(listener);
+		ImageView diagram = (ImageView) arg2.findViewById(R.id.search_con_result_diagram);
+		diagram.setOnClickListener(listener);
+		ImageView more = (ImageView) arg2.findViewById(R.id.search_con_result_more);
+		more.setOnClickListener(listener);
 		return arg2;
 	}
 

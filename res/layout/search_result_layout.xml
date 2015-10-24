@@ -51,7 +51,7 @@
           android:id="@+id/local_search_listview"
           android:layout_height="fill_parent"
           android:layout_width="fill_parent"
-          android:dividerHeight="5dip"
+          android:dividerHeight="2dip"
           android:divider="#DCDCDC"
           android:background="#ffffff"></ExpandableListView>
 </LinearLayout>

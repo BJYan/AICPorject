@@ -165,6 +165,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
         mDown_Button.setOnClickListener(this);
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 		
+		uploadInit();
 		/*
 		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
 		mUp_linearLayout = (LinearLayout)listViews.get(0).findViewById(R.id.up_linear);
@@ -297,6 +298,12 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		getData();
 		initViewValue();*/
 	    return view;
+	}
+
+
+	private void uploadInit() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

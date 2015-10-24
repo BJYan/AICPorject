@@ -94,7 +94,6 @@
     <ExpandableListView 
         android:id="@+id/search_con_result_list" 
         android:dividerHeight="3dip"
-        android:divider="#ffffff"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent">
     </ExpandableListView>

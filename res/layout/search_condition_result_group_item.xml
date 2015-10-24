@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:src="@drawable/search_con_result_more"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="5dip"
+        android:layout_marginRight="10dip"
         android:gravity="center"/>
     <ImageView 
         android:id="@+id/search_con_result_diagram"
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:src="@drawable/search_con_result_diagram"
         android:layout_toLeftOf="@id/search_con_result_more"
-        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
         android:gravity="center"/>
     <ImageView 
         android:id="@+id/search_con_result_spectrum"
@@ -52,6 +52,6 @@
         android:layout_width="wrap_content"
         android:src="@drawable/search_con_result_spectrum"
         android:layout_toLeftOf="@+id/search_con_result_diagram"
-        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
         android:gravity="center"/>
 </RelativeLayout>

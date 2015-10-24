@@ -38,7 +38,8 @@
         	android:layout_height="36dip"
         	android:padding="3dip" 
         	android:layout_alignParentRight="true"
-        	/>
+        	android:layout_marginRight="5dip"
+        	android:layout_centerVertical="true"/>
         <View 
             android:id="@+id/device_item_line_2"
             android:layout_height="1dip"
