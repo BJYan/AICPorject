@@ -11,6 +11,7 @@
 	    android:gravity="center"
 	    android:textSize="16dp"/>
     <Button 
+        android:id="@+id/network_setting_update"
         android:layout_width="150dip"
         android:layout_height="35dip"
         android:text="开始同步"/>

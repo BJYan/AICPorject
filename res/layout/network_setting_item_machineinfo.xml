@@ -16,6 +16,7 @@
             android:text="本机名称："
             android:textSize="16dp"/>
         <TextView 
+            android:id="@+id/network_setting_device_name"
             android:layout_height="wrap_content"
             android:layout_width="120dip"
             android:text="mac name"
@@ -35,6 +36,7 @@
             android:text="本机  IP："
             android:textSize="16dp"/>
         <TextView 
+            android:id="@+id/network_setting_device_ip"
             android:layout_height="wrap_content"
             android:layout_width="120dip"
             android:text="mac name"
@@ -52,6 +54,7 @@
             android:text="本机MAC："
             android:textSize="16dp"/>
         <TextView 
+            android:id="@+id/network_setting_device_mac"
             android:layout_height="wrap_content"
             android:layout_width="120dip"
             android:text="mac name"

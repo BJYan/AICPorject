@@ -11,6 +11,7 @@
         android:gravity="center_horizontal"
         android:layout_marginTop="5dip">
         <Switch 
+            android:id="@+id/network_setting_newplan"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textOn="on"
@@ -21,13 +22,14 @@
             android:text="发现新巡检计划"
             android:layout_marginLeft="15dip"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:layout_marginTop="5dip">
         <Switch 
+            android:id="@+id/network_setting_newmsg"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textOn="on"
@@ -38,13 +40,14 @@
             android:text="发现新消息"
             android:layout_marginLeft="15dip"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:layout_marginTop="5dip">
         <Switch 
+            android:id="@+id/network_setting_newtask"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textOn="on"
@@ -55,7 +58,7 @@
             android:text="发现新任务"
             android:layout_marginLeft="15dip"/>
     </LinearLayout>
-        <LinearLayout 
+    <LinearLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -63,6 +66,7 @@
         android:layout_marginTop="5dip"
         android:layout_marginBottom="5dip">
         <Switch 
+            android:id="@+id/network_setting_lowmemory"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textOn="on"

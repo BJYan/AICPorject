@@ -16,6 +16,7 @@
             android:text="服务器IP"
             android:layout_marginRight="5dip"/>
         <EditText 
+            android:id="@+id/network_setting_server_ip1"
             android:layout_height="wrap_content"
             android:layout_width="45dip"
             android:text="000"
@@ -25,6 +26,7 @@
 	        android:maxLength="3"
 	        android:gravity="center_horizontal"/>
         <EditText 
+            android:id="@+id/network_setting_server_ip2"
             android:layout_height="wrap_content"
             android:layout_width="45dip"
             android:text="000"
@@ -34,6 +36,7 @@
 	        android:maxLength="3"
 	        android:gravity="center_horizontal"/>
         <EditText 
+            android:id="@+id/network_setting_server_ip3"
             android:layout_height="wrap_content"
             android:layout_width="45dip"
             android:text="000"
@@ -43,6 +46,7 @@
 	        android:maxLength="3"
 	        android:gravity="center_horizontal"/>
         <EditText 
+            android:id="@+id/network_setting_server_ip4"
             android:layout_height="wrap_content"
             android:layout_width="45dip"
             android:text="000"
@@ -63,12 +67,14 @@
             android:layout_width="80dip"
             android:text="射频卡号"/>
         <EditText 
+            android:id="@+id/network_setting_card_number"
             android:layout_height="wrap_content"
             android:layout_width="150dip"
             android:text="mac name"
             android:textSize="14dp"/>
     </LinearLayout>
     <Button 
+        android:id="@+id/network_setting_server_save"
         android:layout_width="100dip"
         android:layout_height="35dip"
         android:text="保存"

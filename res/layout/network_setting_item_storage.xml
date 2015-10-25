@@ -23,6 +23,7 @@
             android:text="总存储空间"
             android:gravity="center"/>
         <TextView 
+            android:id="@+id/network_setting_total_storage"
             android:layout_height="wrap_content"
             android:layout_width="80dip"
             android:text="16G"
@@ -40,6 +41,7 @@
             android:text="可用空间"
             android:gravity="center"/>
         <TextView 
+            android:id="@+id/network_setting_available_storage"
             android:layout_height="wrap_content"
             android:layout_width="80dip"
             android:text="11G"
@@ -63,10 +65,11 @@
             android:layout_width="wrap_content"
             android:text="巡检结果数值"/>
         <Spinner 
+            android:id="@+id/network_setting_check_result_num"
             android:layout_height="wrap_content"
             android:layout_width="100dip"
             android:textSize="14dp"
-            android:entries="@array/month"/>
+            android:entries="@array/month" />
     </LinearLayout>
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -79,6 +82,7 @@
             android:layout_width="wrap_content"
             android:text="巡检结果照片"/>
         <Spinner 
+            android:id="@+id/network_setting_check_result_pic"
             android:layout_height="wrap_content"
             android:layout_width="100dip"
             android:textSize="14dp"
@@ -95,6 +99,7 @@
             android:layout_width="wrap_content"
             android:text="巡检结果录音"/>
         <Spinner 
+            android:id="@+id/network_setting_check_result_record"
             android:layout_height="wrap_content"
             android:layout_width="100dip"
             android:textSize="14dp"
@@ -111,6 +116,7 @@
             android:layout_width="wrap_content"
             android:text="临时测量数据"/>
         <Spinner 
+            android:id="@+id/network_setting_temp_check_data"
             android:layout_height="wrap_content"
             android:layout_width="100dip"
             android:textSize="14dp"
@@ -127,6 +133,7 @@
             android:layout_width="wrap_content"
             android:text="执行任务数据"/>
         <Spinner 
+            android:id="@+id/network_setting_task_data"
             android:layout_height="wrap_content"
             android:layout_width="100dip"
             android:textSize="14dp"

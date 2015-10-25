@@ -1,24 +1,35 @@
 package com.aic.aicdetactor.adapter;
 
+import java.util.List;
+
 import com.aic.aicdetactor.R;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
-public class NetWorkSettingAdapter extends BaseExpandableListAdapter {
+public class NetWorkSettingAdapter extends BaseExpandableListAdapter{
 	private LayoutInflater mInflater;
 	private Context mContext = null;
 	String[] groupViewText;
+	List<View> settingViewList;
 	
-	public NetWorkSettingAdapter(Context context) {
+	public NetWorkSettingAdapter(Context context, List<View> settingViewList) {
 		// TODO Auto-generated constructor stub
 		mContext = context;
 		mInflater = LayoutInflater.from(mContext);
+		this.settingViewList = settingViewList;
 		groupViewText = context.getResources().getStringArray(R.array.network_setting);
 	}
 
@@ -37,19 +48,7 @@ public class NetWorkSettingAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
-		View childView = null ;
-		switch (arg0) {
-		case 0: childView = mInflater.inflate(R.layout.network_setting_item_machineinfo, null,false); break;
-		case 1: childView = mInflater.inflate(R.layout.network_setting_item_retpassword, null,false); break;
-		case 2: childView = mInflater.inflate(R.layout.network_setting_item_pushsetting, null,false); break;
-		case 3: childView = mInflater.inflate(R.layout.network_setting_item_cardreader, null,false); break;
-		case 4: childView = mInflater.inflate(R.layout.network_setting_item_storage, null,false); break;
-		case 5: childView = mInflater.inflate(R.layout.network_setting_item_timesync, null,false); break;
-		default:
-			break;
-		}
-		
-		return childView;
+		return settingViewList.get(arg0);
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class NetWorkSettingAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return 6;
+		return settingViewList.size();
 	}
 
 	@Override
