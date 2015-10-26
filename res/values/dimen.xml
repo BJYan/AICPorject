@@ -42,4 +42,5 @@
 <dimen name="temperatrue_text_size">30sp</dimen>
 <!-- 搜索结果蓝色字字体大小-->
 <dimen name="search_resule_bluetext_size">12sp</dimen>
+<dimen name="exlist_item_high">38dip</dimen>
 </resources>

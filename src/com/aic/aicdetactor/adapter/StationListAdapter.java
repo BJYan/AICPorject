@@ -42,6 +42,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	// groupView data
 	private List<Map<String, String>> mDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
+	int exlistItemHigh;
 
 	public StationListAdapter(CommonActivity av, Context context, int routeIndex,boolean mIsSpecial) {
 		mContext = context;
@@ -51,6 +52,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		mDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
 		this.mIsSpecial =mIsSpecial;
+		exlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high);
 		InitStationData();
 	}
 
@@ -92,7 +94,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						(3+CommonDef.LISTITEM_HEIGHT)*mDataList.size());
+						exlistItemHigh*mDataList.size());
 				secGroupView.setLayoutParams(lp);
 			}
 		});

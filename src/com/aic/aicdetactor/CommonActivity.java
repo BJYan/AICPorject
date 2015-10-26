@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.achartengine.ChartFactory;
+import org.achartengine.chart.LineChart;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.chart.XYChart;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -34,10 +36,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
 public class CommonActivity extends Activity{
+	protected static final String TAG = "CommonActivity";
 	protected FlippingLoadingDialog mLoadingDialog;
 	public myApplication app = null;
 	CommonAlterDialog commonAlterDialog;
@@ -144,7 +149,7 @@ public class CommonActivity extends Activity{
 	    return true;  
 	  }
 	 
-	 public View getBlackLineChartView(String title, float[] y, String xyTitle){
+	 public View getBlackLineChartView(String title, final float[] y){
 		    
 		 String[] titles = new String[]{title};
 		 List<float[]> yValues = new ArrayList<float[]>();
@@ -157,7 +162,7 @@ public class CommonActivity extends Activity{
 		 xValues.add(x);
 		 XYMultipleSeriesDataset dataset = buildDataset(titles, xValues, yValues);
 
-		 XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
+		 final XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		    renderer.setXLabels(12);
 		    renderer.setYLabels(10);
 		    renderer.setShowGrid(true);
@@ -177,20 +182,56 @@ public class CommonActivity extends Activity{
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
-		    renderer.setMargins(new int[] {0, 25, 10, 0});
+		    renderer.setMargins(new int[] {0, 50, 10, 0});
 		    renderer.setPanEnabled(true,true);
-		    if(xyTitle!=null){
-			    renderer.setAxisTitleTextSize(20);
-			    renderer.setXTitle(xyTitle);
-		    }
-
+		    renderer.setAxisTitleTextSize(20);
+		    renderer.setYTitle("m/s*2");
+		    
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
 		    XYrenderer.setColor(Color.RED);
 		    XYrenderer.setPointStyle(PointStyle.CIRCLE);
 		    renderer.addSeriesRenderer(XYrenderer);
-		 return ChartFactory.getLineChartView(getApplicationContext(), dataset, renderer);
+		 View chartView = ChartFactory.getLineChartView(getApplicationContext(), dataset, renderer);
+		 final XYChart lineChart = new LineChart(dataset, renderer);
+		 chartView.setOnTouchListener(new OnTouchListener() {
+			boolean moved = false;
+			XYMultipleSeriesRenderer movedRenderer = lineChart.getRenderer();
+			@Override
+			public boolean onTouch(View arg0, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_MOVE:
+					moved = true;
+					break;
+				case MotionEvent.ACTION_UP:
+					if(moved) { 
+						float[] MinMaxData = getRangeMaxMin(y,(int)movedRenderer.getXAxisMin(),(int)movedRenderer.getXAxisMax());
+						Log.i(TAG, "XAxisMin = "+movedRenderer.getXAxisMin()+" XAxisMax = "+movedRenderer.getXAxisMax());
+						String MinMax = "Min:"+MinMaxData[0]+"\nMax:"+MinMaxData[1];
+						renderer.setXTitle(MinMax);
+					}
+					break;
+				default:
+					break;
+				}
+				return false;
+			}
+		});
+		 return chartView;
 	 }
 	 
+	 private float[] getRangeMaxMin(float[] data,int start, int end){ 
+		 float[] MinMaxTemp = new float[]{data[start],data[start]};
+		 for(int i=0;i<data.length;i++){
+			 if(i>=start&&i<=end) {
+				 Log.e(TAG, "data["+i+"] = "+data[i]);
+				 if(data[i]<=MinMaxTemp[0]) MinMaxTemp[0] = data[i];
+				 if(data[i]>MinMaxTemp[1]) MinMaxTemp[1] = data[i];
+			 }
+		 }
+		 return MinMaxTemp;
+	 }
+
 	 /**
 	  * 曲线图(数据集) : 创建曲线图图表数据集
 	  * 
