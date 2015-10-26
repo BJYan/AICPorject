@@ -4,26 +4,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
      >
-     <LinearLayout
-	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:layout_weight="1">	    
+       
     <include layout="@layout/top_navitation"/>
 	<FrameLayout 
 	    android:id="@+id/fragment_content"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="1"/>
+	    android:layout_weight="0"/>
+	
+	<LinearLayout
+	    android:id="@+id/linefirst"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"	    
+	    android:background="@drawable/top_item_selected">
+	
+	    <LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    >
+	<CheckBox 
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/checkorder"
+	    android:text="@string/check_order"/>
+	
+	<Spinner 
+	    android:id="@+id/checkspinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    />
 	</LinearLayout>
+	<ListView 
+	    android:id="@+id/partitemlist"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"/>
+	
+	
+	</LinearLayout>
+	
 	<LinearLayout
 	    android:id="@+id/bottom_line"
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_gravity="bottom|center"
-	    android:background="@drawable/top_item_selected">
+	    android:background="@drawable/top_item_selected"
+	    android:visibility="gone">
 
 	    <Button
 		    android:id="@+id/bottombutton_pre"

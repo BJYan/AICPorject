@@ -59,6 +59,15 @@ public class myApplication extends Application
 	public List<WorkerInfoJson> gWorkerInfoJsonList=null;
 	private boolean gBLogIn = false;
 
+	//通过NFC获取ID号 及打卡
+	private String mNFCCard="";
+	
+	public void setNFCId(String Id){
+		mNFCCard = Id;
+	}
+	public String getNFCId(){
+		return mNFCCard;
+	}
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
 	}

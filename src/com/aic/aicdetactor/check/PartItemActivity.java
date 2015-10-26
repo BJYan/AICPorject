@@ -1,6 +1,7 @@
 
 package com.aic.aicdetactor.check;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -34,14 +35,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +58,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.T_Device_Item;
 import com.aic.aicdetactor.fragment.PartItemMeasureBaseFragment;
 import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment;
@@ -78,9 +86,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	OnTemperatureMeasureListener,
 	OnMeasureMeasureListener{
 
-	//private ListView mListView = null;
+	private ListView mListView = null;
 	String TAG = "luotest";
-//	private Spinner mSpinner = null;
+	private Spinner mSpinner = null;
 	private TextView mItemDefTextView = null;//当只有一项时才显示
 	private String mCheckItemNameStr = null;//检查项名
 	private String mCheckUnitNameStr = null;//检查部件名称
@@ -94,7 +102,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private SimpleAdapter mListViewAdapter = null;
 	
 	//partItem 数组，包含Fast_Record_Item_Name 及 PartItemData : 
-	private List<Object> mPartItemList=null;
+	//private List<Object> mPartItemList=null;
 	private CheckBox mCheckbox = null;
 	//private int mRouteIndex =0;
 	private int mStationIndex =0;
@@ -143,7 +151,11 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private OnButtonListener mFragmentCallBack = null;
 	private String mFirstStartTime="";
 	private String mLastEndTime="";
-	
+	private LinearLayout mFirstLLayout=null;
+	private LinearLayout mSecendLLayout=null;
+	private PartItemMeasureBaseFragment fragment  =null;
+	private ArrayList<PartItemJson> mPartItemList=null;
+	private ArrayList<String> mPartItemNameList=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -153,60 +165,96 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		MLog.Logd(TAG,"PartItemActivity:onCreate() ");
 		setContentView(R.layout.unitcheck);
-		app =((myApplication) getApplication());
-		mStationIndex = app.mStationIndex;
-		mDeviceIndex = app.mDeviceIndex;
-	Log.d("atest"," atest mStationIndex =  "+mStationIndex +",mDeviceIndex="+mDeviceIndex);
+		
 		mPartItemIndex =0;
-		//计划巡检还是特别巡检
-		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
-		planNameTextView.setText(app.gRouteClassName);
-
-		//路线名称
-		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
-		RouteNameTextView.setText(app.mFileList.get(app.mRouteIndex).get(RouteDaoStationParams.LineName));
-         //站点名称
-		TextView stationTextView = (TextView) findViewById(R.id.stationName);
-		stationTextView.setText(app.mLineJsonData.StationInfo.get(mStationIndex).Name);
-		//设备名称
-		TextView deviceTextView = (TextView) findViewById(R.id.deviceName);		
-		deviceTextView.setText(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name);
-
-		//返回图标
-		ImageView imageView = (ImageView)findViewById(R.id.backImage);
-		imageView.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				MLog.Logd(TAG,"imageView.setOnClickListener");
-				// TODO Auto-generated method stub
-				finish();
-			}
-			
-		});
-
-		mButtion_Position = (Button)findViewById(R.id.bottombutton1);
-		mButtion_Position.setOnClickListener(this);
-
-		
-		mButton_Direction = (Button)findViewById(R.id.bottombutton2);
-		mButton_Direction.setOnClickListener(this);
-		
-		mButton_Next = (Button)findViewById(R.id.next);
-		mButton_Next.setOnClickListener(this);
-		 
-		mButton_Pre = (Button)findViewById(R.id.bottombutton_pre);
-		mButton_Pre.setOnClickListener(this);
-		
-		mButton_Measurement = (Button)findViewById(R.id.bottombutton3);
-		mButton_Measurement.setOnClickListener(this);
+		initViewAndData();
 		//对应
         mJSONArray = new JSONArray();
         mNewArrayJSON= new JSONArray();
         mHandler.sendMessage(mHandler.obtainMessage(MSG_INIT_DATA));
 	}
 
-	
+	void initViewAndData() {
+		app = ((myApplication) getApplication());
+		mStationIndex = app.mStationIndex;
+		mDeviceIndex = app.mDeviceIndex;
+		Log.d("atest", " atest mStationIndex =  " + mStationIndex
+				+ ",mDeviceIndex=" + mDeviceIndex);
+		// 计划巡检还是特别巡检
+		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
+		planNameTextView.setText(app.gRouteClassName);
+
+		// 路线名称
+		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
+		RouteNameTextView.setText(app.mFileList.get(app.mRouteIndex).get(
+				RouteDaoStationParams.LineName));
+		// 站点名称
+		TextView stationTextView = (TextView) findViewById(R.id.stationName);
+		stationTextView.setText(app.mLineJsonData.StationInfo
+				.get(mStationIndex).Name);
+		// 设备名称
+		TextView deviceTextView = (TextView) findViewById(R.id.deviceName);
+		deviceTextView
+				.setText(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem
+						.get(mDeviceIndex).Name);
+		mFirstLLayout = (LinearLayout) findViewById(R.id.linefirst);
+		mSecendLLayout = (LinearLayout) findViewById(R.id.bottom_line);
+		mCheckbox = (CheckBox) findViewById(R.id.checkorder);
+		mSpinner = (Spinner) findViewById(R.id.checkspinner);
+		mListView = (ListView) findViewById(R.id.partitemlist);
+		initListViewAndData();
+		mListView.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, mPartItemNameList));
+		
+		getDeviceStatusArray(mStationIndex, mDeviceIndex);
+		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,statusList);
+		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSpinner.setAdapter(spinnerAdapter);
+		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		// 返回图标
+		ImageView imageView = (ImageView) findViewById(R.id.backImage);
+		imageView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				MLog.Logd(TAG, "imageView.setOnClickListener");
+				// TODO Auto-generated method stub
+				finish();
+			}
+
+		});
+
+		mButtion_Position = (Button) findViewById(R.id.bottombutton1);
+		mButtion_Position.setOnClickListener(this);
+
+		mButton_Direction = (Button) findViewById(R.id.bottombutton2);
+		mButton_Direction.setOnClickListener(this);
+
+		mButton_Next = (Button) findViewById(R.id.next);
+		mButton_Next.setOnClickListener(this);
+
+		mButton_Pre = (Button) findViewById(R.id.bottombutton_pre);
+		mButton_Pre.setOnClickListener(this);
+
+		mButton_Measurement = (Button) findViewById(R.id.bottombutton3);
+		mButton_Measurement.setOnClickListener(this);
+	}
 	int getCurrentPartItemType(){
 	long type =app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
 	return (int)type;
@@ -235,7 +283,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		return (int)type;
 	}
 	
-	private PartItemMeasureBaseFragment fragment  =null;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
 		FragmentManager fragmentManager = getFragmentManager();
@@ -336,29 +383,33 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
        
 		super.onResume();
 	}
-
- /**
-  * 获取该项的巡检类型 及是否要巡检的flag，
-  * 0,需要巡检
-  * 1，提示 是否要巡检
-  * 2,不巡检
-  * @return
-  */
-	int getPatItemType(){
-		
-		if(mPartItemList != null){
-			mCurPartItemobject = (JSONObject) mPartItemList.get(mCheckIndex);
-			MLog.Logd(TAG,"getPatItemType() mPartItemList size ="+mPartItemList.size() +" object is " +mCurPartItemobject.toString());
-		}else{
-			MLog.Logd(TAG,"getPatItemType() mPartItemList IS NULL");
-		}
-//		 mCheckUnit_DataType=Integer.parseInt(app
-//		.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_DATA_TYPE));
-//		 
-//		return  Integer.parseInt(app.getPartItemCheckUnitName(mCurPartItemobject,CommonDef.partItemData_Index.PARTITEM_TIPS_FLAG));
-		return 0;
-	}
 	
+	void initListViewAndData(){
+		try {
+			if(mPartItemList == null){
+			 mPartItemList = new ArrayList<PartItemJson>();
+			 }else{
+				 mPartItemList.clear();
+			 }
+			
+			if(mPartItemNameList == null){
+			 mPartItemNameList =new ArrayList<String>();
+			 }else{
+				 mPartItemNameList.clear();
+			 }
+			PartItemJson item =null;
+			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.size(); i++) {
+				
+				item =  app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(i);
+				mPartItemList.add(item);
+				mPartItemNameList.add(item.Check_Content);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+		
+	}
    
    private final int MSG_INIT_DATA =0;
    private final int MSG_NEXT =1;
@@ -368,11 +419,14 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
    private final int MSG_SAVE_PARTITEMDATA =5;
    private final int MSG_SAVE_DEVICEITEM =6;
    private final int MSG_ADD_A_PARTITEMDATA =7;
+   private final int MSG_INIT_FRAGMENT =8;
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
 		   switch(msg.what){
 		   case MSG_INIT_DATA:
+			   break;
+		   case MSG_INIT_FRAGMENT:
 			   switchFragment(getCurrentPartItemType(),true);
 			   break;
 		   case MSG_NEXT:
@@ -545,46 +599,46 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mEndTime = SystemUtil.getSystemTime(0);
 		// 先保存当前测试项的数据
 		MLog.Logd(TAG, "mPartItemList size is ," + mPartItemList.size());
-		JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
-		MLog.Logd(TAG, "saveCheckedItemNode()," + json);
-		String partItemData = "";
-		try {
-			partItemData = json.getString(KEY.KEY_PARTITEMDATA);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// 添加巡检结果到结果中，便于形成最后的结果。
-		if (mZhouCounts == 0) {
-			try {
-				json.put(
-						KEY.KEY_PARTITEMDATA,
-						addUpdata(partItemData, mCheckValue,
-								SystemUtil.createGUID()));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// json =
-			// app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-			MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
-			mJSONArray.put(json);
-		} else {
-			MLog.Logd(TAG, "saveCheckedItemNode() mCheckValue," + mCheckValue+",mZhouCounts="+mZhouCounts);
-			String[] value = mCheckValue.split(",");
-			String guid = SystemUtil.createGUID();
-			for (int i = 0; i < mZhouCounts&&i <value.length; i++) {
-				try {
-					json.put(KEY.KEY_PARTITEMDATA,
-							addUpdata(partItemData, value[i], guid));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
-				mJSONArray.put(json);
-			}
-		}
+		//JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
+//		MLog.Logd(TAG, "saveCheckedItemNode()," + json);
+//		String partItemData = "";
+//		try {
+//			partItemData = json.getString(KEY.KEY_PARTITEMDATA);
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		// 添加巡检结果到结果中，便于形成最后的结果。
+//		if (mZhouCounts == 0) {
+//			try {
+//				json.put(
+//						KEY.KEY_PARTITEMDATA,
+//						addUpdata(partItemData, mCheckValue,
+//								SystemUtil.createGUID()));
+//			} catch (JSONException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			// json =
+//			// app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
+//			MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
+//			mJSONArray.put(json);
+//		} else {
+//			MLog.Logd(TAG, "saveCheckedItemNode() mCheckValue," + mCheckValue+",mZhouCounts="+mZhouCounts);
+//			String[] value = mCheckValue.split(",");
+//			String guid = SystemUtil.createGUID();
+//			for (int i = 0; i < mZhouCounts&&i <value.length; i++) {
+//				try {
+//					json.put(KEY.KEY_PARTITEMDATA,
+//							addUpdata(partItemData, value[i], guid));
+//				} catch (JSONException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
+//				mJSONArray.put(json);
+//			}
+//		}
 	}
 	
 	String Item_def = "运行";
@@ -778,12 +832,12 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			break;		
 		case R.id.bottombutton3://测量
 			if(mButton_Measurement.getText().equals(getString(R.string.textrecord))){
-				Intent intent = new Intent();
-				JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
+			//	Intent intent = new Intent();
+			//	JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
 //				String value = app.getPartItemCheckUnitName(json, CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME);
 //				intent.putExtra(CommonDef.check_unit_info.NAME, value);
-				intent.setClass(PartItemActivity.this, NotepadActivity.class);
-				startActivityForResult(intent,PartItem_Contact.PARTITEM_NOTEPAD_RESULT);
+				//intent.setClass(PartItemActivity.this, NotepadActivity.class);
+				//startActivityForResult(intent,PartItem_Contact.PARTITEM_NOTEPAD_RESULT);
 			}else{
 				 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
 				
@@ -949,6 +1003,34 @@ private int mZhouCounts=0;
 			 
 		//}
 		
+		
+	}
+	
+	List<String> statusList = new ArrayList<String>();
+	public List<String>getDeviceStatusArray(int station,int device){
+		statusList.clear();
+		String str="";
+		boolean bFind = false;
+		for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
+			if(bFind) break;
+			try {
+				for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+					if(i == station && deviceIndex == device){
+						str =app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
+						bFind=true;
+						break;
+						}
+				}				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		
+		String[]array = str.split("\\/");
+		for(int k=0;k<array.length;k++){
+			statusList.add(array[k]);
+		}
+		return statusList;
 		
 	}
 }
