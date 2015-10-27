@@ -38,14 +38,15 @@
         	android:layout_toLeftOf="@id/vline"
         	android:padding="5dip"
         	android:layout_centerVertical="true"
-        	android:visibility="gone" />
+        	 />
           <LinearLayout 
               android:layout_height="wrap_content"
               android:layout_width="wrap_content"
               android:orientation="horizontal"
               android:layout_toLeftOf="@id/vline"
               android:layout_centerVertical="true"
-              android:layout_marginRight="5dip">
+              android:layout_marginRight="5dip"
+              android:visibility="gone">
               <ImageView
         			android:id="@+id/station_record"
         			android:layout_width="wrap_content"

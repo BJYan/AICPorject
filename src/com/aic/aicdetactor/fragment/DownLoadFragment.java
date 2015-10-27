@@ -379,6 +379,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		final RadioButton uploadType_wifi = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb1);
 		final RadioButton uploadType_usb = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb2);
 		final RadioButton uploadType_both = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb3);
+		final Button uploadBtn = (Button) listViews.get(0).findViewById(R.id.network_upload_button);
 		uploadTypeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			
 			@Override
@@ -388,10 +389,12 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					uploadType_wifi.setVisibility(View.GONE);
 					uploadType_usb.setVisibility(View.GONE);
 					uploadType_both.setVisibility(View.GONE);
+					uploadBtn.setVisibility(View.GONE);
 				} else {
 					uploadType_wifi.setVisibility(View.VISIBLE);
 					uploadType_usb.setVisibility(View.VISIBLE);
 					uploadType_both.setVisibility(View.VISIBLE);
+					uploadBtn.setVisibility(View.VISIBLE);
 				}
 			}
 		});

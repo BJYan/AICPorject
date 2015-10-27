@@ -38,6 +38,8 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
 	List<View> DBsearchItemList;
 	Map<TextView, Boolean> options;
 	LayoutInflater inflater;
+	ArrayList<View> pagerViewlist;
+	View searchView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,12 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		this.inflater = inflater;
-		View searchView = inflater.inflate(R.layout.search_fragment_layout, container, false);
+		searchView = inflater.inflate(R.layout.search_fragment_layout, container, false);
+		tabViewInit();
+		return searchView;
+	}
+
+	private void tabViewInit() {
 		tabHost = (TabHost)searchView.findViewById(R.id.search_tabhost);  
         // 如果没有继承TabActivity时，通过该种方法加载启动tabHost  
         tabHost.setup();
@@ -63,15 +70,31 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
         
         viewPager = (ViewPager)searchView.findViewById(R.id.search_vPager); 
         
-        ArrayList<View> listViews = new ArrayList<View>();
-        listViews.add(inflater.inflate(R.layout.search_local_layout, null));
-        listViews.add(inflater.inflate(R.layout.search_database_layout, null));
+        pagerViewlist = new ArrayList<View>();
+        pagerViewlist.add(inflater.inflate(R.layout.search_local_layout, null));
+        pagerViewlist.add(inflater.inflate(R.layout.search_database_layout, null));
+        //初始化本地搜索界面
+        localSearchViewInit(); 
+        //初始化数据库搜索界面
+        dbSearchViewInit();
         
-        ListView searchLocalList = (ListView) listViews.get(0).findViewById(R.id.search_local_list);
-        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext());
-        searchLocalList.setAdapter(searchLocalListAdapter);
+        SearchAdapter searchAdapter = new SearchAdapter(pagerViewlist);
+        viewPager.setAdapter(searchAdapter);
+        viewPager.setCurrentItem(0);
+        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
         
-        DBsearchItemList = new ArrayList<View>();
+        tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
+            @Override  
+            public void onTabChanged(String tabId){  
+                Log.i("DownLoadFragment--tabId--=", tabId);  
+                if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
+                if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
+            }  
+        });
+	}
+
+	private void dbSearchViewInit() {
+		DBsearchItemList = new ArrayList<View>();
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_searchmodel, null));
         DBsearchItemList.add(inflater.inflate(R.layout.search_database_item_routemodel, null));
         TextView SearchBtn_1 = (TextView) DBsearchItemList.get(0).findViewById(R.id.search_button_1);
@@ -86,10 +109,8 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
         routeStartTime.setOnClickListener(this);
         TextView routeEndTime = (TextView) DBsearchItemList.get(1).findViewById(R.id.search_route_end_time);
         routeEndTime.setOnClickListener(this);
-        
-        
-        
-        ExpandableListView searchDBList = (ExpandableListView) listViews.get(1).findViewById(R.id.search_database_list);
+
+        ExpandableListView searchDBList = (ExpandableListView) pagerViewlist.get(1).findViewById(R.id.search_database_list);
         SearchDatabaseExListAdapter SearchDBExListAdapter = new SearchDatabaseExListAdapter(getActivity().getApplicationContext(),DBsearchItemList);
         searchDBList.setAdapter(SearchDBExListAdapter);
         searchDBList.setGroupIndicator(null);
@@ -120,21 +141,12 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
         		options.put((TextView) optionsContainer.getChildAt(i), false);
         	}
         }
-        
-        SearchAdapter searchAdapter = new SearchAdapter(listViews);
-        viewPager.setAdapter(searchAdapter);
-        viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
-        
-        tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
-            @Override  
-            public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
-                if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
-                if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
-            }  
-        });
-		return searchView;
+	}
+
+	private void localSearchViewInit() {
+		ListView searchLocalList = (ListView) pagerViewlist.get(0).findViewById(R.id.search_local_list);
+        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext());
+        searchLocalList.setAdapter(searchLocalListAdapter);
 	}
 	
 	class MyOnPageChangeListener implements OnPageChangeListener{

@@ -94,7 +94,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						exlistItemHigh*mDataList.size());
+						exlistItemHigh*app.mNormalLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg0).PartItem.size()+exlistItemHigh);
 				secGroupView.setLayoutParams(lp);
 			}
 		});
