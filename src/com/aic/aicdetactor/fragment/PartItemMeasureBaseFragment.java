@@ -3,8 +3,10 @@ package com.aic.aicdetactor.fragment;
 import java.io.IOException;
 
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
+import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
 
@@ -18,9 +20,10 @@ import android.view.ViewGroup;
 public abstract class PartItemMeasureBaseFragment extends Fragment {
 
 	protected int mPartItemIndex=0;
-	protected PartItemJson mPartItemData=null;
+	protected PartItemJsonUp mPartItemData=null;
 	private myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
+	private DeviceItemJson mDeviceItemData=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG,"onCreate()");
@@ -29,6 +32,8 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 		mPartItemIndex =getArguments().getInt("partItemIndex");
 		app =(myApplication) PartItemMeasureBaseFragment.this.getActivity().getApplication();
 		mPartItemData = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex);
+		mDeviceItemData = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex));
+		mPartItemData = mDeviceItemData.PartItem.get(mPartItemIndex);
 		int m=0;
 		m++;
 	}
@@ -42,26 +47,31 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 	
 	//测量项名称
 	protected String getPartItemName(){
-		return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Check_Content;
+		//return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Check_Content;
+		return mPartItemData.Check_Content;
 	}
 	
 	
 	//数据有效范围，上限
 	protected float getPartItemUp_Limit(){
-		return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Up_Limit;
+		return mPartItemData.Up_Limit;
+		//return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Up_Limit;
 	}
 	
 	//数据有效范围，中限
 	protected float getPartItemMiddle_Limit(){
-		return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Middle_Limit;
+		return mPartItemData.Middle_Limit;
+		//return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Middle_Limit;
 	}
 	//数据的单位
 	protected String getPartItemUnit(){
-		return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Unit;
+		return mPartItemData.Unit;
+		//return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Unit;
 	}
 	//数据有效范围，下限
 	protected float getPartItemDown_Limit(){
-		return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Down_Limit;
+		return mPartItemData.Down_Limit;
+	//	return app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.get(mPartItemIndex).Down_Limit;
 	}
 	
 	//设置测量的数据结果
@@ -74,7 +84,8 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 	
 	//判断是否从上到下顺序测量完，
 	public  boolean isCheckedFinish(){
-		return (mPartItemIndex+1)==app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.size()?true:false;
+		return(mPartItemIndex+1)== mDeviceItemData.PartItem.size()?true:false;
+		//return (mPartItemIndex+1)==app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(app.mDeviceIndex).PartItem.size()?true:false;
 	}
 	
 	

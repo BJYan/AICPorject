@@ -17,6 +17,12 @@ public  class DownloadNormalData
     public List<WorkerInfoJson> T_Worker ;
   
 
+    public int getStationCount(){
+    	if(StationInfo!=null){
+    		return StationInfo.size();
+    	}
+    	return 0;
+    }
     /**
      * 
      * @param type; line 0;station 1; device 2

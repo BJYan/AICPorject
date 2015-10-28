@@ -28,6 +28,7 @@ import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemJson;
+import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.ChartDialogBtnListener;
 import com.aic.aicdetactor.util.MLog;
@@ -36,7 +37,7 @@ import com.aic.aicdetactor.view.GroupViewHolder;
 public class DeviceListAdapter  extends BaseExpandableListAdapter implements ChartDialogBtnListener{
 	private Context context;
 	private LayoutInflater mInflater;
-	ArrayList<ArrayList<PartItemJson>> mChildrenList;
+	ArrayList<ArrayList<PartItemJsonUp>> mChildrenList;
 	private List<Map<String, String>> mDataList = null;
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
@@ -233,7 +234,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		MLog.Logd(TAG, "InitData>> ");
 		try {
 			mDataList.clear();
-			mChildrenList = new ArrayList<ArrayList<PartItemJson>>();
+			mChildrenList = new ArrayList<ArrayList<PartItemJsonUp>>();
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				if(mIsSpecial){
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
@@ -272,8 +273,8 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		long gg=System.currentTimeMillis();
 		MLog.Logd(TAG, "InitChidrenData>> stationIndex="+stationIndex);
 		try {
-			ArrayList<PartItemJson> childList = new ArrayList<PartItemJson>();
-			PartItemJson item =null;
+			ArrayList<PartItemJsonUp> childList = new ArrayList<PartItemJsonUp>();
+			PartItemJsonUp item =null;
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.size(); i++) {
 				
 				item =  app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(itemIndexs).PartItem.get(i);//mGSon.fromJson(mPartItemList.get(i).toString(), PartItemItem.class);
@@ -302,16 +303,16 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	
 	//如果是 在位管理的话 ，需要在partitem数组中新增添一项partitem
 	void addIs_InPlacePartItem(int deviceIndex){
-		PartItemJson partitem = new PartItemJson();
+		PartItemJsonUp partitem = new PartItemJsonUp();
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Device_Checked=1;
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_RFID_Checked=1;
 		if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem !=null
 				&&app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.size()>0){
-			List<PartItemJson> PartItem = app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem;
+			List<PartItemJsonUp> PartItem = app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem;
 			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.removeAll(PartItem);
 			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.add(partitem);
 		}else{
-			List<PartItemJson>list = new ArrayList<PartItemJson>();
+			List<PartItemJsonUp>list = new ArrayList<PartItemJsonUp>();
 			list.add(partitem);
 			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem=list;
 		}

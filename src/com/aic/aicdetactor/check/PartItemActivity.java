@@ -41,6 +41,8 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -59,6 +61,7 @@ import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
+import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.T_Device_Item;
 import com.aic.aicdetactor.fragment.PartItemMeasureBaseFragment;
 import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment;
@@ -110,7 +113,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private int mCheckIndex =0;
 	private int mPartItemIndex =0;
 	//是否需要反向排序来巡检
-	private boolean isReverseDetection = false;
+	
 	//点击listItem后 ListView 视图消失，显示具体测试点界面
 	private boolean bListViewVisible = true;
 	private boolean bSpinnerVisible = true;
@@ -154,8 +157,13 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private LinearLayout mFirstLLayout=null;
 	private LinearLayout mSecendLLayout=null;
 	private PartItemMeasureBaseFragment fragment  =null;
-	private ArrayList<PartItemJson> mPartItemList=null;
+	private ArrayList<PartItemJsonUp> mPartItemList=null;
 	private ArrayList<String> mPartItemNameList=null;
+	
+	enum RUNSTATUS{
+		RUN,
+		
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -200,6 +208,24 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mFirstLLayout = (LinearLayout) findViewById(R.id.linefirst);
 		mSecendLLayout = (LinearLayout) findViewById(R.id.bottom_line);
 		mCheckbox = (CheckBox) findViewById(R.id.checkorder);
+		mCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				// TODO Auto-generated method stub
+				 boolean isReverseDetection = false;
+				if(arg1){
+					isReverseDetection = true;
+				}else{
+					isReverseDetection = false;
+				}
+				Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATA);
+				msg.arg1=isReverseDetection==true?1:0;
+				mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATA);
+				
+			}
+			
+		});
 		mSpinner = (Spinner) findViewById(R.id.checkspinner);
 		mListView = (ListView) findViewById(R.id.partitemlist);
 		initListViewAndData();
@@ -216,9 +242,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
 				// TODO Auto-generated method stub
-
+			
+			mSpinner.getSelectedItem().toString();
 			}
-
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
 				// TODO Auto-generated method stub
@@ -387,7 +413,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	void initListViewAndData(){
 		try {
 			if(mPartItemList == null){
-			 mPartItemList = new ArrayList<PartItemJson>();
+			 mPartItemList = new ArrayList<PartItemJsonUp>();
 			 }else{
 				 mPartItemList.clear();
 			 }
@@ -397,7 +423,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			 }else{
 				 mPartItemNameList.clear();
 			 }
-			PartItemJson item =null;
+			PartItemJsonUp item =null;
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.size(); i++) {
 				
 				item =  app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(i);
@@ -411,6 +437,15 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		
 	}
    
+	/**
+	 * 
+	 * @param bReverse ,other order
+	 */
+	void revertListViewData(boolean bReverse){
+		mSpinner.setEnabled(false);
+		//mListView.not
+	}
+	
    private final int MSG_INIT_DATA =0;
    private final int MSG_NEXT =1;
    private final int MSG_MEASUERMENT =2;
@@ -420,6 +455,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
    private final int MSG_SAVE_DEVICEITEM =6;
    private final int MSG_ADD_A_PARTITEMDATA =7;
    private final int MSG_INIT_FRAGMENT =8;
+   private final int MSG_CHANGE_LISTVIEWDATA =9;
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
@@ -449,6 +485,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		   case MSG_ADD_A_PARTITEMDATA:
 			   addAPartItemData(msg.arg1,msg.arg2,msg.obj);
 			   
+			   break;
+		   case MSG_CHANGE_LISTVIEWDATA:
+			   revertListViewData(msg.arg1>0?true:false);
 			   break;
 		   }
 	   }
@@ -655,94 +694,95 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	 * @return
 	 */
 	private String addUpdata(String oldvalue,String checkValue,String Item23_Guid){
-		String value= "";
-		ContentValues vc = new ContentValues();
-		vc.put("19", Item_def);
-		vc.put("20", mStartTime);
-		vc.put("21", mEndTime);
-		vc.put("22", SystemUtil.getDiffDate(mStartTime,mEndTime));
-		switch(mCheckUnit_DataType){
-		 case CommonDef.checkUnit_Type.ACCELERATION:
-			 vc.put("23", Item23_Guid);	 
-			 vc.put("24", SystemUtil.createGUID());
-			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-			 vc.put("27", 0);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-			 vc.put("29", "上限值");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-				vc.put("30", "不为空");//当测量类型为加速度、速度、位移时，不为空； 				其它数据类型为空
-
-				vc.put("31", "不为空");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-			 break;
-		 case CommonDef.checkUnit_Type.SPEED:	
-			 vc.put("23", Item23_Guid);	 
-			 vc.put("24", SystemUtil.createGUID());
-			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-			 vc.put("27", 1);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-			 vc.put("29", "");
-			vc.put("30", "");
-				vc.put("31", "");
-			 break;
-		 case CommonDef.checkUnit_Type.DISPLACEMENT:
-			 vc.put("23", Item23_Guid);	 
-			 vc.put("24", SystemUtil.createGUID());
-			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-			 vc.put("27", 2);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-			 vc.put("29", "");
-				vc.put("30", "");
-				vc.put("31", "");
-			   break;
-		  
-		default:
-			vc.put("23", "");
-			vc.put("24", "");
-			vc.put("26", "");
-			vc.put("27", "");
-			vc.put("28", "");
-			vc.put("29", "");
-			vc.put("30", "");
-			vc.put("31", "");
-			   break;
-		  
-		}
-		vc.put("25", 0);
-		
-		vc.put("32", "");
-		vc.put("33", "");
-		vc.put("34", "");
-		vc.put("35", "");
-		
-		value = vc.get("19")+ff
-				+vc.get("20")+ff
-				+vc.get("21")+ff
-				+vc.get("22")+ff
-				+vc.get("23")+ff
-				+vc.get("24")+ff
-				+vc.get("25")+ff
-				+vc.get("26")+ff
-				+vc.get("27")+ff
-				+vc.get("28")+ff
-				+vc.get("29")+ff
-				+vc.get("30")+ff
-				+vc.get("31")+ff
-				+vc.get("32")+ff
-				+vc.get("33")+ff
-				+vc.get("34")+ff
-				+vc.get("35")+ff
-				+ff+ff+ff+ff;
-		
-		
-		String[] array = oldvalue.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
+//		String value= "";
+//		ContentValues vc = new ContentValues();
+//		vc.put("19", Item_def);
+//		vc.put("20", mStartTime);
+//		vc.put("21", mEndTime);
+//		vc.put("22", SystemUtil.getDiffDate(mStartTime,mEndTime));
+//		switch(mCheckUnit_DataType){
+//		 case CommonDef.checkUnit_Type.ACCELERATION:
+//			 vc.put("23", Item23_Guid);	 
+//			 vc.put("24", SystemUtil.createGUID());
+//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
+//			 vc.put("27", 0);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
+//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
+//			 vc.put("29", "上限值");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
+//				vc.put("30", "不为空");//当测量类型为加速度、速度、位移时，不为空； 				其它数据类型为空
+//
+//				vc.put("31", "不为空");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
+//			 break;
+//		 case CommonDef.checkUnit_Type.SPEED:	
+//			 vc.put("23", Item23_Guid);	 
+//			 vc.put("24", SystemUtil.createGUID());
+//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
+//			 vc.put("27", 1);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
+//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
+//			 vc.put("29", "");
+//			vc.put("30", "");
+//				vc.put("31", "");
+//			 break;
+//		 case CommonDef.checkUnit_Type.DISPLACEMENT:
+//			 vc.put("23", Item23_Guid);	 
+//			 vc.put("24", SystemUtil.createGUID());
+//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
+//			 vc.put("27", 2);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
+//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
+//			 vc.put("29", "");
+//				vc.put("30", "");
+//				vc.put("31", "");
+//			   break;
+//		  
+//		default:
+//			vc.put("23", "");
+//			vc.put("24", "");
+//			vc.put("26", "");
+//			vc.put("27", "");
+//			vc.put("28", "");
+//			vc.put("29", "");
+//			vc.put("30", "");
+//			vc.put("31", "");
+//			   break;
+//		  
+//		}
+//		vc.put("25", 0);
+//		
+//		vc.put("32", "");
+//		vc.put("33", "");
+//		vc.put("34", "");
+//		vc.put("35", "");
+//		
+//		value = vc.get("19")+ff
+//				+vc.get("20")+ff
+//				+vc.get("21")+ff
+//				+vc.get("22")+ff
+//				+vc.get("23")+ff
+//				+vc.get("24")+ff
+//				+vc.get("25")+ff
+//				+vc.get("26")+ff
+//				+vc.get("27")+ff
+//				+vc.get("28")+ff
+//				+vc.get("29")+ff
+//				+vc.get("30")+ff
+//				+vc.get("31")+ff
+//				+vc.get("32")+ff
+//				+vc.get("33")+ff
+//				+vc.get("34")+ff
+//				+vc.get("35")+ff
+//				+ff+ff+ff+ff;
+//		
+//		
+//		String[] array = oldvalue.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
 		String newValue = "";
-		for(int i =0;i<array.length;i++){
-			if(i!=13){
-			newValue= newValue+array[i]+ff;
-			}else{
-				newValue= newValue+checkValue+ff;
-			}
-		}
-		return newValue+value;
+//		for(int i =0;i<array.length;i++){
+//			if(i!=13){
+//			newValue= newValue+array[i]+ff;
+//			}else{
+//				newValue= newValue+checkValue+ff;
+//			}
+//		}
+//		return newValue+value;
+		return null;
 	}
 	boolean isTimeOut(){
 		return false;

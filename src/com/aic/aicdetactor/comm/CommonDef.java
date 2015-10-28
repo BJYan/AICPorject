@@ -98,6 +98,22 @@ public class CommonDef {
 		="11",  振动波形		
 		注：8,9,11类型在下载的JSON格式里不存在
 	 */
+		/**
+		 * 1.温度   ，Code= "00"；
+			2.录入   ，Code= "01"；
+			3.抄表   ，Code= "02"；
+			4.加速度 ，Code= "03"；
+			5.速度   ，Code= "04"；
+			6.位移   ，Code= "05"；
+			7.转速    ，Code="06"；
+			8.预设状况，Code= "07"；
+			9.图片   ，Code= "08"；
+			10.音频   ，Code="09"；
+			11.观察 ，Code="10"；
+			12.振动波形 ，Code=11.
+
+			图片、音频、振动波形在上位机编辑时不用出现
+		 */
 
 	// 温度
 	public static final int TEMPERATURE = 0;
