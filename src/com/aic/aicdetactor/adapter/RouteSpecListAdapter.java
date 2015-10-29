@@ -129,7 +129,7 @@ public class RouteSpecListAdapter extends BaseAdapter{
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
-					int iRouteCount = app.mFileList !=null?app.mFileList.size():0;
+					int iRouteCount = app.mJugmentListParms !=null?app.mJugmentListParms.size():0;
 					MLog.Logd(TAG,
 							"in init() 2 start "
 									+ SystemUtil
@@ -144,12 +144,12 @@ public class RouteSpecListAdapter extends BaseAdapter{
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
-							if(Integer.valueOf(app.mFileList.get(routeIndex).get(RouteDaoStationParams.HasSpecialLine))>0){
-							map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineName));
+							if(app.mJugmentListParms.get(routeIndex).T_Line.HasSpecialLine){
+							map.put(CommonDef.route_info.NAME,app.mJugmentListParms.get(routeIndex).T_Line.Name);
 							map.put(CommonDef.route_info.DEADLINE,"2000-10-10");
 
 							map.put(CommonDef.route_info.PROGRESS,
-									app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineCheckedCount) + "/" + app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineSpecialTotalCount));
+									app.mJugmentListParms.get(routeIndex).T_Line.LineCheckedCount + "/" + app.mJugmentListParms.get(routeIndex).T_Line.LineSpecialTotalCount);
 						
 							String index = "" + (routeIndex + 1);
 							map.put(CommonDef.route_info.INDEX, index);

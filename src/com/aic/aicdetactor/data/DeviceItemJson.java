@@ -146,7 +146,9 @@ public class DeviceItemJson//:ICloneable
     	Is_Device_Checked=1;
     }
     public void setDataExistGuid(){
+    	if(Data_Exist_Guid.length()<20){
     	Data_Exist_Guid=SystemUtil.createGUID();
+    	}
     }
     
     public void setWorkerInfos(String WorkerClassGroup,String WorkerClassShift,String WorkerNumber,String WorkerName,String WorkerGuid){

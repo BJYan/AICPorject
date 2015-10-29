@@ -276,51 +276,48 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
     	float MID = 100;
     	float LOW = 0;
     	
-//		String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-//		
-//    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
-//    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
-//    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
-//
-//		
-//    	int x = (int) (Math.random()*max_xyz);
-//    	int y = (int) (Math.random()*max_xyz);
-//    	int z = (int) (Math.random()*max_xyz);
-//    	float temp = (int) (Math.random()*max_temperation);
-//    	
-//    	mXTextView.setText(String.valueOf(x));
-//    	mYTextView.setText(String.valueOf(y));
-//    	mZTextView.setText(String.valueOf(z));
-//    	switch(mZhouCounts){
-//    	case 1:
-//    		y=z=0;
-//    		break;
-//    	case 2:
-//    		z=0;
-//    		break;
-//    	}
-//   
-//    	if((temp < MAX) && (temp>=MID) ){
-//    		mRadioButton.setBackgroundColor(Color.YELLOW);
-//    		if(mColorTextView !=null)
-//    		mColorTextView.setText(getString(R.string.warning));
-//    		
-//    	}else if((temp >= LOW) && (temp<MID)){
-//    		mRadioButton.setBackgroundColor(Color.BLACK);
-//    		if(mColorTextView !=null)
-//    		mColorTextView.setText(getString(R.string.normal));
-//    	}else if(temp <LOW){
-//    		mRadioButton.setBackgroundColor(Color.GRAY);
-//    		if(mColorTextView !=null)
-//    		mColorTextView.setText(getString(R.string.invalid));
-//    	}else if(temp>=MAX){
-//    		mRadioButton.setBackgroundColor(Color.RED);
-//    		if(mColorTextView !=null)
-//    		mColorTextView.setText(getString(R.string.dangerous));
-//    	}
-//    	
-//    	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
-//    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
+    	MAX = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Up_Limit));
+    	MID = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Middle_Limit));
+    	LOW = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Down_Limit));
+		
+    	int x = (int) (Math.random()*max_xyz);
+    	int y = (int) (Math.random()*max_xyz);
+    	int z = (int) (Math.random()*max_xyz);
+    	float temp = (int) (Math.random()*max_temperation);
+    	
+    	mXTextView.setText(String.valueOf(x));
+    	mYTextView.setText(String.valueOf(y));
+    	mZTextView.setText(String.valueOf(z));
+    	switch(mZhouCounts){
+    	case 1:
+    		y=z=0;
+    		break;
+    	case 2:
+    		z=0;
+    		break;
+    	}
+   
+    	if((temp < MAX) && (temp>=MID) ){
+    		mRadioButton.setBackgroundColor(Color.YELLOW);
+    		if(mColorTextView !=null)
+    		mColorTextView.setText(getString(R.string.warning));
+    		
+    	}else if((temp >= LOW) && (temp<MID)){
+    		mRadioButton.setBackgroundColor(Color.BLACK);
+    		if(mColorTextView !=null)
+    		mColorTextView.setText(getString(R.string.normal));
+    	}else if(temp <LOW){
+    		mRadioButton.setBackgroundColor(Color.GRAY);
+    		if(mColorTextView !=null)
+    		mColorTextView.setText(getString(R.string.invalid));
+    	}else if(temp>=MAX){
+    		mRadioButton.setBackgroundColor(Color.RED);
+    		if(mColorTextView !=null)
+    		mColorTextView.setText(getString(R.string.dangerous));
+    	}
+    	
+    	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
+    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
     }
 
 	

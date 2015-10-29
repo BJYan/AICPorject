@@ -153,29 +153,28 @@ public class PartItemMeasureTemperatureFragment  extends PartItemMeasureBaseFrag
     	float MAX = 200;
     	float MID = 100;
     	float LOW = 0;
-//    	String[] value = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-//		
-//    	MAX = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MAX_VALUE]);
-//    	MID = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIDDLE_VALUE]);
-//    	LOW = SystemUtil.getTemperature(value[CommonDef.partItemData_Index.PARTITEM_MIN_VALUE]);
-//
-//    	float temp = (int) (Math.random()*max_temperation);
-//    	if((temp < MAX) && (temp>=MID) ){
-//    		mRadioButton.setBackgroundColor(Color.YELLOW);
-//    		mColorTextView.setText(getString(R.string.warning));
-//    		
-//    	}else if((temp >= LOW) && (temp<MID)){
-//    		mRadioButton.setBackgroundColor(Color.BLACK);
-//    		mColorTextView.setText(getString(R.string.normal));
-//    	}else if(temp <LOW){
-//    		mRadioButton.setBackgroundColor(Color.GRAY);
-//    		mColorTextView.setText(getString(R.string.invalid));
-//    	}else if(temp>=MAX){
-//    		mRadioButton.setBackgroundColor(Color.RED);
-//    		mColorTextView.setText(getString(R.string.dangerous));
-//    	}
-//    	mTemeratureResultStr.setText(temp + " C");
-//    	mCallback.OnClick(temp + " C"+"*");
+		
+    	MAX = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Up_Limit));
+    	MID = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Middle_Limit));
+    	LOW = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Down_Limit));
+
+    	float temp = (int) (Math.random()*max_temperation);
+    	if((temp < MAX) && (temp>=MID) ){
+    		mRadioButton.setBackgroundColor(Color.YELLOW);
+    		mColorTextView.setText(getString(R.string.warning));
+    		
+    	}else if((temp >= LOW) && (temp<MID)){
+    		mRadioButton.setBackgroundColor(Color.BLACK);
+    		mColorTextView.setText(getString(R.string.normal));
+    	}else if(temp <LOW){
+    		mRadioButton.setBackgroundColor(Color.GRAY);
+    		mColorTextView.setText(getString(R.string.invalid));
+    	}else if(temp>=MAX){
+    		mRadioButton.setBackgroundColor(Color.RED);
+    		mColorTextView.setText(getString(R.string.dangerous));
+    	}
+    	mTemeratureResultStr.setText(temp + " C");
+    	mCallback.OnClick(temp + " C"+"*");
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.aic.aicdetactor.app;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Application;
 
 import com.aic.aicdetactor.data.DownloadNormalData;
+import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -27,14 +29,6 @@ public class myApplication extends Application
     public String gRouteClassName = "";
     //当前路线名称
     public String gRouteName = "";
-    //当前站点名称
-//    public String gStationName ="";    
-//    //当前设备名称
-//    public String gDeviceName = "";
-//    //当前巡检项名称
-//    public String mPartItemName = "";
-    
-//    private String mStrGuid = null;
     //登录的工人用户名
     private String mWorkerName = null;
     //登录用户名对应的密码
@@ -47,7 +41,6 @@ public class myApplication extends Application
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
       
-    public List<Map<String,String>> mFileList = null;
     //当前日常巡检数据，不包括特巡数据
     public DownloadNormalData mNormalLineJsonData=null;
     //当前特巡数据，不包括日常巡检数据
@@ -56,9 +49,8 @@ public class myApplication extends Application
     public DownloadNormalData mLineJsonData=null;
     //
 	private List<String> mTMPRouteFileList = null;
-	public List<WorkerInfoJson> gWorkerInfoJsonList=null;
 	private boolean gBLogIn = false;
-
+	public List<JugmentParms> mJugmentListParms=null;
 	//通过NFC获取ID号 及打卡
 	private String mNFCCard="";
 	

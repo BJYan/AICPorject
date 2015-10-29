@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -16,4 +17,6 @@ public class PeriodInfoJson
     public int T_Period_Unit_Id ;
 
     public List<PeriodJson> Periods ;
+    public PeriodInfoJson(){
+    	Periods= new    ArrayList<PeriodJson>(); }
 }

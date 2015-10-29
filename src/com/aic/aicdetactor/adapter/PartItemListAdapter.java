@@ -19,6 +19,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	//private ArrayList<String> mPartItemNameList=null;
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
+	private PartItemJsonUp mExternPartItemList =null;
 	myApplication app ;
 	Activity mActivity;
 	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex){
@@ -27,6 +28,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		this.mActivity = av;
 		app = ((myApplication)av. getApplication());
 		initListViewAndData();
+		mExternPartItemList = new PartItemJsonUp();
 	}
 	@Override
 	public int getCount() {
@@ -106,14 +108,19 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 	}
 	
-	public void getNewPartItemListDataByStatusArray(int index){
+	public void getNewPartItemListDataByStatusArray(int index,String DeviceItemDef){
 		mPartItemList.clear();
 		for(int m= 0;m<mOriPartItemList.size();m++){
 			if(mOriPartItemList.get(m).Start_Stop_Flag==index)	{
 				mPartItemList.add(mOriPartItemList.get(m));
 				}
 			}
+		setDeviceItemItemDef(DeviceItemDef);
 		this.notifyDataSetChanged();
+	}
+	private void setDeviceItemItemDef(String itemdef){
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Item_Define=itemdef;
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).setSartDate();
 	}
 	@Override
 	public void notifyDataSetChanged() {

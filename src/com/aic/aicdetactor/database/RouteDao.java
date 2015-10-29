@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
+import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
 import com.aic.aicdetactor.data.PeriodJson;
@@ -212,6 +213,31 @@ public class RouteDao {
 					lineGuid
 					});
 			}
+		
+		
+		
+		 sql = "insert into "+DBHelper.TABLE_Period
+				 +"(" + DBHelper.Period_Table.Base_Point +","				 
+				 + DBHelper.Period_Table.Frequency+","
+				 + DBHelper.Period_Table.Name+","
+				 + DBHelper.Period_Table.Status_Array+","				
+				 + DBHelper.Period_Table.T_Line_Content_Guid+","	
+				   + DBHelper.Period_Table.T_Line_Guid+","	
+				 + DBHelper.Period_Table.T_Period_Unit_Code + ","
+				  + DBHelper.Period_Table.T_Period_Unit_Id
+				 +")values(?,?,?,?,?,?,?,?)";
+				
+		mDB.execSQL(sql, new Object[] {
+				peroid.Base_Point,
+				peroid.Frequency,
+				peroid.Name,
+				peroid.Status_Array,	
+				lineGuid,
+				peroid.T_Line_Content_Guid,		
+				peroid.T_Period_Unit_Code,
+				peroid.T_Period_Unit_Id
+				});
+		
 		//-----------------------------period end-------------------------------------------
 			
 		//-----------------------------Organization_CorporationName Start-------------------------------------------
@@ -685,6 +711,58 @@ public class RouteDao {
 		return list;
 	}
 	
+	 
+	public PeriodInfoJson getPeriodJsonListByGuidEx(String strLineGuid){
+		//List<PeriodJson> list = new ArrayList<PeriodJson>();
+		PeriodInfoJson pjson= new PeriodInfoJson();
+		Cursor cur = null;
+		try{
+		cur = mDB.query(DBHelper.TABLE_Periods, null, DBHelper.Periods_Table.Line_Guid +" =? ",new String[]{strLineGuid} , null, null, null);
+		if(cur!=null){
+			cur.moveToFirst();
+			for(int i=0;i<cur.getCount();i++){
+				PeriodJson periofinfo = new PeriodJson();
+				periofinfo.Is_Omission_Check     = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Is_Omission_Check)));
+				periofinfo.Is_Permission_Timeout = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Is_Permission_Timeout)));
+				periofinfo.Span                  = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Span)));
+				periofinfo.Start_Point           = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Start_Point)));
+				periofinfo.T_Turn_Number_Array   = cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.T_Turn_Number_Array));				
+				periofinfo.Task_Mode             = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Task_Mode)));
+				periofinfo.Turn_Finish_Mode      = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Periods_Table.Turn_Finish_Mode)));
+				pjson.Periods.add(periofinfo);
+				cur.moveToNext();
+			}
+		}
+		}catch(Exception e){
+			
+		}finally{
+			if(cur!=null){cur.close();}
+		}
+		
+		try{
+			cur = mDB.query(DBHelper.TABLE_Period, null, DBHelper.Period_Table.T_Line_Guid +" =? ",new String[]{strLineGuid} , null, null, null);
+			if(cur!=null){
+				cur.moveToFirst();
+				for(int i=0;i<cur.getCount();i++){
+					pjson.Base_Point     = cur.getString(cur.getColumnIndex(DBHelper.Period_Table.Base_Point));
+					pjson.Frequency = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Period_Table.Frequency)));
+					pjson.Name                  = cur.getString(cur.getColumnIndex(DBHelper.Period_Table.Name));
+					pjson.Status_Array           = cur.getString(cur.getColumnIndex(DBHelper.Period_Table.Status_Array));
+					pjson.T_Line_Content_Guid   = cur.getString(cur.getColumnIndex(DBHelper.Period_Table.T_Line_Content_Guid));				
+					pjson.T_Line_Guid             = strLineGuid;
+					pjson.T_Period_Unit_Code      = cur.getString(cur.getColumnIndex(DBHelper.Period_Table.T_Period_Unit_Code));
+					pjson.T_Period_Unit_Id      = Integer.valueOf(cur.getString(cur.getColumnIndex(DBHelper.Period_Table.T_Period_Unit_Id)));
+					cur.moveToNext();
+				}
+			}
+			}catch(Exception e){
+				
+			}finally{
+				if(cur!=null){cur.close();}
+			}
+		
+		return pjson;
+	}
 	/**
 	 * 根据巡检数据的LINEGuid获取周期的数组
 	 * @param strLineGuid
@@ -748,6 +826,33 @@ public class RouteDao {
 			cur.close();
 		}
 		return list;
+}
+	
+	public WorkerInfoJson getWorkerInfoByLineGuid(String strLineGuid,String name,String pwd){
+		WorkerInfoJson list = new WorkerInfoJson();
+		Cursor cur = mDB.query(WorkerTableName,						
+						null,
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Number+ "=?"+" and "+DBHelper.Plan_Worker_Table.T_Line_Guid+ "=?", new String[] { name,pwd,strLineGuid }, 
+						null,
+						null, null);
+		WorkerInfoJson worker = new WorkerInfoJson();
+		if (cur != null) {
+			cur.moveToFirst();
+			for(int n=0;n<cur.getCount();n++){
+				
+				worker.Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Name));
+				worker.Number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
+				worker.Alias_Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Alias_Name));
+				worker.Class_Group = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Class_Group));
+				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Content_Guid));
+				worker.T_Line_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+				worker.T_Organization_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Organization_Guid));
+				worker.Password = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Pwd));
+				cur.moveToNext();
+			}
+			cur.close();
+		}
+		return worker;
 }
 
 /**
@@ -839,7 +944,85 @@ public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,Co
 	return fileNameList;
 }
 
+public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,ContentValues cv){
+	String error = "";
+	List<String> guidList = new ArrayList<String>();
+	List<JugmentParms> mJugmentListParms=new   ArrayList<JugmentParms>();
+	
+	//查询工人信息
+	Cursor cur =  mDB.query(WorkerTableName, null,
+				DBHelper.Plan_Worker_Table.Name + "=?" + " and "+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
+				new String[] { name, pwsd}, null, null, null);
+	
+		if (cur != null && cur.getCount() > 0) {
+			MLog.Logd("luotest","queryLogIn()  cur != null cur.count ="	+ cur.getCount());
+			cur.moveToFirst();
+			for (int n = 0; n < cur.getCount(); n++) {
+				String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+				guidList.add(GUID);
+				cur.moveToNext();
+				MLog.Logd("luotest","queryLogIn()  searvher worker table GUID is"+ GUID);
+			}
+			cur.close();
+			cur = null;
+		} else {
+			
+			MLog.Logd("luotest","queryLogIn() searvher worker table cur is null");
+			error = "没有您的信息，请核实再登录";
+		}
 
+	if (cur != null) {
+		cur.close();
+	}
+
+	
+
+	for (int k = 0; k < guidList.size(); k++) {
+		MLog.Logd("luotest", " queryLogIn() search worker table " + k);
+		Cursor cursor2 = mDB.query(RouteTableName,
+				null,
+				DBHelper.SourceTable.PLANGUID + "=?",
+				new String[] { guidList.get(k) }, null, null, null);
+		
+		if (cursor2 != null && cursor2.getCount() > 0) {
+			cursor2.moveToFirst();
+			for (int i = 0; i < cursor2.getCount(); i++) {
+				Map<String, String> map = new HashMap<String, String>();
+				JugmentParms mJugmentParms = new JugmentParms();
+				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+				mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+				mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+				mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+				mJugmentParms.T_Line.LineNormalTotalCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
+				mJugmentParms.T_Line.LineSpecialTotalCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
+				mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+				mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
+
+				
+				mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+				mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+				mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+				
+				mJugmentListParms.add(mJugmentParms);
+				cursor2.moveToNext();
+				MLog.Logd("luotest"," queryLogIn() search route table  result path is "	+ path);
+			}
+			cursor2.close();
+			cursor2 = null;
+		} else {
+			MLog.Logd("luotest",
+					" queryLogIn() search route table cursor2 is null");
+			error = "没有您对应的巡检任务";
+		}
+
+		if (cursor2 != null) {
+			cursor2.close();
+		}
+	}
+	MLog.Logd("luotest", "queryLogIn() end  error=" + error);
+	cv.put("error", error);
+	return mJugmentListParms;
+}
 
 //查询临时路线
 	private void queryTempRouteInfo(List<Map<String,String>> fileNameList){

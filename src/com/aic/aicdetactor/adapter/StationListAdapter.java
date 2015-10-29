@@ -196,7 +196,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
-           String path= app.mFileList.get(mrouteIndex).get("LinePath");
+           String path= app.mJugmentListParms.get(mrouteIndex).T_Line.LinePath;
            String  planjson = SystemUtil.openFile(path);
 			//app.mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
            app.LineDataClassifyFromOneFile(path, mIsSpecial);

@@ -10,13 +10,20 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
+import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.CheckStatus;
+import com.aic.aicdetactor.data.LineInfoJson;
+import com.aic.aicdetactor.data.PeriodInfoJson;
+import com.aic.aicdetactor.data.RoutePeroid;
+import com.aic.aicdetactor.data.TurnInfoJson;
+import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -27,6 +34,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RouteNormalListAdapter extends BaseAdapter{
 	private Context context;
@@ -89,20 +97,27 @@ public class RouteNormalListAdapter extends BaseAdapter{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				
-		app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
-		app.mRouteIndex = position;
-		Intent intent = new Intent();
-		intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,
-				position);
-		app.setCurrentRouteIndex(position);
-		intent.putExtra(CommonDef.route_info.NAME,
-				(String) mapItem.get(CommonDef.route_info.NAME));
-		intent.putExtra(CommonDef.route_info.INDEX,
-				(String) mapItem.get(CommonDef.route_info.INDEX));
-		intent.setClass(context,
-				StationActivity.class);
-		mActivity.startActivity(intent);
+				ConditionalJudgement jugment = new ConditionalJudgement();
+				ContentValues nInfo=new ContentValues();
+				if(jugment.GetUploadJsonFile(app.mJugmentListParms.get(position).T_Line,
+						app.mJugmentListParms.get(position).m_PeriodInfo, 
+						app.mJugmentListParms.get(position).T_Turn, 
+						app.mJugmentListParms.get(position).m_WorkerInfoJson, 
+						app.mJugmentListParms.get(position).m_RoutePeroid, nInfo)){
+					
+				}else{
+					Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
+				//	return;
+				}
+				app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
+				app.mRouteIndex = position;
+				Intent intent = new Intent();
+				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,position);
+				app.setCurrentRouteIndex(position);
+				intent.putExtra(CommonDef.route_info.NAME,(String) mapItem.get(CommonDef.route_info.NAME));
+				intent.putExtra(CommonDef.route_info.INDEX,(String) mapItem.get(CommonDef.route_info.INDEX));
+				intent.setClass(context,StationActivity.class);
+				mActivity.startActivity(intent);
 			}});
 				
 		return arg1;
@@ -127,7 +142,7 @@ public class RouteNormalListAdapter extends BaseAdapter{
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 
-					int iRouteCount = app.mFileList !=null?app.mFileList.size():0;
+					int iRouteCount = app.mJugmentListParms !=null?app.mJugmentListParms.size():0;
 					MLog.Logd(TAG,
 							"in init() 2 start "
 									+ SystemUtil
@@ -143,11 +158,11 @@ public class RouteNormalListAdapter extends BaseAdapter{
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 							Map<String, String> map = new HashMap<String, String>();
-								map.put(CommonDef.route_info.NAME,app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineName));
+								map.put(CommonDef.route_info.NAME,app.mJugmentListParms.get(routeIndex).T_Line.Name);
 								map.put(CommonDef.route_info.DEADLINE,"2010-8-8");
 
 								map.put(CommonDef.route_info.PROGRESS,
-										app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineCheckedCount) + "/" + app.mFileList.get(routeIndex).get(RouteDaoStationParams.LineNormalTotalCount));
+										app.mJugmentListParms.get(routeIndex).T_Line.LineCheckedCount + "/" + app.mJugmentListParms.get(routeIndex).T_Line.LineNormalTotalCount);
 							
 								String index = "" + (routeIndex + 1);
 								map.put(CommonDef.route_info.INDEX, index);

@@ -43,7 +43,6 @@ public class PartItemMeasureMeasurementFragment  extends PartItemMeasureBaseFrag
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		//return super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.measurement, container, false);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
@@ -71,6 +70,7 @@ public class PartItemMeasureMeasurementFragment  extends PartItemMeasureBaseFrag
 	@Override
 	public void OnButtonDown(int buttonId, Bundle bundle) {
 		// TODO Auto-generated method stub
+		//开始测量
 	}
 
 

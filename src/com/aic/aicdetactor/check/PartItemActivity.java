@@ -162,11 +162,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	private ArrayList<String> mPartItemNameList=null;
 	
-	//private ArrayList<PartItemJsonUp> mPartItemListReverse=null;
-	//private ArrayList<String> mPartItemNameListReverse=null;
-	
-	
-	PartItemListAdapter mAdapterList =null;
+	private PartItemListAdapter mAdapterList =null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -198,8 +194,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 		// 路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
-		RouteNameTextView.setText(app.mFileList.get(app.mRouteIndex).get(
-				RouteDaoStationParams.LineName));
+		RouteNameTextView.setText(app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
 		// 站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
 		stationTextView.setText(app.mLineJsonData.StationInfo
@@ -250,13 +245,11 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			
 			
 				if(mSpinner.getSelectedItemPosition()>0){
-			Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
-			msg.arg1=mSpinner.getSelectedItemPosition();
-			
-			
-			
-				Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
-			mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
+					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
+					msg.arg1=mSpinner.getSelectedItemPosition();
+					msg.obj=mSpinner.getSelectedItem().toString();
+					Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
+					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
 				}else{
 					mAdapterList.initListViewAndData();
 				}
@@ -476,7 +469,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   break;
 		   case MSG_CHANGE_LISTVIEWDATAEX:
 			   Toast.makeText(PartItemActivity.this, "收到的是:"+mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
-			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1);
+			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1,msg.obj);
 			   break;
 		   }
 	   }
@@ -486,13 +479,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	   mAdapterList.revertListViewData(); 
    }
    
-   void regetDataByStatusArrayIndex(int index){
-	   mAdapterList.getNewPartItemListDataByStatusArray(index); 
+   void regetDataByStatusArrayIndex(int index,Object itemdef){
+	   mAdapterList.getNewPartItemListDataByStatusArray(index,(String)itemdef); 
 	  if( mAdapterList.getCount()>0){
-	  
-	   
 		mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
-	//   mHandler.sendEmptyMessage(MSG_INIT_FRAGMENT);
 	  }
    }
    final int CAMERA_TYPE =1;
@@ -920,7 +910,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
 		mStartTime = SystemUtil.getSystemTime(0);
-    	//mCheckValue = "getMeasureValue "+valueIndex++;
 		mFragmentCallBack.OnButtonDown(0, null);
     }
     @Override  

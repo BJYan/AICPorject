@@ -119,15 +119,16 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 
 		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
-		app.mFileList = dao.queryLineInfoByWorker(mLogName, mLogPwd, cv);
+	
+		app.mJugmentListParms=dao.queryLineInfoByWorkerEx(mLogName, mLogPwd, cv);
 		error = cv.getAsString("error");
 		Log.i(TAG, " Login() error = " + error);
 
-		if (app.mFileList.size() > 0) {
+		if (app.mJugmentListParms.size() > 0) {
 			app.setLoginWorkerName(mLogName);
 			app.setLoginWorkerPwd(mLogPwd);
 			app.setLogInStatus(true);
-			app.gWorkerInfoJsonList=dao.getWorkerInfoListByNameAndPwd(mLogName,mLogPwd);
+	
 			return true;
 		}
 		return false;

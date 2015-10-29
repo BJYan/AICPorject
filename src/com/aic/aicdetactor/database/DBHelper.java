@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 11;//版本号
+	 private final static int VERSION = 12;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -162,6 +162,19 @@ public class DBHelper extends SQLiteOpenHelper {
 			 public static final String	 Turn_Finish_Mode = "Turn_Finish_Mode";
 			 public static final String Line_Guid = "Line_Guid";
 		 } 
+		 
+		 public static String TABLE_Period = "Period";  
+		 public class Period_Table{ 
+			 public static final String Base_Point = "Base_Point";
+			 public static final String Frequency = "Frequency";
+			 public static final String Name = "Name";
+			 public static final String Status_Array = "Status_Array";
+			 public static final String T_Line_Content_Guid = "T_Line_Content_Guid";
+			 public static final String	 T_Line_Guid = "T_Line_Guid";
+			 public static final String	 T_Period_Unit_Code = "T_Period_Unit_Code";
+			 public static final String T_Period_Unit_Id = "T_Period_Unit_Id";
+		 } 
+		 
 	 //自带的构造方法
 	 public DBHelper(Context context, String name, CursorFactory factory,
 	   int version) {
@@ -345,8 +358,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+")";
 		db.execSQL(Organization_WorkShopNameSql);
 
-		//Period Table
-		String PeriodSql = "create table IF NOT EXISTS "
+		//Periods Table
+		String PeriodsSql = "create table IF NOT EXISTS "
 				+ TABLE_Periods 
 				+ "(" 
 				+ Periods_Table.Is_Omission_Check+" varchar(256) ,"	
@@ -358,7 +371,27 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Periods_Table.Task_Mode+" varchar(256), "
 				+ Periods_Table.Turn_Finish_Mode+" varchar(256) "
 				+")";
-		db.execSQL(PeriodSql);
+		db.execSQL(PeriodsSql);
+		
+		
+		
+		//Period Table
+				String PSql = "create table IF NOT EXISTS "
+						+ TABLE_Period 
+						+ "(" 
+						+ Period_Table.Base_Point+" varchar(256) ,"	
+						+ Period_Table.Frequency+" INT ,"	
+						+ Period_Table.Name+" varchar(256) ,"	
+						+ Period_Table.Status_Array+" varchar(256) ,"	
+						+ Period_Table.T_Line_Content_Guid+" varchar(256) ,"	
+						+ Period_Table.T_Line_Guid+" varchar(256), "	
+						+ Period_Table.T_Period_Unit_Code+" varchar(256), "
+						+ Period_Table.T_Period_Unit_Id+" INT "
+						+")";
+				db.execSQL(PSql);
+				
+		
+		 
 
 	}
 
@@ -398,6 +431,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	  db.execSQL(sql);
 	  
 	  sql  = "DROP TABLE IF EXISTS "+TABLE_Periods;
+	  db.execSQL(sql);
+	  
+	  sql  = "DROP TABLE IF EXISTS "+TABLE_Period;
 	  db.execSQL(sql);
 	  
 	  
