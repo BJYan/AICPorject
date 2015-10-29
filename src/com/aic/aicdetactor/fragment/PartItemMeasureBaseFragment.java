@@ -23,7 +23,7 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 	protected PartItemJsonUp mPartItemData=null;
 	private myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
-	private DeviceItemJson mDeviceItemData=null;
+	protected DeviceItemJson mDeviceItemData=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG,"onCreate()");

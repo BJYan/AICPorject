@@ -21,8 +21,15 @@
             android:text=""
             android:singleLine="true"
             android:textSize="@dimen/normal_text_size" />
+        
+        
     </LinearLayout>
-    
+     <EditText
+            android:id="@+id/editcontent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="请客观的填写测量数据"
+            android:textSize="@dimen/normal_text_size" />
 
 
 </LinearLayout>

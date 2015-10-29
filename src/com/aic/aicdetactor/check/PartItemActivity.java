@@ -55,6 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
@@ -158,12 +159,15 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private LinearLayout mSecendLLayout=null;
 	private PartItemMeasureBaseFragment fragment  =null;
 	private ArrayList<PartItemJsonUp> mPartItemList=null;
+	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	private ArrayList<String> mPartItemNameList=null;
 	
-	enum RUNSTATUS{
-		RUN,
-		
-	}
+	//private ArrayList<PartItemJsonUp> mPartItemListReverse=null;
+	//private ArrayList<String> mPartItemNameListReverse=null;
+	
+	
+	PartItemListAdapter mAdapterList =null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -228,9 +232,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		});
 		mSpinner = (Spinner) findViewById(R.id.checkspinner);
 		mListView = (ListView) findViewById(R.id.partitemlist);
-		initListViewAndData();
-		mListView.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mPartItemNameList));
+		mAdapterList = new PartItemListAdapter(PartItemActivity.this,mStationIndex,mDeviceIndex);
+		mListView.setAdapter(mAdapterList);
 		
 		getDeviceStatusArray(mStationIndex, mDeviceIndex);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,statusList);
@@ -243,7 +246,20 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					int arg2, long arg3) {
 				// TODO Auto-generated method stub
 			
-			mSpinner.getSelectedItem().toString();
+				String str=mSpinner.getSelectedItem().toString();
+			
+			
+				if(mSpinner.getSelectedItemPosition()>0){
+			Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
+			msg.arg1=mSpinner.getSelectedItemPosition();
+			
+			
+			
+				Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
+			mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
+				}else{
+					mAdapterList.initListViewAndData();
+				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
@@ -410,41 +426,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		super.onResume();
 	}
 	
-	void initListViewAndData(){
-		try {
-			if(mPartItemList == null){
-			 mPartItemList = new ArrayList<PartItemJsonUp>();
-			 }else{
-				 mPartItemList.clear();
-			 }
-			
-			if(mPartItemNameList == null){
-			 mPartItemNameList =new ArrayList<String>();
-			 }else{
-				 mPartItemNameList.clear();
-			 }
-			PartItemJsonUp item =null;
-			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.size(); i++) {
-				
-				item =  app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(i);
-				mPartItemList.add(item);
-				mPartItemNameList.add(item.Check_Content);
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		
-	}
    
-	/**
-	 * 
-	 * @param bReverse ,other order
-	 */
-	void revertListViewData(boolean bReverse){
-		mSpinner.setEnabled(false);
-		//mListView.not
-	}
 	
    private final int MSG_INIT_DATA =0;
    private final int MSG_NEXT =1;
@@ -456,6 +438,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
    private final int MSG_ADD_A_PARTITEMDATA =7;
    private final int MSG_INIT_FRAGMENT =8;
    private final int MSG_CHANGE_LISTVIEWDATA =9;
+   private final int MSG_CHANGE_LISTVIEWDATAEX =10;
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
@@ -463,6 +446,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		   case MSG_INIT_DATA:
 			   break;
 		   case MSG_INIT_FRAGMENT:
+			   mFirstLLayout.setVisibility(View.GONE);
+			   mSecendLLayout.setVisibility(View.VISIBLE);
 			   switchFragment(getCurrentPartItemType(),true);
 			   break;
 		   case MSG_NEXT:
@@ -477,7 +462,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   preCheckItem();
 			   break;
 		   case MSG_SAVE_PARTITEMDATA:
-			  // saveCheckedItemNode();			  
+			  // saveCheckedItemNode();			  on
 			   break;
 		   case MSG_SAVE_DEVICEITEM:
 			   saveDeviceItem();
@@ -487,12 +472,29 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   
 			   break;
 		   case MSG_CHANGE_LISTVIEWDATA:
-			   revertListViewData(msg.arg1>0?true:false);
+			   revertListData();
+			   break;
+		   case MSG_CHANGE_LISTVIEWDATAEX:
+			   Toast.makeText(PartItemActivity.this, "收到的是:"+mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
+			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1);
 			   break;
 		   }
 	   }
    };
    
+   void revertListData(){
+	   mAdapterList.revertListViewData(); 
+   }
+   
+   void regetDataByStatusArrayIndex(int index){
+	   mAdapterList.getNewPartItemListDataByStatusArray(index); 
+	  if( mAdapterList.getCount()>0){
+	  
+	   
+		mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
+	//   mHandler.sendEmptyMessage(MSG_INIT_FRAGMENT);
+	  }
+   }
    final int CAMERA_TYPE =1;
    final int RF_TYPE =0;
    final int AUDIO_TYPE =2;
@@ -604,7 +606,16 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	 */
 	void preCheckItem(){	
 		//显示数据
-		switchFragment(getPrevPartItemType(), false);		
+		switchFragment(getPrevPartItemType(), false);	
+		if(mPartItemIndex<0){
+			mPartItemIndex=0;
+			mFirstLLayout.setVisibility(View.VISIBLE);
+			mSecendLLayout.setVisibility(View.GONE);
+			
+			mSpinner.setSelection(0);
+			mSpinner.setSelected(true);
+		}
+		
 	}
 	/**
 	 * 保存当前的DeviceItem项的数据，添加一些flag and time information
@@ -1065,7 +1076,7 @@ private int mZhouCounts=0;
 				e.printStackTrace();
 			}	
 		}
-		
+		statusList.add("请选择状态");
 		String[]array = str.split("\\/");
 		for(int k=0;k<array.length;k++){
 			statusList.add(array[k]);
