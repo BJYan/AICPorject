@@ -11,7 +11,6 @@ import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.LineInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
 import com.aic.aicdetactor.data.RoutePeroid;
@@ -97,17 +96,19 @@ public class RouteNormalListAdapter extends BaseAdapter{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				ConditionalJudgement jugment = new ConditionalJudgement();
-				ContentValues nInfo=new ContentValues();
-				if(jugment.GetUploadJsonFile(app.mJugmentListParms.get(position).T_Line,
-						app.mJugmentListParms.get(position).m_PeriodInfo, 
-						app.mJugmentListParms.get(position).T_Turn, 
-						app.mJugmentListParms.get(position).m_WorkerInfoJson, 
-						app.mJugmentListParms.get(position).m_RoutePeroid, nInfo)){
-					
-				}else{
-					Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
-				//	return;
+				if(!app.isTest){
+					ConditionalJudgement jugment = new ConditionalJudgement();
+					ContentValues nInfo=new ContentValues();
+					if(jugment.GetUploadJsonFile(app.mJugmentListParms.get(position).T_Line,
+							app.mJugmentListParms.get(position).m_PeriodInfo, 
+							app.mJugmentListParms.get(position).T_Turn, 
+							app.mJugmentListParms.get(position).m_WorkerInfoJson, 
+							app.mJugmentListParms.get(position).m_RoutePeroid, nInfo,mActivity.getApplicationContext())){
+						
+					}else{
+						Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
+						return;
+					}
 				}
 				app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
 				app.mRouteIndex = position;
@@ -147,7 +148,6 @@ public class RouteNormalListAdapter extends BaseAdapter{
 							"in init() 2 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-					CheckStatus status = null;
 					mItemDatas.clear();
 					for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
 						try {

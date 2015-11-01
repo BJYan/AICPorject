@@ -30,6 +30,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 
@@ -126,7 +127,7 @@ public class Search_fragment extends Fragment  implements OnButtonListener,OnCli
     }
 
 	@Override
-	public void OnButtonDown(int buttonId, Bundle bundle) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value) {
 		// TODO Auto-generated method stub
 		
 	}

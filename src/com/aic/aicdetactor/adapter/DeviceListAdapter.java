@@ -32,6 +32,7 @@ import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.ChartDialogBtnListener;
 import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
 public class DeviceListAdapter  extends BaseExpandableListAdapter implements ChartDialogBtnListener{
@@ -243,7 +244,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 		MLog.Logd(TAG, "InitData>> ");
 		try {
 			mDataList.clear();
+			if(mChildrenList==null){
 			mChildrenList = new ArrayList<ArrayList<PartItemJsonUp>>();
+			}else{
+				mChildrenList.clear();
+			}
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				if(mIsSpecial){
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
@@ -313,8 +318,16 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 	//如果是 在位管理的话 ，需要在partitem数组中新增添一项partitem
 	void addIs_InPlacePartItem(int deviceIndex){
 		PartItemJsonUp partitem = new PartItemJsonUp();
+		
+		partitem.Start_Check_Datetime=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Device_Checked=1;
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_RFID_Checked=1;
+		if(app.isTest){
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Omission_Check=89;
+		}else{
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Omission_Check=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Omission_Check;
+		
+		}
 		if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem !=null
 				&&app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.size()>0){
 			List<PartItemJsonUp> PartItem = app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem;

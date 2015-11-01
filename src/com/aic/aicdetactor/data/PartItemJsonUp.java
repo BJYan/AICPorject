@@ -22,11 +22,7 @@ public class PartItemJsonUp
     public String Extra_Information ;
     public int T_Maintenance_Status_Id ;
     public String Fault_Diagnosis ;
-    public float Default_RPM ;
-    //#else
-    public String PartItemData ;
-    //#endif
-    //  
+    public float Default_RPM ;    //  
     public String Item_Define;
     
     //上传数据时候 需要的项
@@ -37,7 +33,7 @@ public class PartItemJsonUp
     public String RecordLab;
     public int SensorType=0;//始终为0
     public String VMSDir;
-    public  String SignalType="";
+    public  int SignalType=-1;
     public String SampleFre;
     public String SamplePoint;
     public String RPM;
@@ -85,14 +81,14 @@ public class PartItemJsonUp
     	int type = Is3TypeData();
     	if(type>0){
     	if(type==3)	{
-    		SignalType="0";
+    		SignalType=0;
     	}else if(type==4)	{
-    		SignalType="1";
+    		SignalType=1;
     	}else if(type==5)	{
-    		SignalType="2";
+    		SignalType=2;
     	}
     	}else{
-    		SignalType="";
+    		SignalType=-1;
     	}
     }
     
@@ -181,9 +177,27 @@ public class PartItemJsonUp
 	      Extra_Information ="";
 	      T_Maintenance_Status_Id=0 ;
 	      Fault_Diagnosis="" ;
-	      Default_RPM=0 ;
-	    //#else
-	      PartItemData="" ;
-	    //#endif
+	      Default_RPM=0 ;	
+	      
+	      
+	       Item_Define="";
+	      
+	      //上传数据时候 需要的项
+	       Start_Check_Datetime="";
+	       End_Check_Datetime="";
+	       Total_Check_Time=0;//单位S
+	       SaveLab="";
+	       RecordLab="";
+	       SensorType=0;//始终为0
+	       VMSDir="";
+	      SignalType=-1;
+	      SampleFre="";
+	       SamplePoint="";
+	       RPM="";
+	       Diagnose_Conclusion="";
+	       Remarks="";
+	       Is_Timeout="";
+	       T_Item_Abnormal_Grade_Id="";
+	       T_Item_Abnormal_Grade_Code="";
     }
 }

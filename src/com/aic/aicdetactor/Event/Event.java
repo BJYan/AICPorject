@@ -9,6 +9,7 @@ import network.aic.xj.common.context.request.DeliverNormalPlanRequestArgs;
 import network.aic.xj.common.context.request.DeliverTempPlanRequestArgs;
 import network.aic.xj.common.context.request.QueryServerCommandRequestArgs;
 import network.aic.xj.common.context.request.UploadMobilePhoneInfoRequestArgs;
+import network.aic.xj.common.context.request.UploadNormalPlanResultRequestArgs;
 import network.aic.xj.common.context.request.UploadRFIDRequestArgs;
 import network.aic.xj.common.context.response.CommandInfo;
 import network.aic.xj.common.request.AckServerCommandRequest;
@@ -16,12 +17,14 @@ import network.aic.xj.common.request.QueryOrganizationRequest;
 import network.aic.xj.common.request.QueryServerCommandRequest;
 import network.aic.xj.common.request.QueryServerInfoRequest;
 import network.aic.xj.common.request.UploadMobilePhoneInfoRequest;
+import network.aic.xj.common.request.UploadNormalPlanResultRequest;
 import network.aic.xj.common.request.UploadRFIDRequest;
 import network.aic.xj.common.response.AckServerCommandResponse;
 import network.aic.xj.common.response.QueryOrganizationResponse;
 import network.aic.xj.common.response.QueryServerCommandResponse;
 import network.aic.xj.common.response.QueryServerInfoResponse;
 import network.aic.xj.common.response.UploadMobilePhoneInfoResponse;
+import network.aic.xj.common.response.UploadNormalPlanResultResponse;
 import network.aic.xj.common.response.UploadRFIDResponse;
 import network.com.citizensoft.common.util.DateUtil;
 import network.com.citizensoft.network.SocketCallTimeout;
@@ -37,7 +40,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.aic.aicdetactor.Config.Config;
-import com.aic.aicdetactor.data.DownloadNormalData;
+import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -92,12 +95,12 @@ public class Event {
 			public void run() {
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = "222.128.3.208";
+				sp.Port = 10000;
 				String planjson="";
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
 				// request.User = "";当前使用用户，保留
 				request.Args = new QueryServerCommandRequestArgs();
 				request.Args.LockSeconds = 0;
@@ -130,7 +133,7 @@ public class Event {
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								 //parse json data for insert databases
-								 DownloadNormalData Normaldata=JSON.parseObject(planjson,DownloadNormalData.class);
+								 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
 								 for(int i=0;i< Normaldata.StationInfo.size();i++){
 									 if(isSpecialLine){break;}
 									 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
@@ -183,7 +186,7 @@ public class Event {
     	 String  planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory()+"/AICLine.txt");
     	 boolean isSpecialLine = false;
 			 //parse json data for insert databases
-			 DownloadNormalData Normaldata=JSON.parseObject(planjson,DownloadNormalData.class);
+    	 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
 			 for(int i=0;i< Normaldata.StationInfo.size();i++){
 				 if(isSpecialLine){break;}
 				 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
@@ -438,6 +441,44 @@ public class Event {
 
 				try {
 					UploadMobilePhoneInfoResponse response = sp.Execute(
+							request, timeout);
+					Message msg = new Message();
+					msg.what = 0;
+					msg.obj = response.Info.Code;
+					handler.sendMessage(msg);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	//UploadNormalPlanResultRequest
+	public void UploadNormalPlanResultInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final DownloadNormalRootData UploadData) {
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				ServiceProvider sp = new ServiceProvider();
+				sp.ServerIP = "222.128.3.208";
+				sp.Port = 10000;
+
+				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
+				request.CreateTime = DateUtil.getCurrentDate();
+				request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_IP = "2.2.2.2";
+				request.Args = new UploadNormalPlanResultRequestArgs();
+				request.Args.UploadData = UploadData;//"TestAndroidAPP";
+
+				SocketCallTimeout timeout = new SocketCallTimeout();
+				timeout.ConnectTimeoutSeconds = 30;
+				timeout.ReceiveTimeoutSeconds = 60;
+				timeout.SendTimeoutSeconds = 60;
+
+				try {
+					UploadNormalPlanResultResponse response = sp.Execute(
 							request, timeout);
 					Message msg = new Message();
 					msg.what = 0;

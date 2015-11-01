@@ -10,7 +10,6 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;

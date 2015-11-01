@@ -17,6 +17,8 @@ import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -54,16 +56,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.LoginActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItem_Contact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
+import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
+import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.T_Device_Item;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 import com.aic.aicdetactor.fragment.PartItemMeasureBaseFragment;
 import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment;
 import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment.OnMeasureMeasureListener;
@@ -137,6 +145,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private int mPartItemCounts = 0;
 	//测试倒计时，用于待信号稳定
 	private final int mMaxSecond_StartMeasure = 30;
+	private static final int  REMOVELASTFRAGMENT =10086;
 	private int mCountDown =mMaxSecond_StartMeasure;
 	//设置颜色级别
 	private RadioButton mRadioButton = null;
@@ -144,8 +153,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	//一个DeviceItem Object
 	private JSONObject mDeviceItemObject =null;
 	//一个ParteItem数组对应的JSON数组
-	private JSONArray mJSONArray = null;
-	private JSONArray mNewArrayJSON = null;
 	private String mDeviceItemDefStr = null;
 	//private boolean []mBValue = null;	//巡检的结果
 	private myApplication app = null;
@@ -161,9 +168,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private ArrayList<PartItemJsonUp> mPartItemList=null;
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	private ArrayList<String> mPartItemNameList=null;
-	
+	private Button mConfigButton;
 	private PartItemListAdapter mAdapterList =null;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -176,10 +182,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		
 		mPartItemIndex =0;
 		initViewAndData();
-		//对应
-        mJSONArray = new JSONArray();
-        mNewArrayJSON= new JSONArray();
-        mHandler.sendMessage(mHandler.obtainMessage(MSG_INIT_DATA));
 	}
 
 	void initViewAndData() {
@@ -248,10 +250,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
 					msg.arg1=mSpinner.getSelectedItemPosition();
 					msg.obj=mSpinner.getSelectedItem().toString();
-					Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
+					//Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
 					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
 				}else{
-					mAdapterList.initListViewAndData();
+					mAdapterList.initListViewAndData(true);
 				}
 			}
 			@Override
@@ -275,9 +277,12 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 		});
 
+		mConfigButton = (Button) findViewById(R.id.config);
+		mConfigButton.setOnClickListener(this);
+		
 		mButtion_Position = (Button) findViewById(R.id.bottombutton1);
 		mButtion_Position.setOnClickListener(this);
-
+		
 		mButton_Direction = (Button) findViewById(R.id.bottombutton2);
 		mButton_Direction.setOnClickListener(this);
 
@@ -290,33 +295,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mButton_Measurement = (Button) findViewById(R.id.bottombutton3);
 		mButton_Measurement.setOnClickListener(this);
 	}
-	int getCurrentPartItemType(){
-	long type =app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
-	return (int)type;
-	}
 	
-	int getPrevPartItemType(){
-		long type =-1;
-		mPartItemIndex--;
-		if(mPartItemIndex>=0){
-		type=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
-		}else{
-			MLog.Loge(TAG, "getPrevPartItemType() error:out of arrayList");
-		}
-		return (int)type;
-	}
-	
-	
-	int getNextPartItemType(){
-		long type =-1;
-		mPartItemIndex++;
-		if(mPartItemIndex<app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.size()){
-		type=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).PartItem.get(mPartItemIndex).T_Measure_Type_Id;
-		}else{
-			MLog.Loge(TAG, "getNextPartItemType() error:out of arrayList");
-		}
-		return (int)type;
-	}
 	
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
@@ -325,6 +304,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
+		bundle.putInt("type", type);
 		
 		
 		  switch(type){
@@ -346,12 +326,14 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					}
 					fragmentTransaction.commit();
 					}
-			   mButtion_Position.setText(getString(R.string.position));
-				mButton_Measurement.setText(getString(R.string.measurement));
-				mButton_Direction.setText(getString(R.string.direction));	
+//			   mButtion_Position.setText(getString(R.string.position));
+//				mButton_Measurement.setText(getString(R.string.measurement));
+//				mButton_Direction.setText(getString(R.string.direction));	
 			   break;
 		   case CommonDef.checkUnit_Type.TEMPERATURE:
-		   case CommonDef.checkUnit_Type.ROTATIONAL_SPEED:
+		   case CommonDef.checkUnit_Type.ROTATION_RATE:
+		   case CommonDef.checkUnit_Type.METER_READING:
+		   case CommonDef.checkUnit_Type.ENTERING:
 			  //方向按鈕隱藏
 			   mButton_Direction.setEnabled(false);
 			  
@@ -365,14 +347,12 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					}					
 					fragmentTransaction.commit();
 					}
-			   mButtion_Position.setText(getString(R.string.position));
-				mButton_Measurement.setText(getString(R.string.measurement));
-				mButton_Direction.setText(getString(R.string.direction));	
+//			   mButtion_Position.setText(getString(R.string.position));
+//				mButton_Measurement.setText(getString(R.string.measurement));
+//				mButton_Direction.setText(getString(R.string.direction));	
 			   break;
-		   case CommonDef.checkUnit_Type.RECORD:
-		   case CommonDef.checkUnit_Type.DEFAULT_CONDITION:
-		   {
-				fragment = new PartItemMeasureObserverFragment();
+		   case CommonDef.checkUnit_Type.OBSERVATION:
+			   fragment = new PartItemMeasureObserverFragment();
 				fragment.setArguments(bundle);  
 				if(bFirstInit){
 				fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -380,14 +360,28 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					fragmentTransaction.replace(R.id.fragment_content,fragment);
 				}
 				fragmentTransaction.commit();
-				
-				mButton_Direction.setEnabled(true);
-				mButtion_Position.setText(getString(R.string.camera));
-				mButton_Measurement.setText(getString(R.string.textrecord));
-				mButton_Direction.setText(getString(R.string.soundrecord));				
-				}
 			   break;
-		   case CommonDef.checkUnit_Type.MEASUREMENT:
+//		   case CommonDef.checkUnit_Type.ENTERING:
+//		  
+//		   {
+//				fragment = new PartItemMeasureObserverFragment();
+//				fragment.setArguments(bundle);  
+//				if(bFirstInit){
+//				fragmentTransaction.add(R.id.fragment_content,fragment);
+//				}else{
+//					fragmentTransaction.replace(R.id.fragment_content,fragment);
+//				}
+//				fragmentTransaction.commit();
+//				
+//				mButton_Direction.setEnabled(true);
+//				mButtion_Position.setText(getString(R.string.camera));
+//				mButton_Measurement.setText(getString(R.string.textrecord));
+//				mButton_Direction.setText(getString(R.string.soundrecord));				
+//				}
+//			   break;
+		   case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
+		//	   break;
+		 //  case CommonDef.checkUnit_Type.METER_READING:
 		   {
 			   fragment = new PartItemMeasureMeasurementFragment();
 				fragment.setArguments(bundle);  
@@ -399,49 +393,58 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 				fragmentTransaction.commit();
 			   
 		   }
-			   break;
+		   break;
+		   case REMOVELASTFRAGMENT:
+			   fragmentTransaction.remove(fragment);
+			   fragmentTransaction.commit();
+			break;
 			   
 			   default:
-				   mButtion_Position.setText(getString(R.string.position));
-					mButton_Measurement.setText(getString(R.string.measurement));
-					mButton_Direction.setText(getString(R.string.direction));	
+//				   mButtion_Position.setText(getString(R.string.position));
+//					mButton_Measurement.setText(getString(R.string.measurement));
+//					mButton_Direction.setText(getString(R.string.direction));	
 				   Toast.makeText(getApplicationContext(), "default Fragment type ="+type, Toast.LENGTH_LONG).show();
+				   
 				   break;
 		  }
+		  
+		  controlButtonDisplayStatus(type);
 	}
 	
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		
-		 //获取第一个PartItemData的测量类型
-       
-		super.onResume();
-	}
 	
-   
 	
-   private final int MSG_INIT_DATA =0;
-   private final int MSG_NEXT =1;
-   private final int MSG_MEASUERMENT =2;
-   private final int MSG_DIRECTION =3;
-   private final int MSG_PRE =4;
-   private final int MSG_SAVE_PARTITEMDATA =5;
-   private final int MSG_SAVE_DEVICEITEM =6;
-   private final int MSG_ADD_A_PARTITEMDATA =7;
-   private final int MSG_INIT_FRAGMENT =8;
-   private final int MSG_CHANGE_LISTVIEWDATA =9;
-   private final int MSG_CHANGE_LISTVIEWDATAEX =10;
+	 private final int MSG_START =0;
+	   private final int MSG_NEXT =MSG_START+1;
+	   private final int MSG_MEASUERMENT =MSG_START+2;
+	   private final int MSG_DIRECTION =MSG_START+3;
+	   private final int MSG_PRE =MSG_START+4;
+	   private final int MSG_SAVE_PARTITEMDATA =MSG_START+5;
+	   private final int MSG_ADD_NEW_PARTITEMDATA =MSG_START+7;
+	   private final int MSG_INIT_FRAGMENT =MSG_START+8;
+	   private final int MSG_CHANGE_LISTVIEWDATA =MSG_START+9;
+	   private final int MSG_CHANGE_LISTVIEWDATAEX =MSG_START+10;
+	   private final int MSG_CACHE_CURRENT_DEVICEITEM_DATA =MSG_START+11;
+	   
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
 		   switch(msg.what){
-		   case MSG_INIT_DATA:
-			   break;
 		   case MSG_INIT_FRAGMENT:
-			   mFirstLLayout.setVisibility(View.GONE);
-			   mSecendLLayout.setVisibility(View.VISIBLE);
-			   switchFragment(getCurrentPartItemType(),true);
+			   if(msg.arg1==1){
+				   mFirstLLayout.setVisibility(View.VISIBLE);
+				   mSecendLLayout.setVisibility(View.GONE);
+				  if( !mAdapterList.gotoNextDeviceItem()){
+					  finish();
+					  return;
+				  }else{
+					  switchFragment(REMOVELASTFRAGMENT,false);  
+				  }
+			   }else{
+				   mFirstLLayout.setVisibility(View.GONE);
+				   mSecendLLayout.setVisibility(View.VISIBLE);
+				   switchFragment(mAdapterList.getCurrentPartItemType(),true);
+			   }
+			  
 			   break;
 		   case MSG_NEXT:
 			   nextCheckItem();
@@ -455,35 +458,30 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   preCheckItem();
 			   break;
 		   case MSG_SAVE_PARTITEMDATA:
-			  // saveCheckedItemNode();			  on
+			   mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
 			   break;
-		   case MSG_SAVE_DEVICEITEM:
-			   saveDeviceItem();
-			   break;
-		   case MSG_ADD_A_PARTITEMDATA:
+		   case MSG_ADD_NEW_PARTITEMDATA:
 			   addAPartItemData(msg.arg1,msg.arg2,msg.obj);
-			   
 			   break;
 		   case MSG_CHANGE_LISTVIEWDATA:
-			   revertListData();
+			   revertPartItemDataList();
 			   break;
 		   case MSG_CHANGE_LISTVIEWDATAEX:
-			   Toast.makeText(PartItemActivity.this, "收到的是:"+mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
 			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1,msg.obj);
+			   break;
+		   case MSG_CACHE_CURRENT_DEVICEITEM_DATA:
 			   break;
 		   }
 	   }
    };
    
-   void revertListData(){
+   void revertPartItemDataList(){
 	   mAdapterList.revertListViewData(); 
    }
    
    void regetDataByStatusArrayIndex(int index,Object itemdef){
 	   mAdapterList.getNewPartItemListDataByStatusArray(index,(String)itemdef); 
-	  if( mAdapterList.getCount()>0){
-		mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
-	  }
+	 
    }
    final int CAMERA_TYPE =1;
    final int RF_TYPE =0;
@@ -518,73 +516,73 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		   break;
 	   case CAMERA_TYPE:
 	   {
-		   JSONObject object = new JSONObject();
-		   try {
-			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-			mNewArrayJSON.put(object);
-			MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+mJSONArray.length());
-			//mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}		   
+//		   JSONObject object = new JSONObject();
+//		   try {
+//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
+//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
+//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
+//			mNewArrayJSON.put(object);
+//			MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+mJSONArray.length());
+//			//mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}		   
 		
 	   }
 		   break;
 	   case AUDIO_TYPE:
 	   {
-		   JSONObject object = new JSONObject();
-		   try {
-			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-			mNewArrayJSON.put(object);
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}		   
+//		   JSONObject object = new JSONObject();
+//		   try {
+//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
+//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
+//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
+//			mNewArrayJSON.put(object);
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}		   
 		
 	   }
 		   break;
 	   case TEXT_RECORD_TYPE:
 	   {
-		   JSONObject object = new JSONObject();
-		   try {
-			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-			mNewArrayJSON.put(object);
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}		   
+//		   JSONObject object = new JSONObject();
+//		   try {
+//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
+//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
+//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
+//			mNewArrayJSON.put(object);
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}		   
 		
 	   }
 		   break;
 	   case TEXT_ZHOU_TYPE:
-			if (zhouCounts > 1) {
-				String guid = SystemUtil.createGUID();
-				String values = msgobject.toString();
-				String[] array = values.split(",");
-				for (int i = 0; i < array.length; i++) {
-					// 需要保存X，Y的数据，相同的GUID，不同的checkValue
-					JSONObject object = new JSONObject();
-					try {
-						String data = mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-						object.put(
-								KEY.KEY_Fast_Record_Item_Name,
-								mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-						object.put(KEY.KEY_PARTITEMDATA,addUpdata(data, array[i], guid));
-						mNewArrayJSON.put(object);
-						MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+ mJSONArray.length());
-					} catch (JSONException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
+//			if (zhouCounts > 1) {
+//				String guid = SystemUtil.createGUID();
+//				String values = msgobject.toString();
+//				String[] array = values.split(",");
+//				for (int i = 0; i < array.length; i++) {
+//					// 需要保存X，Y的数据，相同的GUID，不同的checkValue
+//					JSONObject object = new JSONObject();
+//					try {
+//						String data = mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
+//						object.put(
+//								KEY.KEY_Fast_Record_Item_Name,
+//								mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
+//						object.put(KEY.KEY_PARTITEMDATA,addUpdata(data, array[i], guid));
+//						mNewArrayJSON.put(object);
+//						MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+ mJSONArray.length());
+//					} catch (JSONException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//				}
+//			}
 		   break;
 	   }
 	  
@@ -596,42 +594,20 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	 */
 	void preCheckItem(){	
 		//显示数据
-		switchFragment(getPrevPartItemType(), false);	
+		mPartItemIndex = mAdapterList.setCurPartItemIndex(--mPartItemIndex);
+		mPartItemIndex = mAdapterList.resetMaxPartItemIndex();
+		switchFragment(mAdapterList.getPrevPartItemType(), false);	
 		if(mPartItemIndex<0){
-			mPartItemIndex=0;
+			switchFragment(REMOVELASTFRAGMENT, false);
+			mPartItemIndex = mAdapterList.setCurPartItemIndex(0);		
 			mFirstLLayout.setVisibility(View.VISIBLE);
-			mSecendLLayout.setVisibility(View.GONE);
-			
+			mSecendLLayout.setVisibility(View.GONE);			
 			mSpinner.setSelection(0);
 			mSpinner.setSelected(true);
 		}
 		
 	}
-	/**
-	 * 保存当前的DeviceItem项的数据，添加一些flag and time information
-	 */
-	void saveDeviceItem(){
-		JSONObject object =(JSONObject) mCurrentDeviceItem;
-		try {
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_Start_Check_Datetime, mStartTime);
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_End_Check_Datetime, mEndTime);
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_Is_Device_Checked, 1);
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_Is_RFID_Checked, 1);
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_Total_Check_Time, SystemUtil.getDiffDate(mStartTime, mEndTime));
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_Is_Omission_Check, 1);
-			for(int i=0;i< mNewArrayJSON.length();i++){
-				mJSONArray.put(mNewArrayJSON.get(i));
-			}
-			object.put(T_Device_Item.Device_Array_Item_Const.Key_PartItem, mJSONArray);
-			MLog.Logd(TAG, "saveDeviceItem() object is "+object.toString());
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		saveUpLoadData();
-	//	app.insertUpLoadInfo(this.getApplicationContext());
-		finish();
-	}
+	
 	/**
 	 * 保存当前的 巡检项巡检结果，重新生成一个PartItem
 	 */
@@ -796,18 +772,17 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private void nextCheckItem() {
 		if (!isTimeOut()) {
 			//保存当前的册数数据
-			fragment.saveCheckValue();
+			//fragment.saveCheckValue();
 			//判断是否是已经巡检完毕
-			if (!fragment.isCheckedFinish()) {
+			mPartItemIndex = mAdapterList.setCurPartItemIndex(++mPartItemIndex);
+			if (!mAdapterList.isCurrentDeviceItemFinish()) {
 				//获取下一点的 数据类型并进行fragment 切换显示数据							
-					switchFragment(getNextPartItemType(), false);	
+					switchFragment(mAdapterList.getNextPartItemType(), false);	
 				if (mCheckIndex != 0 && !mButton_Pre.isEnabled()) {
 					mButton_Pre.setEnabled(true);
 				}
 			}else {
-				fragment.saveDataToFile();
-				Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
-				this.finish();
+				ShowDialog();
 			}
 		} else {
 			Toast.makeText(getApplicationContext(),	getString(R.string.time_out), Toast.LENGTH_LONG).show();
@@ -815,8 +790,34 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		}
 
 	}
+	void ShowDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this); 
+		builder.setMessage("数据已巡检完毕，是否要存盘吗？") 
+		       .setCancelable(true) 
+		       .setTitle("提示")
+		       .setPositiveButton("确认", new DialogInterface.OnClickListener() { 
+		           public void onClick(DialogInterface dialog, int id) { 
+		        	   
+		        	   
+		        	   mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
+		        	   //fragment.saveDataToFile();
+						Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
+						dialog.dismiss();
+						Message msg=new Message();
+						msg.what = MSG_INIT_FRAGMENT;
+						msg.arg1=1;//next Device
+						mHandler.sendMessage(msg);
+		           } 
+		       }) 
+		       .setNegativeButton("取消", new DialogInterface.OnClickListener() { 
+		           public void onClick(DialogInterface dialog, int id) { 
+		                dialog.cancel(); 
+		           } 
+		       }); 
+		builder.show();
+	}
 	
-
+	
 	private Uri imageFilePath = null;
     
 
@@ -825,6 +826,13 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		switch(arg0.getId()){
+		case R.id.config:
+			 if( mAdapterList.getCount()>0&&mSpinner.getSelectedItemPosition()>0){
+					mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
+				  }else{
+					  Toast.makeText(getApplicationContext(), "请选择状态", Toast.LENGTH_LONG).show();
+				  }
+			break;
 		case R.id.bottombutton_pre://上一测试点
 		{
 			//首先是显示上一测试点的数据。
@@ -854,20 +862,22 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			break;
 		case R.id.next://下一测试点
 		{
-			if(mButton_Next.getText().equals(getString(R.string.save_and_finish))){
-				//
-				Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
-				msg.arg1 = RF_TYPE;
-				mHandler.sendMessage(msg);
-				mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
-			}else{	
-				if(mCheckUnit_DataType ==CommonDef.checkUnit_Type.RECORD
-						||mCheckUnit_DataType ==CommonDef.checkUnit_Type.DEFAULT_CONDITION){
-					mFragmentCallBack.OnButtonDown(1, null);
-				}
-	        mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
-	        mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
-			}
+//			if(mButton_Next.getText().equals(getString(R.string.save_and_finish))){
+//				//
+//				Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
+//				msg.arg1 = RF_TYPE;
+//				mHandler.sendMessage(msg);
+//				mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
+//			}else{	
+//				if(mCheckUnit_DataType ==CommonDef.checkUnit_Type.RECORD
+//						||mCheckUnit_DataType ==CommonDef.checkUnit_Type.DEFAULT_CONDITION){
+//					mFragmentCallBack.OnButtonDown(1, null);
+//				}
+//	        mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
+//	        mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
+//			}
+			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
+			mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
 			
 		}
 			break;		
@@ -880,7 +890,15 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 				//intent.setClass(PartItemActivity.this, NotepadActivity.class);
 				//startActivityForResult(intent,PartItem_Contact.PARTITEM_NOTEPAD_RESULT);
 			}else{
-				 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+				if(!app.isTest){
+					if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
+					 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+					}else {
+						Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
+					}
+				}else{
+					mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+				}
 				
 			}
 			break;
@@ -906,11 +924,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 	
-    private int valueIndex =0;
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
 		mStartTime = SystemUtil.getSystemTime(0);
-		mFragmentCallBack.OnButtonDown(0, null);
+		mFragmentCallBack.OnButtonDown(0, mAdapterList,"");
     }
     @Override  
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -921,9 +938,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			
 				Bundle bundle = new Bundle();
 				bundle.putString("pictureUri", imageFilePath.toString());
-				mFragmentCallBack.OnButtonDown(0, bundle);
+				mFragmentCallBack.OnButtonDown(0, mAdapterList,"");
 				// imageView.setImageBitmap(pic);
-				Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
+				Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
 				msg.arg1 = CAMERA_TYPE;
 				mHandler.sendMessage(msg);
 			
@@ -943,7 +960,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					CommonDef.PartItemData_Shered_info.Content, "");
 
 			// 重新生成一个parItemData数据项目
-			Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
+			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
 			msg.arg1 = TEXT_RECORD_TYPE;
 			mHandler.sendMessage(msg);
 		}
@@ -951,7 +968,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		if (PartItem_Contact.PARTITEM_SOUNDRECORD_RESULT == requestCode) {
 			Intent intent = data;
 			mCheckValue = intent.getExtras().getString(CommonDef.AUDIO_PATH);
-			Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
+			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
 			msg.arg1 = AUDIO_TYPE;
 			mHandler.sendMessage(msg);
 		}
@@ -976,7 +993,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	}
 	
 	public interface OnButtonListener{
-		void OnButtonDown(int buttonId,Bundle object);
+		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value);
 	};
 
 	/**
@@ -1046,6 +1063,49 @@ private int mZhouCounts=0;
 		
 	}
 	
+	void controlButtonDisplayStatus(int type){
+		mButtion_Position = (Button) findViewById(R.id.bottombutton1);
+		mButtion_Position.setOnClickListener(this);
+
+		mButton_Direction = (Button) findViewById(R.id.bottombutton2);
+		mButton_Direction.setOnClickListener(this);
+
+		mButton_Next = (Button) findViewById(R.id.next);
+		mButton_Next.setOnClickListener(this);
+
+		mButton_Pre = (Button) findViewById(R.id.bottombutton_pre);
+		mButton_Pre.setOnClickListener(this);
+
+		mButton_Measurement = (Button) findViewById(R.id.bottombutton3);
+		mButton_Measurement.setOnClickListener(this);
+		switch(type){
+		
+		case CommonDef.checkUnit_Type.TEMPERATURE:
+		case CommonDef.checkUnit_Type.ROTATION_RATE:
+			mButton_Direction.setVisibility(View.GONE);
+			mButtion_Position.setVisibility(View.GONE);
+			mButton_Measurement.setVisibility(View.VISIBLE);
+			mButton_Next.setVisibility(View.VISIBLE);
+			
+			break;
+		case CommonDef.checkUnit_Type.ENTERING:			
+		case CommonDef.checkUnit_Type.METER_READING:
+		case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
+		case  CommonDef.checkUnit_Type.OBSERVATION:
+			mButton_Direction.setVisibility(View.GONE);
+			mButtion_Position.setVisibility(View.GONE);
+			mButton_Measurement.setVisibility(View.GONE);
+			mButton_Next.setVisibility(View.VISIBLE);
+			break;
+		case CommonDef.checkUnit_Type.ACCELERATION:		
+		case CommonDef.checkUnit_Type.SPEED:		
+		case CommonDef.checkUnit_Type.DISPLACEMENT:
+			mButton_Direction.setVisibility(View.VISIBLE);
+			mButtion_Position.setVisibility(View.VISIBLE);
+			mButton_Measurement.setVisibility(View.VISIBLE);
+			break;
+		}
+	}
 	List<String> statusList = new ArrayList<String>();
 	public List<String>getDeviceStatusArray(int station,int device){
 		statusList.clear();

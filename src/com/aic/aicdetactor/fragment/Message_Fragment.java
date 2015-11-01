@@ -14,7 +14,6 @@ import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.TemporaryDataBean;
 import com.aic.aicdetactor.database.TemporaryRouteDao;

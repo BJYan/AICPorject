@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 12;//版本号
+	 private final static int VERSION = 13;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -97,7 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 
 		 public static final String Checked_Count = "Checked_Count";
 		 public static final String ItemCounts = "ItemCounts";
-		 public static final String isSpecialLine = "isSpecialLine";
+		 public static final String Is_Special_Inspection = "Is_Special_Inspection";
 	 } 
 	 
 	 public static String TABLE_TEMPORARY = "T_Temporary_Line_Json";  
@@ -253,7 +253,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String checkingsql = "create table IF NOT EXISTS "
 				+ TABLE_CHECKING 
 				+ "(" 
-				+ Checking_Table.T_Line_Guid +" varchar(256) PRIMARY KEY,"
+				+ Checking_Table.T_Line_Guid +" varchar(256) ,"
 				+ Checking_Table.T_Line_Name +" varchar(256),"
 				+ Checking_Table.Task_Mode +" varchar(256),"
 				+ Checking_Table.Start_Point +" varchar(256),"
@@ -273,7 +273,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
 				+ Checking_Table.Checked_Count +" INTEGER,"
 				+ Checking_Table.ItemCounts +" INTEGER ,"	
-				+ Checking_Table.isSpecialLine +" BOOLEAN "
+				+ Checking_Table.Is_Special_Inspection +" BOOLEAN "
 				+")";
 
 		db.execSQL(checkingsql);
@@ -369,7 +369,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Periods_Table.Start_Point+" varchar(256) ,"	
 				+ Periods_Table.T_Turn_Number_Array+" varchar(256), "	
 				+ Periods_Table.Task_Mode+" varchar(256), "
-				+ Periods_Table.Turn_Finish_Mode+" varchar(256) "
+				+ Periods_Table.Turn_Finish_Mode+" INT "
 				+")";
 		db.execSQL(PeriodsSql);
 		

@@ -190,4 +190,6 @@
      <string name="route_temp_device_code_hint">请输入设备编号</string> 
      <string name="route_temp_checkitem_name_hint">请输入测点名称</string>  
      <string name="route_temp_checkitem_code_hint">请输入测点编号</string> 
+     
+      <string name="config">确认</string>
 </resources>

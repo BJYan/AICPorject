@@ -63,7 +63,6 @@ import com.aic.aicdetactor.adapter.TreeViewAdapter;
 import com.aic.aicdetactor.adapter.TreeViewTest;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
 import com.aic.aicdetactor.dialog.NFCDialog;
 import com.aic.aicdetactor.util.MLog;

@@ -1,21 +1,30 @@
 package com.aic.aicdetactor.fragment;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.KEY;
@@ -38,10 +47,14 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 	//存储文字记录信息文件路径
 	private String mTextRecordPath = null;
 	
+	private Spinner mSpinner;
 	//之间的通信接口
 	private OnMediakListener mCallback = null;
 	EditText mExternalInfoEditText = null;
 	private TextView mDeviceNameTextView = null;
+	private ArrayAdapter<String> mSpinnerAdapter;
+	private List<String> mSpinnerData = new ArrayList<String>();
+	private String mSelectValue="";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -60,9 +73,44 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 		mDeviceNameTextView.setText(getPartItemName());
 		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);
 		mExternalInfoEditText.setText(getPartItemName());
+		mSpinner= (Spinner)view.findViewById(R.id.spinner);
+		
+		getPartItemStatusArray(mPartItemData.Extra_Information);
+		mSpinnerAdapter = new ArrayAdapter<String>(this.getActivity().getApplicationContext(), android.R.layout.simple_spinner_item,mSpinnerData);
+		mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSpinner.setAdapter(mSpinnerAdapter);
+		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				mSelectValue=mSpinner.getSelectedItem().toString();
+				
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
 		return view;
 	}
-
+	/**
+	 * 从Extra_Information 获取数据，包括里面的数字代码,例如 正常01
+	 */
+	private String[]StatusNameArray = null;
+	public List<String>getPartItemStatusArray(String str){
+		mSpinnerData.clear();		
+		mSpinnerData.add("请选择状态");
+		StatusNameArray = str.split("\\/");
+		for(int k=0;k<StatusNameArray.length;k++){
+			mSpinnerData.add(StatusNameArray[k].substring(0, StatusNameArray[k].length()-2));
+		}
+		return mSpinnerData;
+		
+	}
 	
     public interface OnMediakListener{
     	
@@ -84,10 +132,15 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 
   
 	@Override
-	public void OnButtonDown(int buttonId, Bundle bundle) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value) {
 		// TODO Auto-generated method stub
+		if("".equals(Value)){
+			Value="Observer";
+		}
+		adapter.saveData(mSelectValue);
+		
 		if(buttonId == 0){
-		Uri	imageFilePath = Uri.parse(bundle.getString("pictureUri"));
+		Uri	imageFilePath = null;//Uri.parse(bundle.getString("pictureUri"));
 			 try {  
 		           // Bundle extra = data.getExtras(); 
 		          //  Bitmap bmp = (Bitmap)data.getExtras().get("data");

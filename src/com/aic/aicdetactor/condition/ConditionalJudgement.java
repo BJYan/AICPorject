@@ -12,8 +12,10 @@ import java.util.List;
 import com.aic.aicdetactor.data.RoutePeroid;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.util.Log;
 
-import com.aic.aicdetactor.data.DownloadNormalData;
 import com.aic.aicdetactor.data.LineInfoJson;
 import com.aic.aicdetactor.data.PeriodJson;
 import com.aic.aicdetactor.data.T_Period;
@@ -21,6 +23,8 @@ import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.data.PeriodInfoJson;
 import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfoJson;
+import com.aic.aicdetactor.database.DBHelper;
+import com.aic.aicdetactor.database.RouteDao;
 
 class T_Period_Code {
 	
@@ -39,7 +43,7 @@ public class ConditionalJudgement {
 //返回=true, 需要的信息从m_RoutePeroid得到，如m_RoutePeroid。Guid为空，则从原始的JSON中得到巡检信息；
 //返回=false 错误信息从nInfo。err得到。
 	public boolean GetUploadJsonFile( LineInfoJson T_Line,PeriodInfoJson m_PeriodInfo,List<TurnInfoJson> T_Turn,
-			WorkerInfoJson m_WorkerInfoJson,RoutePeroid m_RoutePeroid,ContentValues nInfo)
+			WorkerInfoJson m_WorkerInfoJson,RoutePeroid m_RoutePeroid,ContentValues nInfo,Context context)
 	{
 		boolean nRe=false;
 		String StartDate,EndDate;
@@ -173,7 +177,7 @@ public class ConditionalJudgement {
 			}	
 			;
 			if(!GetCurCheckedFileName(T_Line.T_Line_Guid,m_TurnInfoJson,m_WorkerInfoJson,m_PeriodInfo.Periods.get(ii),m_PeriodInfo.T_Period_Unit_Code,
-					m_PeriodInfo.Base_Point,StartDate,	EndDate,nInfo))
+					m_PeriodInfo.Base_Point,StartDate,	EndDate,nInfo,context))
 			{
 				 // nInfo.put("err", "发生意外错误");
 				  return false;	
@@ -224,12 +228,11 @@ public class ConditionalJudgement {
 	
 	
 private boolean GetCurCheckedFileName(String T_Line_Guid,TurnInfoJson m_TurnInfoJson,WorkerInfoJson m_WorkerInfoJson,
-		PeriodJson m_PeriodJson,String T_Period_Unit_Code,String Base_Point,String Start_Date,String End_Date,ContentValues FileNameInfo)
+		PeriodJson m_PeriodJson,String T_Period_Unit_Code,String Base_Point,String Start_Date,String End_Date,ContentValues FileNameInfo,Context context)
 {
 	boolean nRe=false;
 	String BaseSql="";
 	String ExSql="";
-
   try{
 	  
 
@@ -255,15 +258,15 @@ private boolean GetCurCheckedFileName(String T_Line_Guid,TurnInfoJson m_TurnInfo
 		;
    if(m_PeriodJson.Task_Mode==0)//每天多次巡检
    {
-	   ExSql+=" and Turn_ Number="+m_TurnInfoJson.Number+" and Turn_Name='"+m_TurnInfoJson.Name+"'";
+	   ExSql+=" and Turn_Number="+m_TurnInfoJson.Number+" and Turn_Name='"+m_TurnInfoJson.Name+"'";
    }
    else //总共一次
    {
 	   ExSql+="";
    }
 	;   
-	
-	BaseSql="select Guid from T_Line_Upload_Json where T_Line_Guid='"+T_Line_Guid+"' and Turn_Finish_Mode="+m_PeriodJson.Turn_Finish_Mode;
+	;
+	BaseSql="select T_Line_Guid from "+DBHelper.TABLE_CHECKING +" where T_Line_Guid='"+T_Line_Guid+"' and Turn_Finish_Mode="+m_PeriodJson.Turn_Finish_Mode;
 	BaseSql+=" and Task_Mode="+m_PeriodJson.Task_Mode;
 	BaseSql+=ExSql;
 	BaseSql+=" and Start_Point="+m_PeriodJson.Start_Point;
@@ -274,7 +277,7 @@ private boolean GetCurCheckedFileName(String T_Line_Guid,TurnInfoJson m_TurnInfo
 	//BaseSql+=" and Date>='"+Start_Date+"' and Date<='"+End_Date +"'";
 	BaseSql+=" and Date BETWEEN '"+Start_Date+"' AND '"+End_Date +"'";
 	
-	FileNameInfo.put("FileName", GetUploadJsonFile(BaseSql));
+	FileNameInfo.put("FileName", GetUploadJsonFile(BaseSql,context));
 	nRe=true; 
   }
   catch(Exception e)
@@ -431,10 +434,26 @@ private int GetCurBaseDateofMonthRoute()
 	 return 1-CurNumofDay;
 }
   
-private String  GetUploadJsonFile(String Sql){
+private String  GetUploadJsonFile(String Sql,Context context){
 	  String FileName="";
 	  //调用sqlite,表中Guid赋给FileName
-	  
+	  RouteDao dao = RouteDao.getInstance(context);
+			 Cursor cur = dao.execSQL(Sql);
+			
+			 try{
+				 if(cur!=null){
+			 
+				 cur.moveToFirst();
+				// for(int i=0;i<cur.getCount();i++){
+					 FileName=cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.T_Line_Name)) ;
+				// }
+			 }
+			 }catch(Exception e){
+				 Log.e("conditionTag", e.toString());
+			 }finally{
+				 if(cur!=null)cur.close();
+			 }
+			 
 	 
 	return FileName;
 }

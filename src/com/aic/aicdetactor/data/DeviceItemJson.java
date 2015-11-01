@@ -126,7 +126,7 @@ public class DeviceItemJson//:ICloneable
     /**
      * 设置巡检开始时间
      */
-    public void setSartDate(){
+    public void setStartDate(){
     	Start_Check_Datetime = SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
     }
     
@@ -149,6 +149,10 @@ public class DeviceItemJson//:ICloneable
     	if(Data_Exist_Guid.length()<20){
     	Data_Exist_Guid=SystemUtil.createGUID();
     	}
+    }
+    
+    public void setIsOmissionCheck(int omissionCheck){
+    	Is_Omission_Check=omissionCheck;
     }
     
     public void setWorkerInfos(String WorkerClassGroup,String WorkerClassShift,String WorkerNumber,String WorkerName,String WorkerGuid){

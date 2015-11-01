@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -276,9 +277,9 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
     	float MID = 100;
     	float LOW = 0;
     	
-    	MAX = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Up_Limit));
-    	MID = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Middle_Limit));
-    	LOW = SystemUtil.getTemperature(String.valueOf(super.mPartItemData.Down_Limit));
+    	MAX = super.mPartItemData.Up_Limit;
+    	MID = super.mPartItemData.Middle_Limit;
+    	LOW = super.mPartItemData.Down_Limit;
 		
     	int x = (int) (Math.random()*max_xyz);
     	int y = (int) (Math.random()*max_xyz);
@@ -342,7 +343,7 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
     }
 
 	@Override
-	public void OnButtonDown(int buttonId, Bundle bundle) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value) {
 		// TODO Auto-generated method stub
 		genRandomXYZ();
 	}

@@ -6,8 +6,10 @@ import java.util.Map;
 
 import android.app.Application;
 
-import com.aic.aicdetactor.data.DownloadNormalData;
+import com.aic.aicdetactor.data.DeviceItemJson;
+import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
+import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -25,6 +27,7 @@ public class myApplication extends Application
     //当前巡检的PartItemData
     public int mPartItemIndex = -1;
     
+    public boolean isTest=false;
     //顶层常规巡检还是特定巡检。
     public String gRouteClassName = "";
     //当前路线名称
@@ -40,13 +43,15 @@ public class myApplication extends Application
     public String mTurnNumber = null;
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
-      
+    
+   // public  DeviceItemJson gCurDeviceItemCahce=null;
+    public  ArrayList<PartItemJsonUp> gCurPartItemList=null;
     //当前日常巡检数据，不包括特巡数据
-    public DownloadNormalData mNormalLineJsonData=null;
+    public DownloadNormalRootData mNormalLineJsonData=null;
     //当前特巡数据，不包括日常巡检数据
-    public DownloadNormalData mSpecialLineJsonData=null;
+    public DownloadNormalRootData mSpecialLineJsonData=null;
     //剔除后的当前巡检数据
-    public DownloadNormalData mLineJsonData=null;
+    public DownloadNormalRootData mLineJsonData=null;
     //
 	private List<String> mTMPRouteFileList = null;
 	private boolean gBLogIn = false;
@@ -125,10 +130,10 @@ public class myApplication extends Application
     	return mWorkerPwd;
     }
   //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离
-    public DownloadNormalData LineDataClassifyFromOneFile(String path,boolean IsSpecial){
+    public DownloadNormalRootData LineDataClassifyFromOneFile(String path,boolean IsSpecial){
   		 String planjson = SystemUtil.openFile(path);
-  		mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);		
-  		mSpecialLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
+  		mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);		
+  		mSpecialLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);
   		
   		//剔除特殊巡检数据
   		for (int i = 0; i < mNormalLineJsonData.StationInfo.size(); i++) {
@@ -172,6 +177,12 @@ public class myApplication extends Application
   			mLineJsonData= mNormalLineJsonData;
   		}
   		
+  		//给每个DeviceItem 下的Data_Exist_Guid生成 GUID
+  		for(int m=0;m<mLineJsonData.StationInfo.size();m++){
+  			for(int n=0;n<mLineJsonData.StationInfo.get(m).DeviceItem.size();n++){
+  				mLineJsonData.StationInfo.get(m).DeviceItem.get(n).Data_Exist_Guid=SystemUtil.createGUID();
+  			}
+  		}
   		return mLineJsonData;
   	}
 }

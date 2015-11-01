@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
@@ -63,6 +64,9 @@ public class RouteDao {
 		mDB = helper.getWritableDatabase();
 	}
 
+	public Cursor execSQL(String StrSql){
+	return	mDB.rawQuery(StrSql, null);
+	}
 	/**
 	 * 
 	 * @param name
@@ -200,8 +204,9 @@ public class RouteDao {
 					 + DBHelper.Periods_Table.Start_Point+","
 					 + DBHelper.Periods_Table.T_Turn_Number_Array+","						
 					 + DBHelper.Periods_Table.Task_Mode + ","
+					  + DBHelper.Periods_Table.Turn_Finish_Mode + ","
 					  + DBHelper.Periods_Table.Line_Guid
-					 +")values(?,?,?,?,?,?,?)";
+					 +")values(?,?,?,?,?,?,?,?)";
 					
 			mDB.execSQL(sql, new Object[] {
 					peroid2.Is_Omission_Check,
@@ -210,6 +215,7 @@ public class RouteDao {
 					peroid2.Start_Point,	
 					peroid2.T_Turn_Number_Array,		
 					peroid2.Task_Mode,
+					peroid2.Turn_Finish_Mode,
 					lineGuid
 					});
 			}
@@ -231,9 +237,9 @@ public class RouteDao {
 				peroid.Base_Point,
 				peroid.Frequency,
 				peroid.Name,
-				peroid.Status_Array,	
+				peroid.Status_Array,				
+				peroid.T_Line_Content_Guid,	
 				lineGuid,
-				peroid.T_Line_Content_Guid,		
 				peroid.T_Period_Unit_Code,
 				peroid.T_Period_Unit_Id
 				});
@@ -530,7 +536,7 @@ public class RouteDao {
 	 * 把巡检结果插入数据表中
 	 * @param info
 	 */
-	public  void insertUploadFile(upLoadInfo info){
+	public  void insertUploadFile(RoutePeroid info){
 		MLog.Logd(TAG, "insertUploadFile() start");
 		String sql = "insert into "
 					+DBHelper.TABLE_CHECKING
@@ -557,10 +563,10 @@ public class RouteDao {
 					mDB.execSQL(sql, new Object[] {
 							info.Base_Point,
 							info.Class_Group,
-							info.Date,
+							SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD),
 							info.File_Guid,
-							info.Is_Updateed,
-							info.Is_Uploaded,
+							false,
+							false,
 							info.Span,
 							info.Start_Point,
 							info.T_Line_Guid,
@@ -734,7 +740,7 @@ public class RouteDao {
 			}
 		}
 		}catch(Exception e){
-			
+			Log.e(TAG, e.toString());
 		}finally{
 			if(cur!=null){cur.close();}
 		}
@@ -956,6 +962,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 	
 		if (cur != null && cur.getCount() > 0) {
 			MLog.Logd("luotest","queryLogIn()  cur != null cur.count ="	+ cur.getCount());
+			WorkerInfoJson WorkerInfoJson = new WorkerInfoJson();
 			cur.moveToFirst();
 			for (int n = 0; n < cur.getCount(); n++) {
 				String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));

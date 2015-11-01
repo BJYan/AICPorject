@@ -9,7 +9,6 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Service;

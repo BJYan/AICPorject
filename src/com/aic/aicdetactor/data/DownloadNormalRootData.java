@@ -4,7 +4,7 @@ import java.util.List;
 
 
 
-public  class DownloadNormalData
+public  class DownloadNormalRootData
 {
     public GlobalInfoJson GlobalInfo ;
     public List<StationInfoJson> StationInfo ;

@@ -22,12 +22,42 @@
             android:singleLine="true"
             android:textSize="@dimen/normal_text_size" />
     </LinearLayout>
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="match_parent"
-        android:layout_height="134dp" >
-    </ListView>
+    
 
+ 
+ <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textViewtmp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/temperature"
+            android:textSize="@dimen/normal_text_size"/>
+
+        <EditText
+            android:id="@+id/check_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/normal_text_size" />
+        
+          <TextView
+            android:id="@+id/unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="C"
+            android:textSize="@dimen/normal_text_size"/>
+    </LinearLayout>
+    
+  <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="最佳测试距离10CM"
+        android:textSize="@dimen/temperatrue_text_size"
+         />
+ 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"

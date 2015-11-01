@@ -115,31 +115,54 @@ public class CommonDef {
 			图片、音频、振动波形在上位机编辑时不用出现
 		 */
 
-	// 温度
+	/**
+	 *  温度
+	 */
 	public static final int TEMPERATURE = 0;
-	// 录入项
-	public static final int RECORD = 1;
-	// 测量，只能输入数字，小数点，正负号，如压力、流量等。	
-	public static final int MEASUREMENT = 2;	
-	// 加速度
+	/**
+	 *  录入项
+	 */
+	public static final int ENTERING = 1;
+	/**
+	 *  抄表，只能输入数字，小数点，正负号，如压力、流量等。	
+	 */
+	public static final int METER_READING = 2;	
+	/**
+	 *  加速度
+	 */
 	public static final int ACCELERATION = 3;
-	// 速度
+	/**
+	 *  速度
+	 */
 	public static final int SPEED = 4;
-	// 位移
-	public static final int DISPLACEMENT = 5;
-	// 转速
-	public static final int ROTATIONAL_SPEED = 6;
-	// 预设状况项
-	public static final int DEFAULT_CONDITION = 7;
-	// 图片
+	/**
+	 *  位移
+	 */
+	public static final int  DISPLACEMENT =5;
+	/**
+	 *  转速
+	 */
+	public static final int ROTATION_RATE = 6;
+	/**
+	 *  预设状况项
+	 */
+	public static final int STATE_PRESUPPOSITOIN=7;
+	/**
+	 *  图片
+	 */
 	public static final int PICTURE = 8;
-	// 音频
+	/**
+	 *  音频
+	 */
 	public static final int AUDIO = 9;
-	// 观察
-	public static final int OBSERVER = 10;
-	// 振动矢量波形
-	// Vibration vector wave
-	public static final int VIBRATION_VECTOR_WAVE = 11;
+	/**
+	 *  观察
+	 */
+	public static final int OBSERVATION = 10;
+	/**
+	 *  振动矢量波形  Vibration vector wave
+	 */
+	public static final int SHOCK_VECTOR = 11;
 	}
 	/**
 	 * 

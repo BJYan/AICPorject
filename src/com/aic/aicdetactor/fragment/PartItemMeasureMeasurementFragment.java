@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.data.KEY;
 
@@ -68,9 +69,14 @@ public class PartItemMeasureMeasurementFragment  extends PartItemMeasureBaseFrag
     }
 
 	@Override
-	public void OnButtonDown(int buttonId, Bundle bundle) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value) {
 		// TODO Auto-generated method stub
 		//开始测量
+	//	super.setPartItemData("Measurement");
+		if("".equals(Value)){
+			Value="Measurement";
+		}
+		adapter.saveData(Value);
 	}
 
 
