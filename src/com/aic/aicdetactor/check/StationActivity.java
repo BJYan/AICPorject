@@ -65,6 +65,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.CheckStatus;
 import com.aic.aicdetactor.data.PartItemItem;
+import com.aic.aicdetactor.dialog.NFCDialog;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.google.gson.Gson;
@@ -89,7 +90,8 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
-private boolean mSpecial = false;
+	private boolean mSpecial = false;
+	NFCDialog nfcdialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +125,7 @@ private boolean mSpecial = false;
 			takepicBtn.setOnClickListener(this);
 			
 			//打卡
-			ImageView imageViewka = (ImageView)findViewById(R.id.ka);
+			ImageView imageViewka = (ImageView)findViewById(R.id.station_nfc);
 			imageViewka.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -132,6 +134,8 @@ private boolean mSpecial = false;
 					// TODO Auto-generated method stub
 					//全屏幕显示一个图片 及 去掉字样的button
 					//finish();
+					nfcdialog = new NFCDialog(StationActivity.this, this);
+					if(!nfcdialog.isShowing()) nfcdialog.show();
 				}
 				
 			});
@@ -265,6 +269,9 @@ private boolean mSpecial = false;
 			case R.id.station_take_pic:
                 Intent intent_takepic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
                 startActivityForResult(intent_takepic, TAKE_PIC);
+				break;
+			case R.id.dialog_nfc_cancel_btn:
+				if(nfcdialog!=null) nfcdialog.dismiss();
 				break;
 			default:
 				break;

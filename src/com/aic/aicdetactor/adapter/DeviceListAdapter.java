@@ -106,8 +106,17 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Cha
 							float[] MinMaxTemp = new float[]{data[0],data[0]};
 
 							View chartView = mActivity.getBlackLineChartView("测试数据", data);
+							View chartView1 = mActivity.getBlackLineChartView("测试数据", data);
+							View chartView2 = mActivity.getBlackLineChartView("测试数据", data);
 
-							chartDialog.setChartView(chartView, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 520));
+							View dialogContent = mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null);
+							LinearLayout chart1Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_first_chart);
+							chart1Container.addView(chartView);
+							LinearLayout chart2Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_sec_chart);
+							chart2Container.addView(chartView1);
+							LinearLayout chart3Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_thr_chart);
+							chart3Container.addView(chartView2);
+							chartDialog.setChartView(dialogContent, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 680));
 							chartDialog.show();
 						}
 						
