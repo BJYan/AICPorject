@@ -8,16 +8,25 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class NfcReadActivity extends CommonActivity{
-	NfcAdapter nfcAdapter;  
+	NfcAdapter nfcAdapter;
+	TextView nfcContent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		              WindowManager.LayoutParams.FLAG_FULLSCREEN); 
 		setContentView(R.layout.dialog_nfc_layout);
+		
+		nfcContent = (TextView) findViewById(R.id.nfc_content);
 	}
 	
 	@Override
@@ -85,8 +94,8 @@ public class NfcReadActivity extends CommonActivity{
                     metaInfo += "Sector " + j + ":验证失败\n";  
                 }  
             }  
-            //promt.setText(metaInfo);  
-            Toast.makeText(this, metaInfo, Toast.LENGTH_SHORT).show();
+            nfcContent.setText(metaInfo);  
+            //Toast.makeText(this, metaInfo, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {  
             e.printStackTrace();  
         }  
