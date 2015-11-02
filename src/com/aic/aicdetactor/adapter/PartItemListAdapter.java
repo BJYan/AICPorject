@@ -160,7 +160,9 @@ public class PartItemListAdapter extends BaseAdapter {
 	
 	public void initListViewAndData(boolean bRefreshListView){
 		
-		mDeviceItemCahce = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
+	//	mDeviceItemCahce = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
+		mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
+		
 		try {
 			if(mPartItemList == null ||mOriPartItemList==null ){
 			 mPartItemList = new ArrayList<PartItemJsonUp>();
