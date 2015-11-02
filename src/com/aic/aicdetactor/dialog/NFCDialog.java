@@ -5,6 +5,7 @@ import com.aic.aicdetactor.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Button;
 
 public class NFCDialog extends Dialog{
