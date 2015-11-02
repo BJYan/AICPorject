@@ -187,6 +187,15 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 	}
 	
+	public void setPartItemStartTime()
+	{
+		mPartItemList.get(mPartItemIndex).setSartDate();
+	}
+	
+	public void setPartItemEndTimeAndTotalTime(){
+		mPartItemList.get(mPartItemIndex).setEndDate();
+		mPartItemList.get(mPartItemIndex).calcCheckDuration();
+	}
 	public void resetInitListData(){
 		initListViewAndData(true);
 	}
@@ -306,8 +315,8 @@ public class PartItemListAdapter extends BaseAdapter {
 		app.mLineJsonData.GlobalInfo.Task_Mode=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Task_Mode;		
 		
 		if(app.mLineJsonData.GlobalInfo.Task_Mode==0){
-			app.mLineJsonData.GlobalInfo.Start_Time="2011-10-01 10:10:10";
-			app.mLineJsonData.GlobalInfo.End_Time=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
+			app.mLineJsonData.GlobalInfo.Start_Time=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Start_Time;
+			app.mLineJsonData.GlobalInfo.End_Time=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.End_Time;
 			if(app.isTest){
 				app.mLineJsonData.GlobalInfo.T_Period_Name="PeriodName_Test";
 				app.mLineJsonData.GlobalInfo.Turn_Number=1002;
@@ -333,7 +342,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	private void genPartItemDataAfterItemDef(){
 		mPartItemAfterItemDef.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;
 		mPartItemAfterItemDef.Extra_Information="设备";
-		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Id="2";
+		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Id=2;
 		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Code="01";
 		
 	}
@@ -351,15 +360,16 @@ public class PartItemListAdapter extends BaseAdapter {
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.remove(mDeviceIndex);
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.add(mDeviceIndex, mDeviceItemCahce);
 		
-		Event ex = new Event();
-		ex.UploadNormalPlanResultInfo_Event(null,null,null,mHandler,app.mLineJsonData);
-		
-		
 		String sonStr=JSON.toJSONString(app.mLineJsonData);
+		Event ex = new Event();
+		ex.UploadNormalPlanResultInfo_Event(null,null,null,mHandler,sonStr);
+		
+		
+		
 		
 		try {
 			//文件要保存到数据库中的
-			SystemUtil.writeFile("/sdcard/"+app.mLineJsonData.GlobalInfo.Guid+".txt", sonStr);
+			SystemUtil.writeFile("/sdcard/AIC/data/"+app.mLineJsonData.GlobalInfo.Guid+".txt", sonStr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -55,12 +55,12 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 	}
 	
 	//数据有效范围，上限
-	protected float getPartItemUp_Limit(){
+	protected double getPartItemUp_Limit(){
 		return mPartItemData.Up_Limit;
 	}
 	
 	//数据有效范围，中限
-	protected float getPartItemMiddle_Limit(){
+	protected double getPartItemMiddle_Limit(){
 		return mPartItemData.Middle_Limit;
 	}
 	//数据的单位
@@ -68,7 +68,7 @@ public abstract class PartItemMeasureBaseFragment extends Fragment {
 		return mPartItemData.Unit;
 	}
 	//数据有效范围，下限
-	protected float getPartItemDown_Limit(){
+	protected double getPartItemDown_Limit(){
 		return mPartItemData.Down_Limit;
 	}
 	

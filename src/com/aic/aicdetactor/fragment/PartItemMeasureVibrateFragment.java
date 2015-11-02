@@ -272,10 +272,10 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 	  //临时生成随机的三维坐标数据,需要线程来循环
     void genRandomXYZ(){    
     	int max_xyz=360;
-    	float max_temperation=300;
-    	float MAX = 200;
-    	float MID = 100;
-    	float LOW = 0;
+    	double max_temperation=300;
+    	double MAX = 200;
+    	double MID = 100;
+    	double LOW = 0;
     	
     	MAX = super.mPartItemData.Up_Limit;
     	MID = super.mPartItemData.Middle_Limit;

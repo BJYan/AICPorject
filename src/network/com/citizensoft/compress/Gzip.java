@@ -15,8 +15,18 @@ public class Gzip {
         {
             stm = new ByteArrayOutputStream();
             gzip = new GZIPOutputStream(stm);
-            gzip.write(data);
+            int count = data.length / 4096;
+            for(int i = 0;i < count;i ++)
+            {
+            	gzip.write(data,i * 4096,4096);
+            }
+            int left = data.length % 4096;
+            if(left != 0)
+            {
+            	gzip.write(data,count * 4096,left);
+            }
             gzip.flush();
+            gzip.finish();
             return stm.toByteArray();
         }
         finally

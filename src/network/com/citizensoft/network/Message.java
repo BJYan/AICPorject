@@ -34,7 +34,7 @@ public class Message {
     public byte[] toByte(boolean isLittleOrder) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(stream, isLittleOrder);
-        writer.writeString(Session, Compress);
+        writer.writeString(Session, false);
         writer.writeShort(Type);
         writer.writeInteger(Data.length);
         for (String data : Data) {

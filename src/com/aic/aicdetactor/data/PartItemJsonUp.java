@@ -12,17 +12,19 @@ public class PartItemJsonUp
     public String T_Measure_Type_Code ;
     public String Unit ;   
     public int Start_Stop_Flag ;
-    public float Up_Limit ;
-    public float Middle_Limit ;
-    public float Down_Limit ;    
-    public float Emissivity ;   
+    public double Up_Limit ;
+    public double Middle_Limit ;
+    public double Down_Limit ;    
+    public double Emissivity ;
+   
+    public double Default_RPM ;    //  
     public int Hint_Status ;   
     public int Axle_Number ;
     public String Check_Mode ;    
     public String Extra_Information ;
     public int T_Maintenance_Status_Id ;
     public String Fault_Diagnosis ;
-    public float Default_RPM ;    //  
+   
     public String Item_Define;
     
     //上传数据时候 需要的项
@@ -32,17 +34,18 @@ public class PartItemJsonUp
     public String SaveLab;
     public String RecordLab;
     public int SensorType=0;//始终为0
-    public String VMSDir;
-    public  int SignalType=-1;
-    public String SampleFre;
-    public String SamplePoint;
-    public String RPM;
+    public int VMSDir;
+    public int SignalType=-1;
+   
+    public int SamplePoint;
+    
     public String Diagnose_Conclusion;
     public String Remarks;
-    public String Is_Timeout;
-    public String T_Item_Abnormal_Grade_Id;
+    public int Is_Timeout;
+    public long T_Item_Abnormal_Grade_Id;
     public String T_Item_Abnormal_Grade_Code;
-    
+    public Integer RPM;
+    public int SampleFre;
     
     
    
@@ -67,9 +70,9 @@ public class PartItemJsonUp
     */
     public void setVMSDir(int XYZ){
     	if(Is3TypeData()>0){
-    		VMSDir=String.valueOf(XYZ);
+    		VMSDir=XYZ;
     	}else{
-    		VMSDir="";
+    		VMSDir=-1;
     	}
     		
     }
@@ -98,11 +101,11 @@ public class PartItemJsonUp
      * 当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
      * @param ValueStr
      */
-    public void setSampleFre(String ValueStr){
+    public void setSampleFre(double ValueStr){
     	if(Is3TypeData()>0){
-    		SampleFre = ValueStr;
+    		SampleFre =2;//ValueStr;
     	}else{
-    		ValueStr="";
+    		ValueStr=-1;
     	}
     }
     
@@ -110,22 +113,22 @@ public class PartItemJsonUp
      * 当测量类型为加速度、速度、位移时，不为空；其它数据类型为空
      * @param SamplePointValue
      */
-    public void setSamplePoint(String SamplePointValue){
+    public void setSamplePoint(int SamplePointValue){
     	if(Is3TypeData()>0){
     		SamplePoint = SamplePointValue;
     	}else{
-    		SamplePoint="";
+    		SamplePoint=-1;
     	}
     }
     /**
      * 当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
      * @param RPMValue
      */
-    public void setRPM(String RPMValue){
+    public void setRPM(double RPMValue){
     	if(Is3TypeData()>0){
-    		RPM = RPMValue;
+    		RPM = 3;//RPMValue;
     	}else{
-    		RPM="";
+    		RPM=0;
     	}
     }
     
@@ -153,6 +156,9 @@ public class PartItemJsonUp
     	Total_Check_Time=Integer.valueOf(SystemUtil.getDiffDate(Start_Check_Datetime, End_Check_Datetime));
     }
     
+    public void setIsTimeOut(boolean bIsTimeOut){
+    	this.Is_Timeout=bIsTimeOut==true?1:0;
+    }
     
     
     public boolean IsNoNeedHint(){
@@ -189,15 +195,15 @@ public class PartItemJsonUp
 	       SaveLab="";
 	       RecordLab="";
 	       SensorType=0;//始终为0
-	       VMSDir="";
+	       VMSDir=-1;
 	      SignalType=-1;
-	      SampleFre="";
-	       SamplePoint="";
-	       RPM="";
+	      SampleFre=-1;
+	       SamplePoint=-1;
+	       RPM=0;
 	       Diagnose_Conclusion="";
 	       Remarks="";
-	       Is_Timeout="";
-	       T_Item_Abnormal_Grade_Id="";
+	       Is_Timeout=0;
+	       T_Item_Abnormal_Grade_Id=-1;
 	       T_Item_Abnormal_Grade_Code="";
     }
 }

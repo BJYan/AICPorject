@@ -1,6 +1,7 @@
 package com.aic.aicdetactor.Event;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import network.aic.xj.client.ServiceProvider;
 import network.aic.xj.common.ResponseCode;
@@ -454,7 +455,7 @@ public class Event {
 		}).start();
 	}
 	//UploadNormalPlanResultRequest
-	public void UploadNormalPlanResultInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final DownloadNormalRootData UploadData) {
+	public void UploadNormalPlanResultInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final String UploadData) {
 
 		new Thread(new Runnable() {
 
@@ -462,7 +463,9 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = "222.128.3.208";
+				//sp.ServerIP = "222.128.3.208";//公网
+				
+				sp.ServerIP = "192.168.1.130";//内网
 				sp.Port = 10000;
 
 				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
@@ -470,7 +473,16 @@ public class Event {
 				request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
 				request.Source_IP = "2.2.2.2";
 				request.Args = new UploadNormalPlanResultRequestArgs();
-				request.Args.UploadData = UploadData;//"TestAndroidAPP";
+				
+				String planjson=null;
+				try {
+					planjson = new String(Base64.encode(UploadData.getBytes(), Base64.DEFAULT),"utf-8");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				request.Args.UploadData = planjson;;
 
 				SocketCallTimeout timeout = new SocketCallTimeout();
 				timeout.ConnectTimeoutSeconds = 30;

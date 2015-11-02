@@ -927,6 +927,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
 		mStartTime = SystemUtil.getSystemTime(0);
+		mAdapterList.setPartItemStartTime();
 		mFragmentCallBack.OnButtonDown(0, mAdapterList,"");
     }
     @Override  
