@@ -271,7 +271,7 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 	}
 	  //临时生成随机的三维坐标数据,需要线程来循环
     void genRandomXYZ(){    
-    	int max_xyz=360;
+    	int max_xyz=160;
     	double max_temperation=300;
     	double MAX = 200;
     	double MID = 100;
@@ -298,23 +298,36 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
     		break;
     	}
    
+    	
     	if((temp < MAX) && (temp>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.warning));
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=3;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="02";
     		
     	}else if((temp >= LOW) && (temp<MID)){
     		mRadioButton.setBackgroundColor(Color.BLACK);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.normal));
+    		mPartItemData.Is_Normal=1;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=2;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="01";
     	}else if(temp <LOW){
     		mRadioButton.setBackgroundColor(Color.GRAY);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.invalid));
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=1;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="00";
     	}else if(temp>=MAX){
     		mRadioButton.setBackgroundColor(Color.RED);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.dangerous));
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=4;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="03";
     	}
     	
     	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);

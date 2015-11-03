@@ -136,23 +136,23 @@ private EditText mEditTextValue;
 		
 		mEditTextValue = (EditText)view.findViewById(R.id.check_temp);
 		mTextViewUnit = (TextView)view.findViewById(R.id.unit);
-		
+		mTextViewUnit.setText(getPartItemUnit());
 		switch(mType){
-		case 0:
+		case 0://温度
 			mTextViewName.setText("温度:");
 			mTextViewUnit.setText("C");
 			break;
-		case 1:
+		case 1://录入
 			mTextViewName.setText("录入:");
 			mTextViewUnit.setVisibility(View.GONE);
 			break;
-		case 2:
+		case 2://抄表
 			mTextViewName.setText("抄表:");
 			mTextViewUnit.setVisibility(View.GONE);
 			break;
-		case 6:
+		case 6://转速
 			mTextViewName.setText("转速:");
-			mTextViewUnit.setText("转/秒");
+			//mTextViewUnit.setText("转/秒");
 			break;
 		}
 		
@@ -168,14 +168,9 @@ private EditText mEditTextValue;
 		MLog.Logd(TAG," Temperature_fragment:onPause()");
 		super.onPause();
 	}
-//	void parseExternalInfo(){
-//    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-//		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
-//		mTemeratureResultStr.setText(newValue);
-//    }
-	  //临时生成随机的三维坐标数据及温度数据。
-    void genRandom_temperation(){    
-    	double max_temperation=300;
+	  //临时生成随机的温度,转速数据。
+    void genRandomValue(){    
+    	double max_temperation=100;
     	double MAX = 200;
     	double MID = 100;
     	double LOW = 0;
@@ -188,23 +183,33 @@ private EditText mEditTextValue;
     	if((temp < MAX) && (temp>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		mColorTextView.setText(getString(R.string.warning));
-    		
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=3;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="02";
     	}else if((temp >= LOW) && (temp<MID)){
     		mRadioButton.setBackgroundColor(Color.BLACK);
     		mColorTextView.setText(getString(R.string.normal));
     		mEditTextValue.setTextColor(Color.BLACK);
+    		mPartItemData.Is_Normal=1;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=2;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="01";
     	}else if(temp <LOW){
     		mRadioButton.setBackgroundColor(Color.GRAY);
     		mColorTextView.setText(getString(R.string.invalid));
     		mEditTextValue.setTextColor(Color.GRAY);
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=1;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="00";
     	}else if(temp>=MAX){
     		mRadioButton.setBackgroundColor(Color.RED);
     		mColorTextView.setText(getString(R.string.dangerous));
     		mEditTextValue.setTextColor(Color.RED);
+    		mPartItemData.Is_Normal=0;
+    		mPartItemData.T_Item_Abnormal_Grade_Id=4;
+    		mPartItemData.T_Item_Abnormal_Grade_Code="03";
     	}
-    	mTemeratureResultStr.setText(temp + " C");
     	mEditTextValue.setText(String.valueOf(temp));
-    	mCallback.OnClick(temp + " C"+"*");
+    	mCallback.OnClick(String.valueOf(temp ));
     }
 
     @Override
@@ -228,7 +233,7 @@ private EditText mEditTextValue;
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			genRandom_temperation();
+			genRandomValue();
 		}
 	}; 
     
@@ -253,7 +258,7 @@ private EditText mEditTextValue;
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value) {
 		// TODO Auto-generated method stub
-		genRandom_temperation();
+		genRandomValue();
 		if("".equals(Value)){
 			Value="temperator";
 		}

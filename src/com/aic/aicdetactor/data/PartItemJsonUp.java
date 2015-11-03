@@ -46,7 +46,7 @@ public class PartItemJsonUp
     public String T_Item_Abnormal_Grade_Code;
     public Integer RPM;
     public int SampleFre;
-    
+    public int Is_Normal;
     
    
     private int Is3TypeData(){
@@ -184,7 +184,7 @@ public class PartItemJsonUp
 	      T_Maintenance_Status_Id=0 ;
 	      Fault_Diagnosis="" ;
 	      Default_RPM=0 ;	
-	      
+	      Is_Normal=0;
 	      
 	       Item_Define="";
 	      

@@ -162,7 +162,13 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 	//	mDeviceItemCahce = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
 		mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
-		
+		//班组
+		mDeviceItemCahce.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
+		//班次
+		mDeviceItemCahce.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
+		mDeviceItemCahce.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
+		mDeviceItemCahce.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
+		mDeviceItemCahce.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
 		try {
 			if(mPartItemList == null ||mOriPartItemList==null ){
 			 mPartItemList = new ArrayList<PartItemJsonUp>();
@@ -304,6 +310,8 @@ public class PartItemListAdapter extends BaseAdapter {
 		}
 		
 		mPartItemList.get(mPartItemIndex).Extra_Information = Value;
+		
+		setPartItemEndTimeAndTotalTime();
 	}
 	
 	/**
