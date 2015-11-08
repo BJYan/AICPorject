@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 13;//版本号
+	 private final static int VERSION = 14;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
