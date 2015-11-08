@@ -11,6 +11,7 @@ import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.WorkerInfoJson;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -110,6 +111,7 @@ public class myApplication extends Application
     {
         super.onCreate(); 
         mApplication = this;
+        Setting set= new Setting();
     }
     
     

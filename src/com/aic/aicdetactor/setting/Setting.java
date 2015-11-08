@@ -26,6 +26,7 @@ public class Setting {
 	public Setting() {
 		mDataDirector = Environment.getExternalStorageDirectory() + "/AIC/";
 
+		
 		//mDataDirector = "/sdcard" + "/AIC/";
 		File destDir = new File(mDataDirector);
 		if (!destDir.exists()) {
@@ -33,6 +34,12 @@ public class Setting {
 			destDir = null;
 		}
 
+		destDir = new File(mDataDirector + "data/");
+		if (!destDir.exists()) {
+			destDir.mkdirs();
+			destDir = null;
+		}
+		
 		mMediaDirector = mDataDirector + "media/";
 		destDir = new File(mMediaDirector);
 		if (!destDir.exists()) {
@@ -57,6 +64,7 @@ public class Setting {
 			destDir.mkdirs();
 			destDir = null;
 		}
+		
 	}
 //	public void setData_Root_Director(String director){
 //		if(director == null){
