@@ -105,6 +105,17 @@ public class RouteNormalListAdapter extends BaseAdapter{
 							app.mJugmentListParms.get(position).m_WorkerInfoJson, 
 							app.mJugmentListParms.get(position).m_RoutePeroid, nInfo,mActivity.getApplicationContext())){
 						
+						
+						String filePath = nInfo.getAsString("FileName");
+						if("".endsWith(filePath)){
+							app.gIsDataChecked=false;
+							String p=app.mJugmentListParms.get(position).T_Line.LinePath;
+							app.setCurGsonPath(p);
+						}else{
+							app.gIsDataChecked=true;
+							app.setCurGsonPath("/sdcard/aic/data/"+filePath);
+						}
+						
 					}else{
 						Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
 						return;

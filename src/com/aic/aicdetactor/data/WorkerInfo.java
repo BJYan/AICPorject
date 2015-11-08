@@ -5,7 +5,7 @@ public class WorkerInfo{
 	public   String Class_Group  = "";
 	public   String Number  = "";
 	public   String Name  ="";
-	public   String T_Line_Content_Guid ="";
+	public   String Guid ="";
 	public   String T_Line_Guid ="";
 	public   String T_Organization_Guid  ="";
 	public String Pwd ="";

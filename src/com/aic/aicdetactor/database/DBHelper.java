@@ -56,7 +56,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final   String Class_Group  = "Class_Group";
 		public static final   String Number  = "Number";
 		public static final   String Name  ="Name";
-		public static final   String T_Line_Content_Guid ="T_Line_Content_Guid";
+		public static final   String Guid ="Guid";
 		public static final   String T_Line_Guid ="T_Line_Guid";
 		public static final   String T_Organization_Guid  ="T_Organization_Guid";
 		public static final  String Pwd ="pwd";
@@ -239,7 +239,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Plan_Worker_Table.Alias_Name+" varchar(256)," 
 				+ Plan_Worker_Table.Class_Group +" varchar,"
 				+ Plan_Worker_Table.Number +" varchar,"
-				+ Plan_Worker_Table.T_Line_Content_Guid + " varchar(256),"
+				+ Plan_Worker_Table.Guid + " varchar(256),"
 				+ Plan_Worker_Table.T_Line_Guid + " varchar(128),"
 				+ Plan_Worker_Table.T_Organization_Guid + " varchar(256),"
 				+ Plan_Worker_Table.Pwd +" varchar(256),"
@@ -273,7 +273,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
 				+ Checking_Table.Checked_Count +" INTEGER,"
 				+ Checking_Table.ItemCounts +" INTEGER ,"	
-				+ Checking_Table.Is_Special_Inspection +" BOOLEAN "
+				+ Checking_Table.Is_Special_Inspection +" INTEGER "
 				+")";
 
 		db.execSQL(checkingsql);

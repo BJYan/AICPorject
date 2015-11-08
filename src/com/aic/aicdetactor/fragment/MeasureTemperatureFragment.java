@@ -20,16 +20,24 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
+import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
+/**
+ * 温度00、录入01、抄表02 、转速06 用的UI 
+ * @author AIC
+ *
+ */
+public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements OnButtonListener{
 
-public class PartItemMeasureTemperatureFragment  extends PartItemMeasureBaseFragment  implements OnButtonListener{
-
+	//UI
 	//示意图片显示
 	private ImageView mImageView = null;
 	//温度测试结果
@@ -39,11 +47,16 @@ public class PartItemMeasureTemperatureFragment  extends PartItemMeasureBaseFrag
 	//测量温度结果对应的文字描述
 	private TextView mColorTextView = null;
 	private TextView mDeviceNameTextView = null;
+	private TextView mTextViewUnit;
+	private TextView mTextViewName;
+	private EditText mEditTextValue;
+	
+	//DATA
 	//之间的通信接口
 	private OnTemperatureMeasureListener mCallback = null;
 	private List<Map<String, Object>> mMapList = null;
-//	String parStr = null;
 	final String TAG = "luotest";
+	private PartItemListAdapter AdapterList;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -64,61 +77,13 @@ public class PartItemMeasureTemperatureFragment  extends PartItemMeasureBaseFrag
 //			
 		
 		super.onCreate(savedInstanceState);
-		int nindex = super.mPartItemIndex;
 		
 	}
-
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onDestroy()");
-		super.onDestroy();
+	public  MeasureTemperatureFragment(PartItemListAdapter AdapterList){
+		this.AdapterList = AdapterList;
 	}
+	
 
-	@Override
-	public void onDestroyOptionsMenu() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onDestroyOptionsMenu()");
-		super.onDestroyOptionsMenu();
-	}
-
-	@Override
-	public void onDestroyView() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onDestroyView()");
-		super.onDestroyView();
-	}
-
-	@Override
-	public void onDetach() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onDetach()");
-		super.onDetach();
-	}
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onResume()");
-		super.onResume();
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		MLog.Logd(TAG," Temperature_fragment:onSaveInstanceState()");
-		// TODO Auto-generated method stub
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	public void onStop() {
-		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onStop()");
-		super.onStop();
-	}
-private TextView mTextViewUnit;
-private TextView mTextViewName;
-private EditText mEditTextValue;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -130,17 +95,29 @@ private EditText mEditTextValue;
 		mRadioButton = (RadioButton)view.findViewById(R.id.radioButton2);
 		mColorTextView = (TextView)view.findViewById(R.id.resultTips);
 		mTemeratureResultStr =(TextView)view.findViewById(R.id.temperature);
-		mDeviceNameTextView.setText(getPartItemName());
+		
+		
+		
 		
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
 		
 		mEditTextValue = (EditText)view.findViewById(R.id.check_temp);
 		mTextViewUnit = (TextView)view.findViewById(R.id.unit);
 		mTextViewUnit.setText(getPartItemUnit());
+		initDisplayData();
+		MLog.Logd(TAG," Temperature_fragment:onCreateView() ");
+		Log.d(TAG, "getName is "+mTextViewName.getText());
+		AdapterList.getCurrentPartItem().setSartDate();
+		return view;
+	}
+    
+	 @Override
+	protected void initDisplayData(){
+		mDeviceNameTextView.setText(getPartItemName());		
+		mEditTextValue.setText(getPartItemData());
 		switch(mType){
 		case 0://温度
 			mTextViewName.setText("温度:");
-			mTextViewUnit.setText("C");
 			break;
 		case 1://录入
 			mTextViewName.setText("录入:");
@@ -152,88 +129,55 @@ private EditText mEditTextValue;
 			break;
 		case 6://转速
 			mTextViewName.setText("转速:");
-			//mTextViewUnit.setText("转/秒");
 			break;
 		}
-		
-		//parseExternalInfo();
-		MLog.Logd(TAG," Temperature_fragment:onCreateView() ");
-		Log.d(TAG, "getName is "+mTextViewName.getText());
-		return view;
 	}
-
+	 private float mCheckedValue=0.0f;
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
 		MLog.Logd(TAG," Temperature_fragment:onPause()");
 		super.onPause();
 	}
-	  //临时生成随机的温度,转速数据。
-    void genRandomValue(){    
-    	double max_temperation=100;
-    	double MAX = 200;
-    	double MID = 100;
-    	double LOW = 0;
+	
+	/**
+	 * 测量并显示测量后的数据
+	 */
+    void  measureAndDisplayData(){    
+    	
+    	double MAX = super.mPartItemData.Up_Limit;;
+    	double MID = super.mPartItemData.Middle_Limit;
+    	double LOW = super.mPartItemData.Down_Limit;
+    	double max_mTemperatureeration=100;
 		
-    	MAX = super.mPartItemData.Up_Limit;
-    	MID = super.mPartItemData.Middle_Limit;
-    	LOW = super.mPartItemData.Down_Limit;
-
-    	float temp = (int) (Math.random()*max_temperation);
-    	if((temp < MAX) && (temp>=MID) ){
+    	mCheckedValue = (float)(Math.random()*max_mTemperatureeration);
+    	
+    	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		mColorTextView.setText(getString(R.string.warning));
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=3;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="02";
-    	}else if((temp >= LOW) && (temp<MID)){
+    	}else if((mCheckedValue >= LOW) && (mCheckedValue<MID)){
     		mRadioButton.setBackgroundColor(Color.BLACK);
     		mColorTextView.setText(getString(R.string.normal));
     		mEditTextValue.setTextColor(Color.BLACK);
-    		mPartItemData.Is_Normal=1;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=2;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="01";
-    	}else if(temp <LOW){
+    	}else if(mCheckedValue <LOW){
     		mRadioButton.setBackgroundColor(Color.GRAY);
     		mColorTextView.setText(getString(R.string.invalid));
     		mEditTextValue.setTextColor(Color.GRAY);
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=1;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="00";
-    	}else if(temp>=MAX){
+    	}else if(mCheckedValue>=MAX){
     		mRadioButton.setBackgroundColor(Color.RED);
     		mColorTextView.setText(getString(R.string.dangerous));
     		mEditTextValue.setTextColor(Color.RED);
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=4;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="03";
     	}
-    	mEditTextValue.setText(String.valueOf(temp));
-    	mCallback.OnClick(String.valueOf(temp ));
+    	mEditTextValue.setText(String.valueOf(mCheckedValue));
     }
 
-    @Override
-	public void onStart() {
-		// TODO Auto-generated method stub
-    	MLog.Logd(TAG," Temperature_fragment:onStart()");
-		super.onStart();
-	}
-
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-	
-		super.onViewCreated(view, savedInstanceState);
-		MLog.Logd(TAG," Temperature_fragment:onViewCreated()");
-		
-		//handler.postDelayed(runnable, 500);
-	
-	}
+    
+   
     Handler handler = new Handler(); 
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			genRandomValue();
+			measureAndDisplayData();
 		}
 	}; 
     
@@ -255,20 +199,61 @@ private EditText mEditTextValue;
         }
     }
 
+    void savePartItemData(PartItemListAdapter adapter){
+    	  int abnormalId=0;
+          String abnormalCode="";
+          int isNormal=-1;
+          
+    	if(adapter.getCurrentPartItemType()==checkUnit_Type.ENTERING
+    			||adapter.getCurrentPartItemType()==checkUnit_Type.METER_READING){
+    		
+    		adapter.saveData(mEditTextValue.getText().toString(),isNormal,abnormalCode,abnormalId);
+    	}else if(adapter.getCurrentPartItemType()==checkUnit_Type.TEMPERATURE
+    			|| adapter.getCurrentPartItemType()==checkUnit_Type.ROTATION_RATE){
+    	final double  MAX = super.mPartItemData.Up_Limit;;
+    	final double  MID = super.mPartItemData.Middle_Limit;
+    	final double  LOW = super.mPartItemData.Down_Limit;
+      
+    	
+    	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
+    		isNormal=0;
+    		abnormalId=3;
+    		abnormalCode="02";
+    	}else if((mCheckedValue >= LOW) && (mCheckedValue<MID)){
+    		isNormal=1;
+    		abnormalId=2;
+    		abnormalCode="01";
+    	}else if(mCheckedValue <LOW){
+    		isNormal=0;
+    		abnormalId=1;
+    		abnormalCode="00";
+    	}else if(mCheckedValue>=MAX){
+    		isNormal=0;
+    		abnormalId=4;
+    		abnormalCode="03";
+    	}
+    	
+    	adapter.saveData(String.valueOf(mCheckedValue),isNormal,abnormalCode,abnormalId);
+    	}
+    }
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
 		// TODO Auto-generated method stub
-		genRandomValue();
-		if("".equals(Value)){
-			Value="temperator";
+		switch(measureOrSave){
+		case PartItemContact.SAVE_DATA:
+			savePartItemData(adapter);
+			break;
+		case PartItemContact.MEASURE_DATA:
+			measureAndDisplayData();
+			break;
 		}
-		adapter.saveData(Value);
+		
 	}
 
-	@Override
-	public void saveCheckValue() {
-		// TODO Auto-generated method stub
-		Log.d("atest", "温度2222   saveCheckValue()");
-		super.setPartItemData("温度2222");
-	}
+//	@Override
+//	public void saveCheckValue() {
+//		// TODO Auto-generated method stub
+//		Log.d("atest", "温度2222   saveCheckValue()");
+//		super.setPartItemData("温度2222");
+//	}
 }

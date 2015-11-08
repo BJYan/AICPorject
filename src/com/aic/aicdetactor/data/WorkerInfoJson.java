@@ -8,7 +8,6 @@ public class WorkerInfoJson
     public String Class_Group ;
     public String Password ;
     public String Guid ;
-//     public String T_Line_Content_Guid ;
     public String T_Line_Guid ;
     public String T_Organization_Guid ;
 }

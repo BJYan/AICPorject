@@ -28,6 +28,8 @@ public class myApplication extends Application
     public int mPartItemIndex = -1;
     
     public boolean isTest=false;
+    //如果为false，数据从原始数据表中获取，否则，从GetUploadJsonFile中获取
+    public boolean gIsDataChecked=false;
     //顶层常规巡检还是特定巡检。
     public String gRouteClassName = "";
     //当前路线名称
@@ -44,7 +46,8 @@ public class myApplication extends Application
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
     
-   // public  DeviceItemJson gCurDeviceItemCahce=null;
+    private String gCurGsonFilePath="";
+    
     public  ArrayList<PartItemJsonUp> gCurPartItemList=null;
     //当前日常巡检数据，不包括特巡数据
     public DownloadNormalRootData mNormalLineJsonData=null;
@@ -76,6 +79,13 @@ public class myApplication extends Application
 //		return Environment.getExternalStorageDirectory()+"/"+mStrGuid+mWorkerNumber +".txt";
 //	}
     
+	public void setCurGsonPath(String path){
+		gCurGsonFilePath = path;
+	}
+	
+	public String  getCurGsonPath(){
+		return gCurGsonFilePath;
+	}
     /**
      * 设置当前的巡检路线的序号，指的是ListView里的序号，从0开始
      * @param routeIndex
@@ -99,8 +109,17 @@ public class myApplication extends Application
     public void onCreate()
     {
         super.onCreate(); 
+        mApplication = this;
     }
     
+    
+    
+    private static myApplication mApplication = null;
+    
+    public static myApplication getApplication() {
+        return mApplication;
+    }
+         
     /**
      * 初始化系统信息
      * @return

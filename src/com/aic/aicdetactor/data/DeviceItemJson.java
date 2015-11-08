@@ -156,7 +156,7 @@ public class DeviceItemJson//:ICloneable
     }
     
     public void setWorkerInfos(String WorkerClassGroup,String WorkerClassShift,String WorkerNumber,String WorkerName,String WorkerGuid){
-    	 T_Worker_Class_Group =WorkerClassGroup;
+    	    T_Worker_Class_Group =WorkerClassGroup;
     	    T_Worker_Class_Shift= WorkerClassShift;
     	    T_Worker_Number =WorkerNumber;
     	    T_Worker_Name =WorkerName;

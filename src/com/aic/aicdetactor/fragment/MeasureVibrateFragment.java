@@ -28,17 +28,24 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.PartItemContact;
+import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.SystemUtil;
 
-
-public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment  implements OnButtonListener{
+/**
+ * 速度04、 位移05、 加速度03 公用的UI
+ * @author AIC
+ *
+ */
+public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnButtonListener{
 
 	private ListView mListView = null;
 	private ImageView mImageView = null;
@@ -57,15 +64,14 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 	private TextView mDeviceNameTextView = null;
 	private String TAG = "luotest";
 	private ImageView mHistoryImageView = null;
-	private int mZhouCounts = 0;
 	private LinearLayout MYLinear = null;
 	private LinearLayout MZLinear = null;
-
+	PartItemListAdapter AdapterList;
+	private float mCheckValue =0.0f;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
 		// TODO Auto-generated method stub
-		mZhouCounts =getArguments().getInt(KEY.KEY_ZHOU_COUNTS);
 		mMapList = new ArrayList<Map<String, Object>>();
 		//初始化ListVew 数据项
 		String [] arraryStr = new String[]{this.getString(R.string.electric_device_parameters),
@@ -83,6 +89,9 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 			super.onCreate(savedInstanceState);
 	}
  
+	public  MeasureVibrateFragment(PartItemListAdapter AdapterList){
+		this.AdapterList = AdapterList;
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,14 +116,14 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 				
 				if(arg2 == 0){
 					Intent intent = new Intent();					
-					 intent.setClass(PartItemMeasureVibrateFragment.this.getActivity(),ElectricParameteActivity.class);
+					 intent.setClass(MeasureVibrateFragment.this.getActivity(),ElectricParameteActivity.class);
 					 startActivity(intent);
 				}else{
 					Intent intent = null;
 					IDemoChart[] mCharts = new IDemoChart[] {
 							 new AverageTemperatureChart()};
 				     // intent = new Intent(this, TemperatureChart.class);
-				      intent = mCharts[0].execute(PartItemMeasureVibrateFragment.this.getActivity(),"test");
+				      intent = mCharts[0].execute(MeasureVibrateFragment.this.getActivity(),"test");
 				    startActivity(intent);
 				}
 				 
@@ -128,6 +137,7 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 		mResultTipStr = (TextView)view.findViewById(R.id.textiew1);
 		
 		mXTextView = (TextView)view.findViewById(R.id.x_value);
+		
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
 		mYTextView = (TextView)view.findViewById(R.id.y_value);
@@ -135,19 +145,20 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 		mTimeTextView = (TextView)view.findViewById(R.id.time_value);
 		MYLinear = (LinearLayout)view.findViewById(R.id.y_linear);
 		MZLinear = (LinearLayout)view.findViewById(R.id.z_linear);
-		if(mZhouCounts==0){
-			MYLinear.setVisibility(View.GONE);
-			
+		if(mPartItemData.Axle_Number==0){
+			MYLinear.setVisibility(View.GONE);			
 		}
-		if(mZhouCounts==1){
+		if(mPartItemData.Axle_Number==1){
 			MYLinear.setVisibility(View.GONE);
 			MZLinear.setVisibility(View.GONE);
 		}
-		if(mZhouCounts==2){
+		if(mPartItemData.Axle_Number==2){
 			MZLinear.setVisibility(View.GONE);	
 		}
 		mColorTextView = (TextView)view.findViewById(R.id.colordiscrip);
 		
+		initDisplayData();
+		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
 	}
 	
@@ -178,7 +189,7 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 //				   }
 //		   }
 		
-		//genRandomXYZ();
+		//measureAndDisplayData();
 		//handler.postDelayed(runnable, 500);
 		displayPic(null);
 	}
@@ -200,18 +211,10 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			genRandomXYZ();
+			measureAndDisplayData();
 		}
 	}; 
 	
-	void parseExternalInfo(){
-//    	String[] array = parStr.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-//		String newValue = array[CommonDef.partItemData_Index.PARTITEM_ADDITIONAL_INFO];
-//		mXTextView.setText(newValue);
-//		mYTextView.setText(newValue);
-//		mZTextView.setText(newValue);
-		
-    }
 	void displayPic(Uri path){
 		if(path == null ){
 			return ;
@@ -269,27 +272,32 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
                 e.printStackTrace();  
             }   
 	}
-	  //临时生成随机的三维坐标数据,需要线程来循环
-    void genRandomXYZ(){    
+	 @Override
+	protected void initDisplayData(){
+		mXTextView.setText(getPartItemData());
+		if(mPartItemData.T_Item_Abnormal_Grade_Id!=AbnomalGradeIdConstant.NORMAL){
+			mXTextView.setTextColor(Color.RED);
+		}else{
+			mXTextView.setTextColor(Color.BLACK);
+		}
+	}
+	
+    void measureAndDisplayData(){    
     	int max_xyz=160;
-    	double max_temperation=300;
-    	double MAX = 200;
-    	double MID = 100;
-    	double LOW = 0;
     	
-    	MAX = super.mPartItemData.Up_Limit;
-    	MID = super.mPartItemData.Middle_Limit;
-    	LOW = super.mPartItemData.Down_Limit;
-		
+    	double MAX = super.mPartItemData.Up_Limit;
+    	double MID = super.mPartItemData.Middle_Limit;
+    	double LOW = super.mPartItemData.Down_Limit;
+    	
     	int x = (int) (Math.random()*max_xyz);
     	int y = (int) (Math.random()*max_xyz);
     	int z = (int) (Math.random()*max_xyz);
-    	float temp = (int) (Math.random()*max_temperation);
-    	
+    	double max_temperation=300;
+		mCheckValue = (int) (Math.random()*max_temperation);
     	mXTextView.setText(String.valueOf(x));
     	mYTextView.setText(String.valueOf(y));
     	mZTextView.setText(String.valueOf(z));
-    	switch(mZhouCounts){
+    	switch(mPartItemData.Axle_Number){
     	case 1:
     		y=z=0;
     		break;
@@ -297,41 +305,25 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
     		z=0;
     		break;
     	}
-   
     	
-    	if((temp < MAX) && (temp>=MID) ){
+    	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.warning));
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=3;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="02";
     		
-    	}else if((temp >= LOW) && (temp<MID)){
+    	}else if((mCheckValue >= LOW) && (mCheckValue<MID)){
     		mRadioButton.setBackgroundColor(Color.BLACK);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.normal));
-    		mPartItemData.Is_Normal=1;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=2;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="01";
-    	}else if(temp <LOW){
+    	}else if(mCheckValue <LOW){
     		mRadioButton.setBackgroundColor(Color.GRAY);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.invalid));
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=1;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="00";
-    	}else if(temp>=MAX){
+    	}else if(mCheckValue>=MAX){
     		mRadioButton.setBackgroundColor(Color.RED);
     		if(mColorTextView !=null)
     		mColorTextView.setText(getString(R.string.dangerous));
-    		mPartItemData.Is_Normal=0;
-    		mPartItemData.T_Item_Abnormal_Grade_Id=4;
-    		mPartItemData.T_Item_Abnormal_Grade_Code="03";
     	}
-    	
-    	Log.d(TAG,"in genRandomXYZ() x ="+ x+",y ="+y+",z="+z + ",temp = "+temp);
-    	mCallback.OnClick((mZhouCounts>0)?mZhouCounts:3,x,y,z);
     }
 
 	
@@ -354,18 +346,57 @@ public class PartItemMeasureVibrateFragment extends PartItemMeasureBaseFragment 
                     + " must implement OnVibateListener");
         }
     }
+    
+    void saveData(PartItemListAdapter adapter){
+    	double MAX = super.mPartItemData.Up_Limit;
+    	double MID = super.mPartItemData.Middle_Limit;
+    	double LOW = super.mPartItemData.Down_Limit;
+    	int isNormal=0;
+    	int AbnormalId=0;
+    	String Abnormalcode="-1";
+    	
+    	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
+    		isNormal=0;
+    		AbnormalId=3;
+    		Abnormalcode="02";
+    		
+    	}else if((mCheckValue >= LOW) && (mCheckValue<MID)){
+    		isNormal=1;
+    		AbnormalId=2;
+    		Abnormalcode="01";
+    	}else if(mCheckValue <LOW){
+    		isNormal=0;
+    		AbnormalId=1;
+    		Abnormalcode="00";
+    	}else if(mCheckValue>=MAX){
+    		isNormal=0;
+    		AbnormalId=4;
+    		Abnormalcode="03";
+    	}
+    	
+		
+    	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId);
+    }
 
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
 		// TODO Auto-generated method stub
-		genRandomXYZ();
+		switch(measureOrSave){
+		case PartItemContact.SAVE_DATA:
+			saveData(adapter);
+			break;
+		case PartItemContact.MEASURE_DATA:
+			measureAndDisplayData();
+			break;
+		}
+		
 	}
 
 
-	@Override
-	public void saveCheckValue() {
-		// TODO Auto-generated method stub
-		Log.d("atest", "震动   saveCheckValue()");
-		super.setPartItemData("震动");
-	}
+//	@Override
+//	public void saveCheckValue() {
+//		// TODO Auto-generated method stub
+//		Log.d("atest", "震动   saveCheckValue()");
+//		super.setPartItemData("震动");
+//	}
 }

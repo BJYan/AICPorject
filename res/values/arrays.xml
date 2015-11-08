@@ -18,7 +18,31 @@
 	<item>观察类</item>	
 	<item>观察类</item>	
 </string-array>  
- <string-array name="exception_msg">
+ <string-array name="abnormal_code">
+	<item>00</item>
+	<item>01</item>
+	<item>02</item>	
+	<item>03</item>
+	<item>04</item>
+	<item>05</item>	
+	<item>06</item>
+	<item>07</item>
+	<item>08</item>	
+	<item>09</item>	
+</string-array>  
+<string-array name="abnormal_id">
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>	
+	<item>4</item>
+	<item>5</item>
+	<item>6</item>	
+	<item>7</item>
+	<item>8</item>
+	<item>9</item>	
+	<item>10</item>	
+</string-array> 
+<string-array name="abnomal_name">
 	<item>无效</item>
 	<item>正常</item>
 	<item>警告</item>	
@@ -30,6 +54,7 @@
 	<item>严重</item>	
 	<item>紧急</item>	
 </string-array>  
+
  <string-array name="groungding_spinner">
 	<item>良好</item>
 	<item>不良</item>

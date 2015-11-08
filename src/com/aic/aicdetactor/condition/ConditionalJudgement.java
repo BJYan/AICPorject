@@ -174,15 +174,14 @@ public class ConditionalJudgement {
 			{		
 				nInfo.put("err", "周期格式有误，只支持一天多次及总共一次巡检");
 			    return false;
-			}	
-			;
+			}
+			
 			if(!GetCurCheckedFileName(T_Line.T_Line_Guid,m_TurnInfoJson,m_WorkerInfoJson,m_PeriodInfo.Periods.get(ii),m_PeriodInfo.T_Period_Unit_Code,
 					m_PeriodInfo.Base_Point,StartDate,	EndDate,nInfo,context))
 			{
 				 // nInfo.put("err", "发生意外错误");
 				  return false;	
 			}
-			;
 			nRe=true;
 			break;			
 			
@@ -266,7 +265,7 @@ private boolean GetCurCheckedFileName(String T_Line_Guid,TurnInfoJson m_TurnInfo
    }
 	;   
 	;
-	BaseSql="select T_Line_Guid from "+DBHelper.TABLE_CHECKING +" where T_Line_Guid='"+T_Line_Guid+"' and Turn_Finish_Mode="+m_PeriodJson.Turn_Finish_Mode;
+	BaseSql="select * from "+DBHelper.TABLE_CHECKING +" where T_Line_Guid='"+T_Line_Guid+"' and Turn_Finish_Mode="+m_PeriodJson.Turn_Finish_Mode;
 	BaseSql+=" and Task_Mode="+m_PeriodJson.Task_Mode;
 	BaseSql+=ExSql;
 	BaseSql+=" and Start_Point="+m_PeriodJson.Start_Point;
@@ -440,19 +439,19 @@ private String  GetUploadJsonFile(String Sql,Context context){
 	  RouteDao dao = RouteDao.getInstance(context);
 			 Cursor cur = dao.execSQL(Sql);
 			
-			 try{
+		//	 try{
 				 if(cur!=null){
 			 
 				 cur.moveToFirst();
-				// for(int i=0;i<cur.getCount();i++){
-					 FileName=cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.T_Line_Name)) ;
-				// }
-			 }
-			 }catch(Exception e){
-				 Log.e("conditionTag", e.toString());
-			 }finally{
+				 for(int i=0;i<cur.getCount();i++){
+					 FileName=cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.File_Guid)) ;
+				 }
+			   }
+			// }catch(Exception e){
+			//	 Log.e("conditionTag", e.toString());
+			// }finally{
 				 if(cur!=null)cur.close();
-			 }
+			// }
 			 
 	 
 	return FileName;

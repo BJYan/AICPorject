@@ -10,6 +10,8 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.RoutePeroid;
+import com.aic.aicdetactor.data.StationInfoJson;
+import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -17,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -107,6 +110,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		tmView = (TextView)arg1;
 		}
 		tmView.setText(mPartItemList.get(arg0).Check_Content);
+		tmView.setTextColor(Color.BLACK);
 		return tmView;
 	}
 	
@@ -157,18 +161,25 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 		return false;
 }
-	
+	/**
+	 * 获取原始数据，用于显示已测量的数据测试情况
+	 * 
+	 * @return
+	 */
+	public PartItemJsonUp getCurOriPartItem(){
+		return mOriPartItemList.get(mPartItemIndex);
+	}
 	public void initListViewAndData(boolean bRefreshListView){
 		
 	//	mDeviceItemCahce = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
 		mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
 		//班组
-		mDeviceItemCahce.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
-		//班次
-		mDeviceItemCahce.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
-		mDeviceItemCahce.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
-		mDeviceItemCahce.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
-		mDeviceItemCahce.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
+//		mDeviceItemCahce.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
+//		//班次
+//		mDeviceItemCahce.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
+//		mDeviceItemCahce.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
+//		mDeviceItemCahce.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
+//		mDeviceItemCahce.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
 		try {
 			if(mPartItemList == null ||mOriPartItemList==null ){
 			 mPartItemList = new ArrayList<PartItemJsonUp>();
@@ -287,30 +298,22 @@ public class PartItemListAdapter extends BaseAdapter {
 		return (int)type;
 	}
 	
+	public PartItemJsonUp getCurrentPartItem(){
+		return mPartItemList.get(mPartItemIndex);
+	}
+	
 	/**
 	 * 保存当前检测数据及一些标记状态
-	 * @param Value
+	 * @param ExValue 测量数值 或选择数据
+	 * @param checkIsNormal  是否正常 1 正常，0 异常
+	 * @param AbnormaCode  异常情况下对应的异常code
+	 * @param AbormalId  异常情况下对应的异常id
 	 */
-	public void saveData(String Value){
-		
-		switch(Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code)){
-//			case CommonDef.checkUnit_Type.ACCELERATION:
-//				break;
-//			case CommonDef.checkUnit_Type.ACCELERATION:
-//				break;
-//			case CommonDef.checkUnit_Type.ACCELERATION:
-//				break;
-//			case CommonDef.checkUnit_Type.ACCELERATION:
-//				break;
-//			case CommonDef.checkUnit_Type.ACCELERATION:
-//				break;
-			case CommonDef.checkUnit_Type.OBSERVATION:
-				
-				break;
-		}
-		
-		mPartItemList.get(mPartItemIndex).Extra_Information = Value;
-		
+	public void saveData(String ExValue,int checkIsNormal,String AbnormaCode,int AbormalId){
+		mPartItemList.get(mPartItemIndex).Extra_Information = ExValue;
+		mPartItemList.get(mPartItemIndex).Is_Normal=checkIsNormal;
+		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Code = AbnormaCode;
+		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Id=AbormalId;
 		setPartItemEndTimeAndTotalTime();
 	}
 	
@@ -370,6 +373,8 @@ public class PartItemListAdapter extends BaseAdapter {
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.remove(mDeviceIndex);
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.add(mDeviceIndex, mDeviceItemCahce);
 		
+		
+		setOtherDataIfNeeded();
 		String sonStr=JSON.toJSONString(app.mLineJsonData);
 		Event ex = new Event();
 		ex.UploadNormalPlanResultInfo_Event(null,null,null,mHandler,sonStr);
@@ -378,15 +383,52 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 		
 		try {
+			String fileGuid="";
 			//文件要保存到数据库中的
-			SystemUtil.writeFile("/sdcard/AIC/data/"+app.mLineJsonData.GlobalInfo.Guid+".txt", sonStr);
+			if(app.gIsDataChecked){
+				fileGuid=getSaveDataFileName();
+				if("".equals(fileGuid)){
+					fileGuid=SystemUtil.createGUID();
+				}
+			}else{
+				fileGuid=SystemUtil.createGUID();
+			}
+			app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.File_Guid=fileGuid;
+			SystemUtil.writeFile("/sdcard/AIC/data/"+fileGuid, sonStr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Special_Inspection=0;
 		saveDataToDB();
 	}
 	
+	String getSaveDataFileName(){
+		RouteDao dao = RouteDao.getInstance(app.getApplicationContext());
+		
+		return dao.getDataSaveFileName(app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name,
+				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number,
+				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group,
+				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Name,
+				String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Number),
+				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Line_Guid);
+	}
+	void setOtherDataIfNeeded(){
+		if(!app.gIsDataChecked){
+			//create device exit_data_guid and t_worker informations
+			for(StationInfoJson station:app.mLineJsonData.StationInfo){
+				for(DeviceItemJson device:station.DeviceItem){
+					device.Data_Exist_Guid = SystemUtil.createGUID();
+					device.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
+					device.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
+					device.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
+					device.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
+					device.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
+				}
+			}
+			
+		}
+	}
 	private void saveDataToDB(){
 		RouteDao dao = RouteDao.getInstance(mActivity.getApplicationContext());
 		if(app.isTest){
@@ -395,9 +437,10 @@ public class PartItemListAdapter extends BaseAdapter {
 			RoutePeroid.Class_Group="T01";
 			RoutePeroid.End_Time=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 			
-			dao.insertUploadFile(RoutePeroid);	
+			dao.insertUploadFile(RoutePeroid,app.gIsDataChecked,true,true);	
 		}else{
-		dao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid);
+		dao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid,app.gIsDataChecked,true,true);
 		}
+		app.gIsDataChecked=true;
 	}
 }

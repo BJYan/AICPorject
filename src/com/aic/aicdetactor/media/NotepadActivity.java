@@ -2,7 +2,7 @@ package com.aic.aicdetactor.media;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.PartItem_Contact;
+import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
@@ -49,7 +49,7 @@ public class NotepadActivity extends Activity implements OnClickListener {
 		switch(arg0.getId()){
 		case R.id.button1:
 			saveData();
-			setResult(PartItem_Contact.PARTITEM_NOTEPAD_RESULT,null);
+			setResult(PartItemContact.PARTITEM_NOTEPAD_RESULT,null);
 			finish();
 			break;
 		}

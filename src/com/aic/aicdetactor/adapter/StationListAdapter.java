@@ -196,8 +196,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
            String path= app.mJugmentListParms.get(mrouteIndex).T_Line.LinePath;
-           String  planjson = SystemUtil.openFile(path);
-			//app.mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalData.class);
+           path = app.getCurGsonPath();
            app.LineDataClassifyFromOneFile(path, mIsSpecial);
 			mDataList.clear();
 			mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
@@ -236,7 +235,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public void notifyDataSetChanged() {
 		// TODO Auto-generated method stub
-		InitStationData();
+	//	InitStationData();
 		super.notifyDataSetChanged();
 	}
 	

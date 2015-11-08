@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.PartItem_Contact;
+import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.MediaDao;
 import com.aic.aicdetactor.util.MLog;
@@ -192,7 +192,7 @@ public class SoundRecordActivity extends Activity implements OnClickListener{
         //Log.i(TAG, "onBackPressed");
 		Intent intent = new Intent();
 		intent.putExtra(CommonDef.AUDIO_PATH, mFilePath);
-        setResult(PartItem_Contact.PARTITEM_NOTEPAD_RESULT,intent);
+        setResult(PartItemContact.PARTITEM_NOTEPAD_RESULT,intent);
         super.onBackPressed();
     }
 	@Override

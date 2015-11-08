@@ -64,6 +64,42 @@ public class RouteDao {
 		mDB = helper.getWritableDatabase();
 	}
 
+	/**
+	 * 根据参数查询TABLE_CHECKING 来生成存储文件的GUID,文件的文件名以此GUID
+	 * @param WorkerName
+	 * @param WorkerNumber
+	 * @param ClassGroup
+	 * @param TurnName
+	 * @param TurnNumber
+	 * @param LineGuid
+	 * @return
+	 */
+	public String getDataSaveFileName(String WorkerName,String WorkerNumber,String ClassGroup,String TurnName,String TurnNumber,String LineGuid){
+		Cursor cursor = null;	
+		String Name="";
+		try{
+		cursor = mDB.query(DBHelper.TABLE_CHECKING,
+				null,
+				DBHelper.Checking_Table.T_Line_Guid + "=? and "
+				+DBHelper.Checking_Table.Worker_Name + "=? and "
+				+DBHelper.Checking_Table.Worker_Number + "=? and "
+				+DBHelper.Checking_Table.Class_Group + "=? and "
+				+DBHelper.Checking_Table.Turn_Name + "=? and "
+				+DBHelper.Checking_Table.Turn_Number + "=?  ", new String[] { LineGuid,WorkerName,WorkerNumber,ClassGroup,TurnName,TurnNumber }, null, null,
+				null);
+		if(cursor!=null &&cursor.getCount()>0){
+			cursor.moveToFirst();
+			Name=cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.File_Guid));
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cursor != null){
+				cursor.close();
+				}
+		}
+		return Name;
+	}
 	public Cursor execSQL(String StrSql){
 	return	mDB.rawQuery(StrSql, null);
 	}
@@ -138,10 +174,11 @@ public class RouteDao {
 						 + DBHelper.Plan_Worker_Table.Alias_Name+","
 						 + DBHelper.Plan_Worker_Table.Class_Group+","
 						 + DBHelper.Plan_Worker_Table.Number+","
+						 + DBHelper.Plan_Worker_Table.Guid+ " ," 
 						 + DBHelper.Plan_Worker_Table.T_Line_Guid+ ","
 						 + DBHelper.Plan_Worker_Table.T_Organization_Guid +","
 						 + DBHelper.Plan_Worker_Table.Pwd
-						 +")values(?,?,?,?,?,?,?)";
+						 +")values(?,?,?,?,?,?,?,?)";
 						
 			
 				mDB.execSQL(sql, new Object[] {
@@ -149,7 +186,7 @@ public class RouteDao {
 						workerinfo.Alias_Name,
 						workerinfo.Class_Group,								
 						workerinfo.Number,
-					//	workerinfo.T_Line_Content_Guid,		
+						workerinfo.Guid,		
 						workerinfo.T_Line_Guid,
 						workerinfo.T_Organization_Guid,
 						workerinfo.Password});
@@ -351,7 +388,7 @@ public class RouteDao {
 						 + DBHelper.Plan_Worker_Table.Alias_Name+","
 						 + DBHelper.Plan_Worker_Table.Class_Group+","
 						 + DBHelper.Plan_Worker_Table.Number+","
-						 + DBHelper.Plan_Worker_Table.T_Line_Content_Guid+","
+						 + DBHelper.Plan_Worker_Table.Guid +","
 						 + DBHelper.Plan_Worker_Table.T_Line_Guid+ ","
 						 + DBHelper.Plan_Worker_Table.T_Organization_Guid +","
 						 + DBHelper.Plan_Worker_Table.Pwd
@@ -363,7 +400,7 @@ public class RouteDao {
 						workerinfo.Alias_Name,
 						workerinfo.Class_Group,								
 						workerinfo.Number,
-						workerinfo.T_Line_Content_Guid,		
+						workerinfo.Guid,		
 						workerinfo.T_Line_Guid,
 						workerinfo.T_Organization_Guid,
 						"00000000"});
@@ -536,9 +573,11 @@ public class RouteDao {
 	 * 把巡检结果插入数据表中
 	 * @param info
 	 */
-	public  void insertUploadFile(RoutePeroid info){
+	public  void insertUploadFile(RoutePeroid info,boolean bIsUpdate,boolean bUpdated,boolean bUpLoaded){
 		MLog.Logd(TAG, "insertUploadFile() start");
-		String sql = "insert into "
+		String sql ="";
+		if(!bIsUpdate){
+		sql = "insert into "
 					+DBHelper.TABLE_CHECKING
 					+"("
 					+ DBHelper.Checking_Table.Base_Point +"," 
@@ -557,13 +596,14 @@ public class RouteDao {
 					+ DBHelper.Checking_Table.Turn_Name +"," 
 					+ DBHelper.Checking_Table.Turn_Number +"," 
 					+ DBHelper.Checking_Table.Worker_Name +"," 					
-					+ DBHelper.Checking_Table.Worker_Number 
-					+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";					
+					+ DBHelper.Checking_Table.Worker_Number +","
+					+ DBHelper.Checking_Table.Is_Special_Inspection 
+					+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";					
 					
 					mDB.execSQL(sql, new Object[] {
 							info.Base_Point,
 							info.Class_Group,
-							SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD),
+							SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM),
 							info.File_Guid,
 							false,
 							false,
@@ -577,9 +617,37 @@ public class RouteDao {
 							info.Turn_Name,
 							info.Turn_Number,
 							info.Worker_Name,
-							info.Worker_Number
+							info.Worker_Number,
+							info.Is_Special_Inspection
 							});
-					
+		}else{
+			//update table_name set field1=val1, field2=val2 where expression;
+			
+			int update=0;
+			int upload=0;
+			if(bUpdated){update=1;}
+			if(bUpLoaded){upload=1;}
+			
+			sql="update " +DBHelper.TABLE_CHECKING +" set "+ DBHelper.Checking_Table.Is_Updateed+" = " +update +","
+					+DBHelper.Checking_Table.Is_Uploaded + " = "+upload 
+					+ " where "
+					+ DBHelper.Checking_Table.Base_Point +"=" +info.Base_Point +" and "
+					+ DBHelper.Checking_Table.Class_Group +"='" +info.Class_Group+"' and "
+					+ DBHelper.Checking_Table.File_Guid +"='"+info.File_Guid +"' and "
+					+ DBHelper.Checking_Table.Span +"="+info.Span +" and "
+					+ DBHelper.Checking_Table.Start_Point +"=" +info.Start_Point+" and "
+					+ DBHelper.Checking_Table.T_Line_Guid +"='" +info.T_Line_Guid+"' and "
+					+ DBHelper.Checking_Table.T_Line_Name +"='" 	+info.T_Line_Name	+"' and "			
+					+ DBHelper.Checking_Table.T_Period_Unit_Code +"='"+info.T_Period_Unit_Code +"' and "
+					+ DBHelper.Checking_Table.Task_Mode +"="+info.Task_Mode +" and "
+					+ DBHelper.Checking_Table.Turn_Finish_Mode +"=" +info.Turn_Finish_Mode		+" and "			
+					+ DBHelper.Checking_Table.Turn_Name +"='" +info.Turn_Name+"' and "
+					+ DBHelper.Checking_Table.Turn_Number +"=" +info.Turn_Number+" and "
+					+ DBHelper.Checking_Table.Worker_Name +"='" +info.Worker_Name	+"' and "				
+					+ DBHelper.Checking_Table.Worker_Number +"='"+info.Worker_Number+"' and "
+					+ DBHelper.Checking_Table.Is_Special_Inspection +"="+info.Is_Special_Inspection;
+			mDB.execSQL(sql);
+		}
 					MLog.Logd(TAG, "insertUploadFile() end");
 	}
 	// 其它操作
@@ -822,7 +890,7 @@ public class RouteDao {
 				worker.Number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
 				worker.Alias_Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Alias_Name));
 				worker.Class_Group = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Class_Group));
-				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Content_Guid));
+				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Guid));
 				worker.T_Line_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
 				worker.T_Organization_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Organization_Guid));
 				worker.Password = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Pwd));
@@ -838,7 +906,7 @@ public class RouteDao {
 		WorkerInfoJson list = new WorkerInfoJson();
 		Cursor cur = mDB.query(WorkerTableName,						
 						null,
-						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Number+ "=?"+" and "+DBHelper.Plan_Worker_Table.T_Line_Guid+ "=?", new String[] { name,pwd,strLineGuid }, 
+						DBHelper.Plan_Worker_Table.Name+ "=?" +" and "+DBHelper.Plan_Worker_Table.Pwd+ "=?"+" and "+DBHelper.Plan_Worker_Table.T_Line_Guid+ "=?", new String[] { name,pwd,strLineGuid }, 
 						null,
 						null, null);
 		WorkerInfoJson worker = new WorkerInfoJson();
@@ -850,7 +918,7 @@ public class RouteDao {
 				worker.Number = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Number));
 				worker.Alias_Name = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Alias_Name));
 				worker.Class_Group = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Class_Group));
-				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Content_Guid));
+				worker.Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Guid));
 				worker.T_Line_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
 				worker.T_Organization_Guid = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Organization_Guid));
 				worker.Password = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.Pwd));

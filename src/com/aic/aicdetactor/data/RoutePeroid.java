@@ -22,6 +22,7 @@ public class RoutePeroid {
 //	public String Special_Inspection_Status_Array;
 	public int Is_Omission_Check;
 	public int Is_Permission_Timeout;// 是否允许超时。
+	public int Is_Special_Inspection;
 
 
 }

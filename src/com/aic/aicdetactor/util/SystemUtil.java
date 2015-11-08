@@ -292,7 +292,7 @@ public class  SystemUtil {
 	 * @return 单位 秒
 	 */
 	public static String getDiffDate(String time, String endTime) {
-		if("".equals(time)||"".equals(endTime)){return ""+0;}
+		if(time==null || endTime==null ||"".equals(time)||"".equals(endTime)){return ""+0;}
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			Date d1 = df.parse(time);

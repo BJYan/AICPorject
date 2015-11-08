@@ -127,7 +127,7 @@ public class Search_fragment extends Fragment  implements OnButtonListener,OnCli
     }
 
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value,int measureOrSave) {
 		// TODO Auto-generated method stub
 		
 	}

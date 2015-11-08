@@ -24,15 +24,24 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.MLog;
 
+/**
+ * 观察项 10 对应的UI
+ * @author AIC
+ *
+ */
+public class MeasureObserverFragment extends MeasureBaseFragment implements OnButtonListener{
 
-public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment implements OnButtonListener{
-
+	
+	//UI
 	//listview
 	private ListView mListview = null;
 	//示意图片显示
@@ -52,15 +61,25 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 	private OnMediakListener mCallback = null;
 	EditText mExternalInfoEditText = null;
 	private TextView mDeviceNameTextView = null;
+	
+	
+	//DATA
 	private ArrayAdapter<String> mSpinnerAdapter;
 	private List<String> mSpinnerData = new ArrayList<String>();
 	private String mSelectValue="";
+	private PartItemListAdapter AdapterList;
+	private final String mSplitFlag = "\\/";
+	private myApplication app=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		app=myApplication.getApplication() ;
 	}
-
+	public  MeasureObserverFragment(PartItemListAdapter AdapterList){
+		this.AdapterList = AdapterList;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -78,6 +97,7 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 		getPartItemStatusArray(mPartItemData.Extra_Information);
 		mSpinnerAdapter = new ArrayAdapter<String>(this.getActivity().getApplicationContext(), android.R.layout.simple_spinner_item,mSpinnerData);
 		mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	
 		mSpinner.setAdapter(mSpinnerAdapter);
 		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -95,6 +115,9 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 			}
 
 		});
+		
+		initDisplayData();
+		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
 	}
 	/**
@@ -104,7 +127,7 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 	public List<String>getPartItemStatusArray(String str){
 		mSpinnerData.clear();		
 		mSpinnerData.add("请选择状态");
-		StatusNameArray = str.split("\\/");
+		StatusNameArray = str.split(mSplitFlag);
 		for(int k=0;k<StatusNameArray.length;k++){
 			mSpinnerData.add(StatusNameArray[k].substring(0, StatusNameArray[k].length()-2));
 		}
@@ -112,7 +135,28 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 		
 	}
 	
-    public interface OnMediakListener{
+	/**
+	 * 当上一点时 ，需要显示上次选中的数据
+	 */
+	protected void displaySelectedData(){
+		String[] strArray=AdapterList.getCurOriPartItem().Extra_Information.split(mSplitFlag);
+		int i=0;
+		for(String oriStr:strArray){
+			i++;
+			if(oriStr.substring(0, oriStr.length()-2).equals(AdapterList.getCurrentPartItem().Extra_Information)){
+				break;
+			}			
+		}
+		mSpinner.setSelection(i);
+	}
+    @Override
+	protected void initDisplayData() {
+		// TODO Auto-generated method stub
+		super.initDisplayData();
+		displaySelectedData();
+	}
+
+	public interface OnMediakListener{
     	
     	void OnClick(String IndexButton);
     }
@@ -132,14 +176,32 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 
   
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
 		// TODO Auto-generated method stub
-		if("".equals(Value)){
-			Value="Observer";
+		switch(measureOrSave){
+		case PartItemContact.SAVE_DATA:
+ {
+			Value = "";
+
+			String[] oriArrary = AdapterList.getCurOriPartItem().Extra_Information.split("\\/");
+			for (String str : oriArrary) {
+				if (str.contains(mSelectValue)) {
+					Value = str;
+					break;
+				}
+			}
+
+			String code = Value.substring(mSelectValue.length());
+			int id = AbnormalInfo.getIdByCode(app.mLineJsonData.T_Item_Abnormal_Grade, code);
+			adapter.saveData(mSelectValue, id == 2 ? 1 : 0, code, id);
 		}
-		adapter.saveData(mSelectValue);
+			break;
+		case PartItemContact.MEASURE_DATA:
+			break;
+		}
+	
 		
-		if(buttonId == 0){
+		if(buttonId != 0){
 		Uri	imageFilePath = null;//Uri.parse(bundle.getString("pictureUri"));
 			 try {  
 		           // Bundle extra = data.getExtras(); 
@@ -211,17 +273,17 @@ public class PartItemMeasureObserverFragment extends PartItemMeasureBaseFragment
 		            e.printStackTrace();  
 		        }  
 			 
-			 mCallback.OnClick(imageFilePath.toString() + "*");
+			// mCallback.OnClick(imageFilePath.toString() + "*");
 		}else{
-			mCallback.OnClick(mExternalInfoEditText.getText().toString());
+			//SmCallback.OnClick(mExternalInfoEditText.getText().toString());
 		}
 	}
 
-	@Override
-	public void saveCheckValue() {
-		// TODO Auto-generated method stub
-		Log.d("atest", "Observert   saveCheckValue()");
-		super.setPartItemData("Observert");
-	}
+//	@Override
+//	public void saveCheckValue() {
+//		// TODO Auto-generated method stub
+//		Log.d("atest", "Observert   saveCheckValue()");
+//		super.setPartItemData("Observert");
+//	}
 	
 }

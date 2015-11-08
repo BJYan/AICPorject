@@ -32,6 +32,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,7 +62,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.PartItem_Contact;
+import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.KEY;
@@ -72,15 +73,16 @@ import com.aic.aicdetactor.data.T_Device_Item;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
-import com.aic.aicdetactor.fragment.PartItemMeasureBaseFragment;
-import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment;
-import com.aic.aicdetactor.fragment.PartItemMeasureMeasurementFragment.OnMeasureMeasureListener;
-import com.aic.aicdetactor.fragment.PartItemMeasureObserverFragment;
-import com.aic.aicdetactor.fragment.PartItemMeasureObserverFragment.OnMediakListener;
-import com.aic.aicdetactor.fragment.PartItemMeasureTemperatureFragment;
-import com.aic.aicdetactor.fragment.PartItemMeasureTemperatureFragment.OnTemperatureMeasureListener;
-import com.aic.aicdetactor.fragment.PartItemMeasureVibrateFragment;
-import com.aic.aicdetactor.fragment.PartItemMeasureVibrateFragment.OnVibateListener;
+import com.aic.aicdetactor.fragment.MeasureBaseFragment;
+import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment;
+import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment.OnMeasureMeasureListener;
+import com.aic.aicdetactor.fragment.MeasureObserverFragment;
+import com.aic.aicdetactor.fragment.MeasureObserverFragment.OnMediakListener;
+import com.aic.aicdetactor.fragment.MeasureTemperatureFragment;
+import com.aic.aicdetactor.fragment.MeasureTemperatureFragment.OnTemperatureMeasureListener;
+import com.aic.aicdetactor.fragment.MeasureVibrateFragment;
+import com.aic.aicdetactor.fragment.MeasureVibrateFragment.OnVibateListener;
+import com.aic.aicdetactor.media.MediaMainActivity;
 import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.media.SoundRecordActivity;
 import com.aic.aicdetactor.util.MLog;
@@ -99,50 +101,33 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	OnMeasureMeasureListener{
 
 	private ListView mListView = null;
-	String TAG = "luotest";
+	String TAG = "luotest.PartItemActivity";
 	private Spinner mSpinner = null;
 	private TextView mItemDefTextView = null;//当只有一项时才显示
 	private String mCheckItemNameStr = null;//检查项名
 	private String mCheckUnitNameStr = null;//检查部件名称
 	
 	private ArrayAdapter<String> spinnerAdapter;
-	private int mLastSpinnerIndex = 0;
-	private Object mPartItemObject = null;
-	private Object mCurrentDeviceItem = null;
-//	private List<Map<String, Object>> mMapList;
-	public final int SPINNER_SELECTCHANGED =0;
-	private SimpleAdapter mListViewAdapter = null;
-	
-	//partItem 数组，包含Fast_Record_Item_Name 及 PartItemData : 
-	//private List<Object> mPartItemList=null;
+	private boolean mIsChecking = false;
 	private CheckBox mCheckbox = null;
-	//private int mRouteIndex =0;
 	private int mStationIndex =0;
 	private int mDeviceIndex = 0;
 	private int mCheckIndex =0;
 	private int mPartItemIndex =0;
-	//是否需要反向排序来巡检
 	
 	//点击listItem后 ListView 视图消失，显示具体测试点界面
-	private boolean bListViewVisible = true;
-	private boolean bSpinnerVisible = true;
 	private LinearLayout mUnitcheck_Vibrate = null;
-	private int mCheckUnit_DataType = 0;
 	private Button mButton_Direction = null;
 	private Button mButton_Next = null;
 	private Button mButton_Pre = null;
 	private Button mButton_Measurement = null;
 	private Button mButtion_Position = null;
-	//private Button mButtion_Media = null;
 	private LinearLayout LinearLayout_y = null;
 	private LinearLayout LinearLayout_z = null;
 	private TextView mTextViewX = null;
 	private TextView mTextViewY = null;
 	private TextView mTextViewZ = null;
 	private TextView mTextViewCountDown = null;
-	private int iCheckedCount =0;
-	private boolean bHasFinishChecked = false;
-	private int mPartItemCounts = 0;
 	//测试倒计时，用于待信号稳定
 	private final int mMaxSecond_StartMeasure = 30;
 	private static final int  REMOVELASTFRAGMENT =10086;
@@ -150,13 +135,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	//设置颜色级别
 	private RadioButton mRadioButton = null;
 	private Fragment mfragment = null;
-	//一个DeviceItem Object
-	private JSONObject mDeviceItemObject =null;
-	//一个ParteItem数组对应的JSON数组
-	private String mDeviceItemDefStr = null;
-	//private boolean []mBValue = null;	//巡检的结果
-	private myApplication app = null;
-	JSONObject mCurPartItemobject = null;
+	public myApplication app = null;
 	//根据Spinner的Index 设置mItemDefIndex
 	private int mItemDefIndex =0;
 	private OnButtonListener mFragmentCallBack = null;
@@ -164,12 +143,13 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private String mLastEndTime="";
 	private LinearLayout mFirstLLayout=null;
 	private LinearLayout mSecendLLayout=null;
-	private PartItemMeasureBaseFragment fragment  =null;
+	private MeasureBaseFragment fragment  =null;
 	private ArrayList<PartItemJsonUp> mPartItemList=null;
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	private ArrayList<String> mPartItemNameList=null;
 	private Button mConfigButton;
 	private PartItemListAdapter mAdapterList =null;
+	private List<String> mStatusList = new ArrayList<String>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -177,7 +157,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
-		MLog.Logd(TAG,"PartItemActivity:onCreate() ");
 		setContentView(R.layout.unitcheck);
 		
 		mPartItemIndex =0;
@@ -233,7 +212,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mListView.setAdapter(mAdapterList);
 		
 		getDeviceStatusArray(mStationIndex, mDeviceIndex);
-		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,statusList);
+		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,mStatusList);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSpinner.setAdapter(spinnerAdapter);
 		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -250,7 +229,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
 					msg.arg1=mSpinner.getSelectedItemPosition();
 					msg.obj=mSpinner.getSelectedItem().toString();
-					//Toast.makeText(PartItemActivity.this, "你点击的是:"+str +mSpinner.getSelectedItemPosition() +","+msg.arg1, 2000).show();
 					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
 				}else{
 					mAdapterList.initListViewAndData(true);
@@ -305,8 +283,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
 		bundle.putInt("type", type);
-		
-		
 		  switch(type){
 		   case CommonDef.checkUnit_Type.ACCELERATION:
 		   case CommonDef.checkUnit_Type.SPEED:	
@@ -316,7 +292,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   mButton_Direction.setEnabled(true);
 			   mButton_Direction.setText(getString(R.string.direction));
 			   {
-					fragment = new PartItemMeasureVibrateFragment();
+					fragment = new MeasureVibrateFragment(mAdapterList);
 					
 					fragment.setArguments(bundle);  
 					if(bFirstInit){
@@ -338,7 +314,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   mButton_Direction.setEnabled(false);
 			  
 			   {
-					fragment = new PartItemMeasureTemperatureFragment();
+					fragment = new MeasureTemperatureFragment(mAdapterList);
 					fragment.setArguments(bundle);  
 					if(bFirstInit){
 					fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -352,7 +328,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //				mButton_Direction.setText(getString(R.string.direction));	
 			   break;
 		   case CommonDef.checkUnit_Type.OBSERVATION:
-			   fragment = new PartItemMeasureObserverFragment();
+			   fragment = new MeasureObserverFragment(mAdapterList);
 				fragment.setArguments(bundle);  
 				if(bFirstInit){
 				fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -383,7 +359,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		//	   break;
 		 //  case CommonDef.checkUnit_Type.METER_READING:
 		   {
-			   fragment = new PartItemMeasureMeasurementFragment();
+			   fragment = new MeasureDefaltStateFragment(mAdapterList);
 				fragment.setArguments(bundle);  
 				if(bFirstInit){
 				fragmentTransaction.add(R.id.fragment_content,fragment);
@@ -447,9 +423,13 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			  
 			   break;
 		   case MSG_NEXT:
+			  // if(!mIsChecking)
+			   {
 			   nextCheckItem();
+			   }
 			   break;
 		   case MSG_MEASUERMENT:
+			   mIsChecking=true;
 			   getMeasureValue();
 			   break;
 		   case MSG_DIRECTION:
@@ -458,6 +438,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   preCheckItem();
 			   break;
 		   case MSG_SAVE_PARTITEMDATA:
+			   saveValue();
 			   mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
 			   break;
 		   case MSG_ADD_NEW_PARTITEMDATA:
@@ -612,7 +593,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	 * 保存当前的 巡检项巡检结果，重新生成一个PartItem
 	 */
 	void saveCheckedItemNode() {
-		mEndTime = SystemUtil.getSystemTime(0);
 		// 先保存当前测试项的数据
 		MLog.Logd(TAG, "mPartItemList size is ," + mPartItemList.size());
 		//JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
@@ -657,110 +637,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		}
 	}
 	
-	String Item_def = "运行";
-	String mStartTime = "";
-	String mEndTime="";
 	
-	final String  ff="*";
+//	final String  ff="*";
 	
-	/**
-	 * 重新生成一个PartItemData对象，并填充新的数值
-	 * @param oldvalue
-	 * @param checkValue
-	 * @param Item23_Guid ,默认为NULL，由该函数来生成GUID，否则由外面传入GUID
-	 * @return
-	 */
-	private String addUpdata(String oldvalue,String checkValue,String Item23_Guid){
-//		String value= "";
-//		ContentValues vc = new ContentValues();
-//		vc.put("19", Item_def);
-//		vc.put("20", mStartTime);
-//		vc.put("21", mEndTime);
-//		vc.put("22", SystemUtil.getDiffDate(mStartTime,mEndTime));
-//		switch(mCheckUnit_DataType){
-//		 case CommonDef.checkUnit_Type.ACCELERATION:
-//			 vc.put("23", Item23_Guid);	 
-//			 vc.put("24", SystemUtil.createGUID());
-//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-//			 vc.put("27", 0);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-//			 vc.put("29", "上限值");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-//				vc.put("30", "不为空");//当测量类型为加速度、速度、位移时，不为空； 				其它数据类型为空
-//
-//				vc.put("31", "不为空");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-//			 break;
-//		 case CommonDef.checkUnit_Type.SPEED:	
-//			 vc.put("23", Item23_Guid);	 
-//			 vc.put("24", SystemUtil.createGUID());
-//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-//			 vc.put("27", 1);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-//			 vc.put("29", "");
-//			vc.put("30", "");
-//				vc.put("31", "");
-//			 break;
-//		 case CommonDef.checkUnit_Type.DISPLACEMENT:
-//			 vc.put("23", Item23_Guid);	 
-//			 vc.put("24", SystemUtil.createGUID());
-//			 vc.put("26", 1);//当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
-//			 vc.put("27", 2);//当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
-//			 vc.put("28", "");//当测量类型为加速度、速度、位移时，不为空，编码参考上限值；其它数据类型为空。
-//			 vc.put("29", "");
-//				vc.put("30", "");
-//				vc.put("31", "");
-//			   break;
-//		  
-//		default:
-//			vc.put("23", "");
-//			vc.put("24", "");
-//			vc.put("26", "");
-//			vc.put("27", "");
-//			vc.put("28", "");
-//			vc.put("29", "");
-//			vc.put("30", "");
-//			vc.put("31", "");
-//			   break;
-//		  
-//		}
-//		vc.put("25", 0);
-//		
-//		vc.put("32", "");
-//		vc.put("33", "");
-//		vc.put("34", "");
-//		vc.put("35", "");
-//		
-//		value = vc.get("19")+ff
-//				+vc.get("20")+ff
-//				+vc.get("21")+ff
-//				+vc.get("22")+ff
-//				+vc.get("23")+ff
-//				+vc.get("24")+ff
-//				+vc.get("25")+ff
-//				+vc.get("26")+ff
-//				+vc.get("27")+ff
-//				+vc.get("28")+ff
-//				+vc.get("29")+ff
-//				+vc.get("30")+ff
-//				+vc.get("31")+ff
-//				+vc.get("32")+ff
-//				+vc.get("33")+ff
-//				+vc.get("34")+ff
-//				+vc.get("35")+ff
-//				+ff+ff+ff+ff;
-//		
-//		
-//		String[] array = oldvalue.split(KEY.PARTITEMDATA_SPLIT_KEYWORD);
-		String newValue = "";
-//		for(int i =0;i<array.length;i++){
-//			if(i!=13){
-//			newValue= newValue+array[i]+ff;
-//			}else{
-//				newValue= newValue+checkValue+ff;
-//			}
-//		}
-//		return newValue+value;
-		return null;
-	}
+	
 	boolean isTimeOut(){
 		return false;
 	}
@@ -771,8 +651,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
     */
 	private void nextCheckItem() {
 		if (!isTimeOut()) {
-			//保存当前的册数数据
-			//fragment.saveCheckValue();
 			//判断是否是已经巡检完毕
 			mPartItemIndex = mAdapterList.setCurPartItemIndex(++mPartItemIndex);
 			if (!mAdapterList.isCurrentDeviceItemFinish()) {
@@ -854,7 +732,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 				MLog.Logd("test", "main_media imageFilePath is " + imageFilePath);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); // 这样就将文件的存储方式和uri指定到了Camera应用中
 
-				startActivityForResult(intent, PartItem_Contact.PARTITEM_CAMERA_RESULT);
+				startActivityForResult(intent, PartItemContact.PARTITEM_CAMERA_RESULT);
 			} else {
 				initPopupWindowFliter(arg0);
 			}
@@ -906,7 +784,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			if(mButton_Direction.getText().equals(getString(R.string.soundrecord))){
 				Intent intent = new Intent();
 				intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
-				startActivityForResult(intent,PartItem_Contact.PARTITEM_SOUNDRECORD_RESULT);
+				startActivityForResult(intent,PartItemContact.PARTITEM_SOUNDRECORD_RESULT);
 			}else{
 			 new AlertDialog.Builder(PartItemActivity.this)
 	         .setTitle(getString(R.string.direction_select))
@@ -926,20 +804,24 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
-		mStartTime = SystemUtil.getSystemTime(0);
-		mAdapterList.setPartItemStartTime();
-		mFragmentCallBack.OnButtonDown(0, mAdapterList,"");
+		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA);
     }
+    
+    void saveValue(){
+		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.SAVE_DATA);
+    }
+    
+    
     @Override  
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		MLog.Logd("test", "onActivityResult() 00" + requestCode + ",resultCode= "
 				+ resultCode);
-		if (requestCode == PartItem_Contact.PARTITEM_CAMERA_RESULT) {
+		if (requestCode == PartItemContact.PARTITEM_CAMERA_RESULT) {
 			mCheckValue = imageFilePath.toString();
 			
 				Bundle bundle = new Bundle();
 				bundle.putString("pictureUri", imageFilePath.toString());
-				mFragmentCallBack.OnButtonDown(0, mAdapterList,"");
+				mFragmentCallBack.OnButtonDown(0, mAdapterList,"",2);
 				// imageView.setImageBitmap(pic);
 				Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
 				msg.arg1 = CAMERA_TYPE;
@@ -948,7 +830,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			
 		}
 
-		if (PartItem_Contact.PARTITEM_NOTEPAD_RESULT == requestCode) {
+		if (PartItemContact.PARTITEM_NOTEPAD_RESULT == requestCode) {
 
 			SharedPreferences mSharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(getApplicationContext());
@@ -966,7 +848,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			mHandler.sendMessage(msg);
 		}
 
-		if (PartItem_Contact.PARTITEM_SOUNDRECORD_RESULT == requestCode) {
+		if (PartItemContact.PARTITEM_SOUNDRECORD_RESULT == requestCode) {
 			Intent intent = data;
 			mCheckValue = intent.getExtras().getString(CommonDef.AUDIO_PATH);
 			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
@@ -994,17 +876,19 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	}
 	
 	public interface OnButtonListener{
-		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value);
+		/**
+		 * 
+		 * @param buttonId
+		 * @param object
+		 * @param Value
+		 * @param measureOrSave 1 measure,2 save data
+		 */
+		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value,int measureOrSave);
 	};
+	
 
-	/**
-	 * 保存巡检数据成文件，并保存到数据表中。
-	 */
-	void saveUpLoadData(){
-		String fileName = "/sdcard/0001.txt";
-	//	app.SaveData(mRouteIndex, fileName);
-	}
 	PopupWindow pw_Left = null;
+	
 	void initPopupWindowFliter(View parent) {
 		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -1065,20 +949,7 @@ private int mZhouCounts=0;
 	}
 	
 	void controlButtonDisplayStatus(int type){
-		mButtion_Position = (Button) findViewById(R.id.bottombutton1);
-		mButtion_Position.setOnClickListener(this);
-
-		mButton_Direction = (Button) findViewById(R.id.bottombutton2);
-		mButton_Direction.setOnClickListener(this);
-
-		mButton_Next = (Button) findViewById(R.id.next);
-		mButton_Next.setOnClickListener(this);
-
-		mButton_Pre = (Button) findViewById(R.id.bottombutton_pre);
-		mButton_Pre.setOnClickListener(this);
-
-		mButton_Measurement = (Button) findViewById(R.id.bottombutton3);
-		mButton_Measurement.setOnClickListener(this);
+		
 		switch(type){
 		
 		case CommonDef.checkUnit_Type.TEMPERATURE:
@@ -1107,9 +978,9 @@ private int mZhouCounts=0;
 			break;
 		}
 	}
-	List<String> statusList = new ArrayList<String>();
+	
 	public List<String>getDeviceStatusArray(int station,int device){
-		statusList.clear();
+		mStatusList.clear();
 		String str="";
 		boolean bFind = false;
 		for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
@@ -1126,12 +997,65 @@ private int mZhouCounts=0;
 				e.printStackTrace();
 			}	
 		}
-		statusList.add("请选择状态");
+		mStatusList.add("请选择状态");
 		String[]array = str.split("\\/");
 		for(int k=0;k<array.length;k++){
-			statusList.add(array[k]);
+			mStatusList.add(array[k]);
 		}
-		return statusList;
+		return mStatusList;
 		
 	}
+	private static final int RESULT_CODE = 1;
+//	@Override  
+//    public boolean dispatchKeyEvent(KeyEvent event) {  
+//   
+//        int action = event.getAction();  
+//   
+//        if (action ==KeyEvent.ACTION_DOWN) {  
+////        	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
+////			 ContentValues values = new ContentValues(3);  
+////            values.put(MediaStore.Images.Media.DISPLAY_NAME, "testing");  
+////            values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
+////            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
+////            imageFilePath = PartItemActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
+////            MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
+////            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
+////			//Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 			  
+////           startActivityForResult(intent, RESULT_CODE);  
+//            Log.d(TAG,"+++++++++ACTION_DOWN++++++");  
+//            return true;  
+//        }  
+//   
+//        if (action== KeyEvent.ACTION_UP) { 
+////        	Intent intent = new Intent();
+////			intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
+////			startActivity(intent);
+//        	Log.d(TAG,"+++++++++ACTION_UP++++++");
+//            return true;  
+//        }  
+//   
+//        return super.dispatchKeyEvent(event);  
+//    }  
+//   
+//   
+//   
+//    @Override  
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {  
+//        switch (keyCode) {  
+//   
+//        case KeyEvent.KEYCODE_VOLUME_DOWN:  
+//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_DOWN++++++");
+//            return true;  
+//   
+//        case KeyEvent.KEYCODE_VOLUME_UP:  
+//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_UP++++++");
+//            return true;  
+//        case KeyEvent.KEYCODE_VOLUME_MUTE:  
+//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_MUTE++++++");
+//   
+//            return true;  
+//        }  
+//        return super.onKeyDown(keyCode, event);  
+//    }  
+   
 }

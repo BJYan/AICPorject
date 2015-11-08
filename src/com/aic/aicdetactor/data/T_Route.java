@@ -31,9 +31,9 @@ public class T_Route extends Route {
 	 public JSONObject mGloableObject = null;
 	 public JSONObject mLineObject = null;
 	 public JSONObject mOrganizationObject = null;
-	 public OrganizationInfo mOrganizationInfo = null;
-	 public LineInfo mLineInfo = null;
-	 public GlobalInfo mGlobalInfo = null;
+	 public OrganizationInfoJson mOrganizationInfo = null;
+	 //public LineInfo mLineInfo = null;
+	 //public GlobalInfo mGlobalInfo = null;
 	 public List<TurnInfo> mTurnList = null;
 	 public List<WorkerInfo> mWorkerList = null;
      public JSONArray mT_PeriodArray = null;
@@ -48,19 +48,19 @@ public class T_Route extends Route {
 	}
      @Override
      public void ParseData(Object obj){
-    	 JSONObject object=(JSONObject) obj;
-    	 try {
-    		 mGloableObject = object.getJSONObject(GlobalInfo.NodeName);
-			mLineObject = object.getJSONObject(T_Line.RootNodeName);
-			mStationArrary= (JSONArray) object.getJSONArray(KEY.KEY_STATIONINFO);
-			mTurnArrary= (JSONArray) object.getJSONArray(T_Turn.RootNodeName);
-			mWorkerArrary= (JSONArray) object.getJSONArray(T_Worker.RootNodeName);
-			JSONObject sub_object = object.getJSONObject(T_Period.RootNodeName);
-			mT_PeriodArray = sub_object.getJSONArray(T_Period.ArrayName);
-			mOrganizationObject = object.getJSONObject(T_Organization.NodeName);
-    	 } catch (Exception e) {
-				e.printStackTrace();
-			}
+//    	 JSONObject object=(JSONObject) obj;
+//    	 try {
+//    		 mGloableObject = object.getJSONObject(GlobalInfo.NodeName);
+//			mLineObject = object.getJSONObject(T_Line.RootNodeName);
+//			mStationArrary= (JSONArray) object.getJSONArray(KEY.KEY_STATIONINFO);
+//			mTurnArrary= (JSONArray) object.getJSONArray(T_Turn.RootNodeName);
+//			mWorkerArrary= (JSONArray) object.getJSONArray(T_Worker.RootNodeName);
+//			JSONObject sub_object = object.getJSONObject(T_Period.RootNodeName);
+//			mT_PeriodArray = sub_object.getJSONArray(T_Period.ArrayName);
+//			mOrganizationObject = object.getJSONObject(T_Organization.NodeName);
+//    	 } catch (Exception e) {
+//				e.printStackTrace();
+//			}
      }
 //	@Override
 //     public void parseBaseInfo() {
