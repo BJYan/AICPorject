@@ -31,6 +31,7 @@ public class myApplication extends Application
     public int mPartItemIndex = -1;
     
     public boolean isTest=false;
+    public boolean isSpecialLine=false;
     //如果为false，数据从原始数据表中获取，否则，从GetUploadJsonFile中获取
     public boolean gIsDataChecked=false;
     //顶层常规巡检还是特定巡检。
@@ -53,9 +54,9 @@ public class myApplication extends Application
     
     public  ArrayList<PartItemJsonUp> gCurPartItemList=null;
     //当前日常巡检数据，不包括特巡数据
-    public DownloadNormalRootData mNormalLineJsonData=null;
+   // private DownloadNormalRootData mNormalLineJsonData=null;
     //当前特巡数据，不包括日常巡检数据
-    public DownloadNormalRootData mSpecialLineJsonData=null;
+   // private DownloadNormalRootData mSpecialLineJsonData=null;
     //剔除后的当前巡检数据
     public DownloadNormalRootData mLineJsonData=null;
     //
@@ -160,46 +161,46 @@ public class myApplication extends Application
   //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离
     public DownloadNormalRootData getLineDataClassifyFromOneFile(boolean IsSpecial){
   		 String planjson = SystemUtil.openFile(getCurGsonPath());
+  		 if(mLineJsonData!=null){mLineJsonData=null;}
   		if(!IsSpecial){ 
-	  		mNormalLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);  		
+  			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);  		
 	  		//剔除特殊巡检数据
-	  		for (int i = 0; i < mNormalLineJsonData.StationInfo.size(); i++) {
+	  		for (int i = 0; i < mLineJsonData.StationInfo.size(); i++) {
 	  			try {
-	  				for (int deviceIndex = 0; deviceIndex < mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-	  					if (Integer.valueOf(mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) > 0) {
-	  						mNormalLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
+	  				for (int deviceIndex = 0; deviceIndex < mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+	  					if (Integer.valueOf(mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) > 0) {
+	  						mLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
 	  					}
 	  				}
-	  				if(mNormalLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
-	  					mNormalLineJsonData.StationInfo.remove(i);
+	  				if(mLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
+	  					mLineJsonData.StationInfo.remove(i);
 	  				}
 	  				
 	  			} catch (Exception e) {
 	  				e.printStackTrace();
 	  			}	
 	  		}
-	  		mLineJsonData= mNormalLineJsonData;
-  		
+	  	  		
   		}else{
-	  		mSpecialLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);
+  			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);
 	  		//剔除日常巡检数据
-	  		for (int i = 0; i < mSpecialLineJsonData.StationInfo.size(); i++) {
+	  		for (int i = 0; i < mLineJsonData.StationInfo.size(); i++) {
 	  			try {
-	  				for (int deviceIndex = 0; deviceIndex < mSpecialLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-	  					if (Integer.valueOf(mSpecialLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) <= 0) {
-	  						mSpecialLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
+	  				for (int deviceIndex = 0; deviceIndex < mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+	  					if (Integer.valueOf(mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Is_Special_Inspection) <= 0) {
+	  						mLineJsonData.StationInfo.get(i).DeviceItem.remove(deviceIndex);
 	  					}
 	  						
 	  				}
-	  				if(mSpecialLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
-	  					mSpecialLineJsonData.StationInfo.remove(i);
+	  				if(mLineJsonData.StationInfo.get(i).DeviceItem.size()==0){
+	  					mLineJsonData.StationInfo.remove(i);
 	  				}
 	  				
 	  			} catch (Exception e) {
 	  				e.printStackTrace();
 	  			}	
 	  		}
-	  		mLineJsonData=mSpecialLineJsonData;
+	  		
   		}
   		return mLineJsonData;
   	}

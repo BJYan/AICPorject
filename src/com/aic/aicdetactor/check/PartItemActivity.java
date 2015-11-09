@@ -983,12 +983,12 @@ private int mZhouCounts=0;
 		mStatusList.clear();
 		String str="";
 		boolean bFind = false;
-		for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
+		for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 			if(bFind) break;
 			try {
-				for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+				for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
 					if(i == station && deviceIndex == device){
-						str =app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
+						str =app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
 						bFind=true;
 						break;
 						}

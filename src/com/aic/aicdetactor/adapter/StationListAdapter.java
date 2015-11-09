@@ -43,14 +43,14 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int exlistItemHigh;
 
-	public StationListAdapter(CommonActivity av, Context context, int routeIndex,boolean mIsSpecial) {
+	public StationListAdapter(CommonActivity av, Context context, int routeIndex) {
 		mContext = context;
 		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
 		mStationDisplayDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
-		this.mIsSpecial =mIsSpecial;
+		this.mIsSpecial =app.isSpecialLine;
 		exlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high);
 		InitStationData();
 	}
@@ -93,7 +93,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						exlistItemHigh*app.mNormalLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg0).PartItem.size()+exlistItemHigh);
+						exlistItemHigh*app.mLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg0).PartItem.size()+exlistItemHigh);
 				secGroupView.setLayoutParams(lp);
 			}
 		});
@@ -198,20 +198,20 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			app.getLineDataClassifyFromOneFile(mIsSpecial);
 			mStationDisplayDataList.clear();
 			mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
-			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
+			for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 				
 				Map<String, String> map = new HashMap<String, String>();
-				map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
+				map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
 				if(!app.gIsDataChecked){
 				map.put(CommonDef.station_info.DEADLINE, "2015");
 				}
-				map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
+				map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
 				mStationDisplayDataList.add(map);
 				try {
 					ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
-					for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+					for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
 								Map<String, String> mapDevice = new HashMap<String, String>();
-								mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+								mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
 								deviceDisplayDataList.add(mapDevice);	
 					}
 					mDeviceArrayDisplayDataList.add(deviceDisplayDataList);					
@@ -241,12 +241,12 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		List<String> statusList = new ArrayList<String>();
 		String str="";
 		boolean bFind = false;
-		for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
+		for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 			if(bFind) break;
 			try {
-				for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+				for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
 					if(i == station && deviceIndex == device){
-						str =app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
+						str =app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Status_Array;
 						bFind=true;
 						break;
 						}

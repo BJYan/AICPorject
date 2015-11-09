@@ -94,7 +94,6 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
-	private boolean mSpecial = false;
 	NFCDialog nfcdialog;
 	Handler handler;
 
@@ -119,7 +118,6 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			app = (myApplication) getApplication();
 			Intent intent =getIntent();
 			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
-			mSpecial = intent.getExtras().getBoolean(CommonDef.route_info.IsSpecilaLine);
 			String  oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);		
 			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
 			
@@ -172,7 +170,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,mSpecial);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
 			mListView.setAdapter(mListViewAdapter);
 			
 

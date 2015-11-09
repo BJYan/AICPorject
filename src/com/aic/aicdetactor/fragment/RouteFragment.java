@@ -51,9 +51,6 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	//
 	private final String TAG = "luotest";
 	private RadioGroup mRadioGroup = null; 
-
-
-
 	private myApplication app = null;
 	private List<Map<String, String>> mItemDatas = null;
 	private SimpleAdapter mListViewAdapter = null;
@@ -146,8 +143,8 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
             @Override  
             public void onTabChanged(String tabId){  
                 Log.i("DownLoadFragment--tabId--=", tabId);  
-                if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
-                if(tabId.equals("tab2")) viewPager.setCurrentItem(1);
+                if(tabId.equals("tab1")){ viewPager.setCurrentItem(0);app.isSpecialLine=false;}
+                if(tabId.equals("tab2")) {viewPager.setCurrentItem(1);app.isSpecialLine=true;}
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(2);
             }  
         });
