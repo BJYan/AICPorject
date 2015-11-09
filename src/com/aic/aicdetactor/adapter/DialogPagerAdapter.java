@@ -3,10 +3,8 @@ package com.aic.aicdetactor.adapter;
 import java.util.List;
 
 import com.aic.aicdetactor.CommonActivity;
-import com.aic.aicdetactor.R;
-
-import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,34 +21,20 @@ public class DialogPagerAdapter extends PagerAdapter{
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return 3;
+		return views.size();
 	}
 	
 	@Override
 	public Object instantiateItem(View container, int position) {
 		// TODO Auto-generated method stub
-		View v = null;
-		switch (position) {
-		case 0:
-			v = context.getLayoutInflater().inflate(R.layout.dialog_content_thr_charts1_layout, null);
-			break;
-		case 1:
-			v = context.getLayoutInflater().inflate(R.layout.dialog_content_thr_charts1_layout, null);
-			break;
-		case 2:
-			v = context.getLayoutInflater().inflate(R.layout.dialog_content_thr_charts1_layout, null);
-			break;
-		default:
-			break;
-		}
-		return v;
+		((ViewPager) container).addView(views.get(position), 0);
+		return views.get(position);
 	}
 
 	@Override
 	public boolean isViewFromObject(View arg0, Object arg1) {
 		// TODO Auto-generated method stub
-		//return arg0 == arg1;
-		return false;
+		return arg0 == arg1;
 	}
 
 	@Override

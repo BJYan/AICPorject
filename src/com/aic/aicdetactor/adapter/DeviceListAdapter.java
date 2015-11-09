@@ -30,12 +30,12 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonDialog;
-import com.aic.aicdetactor.dialog.CommonDialog.ChartDialogBtnListener;
+import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
-public class DeviceListAdapter  extends BaseExpandableListAdapter implements ChartDialogBtnListener{
+public class DeviceListAdapter  extends BaseExpandableListAdapter implements CommonDialogBtnListener{
 	private Context context;
 	private LayoutInflater mInflater;
 	ArrayList<ArrayList<PartItemJsonUp>> mChildrenList;

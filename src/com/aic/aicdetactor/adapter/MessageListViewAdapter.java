@@ -2,7 +2,7 @@ package com.aic.aicdetactor.adapter;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.dialog.CommonDialog;
-import com.aic.aicdetactor.dialog.CommonDialog.ChartDialogBtnListener;
+import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.BaseAdapter;
 
-public class MessageListViewAdapter extends BaseAdapter implements ChartDialogBtnListener{
+public class MessageListViewAdapter extends BaseAdapter implements CommonDialogBtnListener{
 	Context context;
 	private LayoutInflater mInflater;
 

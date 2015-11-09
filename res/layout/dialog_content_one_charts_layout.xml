@@ -16,16 +16,16 @@
             android:text="采样点数"/>
         <Spinner 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="70dip"
             android:entries="@array/check_data_type"/>
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="60dip"
             android:text="采样点数"
-            android:layout_marginLeft="20dip"/>
+            android:layout_marginLeft="10dip"/>
         <Spinner 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="70dip"
             android:entries="@array/check_data_type"/>
     </LinearLayout>
     <LinearLayout 

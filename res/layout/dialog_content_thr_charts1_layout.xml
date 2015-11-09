@@ -16,16 +16,16 @@
             android:text="采样点数"/>
         <Spinner 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="70dip"
             android:entries="@array/check_data_type"/>
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="60dip"
             android:text="采样点数"
-            android:layout_marginLeft="20dip"/>
+            android:layout_marginLeft="10dip"/>
         <Spinner 
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="70dip"
             android:entries="@array/check_data_type"/>
     </LinearLayout>
     <LinearLayout 
@@ -72,7 +72,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_first_option_name2"
 	        	android:layout_height="wrap_content"
@@ -94,7 +95,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_first_option_name3"
 	        	android:layout_height="wrap_content"
@@ -116,7 +118,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 		</RelativeLayout>
         <RelativeLayout 
 	    	android:layout_height="wrap_content"
@@ -156,7 +159,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_sec_option_name2"
 	        	android:layout_height="wrap_content"
@@ -178,7 +182,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_sec_option_name3"
 	        	android:layout_height="wrap_content"
@@ -200,7 +205,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 		</RelativeLayout>
         <RelativeLayout 
 	    	android:layout_height="wrap_content"
@@ -240,7 +246,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_thr_option_name2"
 	        	android:layout_height="wrap_content"
@@ -262,7 +269,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_thr_option_name3"
 	        	android:layout_height="wrap_content"
@@ -284,7 +292,8 @@
 	        	android:text="1.85"
 	        	android:padding="2dip"
 	        	android:textColor="#000000"
-	        	android:gravity="center"/>
+	        	android:gravity="center"
+	        	android:textSize="12dp"/>
 		</RelativeLayout>
     </LinearLayout>
 </LinearLayout>

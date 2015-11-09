@@ -14,29 +14,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
-import android.widget.TabHost.TabSpec;
-import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabHost.TabSpec;
 
-public class CommonDialog extends Dialog implements android.view.View.OnClickListener{
+public class OneCtrlDialog extends Dialog implements android.view.View.OnClickListener{
 	Context context;
 	LayoutInflater inflater;
 	LinearLayout ctrlerContainer;
 	Vector<TabHost> ctrlerContainerList;
-	CommonDialogBtnListener listener; 
+	OneCtrlDialogBtnListener listener; 
 	View contentView;
 
-	public interface CommonDialogBtnListener{
-		public void onClickBtn1Listener(CommonDialog dialog);
-		public void onClickBtn2Listener(CommonDialog dialog);
+	public interface OneCtrlDialogBtnListener{
+		public void onClickBtn1Listener(OneCtrlDialog dialog);
+		public void onClickBtn2Listener(OneCtrlDialog dialog);
 	}
-	public CommonDialog(Context context) {
+	public OneCtrlDialog(Context context) {
 		super(context, R.style.Theme_Light_FullScreenDialogAct);
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		ctrlerContainerList = new Vector<TabHost>();
-		contentView = inflater.inflate(R.layout.dialog_super_chart_layout, null);
+		contentView = inflater.inflate(R.layout.dialog_onectrl_layout, null);
 	}
 
 	@Override
@@ -45,23 +45,10 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		super.onCreate(savedInstanceState);
 		setContentView(contentView);
 
-		String[] tab_first = new String[]{"时域","轴心","频域"};
+		//String[] tab_first = new String[]{"时域","轴心","频域","有效值"};
 		//String[] tab_sec = new String[]{"x","y","z"};
 		//controllerInit(tab_first,null);
-	}
-	
-	@Override
-	public void setTitle(CharSequence title) {
-		// TODO Auto-generated method stub
-		TextView DialogTitle = (TextView) contentView.findViewById(R.id.dialog_title);
-		DialogTitle.setText(title);
-	}
-	
-	@Override
-	public void setTitle(int titleId) {
-		// TODO Auto-generated method stub
-		TextView DialogTitle = (TextView) contentView.findViewById(R.id.dialog_title);
-		DialogTitle.setText(titleId);
+		//TabViewInit(tab_first);
 	}
 	
 	public void setCloseBtnVisibility(int visibility){
@@ -70,7 +57,7 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		dialogClose.setOnClickListener(this);
 	}
 	
-	public void setButtomBtn(CommonDialogBtnListener listener, String btn1name, String btn2name){
+	public void setButtomBtn(OneCtrlDialogBtnListener listener, String btn1name, String btn2name){
 		this.listener = listener;
 		Button Button1 = null,Button2 = null;
 		if(!btn1name.equals("")) {
@@ -96,27 +83,8 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		ChartContainer.addView(chartView,layoutParams);
 	}
 	
-	private void controllerInit(String[] tabname1,String[] tabname2){
-		View line2 = findViewById(R.id.dialog_line_2);
-		if(tabname1!=null) { 
-			line2.setVisibility(View.VISIBLE);
-			TabHost tab1 = (TabHost)contentView.findViewById(R.id.dialog_tabhost1);
-			tab1.setVisibility(View.VISIBLE);
-			TabViewInit(tab1, tabname1);
-		}
-		if(tabname2!=null) {
-			TabHost tab2 = (TabHost)contentView.findViewById(R.id.dialog_tabhost2);
-			tab2.setVisibility(View.VISIBLE);
-			TabViewInit(tab2, tabname2);
-			line2.setVisibility(View.VISIBLE);
-		}
-		if(tabname1!=null&&tabname2!=null){
-			View line = contentView.findViewById(R.id.dialog_tabhost_line);
-			line.setVisibility(View.VISIBLE);
-		}
-	}
-	
-	protected TabHost TabViewInit(TabHost tab, String[] tabname){
+	public TabHost TabViewInit(String[] tabname, OnTabChangeListener tabChangeListener){
+		TabHost tab = (TabHost)contentView.findViewById(R.id.dialog_tabhost1);
 		tab.setup();
         
 		TabSpec tab1 = tab.newTabSpec("tab1");
@@ -137,6 +105,14 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		tab3.setIndicator(tab3_tv);
 		tab3.setContent(R.id.tab3);
 		tab.addTab(tab3);
+		TabSpec tab4 = tab.newTabSpec("tab4");
+		TextView tab4_tv = (TextView) inflater.inflate(R.layout.dialog_tab_layout, null);
+		if(tabname[3]!=null) tab4_tv.setText(tabname[3]);
+		tab4.setIndicator(tab4_tv);
+		tab4.setContent(R.id.tab4);
+		tab.addTab(tab4);
+		
+		tab.setOnTabChangedListener(tabChangeListener);
 		return tab;
 	}
 

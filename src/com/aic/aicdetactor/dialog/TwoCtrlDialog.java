@@ -3,7 +3,6 @@ package com.aic.aicdetactor.dialog;
 import java.util.Vector;
 
 import com.aic.aicdetactor.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,23 +13,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
-import android.widget.TabHost.TabSpec;
-import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+import android.widget.TabHost.TabSpec;
 
-public class CommonDialog extends Dialog implements android.view.View.OnClickListener{
+public class TwoCtrlDialog extends Dialog implements android.view.View.OnClickListener{
 	Context context;
 	LayoutInflater inflater;
 	LinearLayout ctrlerContainer;
 	Vector<TabHost> ctrlerContainerList;
-	CommonDialogBtnListener listener; 
+	TwoCtrDialogBtnListener listener; 
 	View contentView;
 
-	public interface CommonDialogBtnListener{
-		public void onClickBtn1Listener(CommonDialog dialog);
-		public void onClickBtn2Listener(CommonDialog dialog);
+	public interface TwoCtrDialogBtnListener{
+		public void onClickBtn1Listener(TwoCtrlDialog dialog);
+		public void onClickBtn2Listener(TwoCtrlDialog dialog);
 	}
-	public CommonDialog(Context context) {
+	public TwoCtrlDialog(Context context) {
 		super(context, R.style.Theme_Light_FullScreenDialogAct);
 		// TODO Auto-generated constructor stub
 		this.context = context;
@@ -70,7 +68,7 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 		dialogClose.setOnClickListener(this);
 	}
 	
-	public void setButtomBtn(CommonDialogBtnListener listener, String btn1name, String btn2name){
+	public void setButtomBtn(TwoCtrDialogBtnListener listener, String btn1name, String btn2name){
 		this.listener = listener;
 		Button Button1 = null,Button2 = null;
 		if(!btn1name.equals("")) {
