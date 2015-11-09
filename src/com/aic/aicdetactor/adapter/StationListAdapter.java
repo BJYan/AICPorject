@@ -39,8 +39,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private final String TAG = "luotest.StationListAdapter";
 	private boolean mIsSpecial =false;
 	// groupView data
-	private List<Map<String, String>> mDataList = null;
-	private ArrayList<ArrayList<Map<String, String>>> mChildrenList = null;
+	private List<Map<String, String>> mStationDisplayDataList = null;
+	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int exlistItemHigh;
 
 	public StationListAdapter(CommonActivity av, Context context, int routeIndex,boolean mIsSpecial) {
@@ -48,7 +48,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
-		mDataList = new ArrayList<Map<String, String>>();
+		mStationDisplayDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
 		this.mIsSpecial =mIsSpecial;
 		exlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high);
@@ -58,7 +58,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public Object getChild(int arg0, int arg1) {
 		// TODO Auto-generated method stub
-		return mChildrenList.get(arg0).get(arg1);
+		return mDeviceArrayDisplayDataList.get(arg0).get(arg1);
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		return mChildrenList.get(arg0).size();
+		return mDeviceArrayDisplayDataList.get(arg0).size();
 		//return 1;
 	}
 
@@ -132,13 +132,13 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public Object getGroup(int arg0) {
 		// TODO Auto-generated method stub
 		MLog.Logd(TAG,"getGroup " + arg0 );
-		return mDataList.get(arg0);
+		return mStationDisplayDataList.get(arg0);
 	}
 
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return mDataList.size();
+		return mStationDisplayDataList.size();
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		
 		MLog.Logd(TAG,"getGroupView " + arg0 );
 		GroupViewHolder holder =null;
-		HashMap<String, String> map = (HashMap<String, String>) mDataList
+		HashMap<String, String> map = (HashMap<String, String>) mStationDisplayDataList
 				.get(arg0);
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.station_list_item, null);
@@ -195,28 +195,26 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, " InitData()>> "+g);
 		try {
-           String path= app.mJugmentListParms.get(mrouteIndex).T_Line.LinePath;
-           path = app.getCurGsonPath();
-           app.LineDataClassifyFromOneFile(path, mIsSpecial);
-			mDataList.clear();
-			mChildrenList = new ArrayList<ArrayList<Map<String, String>>>();
+			app.getLineDataClassifyFromOneFile(mIsSpecial);
+			mStationDisplayDataList.clear();
+			mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
 			for (int i = 0; i < app.mNormalLineJsonData.StationInfo.size(); i++) {
 				
 				Map<String, String> map = new HashMap<String, String>();
 				map.put(CommonDef.station_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).Name);
+				if(!app.gIsDataChecked){
 				map.put(CommonDef.station_info.DEADLINE, "2015");
+				}
 				map.put(CommonDef.station_info.PROGRESS, app.mNormalLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mNormalLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-				mDataList.add(map);
-
-				
+				mStationDisplayDataList.add(map);
 				try {
-					ArrayList<Map<String, String>> childList = new ArrayList<Map<String, String>>();
+					ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
 					for (int deviceIndex = 0; deviceIndex < app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
 								Map<String, String> mapDevice = new HashMap<String, String>();
 								mapDevice.put(CommonDef.device_info.NAME,app.mNormalLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-								childList.add(mapDevice);	
+								deviceDisplayDataList.add(mapDevice);	
 					}
-					mChildrenList.add(childList);					
+					mDeviceArrayDisplayDataList.add(deviceDisplayDataList);					
 					
 				} catch (Exception e) {
 					e.printStackTrace();

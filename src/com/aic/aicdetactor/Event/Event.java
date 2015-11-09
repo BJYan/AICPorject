@@ -2,6 +2,8 @@ package com.aic.aicdetactor.Event;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.UUID;
 
 import network.aic.xj.client.ServiceProvider;
 import network.aic.xj.common.ResponseCode;
@@ -12,6 +14,7 @@ import network.aic.xj.common.context.request.QueryServerCommandRequestArgs;
 import network.aic.xj.common.context.request.UploadMobilePhoneInfoRequestArgs;
 import network.aic.xj.common.context.request.UploadNormalPlanResultRequestArgs;
 import network.aic.xj.common.context.request.UploadRFIDRequestArgs;
+import network.aic.xj.common.context.request.UploadWaveDataRequestArgs;
 import network.aic.xj.common.context.response.CommandInfo;
 import network.aic.xj.common.request.AckServerCommandRequest;
 import network.aic.xj.common.request.QueryOrganizationRequest;
@@ -20,6 +23,7 @@ import network.aic.xj.common.request.QueryServerInfoRequest;
 import network.aic.xj.common.request.UploadMobilePhoneInfoRequest;
 import network.aic.xj.common.request.UploadNormalPlanResultRequest;
 import network.aic.xj.common.request.UploadRFIDRequest;
+import network.aic.xj.common.request.UploadWaveDataRequest;
 import network.aic.xj.common.response.AckServerCommandResponse;
 import network.aic.xj.common.response.QueryOrganizationResponse;
 import network.aic.xj.common.response.QueryServerCommandResponse;
@@ -27,6 +31,7 @@ import network.aic.xj.common.response.QueryServerInfoResponse;
 import network.aic.xj.common.response.UploadMobilePhoneInfoResponse;
 import network.aic.xj.common.response.UploadNormalPlanResultResponse;
 import network.aic.xj.common.response.UploadRFIDResponse;
+import network.aic.xj.common.response.UploadWaveDataResponse;
 import network.com.citizensoft.common.util.DateUtil;
 import network.com.citizensoft.network.SocketCallTimeout;
 import android.app.Activity;
@@ -503,4 +508,58 @@ public class Event {
 			}
 		}).start();
 	}
+	
+	
+	//UploadWaveDataRequest
+		public static void  UploadWaveDataRequestInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final byte[] UploadData) {
+
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+
+					ServiceProvider sp = new ServiceProvider();
+					//sp.ServerIP = "222.128.3.208";//公网
+					
+					sp.ServerIP = "192.168.1.130";//内网
+					sp.Port = 10000;
+
+					UploadWaveDataRequest request = new UploadWaveDataRequest();
+					request.CreateTime = DateUtil.getCurrentDate();
+					request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
+					request.Source_IP = "2.2.2.2";
+					request.Args = new UploadWaveDataRequestArgs();
+					
+					String planjson=null;
+					try {
+						planjson = new String(Base64.encode(UploadData, Base64.DEFAULT),"utf-8");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					HashMap<String,String> wavedatas = new HashMap<String,String>();
+					wavedatas.put(UUID.randomUUID().toString(), planjson);
+					request.Args.WaveDatas = wavedatas;
+
+					SocketCallTimeout timeout = new SocketCallTimeout();
+					timeout.ConnectTimeoutSeconds = 30;
+					timeout.ReceiveTimeoutSeconds = 60;
+					timeout.SendTimeoutSeconds = 60;
+
+					try {
+						UploadWaveDataResponse response = sp.Execute(
+								request, timeout);
+						Message msg = new Message();
+						msg.what = 0;
+						msg.obj = response.Info.Code;
+						//handler.sendMessage(msg);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+		
 }
