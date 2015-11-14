@@ -3,18 +3,20 @@ package com.aic.aicdetactor.adapter;
 import java.util.List;
 
 import com.aic.aicdetactor.CommonActivity;
+
+import android.app.Activity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class DialogPagerAdapter extends PagerAdapter{
-	CommonActivity context;
+public class CommonViewPagerAdapter extends PagerAdapter{
+	Activity context;
 	List<View> views;
 	
-	public DialogPagerAdapter(CommonActivity context, List<View> views) {
+	public CommonViewPagerAdapter(Activity activity, List<View> views) {
 		// TODO Auto-generated constructor stub
-		this.context = context;
+		this.context = activity;
 		this.views = views;
 	}
 

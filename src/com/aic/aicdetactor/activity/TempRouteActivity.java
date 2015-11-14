@@ -6,7 +6,7 @@ import java.util.List;
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.DeviceListAdapter;
-import com.aic.aicdetactor.adapter.DialogPagerAdapter;
+import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
@@ -68,7 +68,7 @@ public class TempRouteActivity extends CommonActivity implements OnClickListener
 			views.add(mInflater.inflate(R.layout.dialog_content_one_charts_layout, null));
 			views.add(mInflater.inflate(R.layout.motor_load_vibration_layout, null));
 			//ViewPager dialogViewPager = (ViewPager) dialogContent.findViewById(R.id.dialog_viewpager);
-			DialogPagerAdapter DialogPagerAdapter = new DialogPagerAdapter(this,views);
+			CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(this,views);
 			dialogContent.setAdapter(DialogPagerAdapter);
 			dialogContent.setOnPageChangeListener(new OnPageChangeListener() {
 				

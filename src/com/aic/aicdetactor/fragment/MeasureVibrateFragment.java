@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -27,10 +28,12 @@ import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
+import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
@@ -68,11 +71,17 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	private LinearLayout MZLinear = null;
 	PartItemListAdapter AdapterList;
 	private float mCheckValue =0.0f;
+	
+	List<View> views;
+	LayoutInflater mInflater;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
 		// TODO Auto-generated method stub
 		mMapList = new ArrayList<Map<String, Object>>();
+		views = new ArrayList<View>();
+		mInflater = getActivity().getLayoutInflater();
 		//初始化ListVew 数据项
 		String [] arraryStr = new String[]{this.getString(R.string.electric_device_parameters),
 				this.getString(R.string.electric_device_spectrum)};
@@ -99,8 +108,14 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		Log.d(TAG,"Vibrate_fragment:onCreateView()");
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
-		View view = inflater.inflate(R.layout.brivate, container, false);
-		mListView = (ListView)view.findViewById(R.id.listView1);
+		ViewPager view = (ViewPager) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
+		views.add(mInflater.inflate(R.layout.brivate, null));
+		views.add(mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null));
+		views.add(mInflater.inflate(R.layout.dialog_content_thr_charts2_layout, null));
+		views.add(mInflater.inflate(R.layout.dialog_content_one_charts_layout, null));
+		CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
+		view.setAdapter(DialogPagerAdapter);
+		mListView = (ListView)views.get(0).findViewById(R.id.listView1);
 		mListViewAdapter = new SimpleAdapter(this.getActivity().getApplicationContext(), mMapList,
 				R.layout.checkunit, new String[] { 			
 				CommonDef.check_item_info.NAME,//巡检项名称		
@@ -131,20 +146,20 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			}
 		});
 		
-		mImageView = (ImageView)view.findViewById(R.id.imageView1);
+		mImageView = (ImageView)views.get(0).findViewById(R.id.imageView1);
 		
-		mRadioButton = (RadioButton)view.findViewById(R.id.colorRadio);
-		mResultTipStr = (TextView)view.findViewById(R.id.textiew1);
+		mRadioButton = (RadioButton)views.get(0).findViewById(R.id.colorRadio);
+		mResultTipStr = (TextView)views.get(0).findViewById(R.id.textiew1);
 		
-		mXTextView = (TextView)view.findViewById(R.id.x_value);
+		mXTextView = (TextView)views.get(0).findViewById(R.id.x_value);
 		
-		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
+		mDeviceNameTextView = (TextView)views.get(0).findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
-		mYTextView = (TextView)view.findViewById(R.id.y_value);
-		mZTextView = (TextView)view.findViewById(R.id.z_value);
-		mTimeTextView = (TextView)view.findViewById(R.id.time_value);
-		MYLinear = (LinearLayout)view.findViewById(R.id.y_linear);
-		MZLinear = (LinearLayout)view.findViewById(R.id.z_linear);
+		mYTextView = (TextView)views.get(0).findViewById(R.id.y_value);
+		mZTextView = (TextView)views.get(0).findViewById(R.id.z_value);
+		mTimeTextView = (TextView)views.get(0).findViewById(R.id.time_value);
+		MYLinear = (LinearLayout)views.get(0).findViewById(R.id.y_linear);
+		MZLinear = (LinearLayout)views.get(0).findViewById(R.id.z_linear);
 		if(mPartItemData.Axle_Number==0){
 			MYLinear.setVisibility(View.GONE);			
 		}
@@ -155,7 +170,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		if(mPartItemData.Axle_Number==2){
 			MZLinear.setVisibility(View.GONE);	
 		}
-		mColorTextView = (TextView)view.findViewById(R.id.colordiscrip);
+		mColorTextView = (TextView)views.get(0).findViewById(R.id.colordiscrip);
 		
 		initDisplayData();
 		AdapterList.getCurrentPartItem().setSartDate();
