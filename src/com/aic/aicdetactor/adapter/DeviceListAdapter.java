@@ -173,7 +173,8 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return mDataList.size();
+		//return mDataList.size();
+		return 1;
 	}
 
 	@Override
@@ -188,7 +189,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		
 		
 		GroupViewHolder holder =null;
-		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(arg0);
+		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(mDeviceIndex);
 		MLog.Logi(TAG, "getGroupView groupPosition = "+arg0);
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.device_list_item, null);
