@@ -13,13 +13,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
@@ -27,6 +32,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -50,13 +56,15 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	private TextView mTextViewUnit;
 	private TextView mTextViewName;
 	private EditText mEditTextValue;
-	
+	private Spinner mSpinner;
 	//DATA
 	//之间的通信接口
 	private OnTemperatureMeasureListener mCallback = null;
 	private List<Map<String, Object>> mMapList = null;
 	final String TAG = "luotest";
 	private PartItemListAdapter AdapterList;
+	String mAbnormalStr="";
+	private int SpinnerSelectedIndex=0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -95,9 +103,24 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		mRadioButton = (RadioButton)view.findViewById(R.id.radioButton2);
 		mColorTextView = (TextView)view.findViewById(R.id.resultTips);
 		mTemeratureResultStr =(TextView)view.findViewById(R.id.temperature);
-		
-		
-		
+		mSpinner = (Spinner)view.findViewById(R.id.temperspinner);
+		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				mAbnormalStr= mSpinner.getSelectedItem().toString();
+				SpinnerSelectedIndex= arg2;
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
 		
@@ -121,11 +144,13 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			break;
 		case 1://录入
 			mTextViewName.setText("录入:");
-			mTextViewUnit.setVisibility(View.GONE);
+			mTextViewUnit.setVisibility(View.INVISIBLE);
+			mSpinner.setVisibility(View.VISIBLE);
 			break;
 		case 2://抄表
 			mTextViewName.setText("抄表:");
-			mTextViewUnit.setVisibility(View.GONE);
+			mTextViewUnit.setVisibility(View.INVISIBLE);
+			mSpinner.setVisibility(View.VISIBLE);
 			break;
 		case 6://转速
 			mTextViewName.setText("转速:");
@@ -206,7 +231,10 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
           
     	if(adapter.getCurrentPartItemType()==checkUnit_Type.ENTERING
     			||adapter.getCurrentPartItemType()==checkUnit_Type.METER_READING){
-    		
+    		String[]code =this.getResources().getStringArray(R.array.enter_abnormal_code);
+    		abnormalCode= code[SpinnerSelectedIndex];
+    		abnormalId= Integer.valueOf(abnormalCode)+1;
+    		isNormal= AbnormalConst.ZhengChang_Code.equals(abnormalCode)?1:0;
     		adapter.saveData(mEditTextValue.getText().toString(),isNormal,abnormalCode,abnormalId);
     	}else if(adapter.getCurrentPartItemType()==checkUnit_Type.TEMPERATURE
     			|| adapter.getCurrentPartItemType()==checkUnit_Type.ROTATION_RATE){
@@ -216,21 +244,21 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
       
     	
     	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
-    		isNormal=0;
-    		abnormalId=3;
-    		abnormalCode="02";
+    		isNormal=AbnormalConst.Abnormal;
+    		abnormalId=AbnormalConst.JingGao_Id;
+    		abnormalCode=AbnormalConst.JingGao_Code;
     	}else if((mCheckedValue >= LOW) && (mCheckedValue<MID)){
-    		isNormal=1;
-    		abnormalId=2;
-    		abnormalCode="01";
+    		isNormal=AbnormalConst.Normal;
+    		abnormalId=AbnormalConst.ZhengChang_Id;
+    		abnormalCode=AbnormalConst.ZhengChang_Code;
     	}else if(mCheckedValue <LOW){
-    		isNormal=0;
-    		abnormalId=1;
-    		abnormalCode="00";
+    		isNormal=AbnormalConst.Abnormal;
+    		abnormalId=AbnormalConst.WuXiao_Id;
+    		abnormalCode=AbnormalConst.WuXiao_Code;
     	}else if(mCheckedValue>=MAX){
-    		isNormal=0;
-    		abnormalId=4;
-    		abnormalCode="03";
+    		isNormal=AbnormalConst.Abnormal;
+    		abnormalId=AbnormalConst.WeiXian_Id;
+    		abnormalCode=AbnormalConst.WeiXian_Code;
     	}
     	
     	adapter.saveData(String.valueOf(mCheckedValue),isNormal,abnormalCode,abnormalId);
@@ -241,7 +269,14 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:
+			if("请选择状态".equals(mAbnormalStr)
+					&& (adapter.getCurrentPartItemType()==checkUnit_Type.ENTERING
+	    			||adapter.getCurrentPartItemType()==checkUnit_Type.METER_READING)){
+			//	CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity().getApplicationContext(),"提示","请选择状态",null,null);
+			//	dialog.show();
+			}else{
 			savePartItemData(adapter);
+			}
 			break;
 		case PartItemContact.MEASURE_DATA:
 			measureAndDisplayData();

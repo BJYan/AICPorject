@@ -60,6 +60,7 @@ import android.widget.Toast;
 import com.aic.aicdetactor.LoginActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItemContact;
@@ -212,8 +213,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mListView.setAdapter(mAdapterList);
 		
 		getDeviceStatusArray(mStationIndex, mDeviceIndex);
-		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,mStatusList);
-		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerAdapter = new SpinnerAdapter(this, mStatusList);
 		mSpinner.setAdapter(spinnerAdapter);
 		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -949,13 +949,18 @@ private int mZhouCounts=0;
 	}
 	
 	void controlButtonDisplayStatus(int type){
-		
+		int iInvisibleOrGone=0;
+		if(app.getScreenWidth()>700){
+			iInvisibleOrGone=View.INVISIBLE;
+		}else{
+			iInvisibleOrGone=View.GONE;
+		}
 		switch(type){
 		
 		case CommonDef.checkUnit_Type.TEMPERATURE:
 		case CommonDef.checkUnit_Type.ROTATION_RATE:
-			mButton_Direction.setVisibility(View.GONE);
-			mButtion_Position.setVisibility(View.GONE);
+			mButton_Direction.setVisibility(iInvisibleOrGone);
+			mButtion_Position.setVisibility(iInvisibleOrGone);
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			mButton_Next.setVisibility(View.VISIBLE);
 			
@@ -964,9 +969,9 @@ private int mZhouCounts=0;
 		case CommonDef.checkUnit_Type.METER_READING:
 		case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
 		case  CommonDef.checkUnit_Type.OBSERVATION:
-			mButton_Direction.setVisibility(View.GONE);
-			mButtion_Position.setVisibility(View.GONE);
-			mButton_Measurement.setVisibility(View.GONE);
+			mButton_Direction.setVisibility(iInvisibleOrGone);
+			mButtion_Position.setVisibility(iInvisibleOrGone);
+			mButton_Measurement.setVisibility(iInvisibleOrGone);
 			mButton_Next.setVisibility(View.VISIBLE);
 			break;
 		case CommonDef.checkUnit_Type.ACCELERATION:		

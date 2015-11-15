@@ -56,6 +56,15 @@
             android:layout_height="wrap_content"
             android:text="C"
             android:textSize="@dimen/normal_text_size"/>
+          <Spinner 
+              android:id="@+id/temperspinner"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="right"
+              android:visibility="invisible"
+              android:entries="@array/enter_abnormal_name"
+            
+              />
     </LinearLayout>
     
   <TextView

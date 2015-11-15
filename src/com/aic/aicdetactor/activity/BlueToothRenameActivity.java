@@ -7,9 +7,11 @@ import java.util.UUID;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
 import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
+import com.aic.aicdetactor.service.DataService;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
@@ -19,6 +21,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +40,7 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 	Intent btDevIntent;
 	BluetoothDevice Dev;
 	BluetoothSocket btSocket; 
-	
+	//BluetoothLeControl mBTControl;
 	private BroadcastReceiver searchDevices = new BroadcastReceiver() {  
 		  
         public void onReceive(Context context, Intent intent) {  
@@ -86,6 +90,7 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 			isbinded = false;
 			bindBtn.setText("绑定");
 		}
+		//mBTControl = BluetoothLeControl.getInstance(this.getApplicationContext());
 	}
 	
     private void connect(BluetoothDevice btDev) {  
@@ -177,7 +182,10 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 				}  
                   
             }else if(Dev.getBondState() == BluetoothDevice.BOND_BONDED){  
-                //connect(Dev);  
+                //connect(Dev);
+            //	mBTControl.Connection(Dev.getAddress());
+            	//mBTControl.setParamates(mHandle);
+            	//mBTControl.Communication2Bluetooth(BluetoothLeControl.fta,BluetoothLeControl.fta.length);
             }
 			if(!isbinded) bindBtn.setText("绑定");
 		} else {  
@@ -204,10 +212,26 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
                   
             }else if(Dev.getBondState() == BluetoothDevice.BOND_BONDED){  
                 //connect(Dev);  
+            	Log.d(TAG," BANDDING");
             } 
 			if(isbinded) bindBtn.setText("取消绑定");
 		}
 		dialog.dismiss();
 	}
+	
+	Handler mHandle = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+			case BluetoothLeControl.MessageReadDataFromBT:
+				Log.d(TAG, "HandleMessage() " +msg.getData().getString("data"));
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
 
 }

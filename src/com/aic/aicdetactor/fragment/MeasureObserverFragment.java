@@ -26,6 +26,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -65,11 +66,15 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 	
 	//DATA
 	private ArrayAdapter<String> mSpinnerAdapter;
+	private ArrayAdapter<String> mStatusSpinnerAdapter;
 	private List<String> mSpinnerData = new ArrayList<String>();
+	private List<String> mStatusSpinnerData = new ArrayList<String>();
 	private String mSelectValue="";
+	private String mStatusSelectValue="";
 	private PartItemListAdapter AdapterList;
 	private final String mSplitFlag = "\\/";
 	private myApplication app=null;
+	private Spinner mStatusSpinner;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -93,11 +98,11 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);
 		mExternalInfoEditText.setText(getPartItemName());
 		mSpinner= (Spinner)view.findViewById(R.id.spinner);
+		mStatusSpinner = (Spinner)view.findViewById(R.id.observerspinner);
 		
 		getPartItemStatusArray(mPartItemData.Extra_Information);
-		mSpinnerAdapter = new ArrayAdapter<String>(this.getActivity().getApplicationContext(), android.R.layout.simple_spinner_item,mSpinnerData);
-		mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	
+		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerData);
+		
 		mSpinner.setAdapter(mSpinnerAdapter);
 		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -106,6 +111,30 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 					int arg2, long arg3) {
 				// TODO Auto-generated method stub
 				mSelectValue=mSpinner.getSelectedItem().toString();
+				   TextView tv = (TextView)arg1;
+                   tv.setTextColor(getResources().getColor(R.color.black));    //设置颜色
+                    tv.setGravity(android.view.Gravity.CENTER_HORIZONTAL);   //设置居中
+				
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+//		mStatusSpinnerAdapter = new ArrayAdapter<String>(this.getActivity().getApplicationContext(), android.R.layout.simple_spinner_item,
+//				this.getResources().getStringArray(R.array.obersver_status));
+//		mStatusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//	
+//		mStatusSpinner.setAdapter(mStatusSpinnerAdapter);
+		mStatusSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				mStatusSelectValue=mStatusSpinner.getSelectedItem().toString();
 				
 			}
 			@Override
@@ -134,6 +163,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 		return mSpinnerData;
 		
 	}
+	
 	
 	/**
 	 * 当上一点时 ，需要显示上次选中的数据

@@ -41,6 +41,7 @@ import com.aic.aicdetactor.activity.TempRouteActivity;
 import com.aic.aicdetactor.adapter.RouteNormalListAdapter;
 import com.aic.aicdetactor.adapter.RoutePageAdapter;
 import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
+import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.database.RouteDao;
@@ -156,7 +157,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		RouteDao dao = RouteDao.getInstance(this.getActivity().getApplicationContext());
 		mFactoryList = dao.getOrganizationList(OrganizationType.OrganizationCorporation);
 		mFactorySpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner1);
-		mFAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mFactoryList);
+		mFAdapter = new SpinnerAdapter(this.getActivity(), mFactoryList);
 		mFAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mFactorySpinner.setAdapter(mFAdapter);
 		mFactorySpinner.setOnItemSelectedListener(this);
@@ -164,7 +165,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		
 		mSList = dao.getOrganizationList(OrganizationType.OrganizationGroup);
 		mSSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner2);
-		mSAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mSList);
+		mSAdapter = new SpinnerAdapter(this.getActivity(), mSList);
 		mSAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSSpinner.setAdapter(mSAdapter);
 		mSSpinner.setOnItemSelectedListener(this);
@@ -172,7 +173,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		
 		mRoomList = dao.getOrganizationList(OrganizationType.OrganizationWorkShop);
 		mRoomSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner3);
-		mRAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_spinner_item, mRoomList);
+		mRAdapter = new SpinnerAdapter(this.getActivity(), mRoomList);
 		mRAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mRoomSpinner.setAdapter(mRAdapter);
 		mRoomSpinner.setOnItemSelectedListener(this);

@@ -14,10 +14,26 @@
 	<item>位移</item>	
 	<item>转速</item>
 	<item>预设状况</item>
-	<item>观察类</item>	
-	<item>观察类</item>	
-	<item>观察类</item>	
+	<item>图片</item>	
+	<item>音频</item>	
+	<item>观察</item>	
+	<item>振动波形</item>	
 </string-array>  
+<string-array name="check_data_code">
+	<item>00</item>
+	<item>01</item>
+	<item>02</item>	
+	<item>03</item>
+	<item>04</item>
+	<item>05</item>	
+	<item>06</item>
+	<item>07</item>
+	<item>08</item>	
+	<item>09</item>	
+	<item>10</item>
+	<item>11</item>		
+</string-array>  
+
  <string-array name="abnormal_code">
 	<item>00</item>
 	<item>01</item>
@@ -53,6 +69,18 @@
 	<item>轻微</item>
 	<item>严重</item>	
 	<item>紧急</item>	
+</string-array>  
+<string-array name="abnomal_code">
+	<item>00</item>
+	<item>01</item>
+	<item>02</item>	
+	<item>03</item>
+	<item>04</item>
+	<item>05</item>	
+	<item>06</item>
+	<item>07</item>
+	<item>08</item>	
+	<item>09</item>	
 </string-array>  
 
  <string-array name="groungding_spinner">
@@ -120,5 +148,30 @@
     <item>鼓冷车间</item>  
     <item>鼓冷车间</item> 
     <item>鼓冷车间</item>  
+</string-array>
+
+  <string-array name="obersver_status">  
+    <item>请选择状态</item>  
+    <item>异常</item> 
+    <item>正常</item>  
+</string-array>
+
+   <string-array name="enter_abnormal_name">  
+    <item>请选择状态</item>  
+    <item>正常</item> 
+    <item>异常</item> 
+    <item>一般</item> 
+    <item>轻微</item> 
+    <item>严重</item> 
+    <item>紧急</item>      
+</string-array>
+<string-array name="enter_abnormal_code">  
+    <item>请选择状态</item>  
+    <item>01</item> 
+    <item>05</item> 
+    <item>06</item> 
+    <item>07</item> 
+    <item>08</item> 
+    <item>09</item>      
 </string-array>
 </resources>

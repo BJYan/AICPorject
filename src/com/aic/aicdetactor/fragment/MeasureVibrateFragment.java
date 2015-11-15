@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
@@ -371,24 +372,23 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	String Abnormalcode="-1";
     	
     	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
-    		isNormal=0;
-    		AbnormalId=3;
-    		Abnormalcode="02";
+    		isNormal=AbnormalConst.Abnormal;
+    		AbnormalId=AbnormalConst.JingGao_Id;
+    		Abnormalcode=AbnormalConst.JingGao_Code;
     		
     	}else if((mCheckValue >= LOW) && (mCheckValue<MID)){
-    		isNormal=1;
-    		AbnormalId=2;
-    		Abnormalcode="01";
+    		isNormal=AbnormalConst.Normal;
+    		AbnormalId=AbnormalConst.ZhengChang_Id;
+    		Abnormalcode=AbnormalConst.ZhengChang_Code;
     	}else if(mCheckValue <LOW){
-    		isNormal=0;
-    		AbnormalId=1;
-    		Abnormalcode="00";
+    		isNormal=AbnormalConst.Abnormal;
+    		AbnormalId=AbnormalConst.WuXiao_Id;
+    		Abnormalcode=AbnormalConst.WuXiao_Code;
     	}else if(mCheckValue>=MAX){
-    		isNormal=0;
-    		AbnormalId=4;
-    		Abnormalcode="03";
-    	}
-    	
+    		isNormal=AbnormalConst.Abnormal;
+    		AbnormalId=AbnormalConst.WeiXian_Id;
+    		Abnormalcode=AbnormalConst.WeiXian_Code;
+    	}    	
 		
     	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId);
     }

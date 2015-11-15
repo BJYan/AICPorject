@@ -80,7 +80,10 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 					mEditTextUserPwd.setEnabled(true);
 				}
 			}});
-		
+		WindowManager wm = this.getWindowManager();
+		 
+		app.setScreenHeight(wm.getDefaultDisplay().getHeight());
+	    app.setScreenWidth(wm.getDefaultDisplay().getWidth()); 
 		getUInfo();
 		
 		//testControl = new TestSetting(this.getApplicationContext());

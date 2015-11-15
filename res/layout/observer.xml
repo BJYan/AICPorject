@@ -29,12 +29,26 @@
             android:textSize="@dimen/normal_text_size" />
     </LinearLayout>
     
- 
+ <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">"
  <Spinner 
      android:id="@+id/spinner"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
+     android:layout_weight="1"
+     android:textAlignment="center"
      />
+  <Spinner 
+        android:id="@+id/observerspinner"
+        android:entries="@array/obersver_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        />
+   </LinearLayout>
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"

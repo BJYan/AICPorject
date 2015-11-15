@@ -7,6 +7,7 @@ import java.util.Map;
 import android.app.Application;
 
 import com.aic.aicdetactor.Event.Event;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
@@ -49,7 +50,8 @@ public class myApplication extends Application
     public String mTurnNumber = null;
     public String mTurnStartTime = null;
     public String mTurnEndTime = null;
-    
+    private int mIScreenWidth=0;
+    private int mIScreenHeight=0;
     private String gCurGsonFilePath="";
     
     public  ArrayList<PartItemJsonUp> gCurPartItemList=null;
@@ -75,6 +77,22 @@ public class myApplication extends Application
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
 	}
+	public void setScreenWidth(int width){
+		mIScreenWidth = width;
+	}
+	
+	public void setScreenHeight(int height){
+		mIScreenHeight = height;
+	}
+	
+	public int getScreenWidth(){
+		return mIScreenWidth;
+	}
+	
+	public int getScreenHeight(){
+		return mIScreenHeight;
+	}
+	
 	/**
 	 * 生成需要保存的JSON文件名字
 	 * @return
@@ -116,10 +134,11 @@ public class myApplication extends Application
         mApplication = this;
         Setting set= new Setting();
        byte[]atest= WaveDataTest.getTestData();
-       int k=0;
-       
+       int k=0;      
        Event.UploadWaveDataRequestInfo_Event(null,null,null,null,atest);
        k++;
+       
+       BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0);
     }
     
     

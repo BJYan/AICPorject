@@ -13,6 +13,7 @@
         	android:layout_width="wrap_content"
         	android:text="可绑定的传感器"
         	android:paddingLeft="20dip"
+        	android:paddingRight="20dip"
         	android:textSize="18dp"
         	android:textColor="#3399cc"
         	android:gravity="bottom"/>

@@ -257,9 +257,17 @@ public class PartItemListAdapter extends BaseAdapter {
 		mDeviceItemCahce.setDeviceChecked();
 		mDeviceItemCahce.setEndDate();
 		if(app.isTest){
-			mDeviceItemCahce.setIsOmissionCheck(17687);
+			if(app.isSpecialLine){
+				mDeviceItemCahce.setIsOmissionCheck(0);
+			}else{
+				mDeviceItemCahce.setIsOmissionCheck(1887);
+			}
 		}else{
+			if(app.isSpecialLine){
+				mDeviceItemCahce.setIsOmissionCheck(0);
+			}else{			
 			mDeviceItemCahce.setIsOmissionCheck(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Omission_Check);
+			}
 		}
 		
 		saveDeviceItemData();

@@ -11,6 +11,8 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
 import com.aic.aicdetactor.adapter.BlueToothDevListAdapter;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
@@ -20,6 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,39 +36,41 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
-	BluetoothAdapter adapter;
-	List<BluetoothDevice> BondedDevices;
-	List<BluetoothDevice> BtDevices;
+	BluetoothAdapter mBluetoothAdapter;
+	List<BluetoothDevice> mBondedDevices;
+	List<BluetoothDevice> mAllBTDevices;
 	BlueToothDevListAdapter blueToothDevListAdapter;
 	BlueToothBindDevListAdapter btBindDevListAdapter;
 	ProgressBar pbar;
 	TextView pbar_text;
 	ExpandableListView DevBindedlist;
+	final String TAG= "Bluetooth_Fragment";
 	
-	BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();
-	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	            BtDevices.add(device);
-	            blueToothDevListAdapter.notifyDataSetChanged();
-	        }
-	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-	        	dismissProgressBar();
-	        	Toast.makeText(getActivity(), "搜索完成！", Toast.LENGTH_SHORT).show();
-	        }
-	    }
-	};
+//	BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//
+//	    public void onReceive(Context context, Intent intent) {
+//	        String action = intent.getAction();
+//	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+//	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+//	            mAllBTDevices.add(device);
+//	            blueToothDevListAdapter.notifyDataSetChanged();
+//	        }
+//	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+//	        	dismissProgressBar();
+//	        	Toast.makeText(getActivity(), "搜索完成！", Toast.LENGTH_SHORT).show();
+//	        }
+//	    }
+//	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		adapter = BluetoothAdapter.getDefaultAdapter();
-		BondedDevices = new ArrayList<BluetoothDevice>();
-		BtDevices = new ArrayList<BluetoothDevice>();
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		mBluetoothAdapter.enable();
+		mBondedDevices = new ArrayList<BluetoothDevice>();
+		mAllBTDevices = new ArrayList<BluetoothDevice>();
 	}
 	
 	@Override
@@ -76,54 +83,98 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		DevBindedlist.setGroupIndicator(null);
 		
 		ListView Devlist = (ListView) BlueToothView.findViewById(R.id.bluetooth_device_list);
-		blueToothDevListAdapter = new BlueToothDevListAdapter(getActivity(),BtDevices);
+		blueToothDevListAdapter = new BlueToothDevListAdapter(getActivity(),mAllBTDevices);
 		Devlist.setAdapter(blueToothDevListAdapter);
 		
 		TextView btSerachBtn = (TextView) BlueToothView.findViewById(R.id.bt_search_btn);
 		btSerachBtn.setOnClickListener(this);
 		pbar = (ProgressBar) BlueToothView.findViewById(R.id.bluetooth_pbar);
 		pbar_text = (TextView) BlueToothView.findViewById(R.id.bluetooth_pbar_text);
+		
+//		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+//		getActivity().registerReceiver(mReceiver, filter);
+//		mBluetoothAdapter.startDiscovery();
+		
+		mBondedDevices = getBondedDevices();
+		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), mBondedDevices,mHandle);
+		DevBindedlist.setAdapter(btBindDevListAdapter);
+		
+		mAllBTDevices.clear();
+		blueToothDevListAdapter.notifyDataSetChanged();
+		
+		
+		
+		
 		return BlueToothView;
 	}
 	
 	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		//getActivity().unregisterReceiver(mReceiver);
+		super.onDestroy();
+	}
+
+	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		super.onResume();
-		// Register the BroadcastReceiver
-		BondedDevices = getBondedDevices();
-		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), BondedDevices);
-		DevBindedlist.setAdapter(btBindDevListAdapter);
 		
-		BtDevices.clear();
-		blueToothDevListAdapter.notifyDataSetChanged();
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		getActivity().registerReceiver(mReceiver, filter);
-		adapter.startDiscovery();
-		showProgressBar();
+		super.onResume();
+		mAllBTDevices.clear();
+		scanLeDevice(true);
+		
+		// Register the BroadcastReceiver
+		
 	}
 	
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		getActivity().unregisterReceiver(mReceiver);
+		scanLeDevice(false);
+		
 	}
+	private boolean mScanning=false;
+	private static final long SCAN_PERIOD = 10000;
+	private void scanLeDevice(final boolean enable) {
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+        	mHandle.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mScanning = false;
+                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
+                }
+            }, SCAN_PERIOD);
 
+            mScanning = true;
+            mBluetoothAdapter.startLeScan(mLeScanCallback);
+            showProgressBar();
+        } else {
+            mScanning = false;
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            dismissProgressBar();
+        }
+        BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
+    }
+	
 	 public List<BluetoothDevice> getBondedDevices(){
 		 List<BluetoothDevice> bondedDevs = new ArrayList<BluetoothDevice>();
-		 Set<BluetoothDevice> devices = new HashSet<BluetoothDevice>();
-		 if(adapter != null){
-			 if(!adapter.isEnabled()){
+		 Set<BluetoothDevice> devicesSet = new HashSet<BluetoothDevice>();
+		 if(mBluetoothAdapter != null){
+			 if(!mBluetoothAdapter.isEnabled()){
 				 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				 startActivity(intent);
 			 }
-			 devices = adapter.getBondedDevices();
+			 devicesSet = mBluetoothAdapter.getBondedDevices();
 			 
-			 if(devices.size()>0) {
-				 	for(Iterator<BluetoothDevice> iterator = devices.iterator();iterator.hasNext();) {
+			 if(devicesSet.size()>0) {
+				 	for(Iterator<BluetoothDevice> iterator = devicesSet.iterator();iterator.hasNext();) {
 				 		BluetoothDevice device = (BluetoothDevice)iterator.next(); 
+				 		if(!bondedDevs.contains(device)){
 				 		bondedDevs.add(device);
+				 		}
 				 	}     
 			 	}
 		 	}
@@ -135,9 +186,10 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.bt_search_btn:
-			Intent intent = new Intent();
-			intent.setClass(getActivity(), BlueToothBindDevListActivity.class);
-			getActivity().startActivity(intent);
+		//	Intent intent = new Intent();
+		//	intent.setClass(getActivity(), BlueToothBindDevListActivity.class);
+		//	getActivity().startActivity(intent);
+			scanLeDevice(true);
 			break;
 
 		default:
@@ -154,4 +206,48 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		pbar_text.setVisibility(View.INVISIBLE);
 		pbar.setVisibility(View.INVISIBLE);		
 	}
+	StringBuffer mStrReceiveData=new StringBuffer();;
+	Handler mHandle = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+			case BluetoothLeControl.MessageReadDataFromBT:
+				//String str =msg.getData().getString("data").toString();
+				byte[]strbyte=msg.getData().getByteArray("key_byte");
+				String str= SystemUtil.bytesToHexString(strbyte);
+				mStrReceiveData.append(str.toString());
+				int count=msg.getData().getInt("count");
+				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+				Toast.makeText(BlueTooth_Fragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
+				break;
+			case BluetoothLeControl.Message_Stop_Scanner:
+				mBluetoothAdapter.stopLeScan(mLeScanCallback);
+				dismissProgressBar();
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
+	
+	 // Device scan callback.
+    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+            new BluetoothAdapter.LeScanCallback() {
+
+        @Override
+        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+        	BlueTooth_Fragment.this.getActivity(). runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!mAllBTDevices.contains(device)) {
+                    	mAllBTDevices.add(device);
+            		}
+                    
+                    blueToothDevListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    };
+    
 }

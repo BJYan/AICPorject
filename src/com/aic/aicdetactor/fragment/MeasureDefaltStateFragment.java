@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
@@ -160,9 +161,9 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements
 			//没选任何选项时,设置信息为normal
 			if(Value==""){
 				Value=this.getActivity().getString(R.string.normal);
-				AbnormalId=2;
-				AbnormalCode="01";
-				IsNormal=1;
+				AbnormalId=AbnormalConst.ZhengChang_Id;
+				AbnormalCode=AbnormalConst.ZhengChang_Code;
+				IsNormal=AbnormalConst.Normal;
 			}else{
 				
 //				AbnormalCode =  Value.substring(mSelectValue.length());
@@ -171,7 +172,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements
 				
 				AbnormalCode="-1";
 				AbnormalId=-1;
-				IsNormal=0;
+				IsNormal=AbnormalConst.Abnormal;
 			}
 			adapter.saveData(Value,IsNormal,AbnormalCode,AbnormalId);
 		}
