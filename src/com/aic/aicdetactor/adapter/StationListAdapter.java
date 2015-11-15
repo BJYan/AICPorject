@@ -41,7 +41,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	// groupView data
 	private List<Map<String, String>> mStationDisplayDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
-	int exlistItemHigh;
+	int secExlistItemHigh,thrExlistItemHigh;
 
 	public StationListAdapter(CommonActivity av, Context context, int routeIndex) {
 		mContext = context;
@@ -51,7 +51,8 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		mStationDisplayDataList = new ArrayList<Map<String, String>>();
 		app = ((myApplication) mActivity.getApplication());
 		this.mIsSpecial =app.isSpecialLine;
-		exlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high);
+		thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
+		secExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level2); 
 		InitStationData();
 	}
 
@@ -93,7 +94,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						exlistItemHigh*app.mLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg1).PartItem.size()+exlistItemHigh);
+						thrExlistItemHigh*app.mLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg1).PartItem.size()+secExlistItemHigh);
 				secGroupView.setLayoutParams(lp);
 			}
 		});
