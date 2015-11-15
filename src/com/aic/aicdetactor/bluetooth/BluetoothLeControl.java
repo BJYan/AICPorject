@@ -23,6 +23,7 @@ public class BluetoothLeControl {
 	public static final int MSG_ERROR=4;
 	public static final int Message_Start_Scanner=5;
 	public static final int Message_Stop_Scanner=6;
+	public static final int Message_End_Upload_Data_From_BLE=7;
 	private boolean bStartCommunicationWithBT=false;
 	private boolean isConnected=false;
 	//5秒钟没获取数据就认为收据发送完毕
@@ -204,6 +205,8 @@ public class BluetoothLeControl {
 	        			}
 	        			//往蓝牙模块写入数据
 	        			mBLE.writeCharacteristic(gattCharacteristic);
+	        			recLen=0;
+	        			handler.postDelayed(runnable, 1000);
 	        		}
 	        		
 	        		//read BLE data
@@ -269,4 +272,21 @@ int k =0;
 k++;
 		 return download;
 	 }
+	 
+	 //设置倒计时来控制或判断BLE发送数据完毕
+	 int recLen =0;
+	 Handler handler = new Handler(); 
+	    Runnable runnable = new Runnable() { 
+	        @Override 
+	        public void run() { 
+	            recLen++; 
+	            Log.d(TAG, "Runnable() recLen="+recLen);
+	            if(recLen<21){
+	            handler.postDelayed(this, 1000); 
+	            }else{
+	            	mHandler.sendEmptyMessage(Message_End_Upload_Data_From_BLE);
+	            }
+	        } 
+	    }; 
+	    
 }

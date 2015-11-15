@@ -12,6 +12,7 @@ import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
 import com.aic.aicdetactor.adapter.BlueToothDevListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Fragment;
@@ -225,6 +226,14 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mBluetoothAdapter.stopLeScan(mLeScanCallback);
 				dismissProgressBar();
+				break;
+			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
+				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrReceiveData.toString().getBytes());
+				int k = proxy.isValidate();
+				proxy.getAXCount();
+				proxy.getChargeValue();
+				proxy.getTemperatorValue();
+				break;
 			}
 			super.handleMessage(msg);
 		}
