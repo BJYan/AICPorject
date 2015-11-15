@@ -77,7 +77,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
+	public View getChildView(int arg0, final int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
 		MLog.Logd(TAG,"getChildView " + arg0 +" ,"+arg1);
 
@@ -93,7 +93,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			public void onGroupExpand(int arg0) {
 				// TODO Auto-generated method stub
 				AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-						exlistItemHigh*app.mLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg0).PartItem.size()+exlistItemHigh);
+						exlistItemHigh*app.mLineJsonData.StationInfo.get(mrouteIndex).DeviceItem.get(arg1).PartItem.size()+exlistItemHigh);
 				secGroupView.setLayoutParams(lp);
 			}
 		});

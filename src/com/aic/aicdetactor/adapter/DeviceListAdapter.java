@@ -153,7 +153,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 					}
 					
 				});
-				holder.NameText.setText(mChildrenList.get(arg0).get(arg1).Check_Content);
+				holder.NameText.setText(mChildrenList.get(mDeviceIndex).get(arg1).Check_Content);
 			return arg3;
 	}
 
@@ -161,7 +161,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
 		//MLog.Logd(TAG,"getChildrenCount "+mChildrenList.get(arg0).size());
-		return mChildrenList.get(arg0).size();
+		return mChildrenList.get(mDeviceIndex).size();
 	}
 
 	@Override
