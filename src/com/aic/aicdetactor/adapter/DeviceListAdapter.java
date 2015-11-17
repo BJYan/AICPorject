@@ -128,7 +128,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 					
 				}
 				arg3.setOnClickListener(new OnClickListener(){
-					int deviceindex = arg0;
+					int deviceindex = mDeviceIndex;
 					int partindex = arg1;
 					@Override
 					public void onClick(View arg0) {
