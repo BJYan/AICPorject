@@ -56,6 +56,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import net.micode.soundrecorder.SoundRecorder;
 
 import com.aic.aicdetactor.LoginActivity;
 import com.aic.aicdetactor.R;
@@ -154,6 +155,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private Button mConfigButton;
 	private PartItemListAdapter mAdapterList =null;
 	private List<String> mStatusList = new ArrayList<String>();
+	BluetoothLeControl BLEControl = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -162,7 +165,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.unitcheck);
-		
+		BLEControl = BluetoothLeControl.getInstance(getApplicationContext());
 		mPartItemIndex =0;
 		initViewAndData();
 		BLEControl.setParamates(mHandler);
@@ -844,8 +847,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.SAVE_DATA);
     }
     
-    BluetoothLeControl BLEControl = BluetoothLeControl.getInstance(getApplicationContext());
-    
     @Override  
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		MLog.Logd("test", "onActivityResult() 00" + requestCode + ",resultCode= "
@@ -1078,23 +1079,37 @@ private int mZhouCounts=0;
 //   
 //   
 //   
-//    @Override  
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {  
-//        switch (keyCode) {  
-//   
-//        case KeyEvent.KEYCODE_VOLUME_DOWN:  
-//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_DOWN++++++");
-//            return true;  
-//   
-//        case KeyEvent.KEYCODE_VOLUME_UP:  
-//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_UP++++++");
-//            return true;  
-//        case KeyEvent.KEYCODE_VOLUME_MUTE:  
-//        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_MUTE++++++");
-//   
-//            return true;  
-//        }  
-//        return super.onKeyDown(keyCode, event);  
-//    }  
+    @Override  
+    public boolean onKeyDown(int keyCode, KeyEvent event) {  
+        switch (keyCode) {  
+   
+        case KeyEvent.KEYCODE_VOLUME_DOWN:  
+        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_DOWN++++++");
+        	Intent intent_down = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
+        	ContentValues values = new ContentValues(3);  
+        	values.put(MediaStore.Images.Media.DISPLAY_NAME, "testing");  
+        	values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
+        	values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
+        	imageFilePath = PartItemActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
+        	MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
+        	intent_down.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
+        	//Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 			  
+        	startActivityForResult(intent_down, RESULT_CODE);  
+
+            return true;  
+   
+        case KeyEvent.KEYCODE_VOLUME_UP:  
+        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_UP++++++");
+        	Intent intent_up = new Intent();
+        	intent_up.setClass(PartItemActivity.this, SoundRecorder.class);
+        	startActivity(intent_up);
+            return true;  
+        case KeyEvent.KEYCODE_VOLUME_MUTE:  
+        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_MUTE++++++");
+   
+            return true;  
+        }  
+        return super.onKeyDown(keyCode, event);  
+    }  
    
 }
