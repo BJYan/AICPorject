@@ -13,6 +13,8 @@ import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
 import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
 import com.aic.aicdetactor.check.SearchResultActivity;
 import com.aic.aicdetactor.check.SearchResultConActivity;
+
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -145,7 +147,7 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
 
 	private void localSearchViewInit() {
 		ListView searchLocalList = (ListView) pagerViewlist.get(0).findViewById(R.id.search_local_list);
-        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext());
+        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext(),SearchFragment.this.getActivity());
         searchLocalList.setAdapter(searchLocalListAdapter);
 	}
 	

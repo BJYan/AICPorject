@@ -4,6 +4,7 @@ import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.SearchResultStationExListAdapter;
 
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ public class SearchResultActivity extends CommonActivity implements OnClickListe
 	ImageView SerachBtn;
 	LayoutInflater inflater;
 	View content;
-	
+	Intent mIntent;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -31,7 +32,7 @@ public class SearchResultActivity extends CommonActivity implements OnClickListe
 		content = inflater.inflate(R.layout.search_result_layout, null);
 		setContentView(content);
 		ExpandableListView localSearchExListView = (ExpandableListView) findViewById(R.id.local_search_listview);
-		SearchResultStationExListAdapter localSearchExListAdapter = new SearchResultStationExListAdapter(getApplicationContext());
+		SearchResultStationExListAdapter localSearchExListAdapter = new SearchResultStationExListAdapter(this.getIntent(),SearchResultActivity.this);
 		localSearchExListView.setAdapter(localSearchExListAdapter);
 		
 		SerachBtn = (ImageView) findViewById(R.id.search_button); 

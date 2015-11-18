@@ -61,6 +61,7 @@ public class myApplication extends Application
    // private DownloadNormalRootData mSpecialLineJsonData=null;
     //剔除后的当前巡检数据
     public DownloadNormalRootData mLineJsonData=null;
+    public DownloadNormalRootData mLocalSearchLineJsonData=null;
     //
 	private List<String> mTMPRouteFileList = null;
 	private boolean gBLogIn = false;
