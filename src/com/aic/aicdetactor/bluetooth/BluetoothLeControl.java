@@ -17,13 +17,14 @@ import android.util.Log;
 
 public class BluetoothLeControl {
 	BluetoothLeClass mBLE;
-	public static final int CONNECTION =1;
-	public static final int MessageReadDataFromBT=2;
-	public static final int MessageSetDataToBT=3;
-	public static final int MSG_ERROR=4;
-	public static final int Message_Start_Scanner=5;
-	public static final int Message_Stop_Scanner=6;
-	public static final int Message_End_Upload_Data_From_BLE=7;
+	public static final int Message_Beigin =200;
+	public static final int Message_Connection_Status =Message_Beigin+1;
+	public static final int MessageReadDataFromBT=Message_Beigin+2;
+	public static final int MessageSetDataToBT=Message_Beigin+3;
+	public static final int MSG_ERROR=Message_Beigin+4;
+	public static final int Message_Start_Scanner=Message_Beigin+5;
+	public static final int Message_Stop_Scanner=Message_Beigin+6;
+	public static final int Message_End_Upload_Data_From_BLE=Message_Beigin+7;
 	private boolean bStartCommunicationWithBT=false;
 	private boolean isConnected=false;
 	//5秒钟没获取数据就认为收据发送完毕
@@ -56,6 +57,8 @@ public class BluetoothLeControl {
 		mBLE.initialize();	
 		mBLE.setOnServiceDiscoverListener(mOnServiceDiscover);
 		mBLE.setOnDataAvailableListener(mOnDataAvailable);
+		mBLE.setOnConnectListener(mOnConnectListener);
+		mBLE.setOnDisconnectListener(mOnDisconnectListener);
 	}
 	
 	private static BluetoothLeControl singleton = null;
@@ -94,6 +97,27 @@ public class BluetoothLeControl {
 		return isConnected;
 	}
 	
+	private BluetoothLeClass.OnConnectListener mOnConnectListener = new BluetoothLeClass.OnConnectListener() {
+		
+		@Override
+		public void onConnect(BluetoothGatt gatt) {
+			// TODO Auto-generated method stub
+			Message msg = mHandler.obtainMessage(Message_Connection_Status);
+			msg.arg1=1;
+			mHandler.sendMessage(msg);
+		}
+	};
+	
+	private BluetoothLeClass.OnDisconnectListener mOnDisconnectListener = new BluetoothLeClass.OnDisconnectListener() {
+		
+		@Override
+		public void onDisconnect(BluetoothGatt gatt) {
+			// TODO Auto-generated method stub
+			Message msg = mHandler.obtainMessage(Message_Connection_Status);
+			msg.arg1=0;
+			mHandler.sendMessage(msg);
+		}
+	};
 	/**
      * 搜索到BLE终端服务的事件
      */
@@ -164,7 +188,7 @@ public class BluetoothLeControl {
 	 */
 	 public void Communication2Bluetooth(List<BluetoothGattService> gattServices,byte[] cmdByte) {
 		// List<BluetoothGattService> gattServices= mBLE.getSupportedGattServices();
-	        if (gattServices == null) {return;}
+	        if (gattServices == null || cmdByte==null) {return;}
 	        
 	        for (BluetoothGattService gattService : gattServices) {
 	        	//-----Service的字段信息-----//

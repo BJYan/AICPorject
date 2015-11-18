@@ -1,6 +1,6 @@
 package com.aic.aicdetactor.bluetooth;
 
-import java.lang.reflect.Array;
+import android.util.Log;
 
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -8,6 +8,7 @@ public class BluetoothPrivateProxy {
 
 	private byte[]  mStrValue;;
 	private byte mDLCMDType=0;
+	final String TAG="BluetoothPrivateProxy";
 	public BluetoothPrivateProxy( byte downLoadCMDType,byte[] strValue){
 		mStrValue=strValue;
 		mDLCMDType = downLoadCMDType;
@@ -48,18 +49,25 @@ public class BluetoothPrivateProxy {
 	}
 	
 	public int getAXCount(){
-		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){		return mStrValue[4];}
+		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){	
+			Log.d(TAG, "mStrValue.lenth = "+mStrValue.length);
+			return mStrValue[4];
+			}
 		
 		return 0;
 	}
 	
 	public int getDataPointCount(){
-		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){	return (mStrValue[6]<<8)|mStrValue[7];}
+		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){	
+			return (mStrValue[6]<<8)|mStrValue[7];
+			}
 		return 0;
 	}
 	
 	public int getCaiYangPointCount(){
-		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){	 return (mStrValue[8]<<8)|mStrValue[9];}
+		if(BluetoothConstast.CMD_Type_CaiJi==mDLCMDType){
+			return (mStrValue[8]<<8)|mStrValue[9];
+			}
 		return 0;
 	}
 	

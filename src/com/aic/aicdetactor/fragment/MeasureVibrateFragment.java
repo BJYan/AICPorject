@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
@@ -36,6 +38,8 @@ import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -407,6 +411,53 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 	}
 
+	@Override
+	protected Handler getHandler() {
+		// TODO Auto-generated method stub
+		//return super.getHandler();
+		return mHandle;
+	}
+
+	StringBuffer mStrReceiveData=new StringBuffer();;
+	String mStrLastReceiveData="";
+	public Handler mHandle = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+			case BluetoothLeControl.MessageReadDataFromBT:
+				byte[]strbyte=msg.getData().getByteArray("key_byte");
+				String str= SystemUtil.bytesToHexString(strbyte);
+				mStrReceiveData.append(str.toString());
+				int count=msg.getData().getInt("count");
+				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+				Toast.makeText(MeasureVibrateFragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
+				break;
+			case BluetoothLeControl.Message_Stop_Scanner:
+				break;
+			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
+				mStrLastReceiveData = mStrReceiveData.toString();
+				mStrReceiveData.delete(0, mStrReceiveData.length());
+				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
+				int k = proxy.isValidate();
+				Log.d(TAG,"AXCount ="+proxy.getAXCount());
+				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+				break;
+			case BluetoothLeControl.Message_Connection_Status:
+				switch(msg.arg1){
+				case 1://BLE has connected
+					break;
+				case 0://BLE has disconnected
+					break;
+				}
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
 
 //	@Override
 //	public void saveCheckValue() {

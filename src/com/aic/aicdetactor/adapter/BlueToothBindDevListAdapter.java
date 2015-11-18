@@ -148,12 +148,17 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 			switch(msg.what){
 			case 6:
 				//mBTControl.Connection(bondedDevices.get(BTIndex).getAddress());
-				byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);	            	 
-            	mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmd);
+				//byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);	            	 
+            	//mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmd);
 				break;
 			}
 			super.handleMessage(msg);
 		}
 		
 	};
+	
+	public void  sendCommmand2BLE(byte[]cmdByte){
+		if(cmdByte==null){return ;}
+		mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmdByte);
+	}
 }

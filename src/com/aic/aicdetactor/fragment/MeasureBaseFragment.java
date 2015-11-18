@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,4 +121,8 @@ public abstract class MeasureBaseFragment extends Fragment {
 	}
 	//public abstract   void saveCheckValue();
 
+	protected Handler getHandler(){
+		return mhandler;
+	}
+	protected Handler mhandler=null;
 }

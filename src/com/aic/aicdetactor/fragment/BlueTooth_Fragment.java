@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -92,6 +93,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		pbar = (ProgressBar) BlueToothView.findViewById(R.id.bluetooth_pbar);
 		pbar_text = (TextView) BlueToothView.findViewById(R.id.bluetooth_pbar_text);
 		
+		Button mSendButton = (Button)BlueToothView.findViewById(R.id.send);
+		mSendButton.setOnClickListener(this);
 //		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 //		getActivity().registerReceiver(mReceiver, filter);
 //		mBluetoothAdapter.startDiscovery();
@@ -145,7 +148,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
                 public void run() {
                     mScanning = false;
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
+                   // BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
 
@@ -157,7 +160,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
             dismissProgressBar();
         }
-        BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
+      //  BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
     }
 	
 	 public List<BluetoothDevice> getBondedDevices(){
@@ -192,7 +195,10 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		//	getActivity().startActivity(intent);
 			scanLeDevice(true);
 			break;
-
+		case R.id.send:
+			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+			btBindDevListAdapter.sendCommmand2BLE(cmd);
+			break;
 		default:
 			break;
 		}
@@ -208,6 +214,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		pbar.setVisibility(View.INVISIBLE);		
 	}
 	StringBuffer mStrReceiveData=new StringBuffer();;
+	String mStrLastReceiveData="";
 	Handler mHandle = new Handler(){
 
 		@Override
@@ -215,7 +222,6 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
-				//String str =msg.getData().getString("data").toString();
 				byte[]strbyte=msg.getData().getByteArray("key_byte");
 				String str= SystemUtil.bytesToHexString(strbyte);
 				mStrReceiveData.append(str.toString());
@@ -228,11 +234,21 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				dismissProgressBar();
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
-				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrReceiveData.toString().getBytes());
+				mStrLastReceiveData = mStrReceiveData.toString();
+				mStrReceiveData.delete(0, mStrReceiveData.length());
+				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
 				int k = proxy.isValidate();
-				proxy.getAXCount();
-				proxy.getChargeValue();
-				proxy.getTemperatorValue();
+				Log.d(TAG,"AXCount ="+proxy.getAXCount());
+				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+				break;
+			case BluetoothLeControl.Message_Connection_Status:
+				switch(msg.arg1){
+				case 1://BLE has connected
+					break;
+				case 0://BLE has disconnected
+					break;
+				}
 				break;
 			}
 			super.handleMessage(msg);
