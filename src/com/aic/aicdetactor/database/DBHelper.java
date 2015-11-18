@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 13;//版本号
+	 private final static int VERSION = 14;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -174,6 +174,22 @@ public class DBHelper extends SQLiteOpenHelper {
 			 public static final String	 T_Period_Unit_Code = "T_Period_Unit_Code";
 			 public static final String T_Period_Unit_Id = "T_Period_Unit_Id";
 		 } 
+		 
+		 
+		 public static String TABLE_Media = "Media";  
+		 public class Media_Table{ 
+			 public static final String Line_Guid = "Line_Guid";
+			 public static final String Data_Exist_Guid  = "Data_Exist_Guid";
+			 public static final String Name = "Name";
+			 public static final String Date = "Date";
+			 public static final String Mime_Type = "Mime_Type";
+			 public static final String	 Is_Updated = "Is_Updated";
+			 public static final String	 UpdatedDate = "UpdatedDate";
+			 public static final String Path = "Path";
+		 } 
+		 
+		 
+		 
 		 
 	 //自带的构造方法
 	 public DBHelper(Context context, String name, CursorFactory factory,
@@ -389,9 +405,21 @@ public class DBHelper extends SQLiteOpenHelper {
 						+ Period_Table.T_Period_Unit_Id+" INT "
 						+")";
 				db.execSQL(PSql);
-				
-		
-		 
+				 
+		//Media Table
+			String mSql = "create table IF NOT EXISTS "
+					+ TABLE_Media 
+					+ "(" 
+					+ Media_Table.Line_Guid+" varchar(256) ,"	
+					+ Media_Table.Data_Exist_Guid+" varchar(256)  ,"	
+					+ Media_Table.Name+" varchar(256) ,"	
+					+ Media_Table.Date+" varchar(256) ,"	
+					+ Media_Table.Mime_Type+" varchar(64) ,"	
+					+ Media_Table.Is_Updated+" INT, "	
+					+ Media_Table.UpdatedDate+" varchar(256), "
+					+ Media_Table.Path+" varchar(256) "
+					+")";
+			db.execSQL(mSql); 
 
 	}
 
@@ -436,6 +464,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	  sql  = "DROP TABLE IF EXISTS "+TABLE_Period;
 	  db.execSQL(sql);
 	  
+	  sql  = "DROP TABLE IF EXISTS "+TABLE_Media;
+	  db.execSQL(sql);
 	  
 	  
 	  onCreate(db);
