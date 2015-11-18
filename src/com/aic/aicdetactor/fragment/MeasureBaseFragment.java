@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
@@ -26,7 +27,10 @@ public abstract class MeasureBaseFragment extends Fragment {
 	private myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
 	//protected DeviceItemJson mDeviceItemData=null;
-
+	BluetoothLeControl BLEControl = null;
+   StringBuffer mStrReceiveData = new StringBuffer();
+   String mStrLastReceiveData="";
+   boolean mCanSendCMD=false;
 	/**
 	 * 数据的类型
 	 */
@@ -43,6 +47,9 @@ public abstract class MeasureBaseFragment extends Fragment {
 		mPartItemData = app.gCurPartItemList.get(getArguments().getInt("partItemIndex"));//mDeviceItemData.PartItem.get(mPartItemIndex);
 		int m=0;
 		m++;
+		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
+		//BLEControl.setParamates(mhandler);
+		BLEControl.Connection("B0:B4:48:CC:2D:84");
 	}
 	
 	@Override

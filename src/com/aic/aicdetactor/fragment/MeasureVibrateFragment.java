@@ -313,7 +313,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	int y = (int) (Math.random()*max_xyz);
     	int z = (int) (Math.random()*max_xyz);
     	double max_temperation=300;
-		mCheckValue = (int) (Math.random()*max_temperation);
+//		mCheckValue = (int) (Math.random()*max_temperation);
     	mXTextView.setText(String.valueOf(x));
     	mYTextView.setText(String.valueOf(y));
     	mZTextView.setText(String.valueOf(z));
@@ -405,7 +405,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			saveData(adapter);
 			break;
 		case PartItemContact.MEASURE_DATA:
-			measureAndDisplayData();
+	//		if(mCanSendCMD){
+				getDataFromBLE();
+				mCanSendCMD=false;
+		//	}
+			
 			break;
 		}
 		
@@ -417,7 +421,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		//return super.getHandler();
 		return mHandle;
 	}
-
+	void getDataFromBLE(){
+		BLEControl.setParamates(mHandle);
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+		super.BLEControl.Communication2Bluetooth(cmd);
+	}
 	StringBuffer mStrReceiveData=new StringBuffer();;
 	String mStrLastReceiveData="";
 	public Handler mHandle = new Handler(){
@@ -443,7 +451,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				int k = proxy.isValidate();
 				Log.d(TAG,"AXCount ="+proxy.getAXCount());
 				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+				mCheckValue = proxy.getChargeValue();
 				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+				mCanSendCMD=true;
+				measureAndDisplayData();
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){

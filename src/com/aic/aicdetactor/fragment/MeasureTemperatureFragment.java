@@ -9,6 +9,7 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +23,15 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
+import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
@@ -165,6 +170,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		super.onPause();
 	}
 	
+	void getDataFromBLE(){
+		BLEControl.setParamates(handler);
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+		super.BLEControl.Communication2Bluetooth(cmd);
+	}
 	/**
 	 * 测量并显示测量后的数据
 	 */
@@ -175,7 +185,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     	double LOW = super.mPartItemData.Down_Limit;
     	double max_mTemperatureeration=100;
 		
-    	mCheckedValue = (float)(Math.random()*max_mTemperatureeration);
+    //	mCheckedValue = (float)(Math.random()*max_mTemperatureeration);
     	
     	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
@@ -198,11 +208,52 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 
     
    
-    Handler handler = new Handler(); 
+    Handler handler = new Handler(){
+
+		@Override
+		public void dispatchMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+		case BluetoothLeControl.MessageReadDataFromBT:
+			byte[]strbyte=msg.getData().getByteArray("key_byte");
+			String str= SystemUtil.bytesToHexString(strbyte);
+			mStrReceiveData.append(str.toString());
+			int count=msg.getData().getInt("count");
+			Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+			Toast.makeText(MeasureTemperatureFragment.this.getActivity(), "Tmp "+count, Toast.LENGTH_SHORT).show();
+			break;
+		case BluetoothLeControl.Message_Stop_Scanner:
+			break;
+		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
+			mStrLastReceiveData = mStrReceiveData.toString();
+			mStrReceiveData.delete(0, mStrReceiveData.length());
+			BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
+			int k = proxy.isValidate();
+			Log.d(TAG,"AXCount ="+proxy.getAXCount());
+			Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+			mCheckedValue=proxy.getTemperatorValue();
+			Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+			mCanSendCMD=true;
+			measureAndDisplayData();
+			break;
+		case BluetoothLeControl.Message_Connection_Status:
+			switch(msg.arg1){
+			case 1://BLE has connected
+				break;
+			case 0://BLE has disconnected
+				break;
+			}
+			break;
+			}
+			super.dispatchMessage(msg);
+		}
+			
+    	
+    };
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			measureAndDisplayData();
+			getDataFromBLE();
 		}
 	}; 
     
@@ -279,12 +330,16 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}
 			break;
 		case PartItemContact.MEASURE_DATA:
-			measureAndDisplayData();
+			if(mCanSendCMD){
+				getDataFromBLE();
+			}
+			
 			break;
 		}
 		
 	}
 
+	
 //	@Override
 //	public void saveCheckValue() {
 //		// TODO Auto-generated method stub

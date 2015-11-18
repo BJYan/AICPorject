@@ -155,7 +155,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private Button mConfigButton;
 	private PartItemListAdapter mAdapterList =null;
 	private List<String> mStatusList = new ArrayList<String>();
-	BluetoothLeControl BLEControl = null;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -165,11 +165,8 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.unitcheck);
-		BLEControl = BluetoothLeControl.getInstance(getApplicationContext());
 		mPartItemIndex =0;
 		initViewAndData();
-		BLEControl.setParamates(mHandler);
-		BLEControl.Connection("B0:B4:48:CC:2D:84");
 	}
 
 	void initViewAndData() {
@@ -408,8 +405,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	   private final int MSG_CHANGE_LISTVIEWDATA =MSG_START+9;
 	   private final int MSG_CHANGE_LISTVIEWDATAEX =MSG_START+10;
 	   private final int MSG_CACHE_CURRENT_DEVICEITEM_DATA =MSG_START+11;
-	   StringBuffer mStrReceiveData = new StringBuffer();
-	   String mStrLastReceiveData="";
+
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
@@ -461,33 +457,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   break;
 		   case MSG_CACHE_CURRENT_DEVICEITEM_DATA:
 			   break;
-		   case BluetoothLeControl.MessageReadDataFromBT:
-				byte[]strbyte=msg.getData().getByteArray("key_byte");
-				String str= SystemUtil.bytesToHexString(strbyte);
-				mStrReceiveData.append(str.toString());
-				int count=msg.getData().getInt("count");
-				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-				Toast.makeText(PartItemActivity.this, ""+count, Toast.LENGTH_SHORT).show();
-				break;
-			case BluetoothLeControl.Message_Stop_Scanner:
-				break;
-			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
-				mStrLastReceiveData = mStrReceiveData.toString();
-				mStrReceiveData.delete(0, mStrReceiveData.length());
-				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
-				int k = proxy.isValidate();
-				Log.d(TAG,"AXCount ="+proxy.getAXCount());
-				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
-				break;
-			case BluetoothLeControl.Message_Connection_Status:
-				switch(msg.arg1){
-				case 1://BLE has connected
-					break;
-				case 0://BLE has disconnected
-					break;
-				}
-				break;
+		   
 		   }
 	   }
    };
@@ -624,57 +594,6 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		}
 		
 	}
-	
-	/**
-	 * 保存当前的 巡检项巡检结果，重新生成一个PartItem
-	 */
-	void saveCheckedItemNode() {
-		// 先保存当前测试项的数据
-		MLog.Logd(TAG, "mPartItemList size is ," + mPartItemList.size());
-		//JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
-//		MLog.Logd(TAG, "saveCheckedItemNode()," + json);
-//		String partItemData = "";
-//		try {
-//			partItemData = json.getString(KEY.KEY_PARTITEMDATA);
-//		} catch (JSONException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		// 添加巡检结果到结果中，便于形成最后的结果。
-//		if (mZhouCounts == 0) {
-//			try {
-//				json.put(
-//						KEY.KEY_PARTITEMDATA,
-//						addUpdata(partItemData, mCheckValue,
-//								SystemUtil.createGUID()));
-//			} catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			// json =
-//			// app.setPartItem_ItemDef(json,0,mCheckValue+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"*3");
-//			MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
-//			mJSONArray.put(json);
-//		} else {
-//			MLog.Logd(TAG, "saveCheckedItemNode() mCheckValue," + mCheckValue+",mZhouCounts="+mZhouCounts);
-//			String[] value = mCheckValue.split(",");
-//			String guid = SystemUtil.createGUID();
-//			for (int i = 0; i < mZhouCounts&&i <value.length; i++) {
-//				try {
-//					json.put(KEY.KEY_PARTITEMDATA,
-//							addUpdata(partItemData, value[i], guid));
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				MLog.Logd(TAG, "saveCheckedItemNode() result is," + json);
-//				mJSONArray.put(json);
-//			}
-//		}
-	}
-	
-	
-//	final String  ff="*";
 	
 	
 	boolean isTimeOut(){
@@ -1046,39 +965,6 @@ private int mZhouCounts=0;
 		
 	}
 	private static final int RESULT_CODE = 1;
-//	@Override  
-//    public boolean dispatchKeyEvent(KeyEvent event) {  
-//   
-//        int action = event.getAction();  
-//   
-//        if (action ==KeyEvent.ACTION_DOWN) {  
-////        	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
-////			 ContentValues values = new ContentValues(3);  
-////            values.put(MediaStore.Images.Media.DISPLAY_NAME, "testing");  
-////            values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
-////            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
-////            imageFilePath = PartItemActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
-////            MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
-////            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
-////			//Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 			  
-////           startActivityForResult(intent, RESULT_CODE);  
-//            Log.d(TAG,"+++++++++ACTION_DOWN++++++");  
-//            return true;  
-//        }  
-//   
-//        if (action== KeyEvent.ACTION_UP) { 
-////        	Intent intent = new Intent();
-////			intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
-////			startActivity(intent);
-//        	Log.d(TAG,"+++++++++ACTION_UP++++++");
-//            return true;  
-//        }  
-//   
-//        return super.dispatchKeyEvent(event);  
-//    }  
-//   
-//   
-//   
     @Override  
     public boolean onKeyDown(int keyCode, KeyEvent event) {  
         switch (keyCode) {  

@@ -90,6 +90,7 @@ public class BluetoothLeControl {
 	 * @return
 	 */
 	public boolean Connection(String strAdress){
+		//if(isConnected) return isConnected;
 		return isConnected=mBLE.connect(strAdress);
 	}
 	
@@ -126,7 +127,7 @@ public class BluetoothLeControl {
 		@Override
 		public void onServiceDiscover(BluetoothGatt gatt) {
 			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0);	            	 
-        	Communication2Bluetooth(mBLE.getSupportedGattServices(),cmd);
+        	Communication2Bluetooth(cmd);
 		}
     	
     };
@@ -186,8 +187,8 @@ public class BluetoothLeControl {
 	 * 先发命令 再获取数据
 	 * @param cmdStr
 	 */
-	 public void Communication2Bluetooth(List<BluetoothGattService> gattServices,byte[] cmdByte) {
-		// List<BluetoothGattService> gattServices= mBLE.getSupportedGattServices();
+	 public void Communication2Bluetooth(byte[] cmdByte) {
+		 List<BluetoothGattService> gattServices= mBLE.getSupportedGattServices();
 	        if (gattServices == null || cmdByte==null) {return;}
 	        
 	        for (BluetoothGattService gattService : gattServices) {
