@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
+import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
@@ -104,11 +105,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 							chartDialog.setButtomBtn(DeviceListAdapter.this, "确定", "取消");
 							DataAnalysis dataAnalysis = new DataAnalysis();
 							float[] data = dataAnalysis.getData();
-							float[] MinMaxTemp = new float[]{data[0],data[0]};
 
-							View chartView = mActivity.getBlackLineChartView("测试数据", data);
-							View chartView1 = mActivity.getBlackLineChartView("测试数据", data);
-							View chartView2 = mActivity.getBlackLineChartView("测试数据", data);
+							ChartBuilder chartBuilder = new ChartBuilder(context);
+							View chartView = chartBuilder.getBlackLineChartView("测试数据", data);
+							View chartView1 = chartBuilder.getBlackLineChartView("测试数据", data);
+							View chartView2 = chartBuilder.getBlackLineChartView("测试数据", data);
 
 							View dialogContent = mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null);
 							LinearLayout chart1Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_first_chart);

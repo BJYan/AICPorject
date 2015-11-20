@@ -35,11 +35,13 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
+import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
+import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -115,11 +117,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		//return super.onCreateView(inflater, container, savedInstanceState);
 		ViewPager view = (ViewPager) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
 		views.add(mInflater.inflate(R.layout.brivate, null));
-		views.add(mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null));
-		views.add(mInflater.inflate(R.layout.dialog_content_thr_charts2_layout, null));
-		views.add(mInflater.inflate(R.layout.dialog_content_one_charts_layout, null));
+		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
+		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
+		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
 		CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
 		view.setAdapter(DialogPagerAdapter);
+		InitChart();
 		mListView = (ListView)views.get(0).findViewById(R.id.listView1);
 		mListViewAdapter = new SimpleAdapter(this.getActivity().getApplicationContext(), mMapList,
 				R.layout.checkunit, new String[] { 			
@@ -182,6 +185,33 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		return view;
 	}
 	
+	private void InitChart() {
+		// TODO Auto-generated method stub
+		ChartBuilder chartBuilder = new ChartBuilder(getActivity());
+		LinearLayout timeChartViewY = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_first_chart);
+		LinearLayout timeChartViewX = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_sec_chart);
+		LinearLayout timeChartViewZ = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_thr_chart);
+		
+		LinearLayout axesChartViewX = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_first_chart);
+		LinearLayout axesChartViewY = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_sec_chart);
+		LinearLayout axesChartViewZ = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_thr_chart);
+		
+		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
+		
+		DataAnalysis dataAnalysis = new DataAnalysis();
+		float[] data = dataAnalysis.getData();
+		
+		timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
+		timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
+		timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));
+		
+		axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
+		axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
+		axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));
+		
+		frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data));
+	}
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

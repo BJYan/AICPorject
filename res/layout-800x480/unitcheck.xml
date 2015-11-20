@@ -60,8 +60,10 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_gravity="bottom|center"
-	    android:background="@drawable/top_item_selected"
-	    android:visibility="gone">
+	    android:background="#aa003399"
+	    android:visibility="gone"
+	    android:paddingTop="5dip"
+	    android:paddingBottom="10dip">
  
  <LinearLayout
 	    android:orientation="horizontal"
@@ -71,48 +73,58 @@
 		<Button
 		    android:id="@+id/bottombutton2"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+		    android:layout_height="35dip"
 		    android:text="@string/direction" 
 		     android:layout_weight="1"
-		   />
+		    android:background="@drawable/blue_button_selector"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginLeft="5dp"/>
 
 		<Button
 		    android:id="@+id/bottombutton3"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+		    android:layout_height="35dip"
 		    android:text="@string/measurement"
 		     android:layout_weight="1"
-		     />
-<Button
+		     android:background="@drawable/blue_button_selector"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginLeft="5dp"/>
+		<Button
 		    android:id="@+id/bottombutton1"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+		    android:layout_height="35dip"
 		    android:text="@string/position" 
-		     android:layout_weight="1"
-		   />
+		    android:layout_weight="1"
+		    android:background="@drawable/blue_button_selector"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginLeft="5dp"/>
 		
 	    </LinearLayout>
 	    <LinearLayout
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    >
+	    android:layout_marginTop="5dip">
 	    
 	    <Button
 		    android:id="@+id/bottombutton_pre"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+		    android:layout_height="35dip"
 		    android:text="@string/pre_item" 
 		    android:layout_weight="1"
-		    android:layout_marginLeft="1dp"/>
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:background="@drawable/blue_button_selector"/>
 	    
 	    <Button
 		    android:id="@+id/next"
 		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+		    android:layout_height="35dip"
 		    android:text="@string/next_item"
 		     android:layout_weight="1"
-		    android:layout_marginRight="1dp"/>
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:background="@drawable/blue_button_selector"/>
 		
 		</LinearLayout>
 	</LinearLayout>
