@@ -64,7 +64,6 @@ import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
@@ -181,15 +180,15 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 
 		// 路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
-		RouteNameTextView.setText(app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
+		RouteNameTextView.setText(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
 		// 站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
-		stationTextView.setText(app.mLineJsonData.StationInfo
+		stationTextView.setText(stationTextView.getText().toString()+app.mLineJsonData.StationInfo
 				.get(mStationIndex).Name);
 		// 设备名称
 		TextView deviceTextView = (TextView) findViewById(R.id.deviceName);
 		deviceTextView
-				.setText(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem
+				.setText(deviceTextView.getText().toString()+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem
 						.get(mDeviceIndex).Name);
 		mFirstLLayout = (LinearLayout) findViewById(R.id.linefirst);
 		mSecendLLayout = (LinearLayout) findViewById(R.id.bottom_line);

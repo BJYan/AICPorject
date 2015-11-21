@@ -30,7 +30,7 @@ import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
+import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -227,12 +227,13 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mStrLastReceiveData = mStrReceiveData.toString();
 			mStrReceiveData.delete(0, mStrReceiveData.length());
-			BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData);
+			DataAnalysis proxy = new DataAnalysis();
+			proxy.getResult(mStrLastReceiveData,(byte)0xd1);
 			int k = proxy.isValidate();
-			Log.d(TAG,"AXCount ="+proxy.getAXCount());
-			Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-			mCheckedValue=proxy.getTemperatorValue();
-			Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+//			Log.d(TAG,"AXCount ="+proxy.getAXCount());
+//			Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+//			mCheckedValue=proxy.getTemperatorValue();
+//			Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
 			mCanSendCMD=true;
 			measureAndDisplayData();
 			break;

@@ -24,7 +24,7 @@ public abstract class MeasureBaseFragment extends Fragment {
 
 	//int mPartItemIndex=0;
 	protected PartItemJsonUp mPartItemData=null;
-	private myApplication app = null;
+	protected myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
 	//protected DeviceItemJson mDeviceItemData=null;
 	BluetoothLeControl BLEControl = null;

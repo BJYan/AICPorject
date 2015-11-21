@@ -8,7 +8,8 @@ public class BluetoothConstast {
 	public final static byte CMD_Type_CaiJiZhuanSu=(byte) 0xD3;
 	public final static byte CMD_Type_SetSensorName=(byte) 0xD4;
 	public final static byte CMD_Type_SetSensorParams=(byte) 0xD5;
-	
+	public final static byte CMD_Type_GetTemper=(byte) 0xD6;
+	public final static byte CMD_Type_GetCharge=(byte) 0xD7;
 	//单轴
 	public final static byte Sensor_AX_Type_One=0x01;
 	//双轴

@@ -206,6 +206,9 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 	}
 	
+	public String getCurDeviceExitDataGuid(){
+		return mDeviceItemCahce.Data_Exist_Guid;
+	}
 	public void setPartItemStartTime()
 	{
 		mPartItemList.get(mPartItemIndex).setSartDate();

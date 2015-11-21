@@ -43,7 +43,6 @@ import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.ElectricParameteActivity;
 import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
@@ -82,6 +81,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	private LinearLayout MYLinear = null;
 	private LinearLayout MZLinear = null;
 	PartItemListAdapter AdapterList;
+	TextView mTimeTV=null;
 	private float mCheckValue =0.0f;
 	
 	List<View> views;
@@ -173,6 +173,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		mTimeTextView = (TextView)views.get(0).findViewById(R.id.time_value);
 		MYLinear = (LinearLayout)views.get(0).findViewById(R.id.y_linear);
 		MZLinear = (LinearLayout)views.get(0).findViewById(R.id.z_linear);
+		mTimeTV = (TextView)views.get(0).findViewById(R.id.time);
 		if(mPartItemData.Axle_Number==0){
 			MYLinear.setVisibility(View.GONE);			
 		}
@@ -337,28 +338,17 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	}
 	
     void measureAndDisplayData(){    
-    	int max_xyz=160;
-    	
     	double MAX = super.mPartItemData.Up_Limit;
     	double MID = super.mPartItemData.Middle_Limit;
     	double LOW = super.mPartItemData.Down_Limit;
     	
-    	int x = (int) (Math.random()*max_xyz);
-    	int y = (int) (Math.random()*max_xyz);
-    	int z = (int) (Math.random()*max_xyz);
-    	double max_temperation=300;
     	
 //		mCheckValue = (int) (Math.random()*max_temperation);
     	
-    	mXTextView.setText(String.valueOf(x));
-    	mYTextView.setText(String.valueOf(y));
-    	mZTextView.setText(String.valueOf(z));
     	switch(mPartItemData.Axle_Number){
     	case 1:
-    		y=z=0;
     		break;
     	case 2:
-    		z=0;
     		break;
     	}
     	
@@ -478,15 +468,19 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				mStrReceiveData.append(str.toString());
 				int count=msg.getData().getInt("count");
 				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-				Toast.makeText(MeasureVibrateFragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
+				//Toast.makeText(MeasureVibrateFragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
+				mTimeTV.setVisibility(View.VISIBLE);
+				mTimeTV.setText("正在测量中");
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
+				mTimeTV.setText("测量完毕");
 				if(mStrReceiveData.length()>0){
 					mStrLastReceiveData = mStrReceiveData.toString();
 					InsertMediaData(mStrLastReceiveData,true);					
-					BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)msg.arg1,mStrLastReceiveData);
+					DataAnalysis proxy = new DataAnalysis();
+					proxy.getResult(mStrLastReceiveData,(byte)msg.arg1);
 					int k = proxy.isValidate();
 					mStrReceiveData.delete(0, mStrReceiveData.length());
 					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+k);
@@ -504,17 +498,17 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					}else{
 						iFailedTime=0;
 					k=proxy.getAXCount();
-					float b=proxy.getChargeValue();
-					float t=proxy.getTemperatorValue();
+					mCheckValue=proxy.getValidValue();
 					measureAndDisplayData();
 					String Wavedata=proxy.getWaveData().toString();
 					InsertMediaData(Wavedata,false);
 					
-					ifNeedAnalysisData(msg.arg1);
+					ifNeedAnalysisData((byte)msg.arg1);
 					}
 				}else{
 					Log.d(TAG,"mStrReceiveData is null");
 				}
+				
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){
@@ -534,13 +528,13 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	 * 只针对采集D1类型的数据进行图形分析
 	 * @param type
 	 */
-void ifNeedAnalysisData(int type){
+void ifNeedAnalysisData(byte type){
 	if(type != BluetoothConstast.CMD_Type_CaiJi){return ;}
 	
 	if(dataAnalysis==null){
 		dataAnalysis = new DataAnalysis();
 	}
-	dataAnalysis.getResult(mStrLastReceiveData);
+	dataAnalysis.getResult(mStrLastReceiveData,type);
 	float[] data = dataAnalysis.getData();
 	float[] MinMaxTemp = new float[]{data[0],data[0]};
 	for(int i=0;i<data.length;i++){
@@ -573,10 +567,10 @@ void ifNeedAnalysisData(int type){
 				+DBHelper.Media_Table.Name +","
 				+DBHelper.Media_Table.Path +","
 				+DBHelper.Media_Table.UpdatedDate +") values ('"
-				+"1234556"+"','"
+				+AdapterList.getCurDeviceExitDataGuid()+"','"
 				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
 				+"0"+"','"
-				+"677777777777"+"','"
+				+super.app.mLineJsonData.T_Line.T_Line_Guid+"','"
 				+"image"+"','"
 				+guid+"','"				
 				+"/sdcard/aic/data/"+guid+"','"
@@ -584,12 +578,6 @@ void ifNeedAnalysisData(int type){
 				
 		dao.execSQL(StrSql);
 	}
-//	@Override
-//	public void saveCheckValue() {
-//		// TODO Auto-generated method stub
-//		Log.d("atest", "震动   saveCheckValue()");
-//		super.setPartItemData("震动");
-//	}
 	
 	void UpLoadWaveData(float[] testData){
 		 byte[] bytedata=new byte[testData.length*4];;

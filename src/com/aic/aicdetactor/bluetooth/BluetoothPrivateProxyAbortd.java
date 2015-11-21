@@ -4,13 +4,13 @@ package com.aic.aicdetactor.bluetooth;
 import com.aic.aicdetactor.bluetooth.analysis.CaiYangValues;
 import com.aic.aicdetactor.util.SystemUtil;
 
-public class BluetoothPrivateProxy {
+public class BluetoothPrivateProxyAbortd {
 
 	String Value;
 	final static int MinLenth =10;
 	private byte mDLCMDType=0;
 	final String TAG="BluetoothPrivateProxy";
-	public BluetoothPrivateProxy( byte downLoadCMDType,String strValue){
+	public BluetoothPrivateProxyAbortd( byte downLoadCMDType,String strValue){
 		Value=strValue;
 		mDLCMDType = downLoadCMDType;
 	}

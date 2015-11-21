@@ -12,7 +12,7 @@ import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
 import com.aic.aicdetactor.adapter.BlueToothDevListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
+import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Fragment;
@@ -236,14 +236,15 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mStrLastReceiveData = mStrReceiveData.toString();
 				mStrReceiveData.delete(0, mStrReceiveData.length());
-				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)msg.arg1,mStrLastReceiveData);
+				DataAnalysis proxy = new DataAnalysis();
+				proxy.getResult(mStrLastReceiveData,(byte)msg.arg1);
 				int k = proxy.isValidate();
 				k=proxy.getAXCount();
-				float b=proxy.getChargeValue();
-				float t=proxy.getTemperatorValue();
-				Log.d(TAG,"AXCount ="+proxy.getAXCount());
-				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+				//float b=proxy.getChargeValue();
+				//float t=proxy.getTemperatorValue();
+				//Log.d(TAG,"AXCount ="+proxy.getAXCount());
+				//Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+				//Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){

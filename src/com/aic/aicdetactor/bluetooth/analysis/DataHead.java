@@ -2,10 +2,25 @@ package com.aic.aicdetactor.bluetooth.analysis;
 
 public class DataHead {
 	public int[] head;
+	/**
+	 * 轴数
+	 * 单轴 1，双轴2,三轴3
+	 */
 	public int sensorType;
+	/**
+	 * 数据类型
+	 *  加速度1,速度2,位移3
+	 */
 	public int dataType;
+	/**
+	 * 采样点个数
+	 */
 	public int dataNum;
+	/**
+	 * 采样点频率
+	 */
 	public int frequency;
+
 
 	public DataHead(String str) {
 		// TODO Auto-generated constructor stub
