@@ -49,7 +49,7 @@ public abstract class MeasureBaseFragment extends Fragment {
 		m++;
 		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
 		//BLEControl.setParamates(mhandler);
-		BLEControl.Connection("B0:B4:48:CC:2D:84");
+		BLEControl.Connection("B0:B4:48:CC:2C:80");
 	}
 	
 	@Override

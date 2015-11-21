@@ -173,7 +173,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	void getDataFromBLE(){
 		BLEControl.setParamates(handler);
 		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
-		super.BLEControl.Communication2Bluetooth(cmd);
+		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
 	/**
 	 * 测量并显示测量后的数据
@@ -227,7 +227,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mStrLastReceiveData = mStrReceiveData.toString();
 			mStrReceiveData.delete(0, mStrReceiveData.length());
-			BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
+			BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData);
 			int k = proxy.isValidate();
 			Log.d(TAG,"AXCount ="+proxy.getAXCount());
 			Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());

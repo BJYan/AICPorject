@@ -159,6 +159,6 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	
 	public void  sendCommmand2BLE(byte[]cmdByte){
 		if(cmdByte==null){return ;}
-		mBTControl.Communication2Bluetooth(cmdByte);
+		mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmdByte);
 	}
 }

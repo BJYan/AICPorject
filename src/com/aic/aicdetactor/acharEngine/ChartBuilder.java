@@ -103,6 +103,7 @@ public class ChartBuilder {
 	 }
 	 
 	 private float[] getRangeMaxMin(float[] data,int start, int end){ 
+		 if(start<0){start=0;}
 		 float[] MinMaxTemp = new float[]{data[start],data[start]};
 		 for(int i=0;i<data.length;i++){
 			 if(i>=start&&i<=end) {

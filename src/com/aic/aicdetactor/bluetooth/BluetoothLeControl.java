@@ -47,6 +47,7 @@ public class BluetoothLeControl {
 	    
 	    
 	private Handler mHandler=null;
+	private  byte downloadCMDByte=0;
 	/**
 	 * 单例
 	 * @param context
@@ -127,7 +128,7 @@ public class BluetoothLeControl {
 		@Override
 		public void onServiceDiscover(BluetoothGatt gatt) {
 			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0);	            	 
-        	Communication2Bluetooth(cmd);
+        	Communication2Bluetooth(getSupportedGattServices(),cmd);
 		}
     	
     };
@@ -162,12 +163,12 @@ public class BluetoothLeControl {
 		public void onCharacteristicWrite(BluetoothGatt gatt,
 				BluetoothGattCharacteristic characteristic) {
 			byte[] byteData=characteristic.getValue();
-			String teStr= SystemUtil.bytesToHexString(characteristic.getValue());
-			Log.e(TAG,"onCharWrite "+gatt.getDevice().getName()
-					+" write "
-					+characteristic.getUuid().toString()
-					+" -> "
-					+teStr);
+//			String teStr= SystemUtil.bytesToHexString(characteristic.getValue());
+//			Log.e(TAG,"onCharWrite "+gatt.getDevice().getName()
+//					+" write "
+//					+characteristic.getUuid().toString()
+//					+" -> "
+//					+teStr);
 			bGetDataContinue=true;
 			count++;
 			Message msg = mHandler.obtainMessage(MessageReadDataFromBT);
@@ -187,10 +188,10 @@ public class BluetoothLeControl {
 	 * 先发命令 再获取数据
 	 * @param cmdStr
 	 */
-	 public void Communication2Bluetooth(byte[] cmdByte) {
-		 List<BluetoothGattService> gattServices= mBLE.getSupportedGattServices();
+	 public void Communication2Bluetooth(List<BluetoothGattService> gattServices,byte[] cmdByte) {
+		// List<BluetoothGattService> gattServices= mBLE.getSupportedGattServices();
 	        if (gattServices == null || cmdByte==null) {return;}
-	        
+	        downloadCMDByte=cmdByte[2];
 	        for (BluetoothGattService gattService : gattServices) {
 	        	//-----Service的字段信息-----//
 	        //	int type = gattService.getType();
@@ -284,7 +285,7 @@ public class BluetoothLeControl {
 			 download[3]=AxCount;
 			 download[4]= SensorType;
 		 }
-		 
+		
 		 byte[] temp=new byte[16];
 		 for(int i=0;i<temp.length;i++){
 			 temp[i]=download[i];
@@ -309,7 +310,9 @@ k++;
 	            if(recLen<21){
 	            handler.postDelayed(this, 1000); 
 	            }else{
-	            	mHandler.sendEmptyMessage(Message_End_Upload_Data_From_BLE);
+	            	Message msg = mHandler.obtainMessage(Message_End_Upload_Data_From_BLE);
+	            		msg.arg1=	downloadCMDByte;
+	            	mHandler.sendMessage(msg);
 	            }
 	        } 
 	    }; 

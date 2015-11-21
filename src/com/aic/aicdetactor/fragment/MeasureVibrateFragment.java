@@ -1,4 +1,5 @@
 package com.aic.aicdetactor.fragment;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
@@ -39,6 +41,7 @@ import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
 import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.BluetoothPrivateProxy;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
@@ -48,6 +51,8 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.database.DBHelper;
+import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.util.SystemUtil;
 
 /**
@@ -122,7 +127,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
 		CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
 		view.setAdapter(DialogPagerAdapter);
-		InitChart();
+		
 		mListView = (ListView)views.get(0).findViewById(R.id.listView1);
 		mListViewAdapter = new SimpleAdapter(this.getActivity().getApplicationContext(), mMapList,
 				R.layout.checkunit, new String[] { 			
@@ -179,7 +184,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			MZLinear.setVisibility(View.GONE);	
 		}
 		mColorTextView = (TextView)views.get(0).findViewById(R.id.colordiscrip);
-		
 		initDisplayData();
 		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
@@ -198,7 +202,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
 		
-		DataAnalysis dataAnalysis = new DataAnalysis();
+		//DataAnalysis dataAnalysis = new DataAnalysis();
 		float[] data = dataAnalysis.getData();
 		
 		timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
@@ -343,7 +347,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	int y = (int) (Math.random()*max_xyz);
     	int z = (int) (Math.random()*max_xyz);
     	double max_temperation=300;
+    	
 //		mCheckValue = (int) (Math.random()*max_temperation);
+    	
     	mXTextView.setText(String.valueOf(x));
     	mYTextView.setText(String.valueOf(y));
     	mZTextView.setText(String.valueOf(z));
@@ -454,10 +460,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	void getDataFromBLE(){
 		BLEControl.setParamates(mHandle);
 		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
-		super.BLEControl.Communication2Bluetooth(cmd);
+		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
+	DataAnalysis dataAnalysis;
 	StringBuffer mStrReceiveData=new StringBuffer();;
 	String mStrLastReceiveData="";
+	int iFailedTime =0;
 	public Handler mHandle = new Handler(){
 
 		@Override
@@ -475,16 +483,38 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			case BluetoothLeControl.Message_Stop_Scanner:
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
-				mStrLastReceiveData = mStrReceiveData.toString();
-				mStrReceiveData.delete(0, mStrReceiveData.length());
-				BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)0xd1,mStrLastReceiveData.getBytes());
-				int k = proxy.isValidate();
-				Log.d(TAG,"AXCount ="+proxy.getAXCount());
-				Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-				mCheckValue = proxy.getChargeValue();
-				Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
-				mCanSendCMD=true;
-				measureAndDisplayData();
+				if(mStrReceiveData.length()>0){
+					mStrLastReceiveData = mStrReceiveData.toString();
+					InsertMediaData(mStrLastReceiveData,true);					
+					BluetoothPrivateProxy proxy = new BluetoothPrivateProxy((byte)msg.arg1,mStrLastReceiveData);
+					int k = proxy.isValidate();
+					mStrReceiveData.delete(0, mStrReceiveData.length());
+					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+k);
+					if(k!=0){
+						String strErr = mColorTextView.getText().toString();
+						if(!strErr.contains("数据丢失")){
+							strErr=strErr+"数据丢失,请重测";
+							;
+						}else{
+							iFailedTime++;
+						}
+						mColorTextView.setText(strErr+" " +iFailedTime);
+						
+						return ;
+					}else{
+						iFailedTime=0;
+					k=proxy.getAXCount();
+					float b=proxy.getChargeValue();
+					float t=proxy.getTemperatorValue();
+					measureAndDisplayData();
+					String Wavedata=proxy.getWaveData().toString();
+					InsertMediaData(Wavedata,false);
+					
+					ifNeedAnalysisData(msg.arg1);
+					}
+				}else{
+					Log.d(TAG,"mStrReceiveData is null");
+				}
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){
@@ -499,11 +529,78 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		}
 		
 	};
-
+	
+	/**
+	 * 只针对采集D1类型的数据进行图形分析
+	 * @param type
+	 */
+void ifNeedAnalysisData(int type){
+	if(type != BluetoothConstast.CMD_Type_CaiJi){return ;}
+	
+	if(dataAnalysis==null){
+		dataAnalysis = new DataAnalysis();
+	}
+	dataAnalysis.getResult(mStrLastReceiveData);
+	float[] data = dataAnalysis.getData();
+	float[] MinMaxTemp = new float[]{data[0],data[0]};
+	for(int i=0;i<data.length;i++){
+		if(data[i]<=MinMaxTemp[0]) MinMaxTemp[0] = data[i];
+		if(data[i]>MinMaxTemp[1]) MinMaxTemp[1] = data[i];
+	}
+	
+	InitChart();
+	
+	UpLoadWaveData(data);
+}
+	void InsertMediaData(String data,boolean test){
+		String guid = SystemUtil.createGUID();
+		if(test){
+			guid="2.txt";
+		}
+		try {
+			SystemUtil.writeFile("/sdcard/aic/data/"+guid, data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		RouteDao dao = RouteDao.getInstance(getActivity());
+		String StrSql="insert into "+DBHelper.TABLE_Media +" ( "
+				+DBHelper.Media_Table.Data_Exist_Guid +","
+				+DBHelper.Media_Table.Date +","
+				+DBHelper.Media_Table.Is_Updated +","
+				+DBHelper.Media_Table.Line_Guid +","
+				+DBHelper.Media_Table.Mime_Type +","
+				+DBHelper.Media_Table.Name +","
+				+DBHelper.Media_Table.Path +","
+				+DBHelper.Media_Table.UpdatedDate +") values ('"
+				+"1234556"+"','"
+				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
+				+"0"+"','"
+				+"677777777777"+"','"
+				+"image"+"','"
+				+guid+"','"				
+				+"/sdcard/aic/data/"+guid+"','"
+				+"0"+"');";
+				
+		dao.execSQL(StrSql);
+	}
 //	@Override
 //	public void saveCheckValue() {
 //		// TODO Auto-generated method stub
 //		Log.d("atest", "震动   saveCheckValue()");
 //		super.setPartItemData("震动");
 //	}
+	
+	void UpLoadWaveData(float[] testData){
+		 byte[] bytedata=new byte[testData.length*4];;
+		 for(int i=0;i<testData.length;i++){
+			 byte[] data=SystemUtil.float2byte(testData[i]);
+			 for(int k=0;k<data.length;k++){
+				 bytedata[i*4+k]=data[k];
+			 }
+		 }
+		 
+		 
+		Event.UploadWaveDataRequestInfo_Event(null,null,null,null,bytedata);
+	}
 }

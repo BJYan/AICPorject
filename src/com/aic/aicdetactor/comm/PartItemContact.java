@@ -13,4 +13,9 @@ public class PartItemContact {
 	 */
 	public final static int MEASURE_DATA=1;
 	public final static int SAVE_DATA=2;
+	public final static int ADD_NEW_MEDIA_DATA=3;
+	
+	
+	public final static int MIME_TYPE_AUDIO=1;
+	public final static int MIME_TYPE_IMAGE=2;
 }
