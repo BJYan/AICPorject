@@ -78,7 +78,8 @@
 		     android:layout_weight="1"
 		    android:background="@drawable/blue_button_selector"
 		    android:layout_marginRight="5dp"
-		    android:layout_marginLeft="5dp"/>
+		    android:layout_marginLeft="5dp"
+		    android:visibility="gone"/>
 
 		<Button
 		    android:id="@+id/bottombutton3"
@@ -97,7 +98,8 @@
 		    android:layout_weight="1"
 		    android:background="@drawable/blue_button_selector"
 		    android:layout_marginRight="5dp"
-		    android:layout_marginLeft="5dp"/>
+		    android:layout_marginLeft="5dp"
+		    android:visibility="gone"/>
 		
 	    </LinearLayout>
 	    <LinearLayout

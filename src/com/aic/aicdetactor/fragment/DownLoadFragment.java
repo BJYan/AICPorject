@@ -10,6 +10,8 @@ import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.database.DBHelper;
+import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
 import com.aic.aicdetactor.util.MLog;
 
@@ -18,6 +20,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -32,11 +35,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
@@ -414,7 +420,11 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				else mDown_Button.setVisibility(View.VISIBLE);
 			}
 		});
+		ListView listView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
 		
+		listView.setAdapter(new ArrayAdapter<String>(this.getActivity(),
+                android.R.layout.simple_list_item_1, getDownLoadRouteInfo()));
+		listView.setClickable(false);
 	}
 	
 	
@@ -594,5 +604,40 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		});
 		builder.show();
 		//window.setContentView(R.layout.dialog_rename_layout);
+	}
+	
+	List<String> getDownLoadRouteInfo(){
+		RouteDao dao = RouteDao.getInstance(getActivity());
+		String SqlStr="select * from "+DBHelper.TABLE_SOURCE_FILE;
+		Cursor cursor = dao.execSQL(SqlStr);
+		List<String> list= new ArrayList<String>();
+		try{
+			while(cursor!=null &&cursor.moveToNext()){
+				String str =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME))+"  "+cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.DownLoadDate));
+				list.add(str);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cursor!=null){
+				cursor.close();
+			}
+		}
+		SqlStr = "select * from "+DBHelper.TABLE_TEMPORARY;
+		
+		try{
+			cursor = dao.execSQL(SqlStr);
+			while(cursor!=null &&cursor.moveToNext()){
+				String str =cursor.getString(cursor.getColumnIndex(DBHelper.Temporary_Table.Title));
+				list.add(str);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cursor!=null){
+				cursor.close();
+			}
+		}
+		return list;
 	}
 }

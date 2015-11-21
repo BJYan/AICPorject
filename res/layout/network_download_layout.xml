@@ -99,13 +99,21 @@
 	        android:layout_width="wrap_content"
 	        android:text="化产车间鼓冷路线20150826"
 	        android:layout_gravity="center"
-	        android:layout_marginTop="5dip"/>
+	        android:layout_marginTop="5dip"
+	        android:visibility="gone"/>
 	    <TextView 
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:text="化产车间鼓冷特巡路线20150826"
 	        android:layout_gravity="center"
-	        android:layout_marginTop="5dip"/>
+	        android:layout_marginTop="5dip"
+	        android:visibility="gone"/>
+	    <ListView 
+	        android:id="@+id/hasdllistview"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="center"/>
+	        
 	 </LinearLayout>
 </LinearLayout>
 </ScrollView>
