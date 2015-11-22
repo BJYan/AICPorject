@@ -912,8 +912,8 @@ private int mZhouCounts=0;
 		
 		case CommonDef.checkUnit_Type.TEMPERATURE:
 		case CommonDef.checkUnit_Type.ROTATION_RATE:
-			mButton_Direction.setVisibility(iInvisibleOrGone);
-			mButtion_Position.setVisibility(iInvisibleOrGone);
+			//mButton_Direction.setVisibility(iInvisibleOrGone);
+			//mButtion_Position.setVisibility(iInvisibleOrGone);
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			mButton_Next.setVisibility(View.VISIBLE);
 			
@@ -922,16 +922,16 @@ private int mZhouCounts=0;
 		case CommonDef.checkUnit_Type.METER_READING:
 		case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
 		case  CommonDef.checkUnit_Type.OBSERVATION:
-			mButton_Direction.setVisibility(iInvisibleOrGone);
-			mButtion_Position.setVisibility(iInvisibleOrGone);
+			//mButton_Direction.setVisibility(iInvisibleOrGone);
+			//mButtion_Position.setVisibility(iInvisibleOrGone);
 			mButton_Measurement.setVisibility(iInvisibleOrGone);
 			mButton_Next.setVisibility(View.VISIBLE);
 			break;
 		case CommonDef.checkUnit_Type.ACCELERATION:		
 		case CommonDef.checkUnit_Type.SPEED:		
 		case CommonDef.checkUnit_Type.DISPLACEMENT:
-			mButton_Direction.setVisibility(View.VISIBLE);
-			mButtion_Position.setVisibility(View.VISIBLE);
+			//mButton_Direction.setVisibility(View.VISIBLE);
+			//mButtion_Position.setVisibility(View.VISIBLE);
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			break;
 		}

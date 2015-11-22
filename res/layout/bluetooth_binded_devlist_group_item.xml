@@ -16,23 +16,40 @@
             android:gravity="center_vertical" 
             android:padding="5dip"
             android:src="@drawable/bluetooth_device_icon"/>
+         <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_weight="2">
         <TextView
             android:id="@+id/bluetooth_device_name"
             android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_height="wrap_content"           
             android:text="AIC3608" 
             android:textSize="@dimen/listview_group_text_size"
             android:textColor="@color/black"
             android:gravity="center_vertical" 
-            android:paddingLeft="10dip"/>
+            android:padding="1dip"/>
+         <TextView
+            android:id="@+id/bluetooth_device_mac"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"           
+            android:text="12:33:45:bf:4f" 
+            android:textSize="@dimen/listview_in_line_left_right_padding"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" 
+            android:padding="1dip"/>
+         </LinearLayout>
          <Switch
             android:id="@+id/bluetooth_device_status"
             android:layout_width="wrap_content"
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:gravity="center_vertical" 
-            android:paddingLeft="10dip"
+            android:padding="3dip"
 			android:textOn="链接"
 			android:textOff="断开"
 			android:focusable="false"/>

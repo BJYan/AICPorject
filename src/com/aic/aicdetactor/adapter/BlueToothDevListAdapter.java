@@ -61,7 +61,9 @@ public class BlueToothDevListAdapter extends BaseAdapter{
 			}
 		});
 		TextView DevName = (TextView) arg1.findViewById(R.id.bluetooth_device_name);
+		TextView Devmac = (TextView) arg1.findViewById(R.id.bluetooth_mac);
 		DevName.setText(btDevices.get(arg0).getName());
+		Devmac.setText(btDevices.get(arg0).getAddress());
 		return arg1;
 	}
 

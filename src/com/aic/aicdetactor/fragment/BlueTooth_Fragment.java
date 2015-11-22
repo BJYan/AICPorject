@@ -11,6 +11,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
 import com.aic.aicdetactor.adapter.BlueToothDevListAdapter;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -47,6 +48,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	TextView pbar_text;
 	ExpandableListView DevBindedlist;
 	final String TAG= "Bluetooth_Fragment";
+	myApplication app;
 	
 //	BroadcastReceiver mReceiver = new BroadcastReceiver() {
 //
@@ -105,7 +107,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		mAllBTDevices.clear();
 		blueToothDevListAdapter.notifyDataSetChanged();
-		
+		app = (myApplication)this.getActivity().getApplication();
 		
 		
 		
@@ -222,7 +224,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
-				byte[]strbyte=msg.getData().getByteArray("key_byte");
+				byte[]strbyte=(byte[]) (msg.obj);
 				String str= SystemUtil.bytesToHexString(strbyte);
 				mStrReceiveData.append(str.toString());
 				int count=msg.getData().getInt("count");
@@ -237,14 +239,17 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				mStrLastReceiveData = mStrReceiveData.toString();
 				mStrReceiveData.delete(0, mStrReceiveData.length());
 				DataAnalysis proxy = new DataAnalysis();
-				proxy.getResult(mStrLastReceiveData,(byte)msg.arg1);
-				int k = proxy.isValidate();
-				k=proxy.getAXCount();
-				//float b=proxy.getChargeValue();
-				//float t=proxy.getTemperatorValue();
-				//Log.d(TAG,"AXCount ="+proxy.getAXCount());
-				//Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-				//Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+				
+				int k = proxy.isValidate(mStrLastReceiveData,(byte)msg.arg1);
+				if(k==0){
+					k=proxy.getAXCount();
+					proxy.getResult();
+					//float b=proxy.getChargeValue();
+					//float t=proxy.getTemperatorValue();
+					//Log.d(TAG,"AXCount ="+proxy.getAXCount());
+					//Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
+					//Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+			    }
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){
@@ -253,6 +258,10 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				case 0://BLE has disconnected
 					break;
 				}
+				break;
+				
+			case BluetoothLeControl.Message_Connected_BLE_Address:
+				app.mCurLinkedBLEAddress=(String) msg.obj;
 				break;
 			}
 			super.handleMessage(msg);

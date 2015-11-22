@@ -86,7 +86,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	
 	List<View> views;
 	LayoutInflater mInflater;
-	
+	long mReceiveDataLenth=0;
+	byte mDLCMD=0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
@@ -351,7 +352,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	case 2:
     		break;
     	}
-    	
+    	mXTextView.setText(String.valueOf(mCheckValue));
     	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		if(mColorTextView !=null)
@@ -434,6 +435,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	//		if(mCanSendCMD){
 				getDataFromBLE();
 				mCanSendCMD=false;
+				mReceiveDataLenth=0;
+				mStrReceiveData.delete(0, mStrReceiveData.length());
 		//	}
 			
 			break;
@@ -449,7 +452,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	}
 	void getDataFromBLE(){
 		BLEControl.setParamates(mHandle);
-		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+		mDLCMD=(byte) 0xd1;
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)1, (byte)1);
 		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
 	DataAnalysis dataAnalysis;
@@ -463,12 +467,20 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
-				byte[]strbyte=msg.getData().getByteArray("key_byte");
+				byte[]strbyte=(byte[]) (msg.obj);
 				String str= SystemUtil.bytesToHexString(strbyte);
-				mStrReceiveData.append(str.toString());
 				int count=msg.getData().getInt("count");
-				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-				//Toast.makeText(MeasureVibrateFragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
+				if(mReceiveDataLenth==0){
+					mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+					}
+				
+				if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
+					handler.sendMessage(handler.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+				}else{						
+					
+					Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+				}
+				Log.d(TAG, "receive count="+count +", mReceiveDataLenth = "+mReceiveDataLenth +",mStrReceiveData lenth= " +mStrReceiveData.length()+","+mStrReceiveData.toString());
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mTimeTV.setVisibility(View.VISIBLE);
@@ -479,9 +491,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				if(mStrReceiveData.length()>0){
 					mStrLastReceiveData = mStrReceiveData.toString();
 					InsertMediaData(mStrLastReceiveData,true);					
-					DataAnalysis proxy = new DataAnalysis();
-					proxy.getResult(mStrLastReceiveData,(byte)msg.arg1);
-					int k = proxy.isValidate();
+					if(dataAnalysis==null){
+						dataAnalysis = new DataAnalysis();
+					}
+					int k = dataAnalysis.isValidate(mStrLastReceiveData,mDLCMD);
 					mStrReceiveData.delete(0, mStrReceiveData.length());
 					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+k);
 					if(k!=0){
@@ -492,15 +505,24 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 						}else{
 							iFailedTime++;
 						}
-						mColorTextView.setText(strErr+" " +iFailedTime);
+						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
 						
 						return ;
 					}else{
 						iFailedTime=0;
-					k=proxy.getAXCount();
-					mCheckValue=proxy.getValidValue();
+						dataAnalysis.getResult();
+					dataAnalysis.getAXCount();					
+					dataAnalysis.getCaiYangFrequency();
+					dataAnalysis.getCRC32();
+					dataAnalysis.getDataNum();
+					dataAnalysis.getDataPointCount();
+					dataAnalysis.getFabsMaxValue();
+					dataAnalysis.getFengFengValue();
+					
+					mCheckValue=dataAnalysis.getValidValue();
+					dataAnalysis.getWaveData();
 					measureAndDisplayData();
-					String Wavedata=proxy.getWaveData().toString();
+					String Wavedata=dataAnalysis.getWaveData().toString();
 					InsertMediaData(Wavedata,false);
 					
 					ifNeedAnalysisData((byte)msg.arg1);
@@ -531,10 +553,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 void ifNeedAnalysisData(byte type){
 	if(type != BluetoothConstast.CMD_Type_CaiJi){return ;}
 	
-	if(dataAnalysis==null){
-		dataAnalysis = new DataAnalysis();
-	}
-	dataAnalysis.getResult(mStrLastReceiveData,type);
+	
 	float[] data = dataAnalysis.getData();
 	float[] MinMaxTemp = new float[]{data[0],data[0]};
 	for(int i=0;i<data.length;i++){

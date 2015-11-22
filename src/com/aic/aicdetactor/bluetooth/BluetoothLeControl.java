@@ -25,11 +25,18 @@ public class BluetoothLeControl {
 	public static final int Message_Start_Scanner=Message_Beigin+5;
 	public static final int Message_Stop_Scanner=Message_Beigin+6;
 	public static final int Message_End_Upload_Data_From_BLE=Message_Beigin+7;
+	public static final int Message_Connected_BLE_Address=Message_Beigin+8;
+	
+	public static final int Message_Connect_Status_Connected=1;
+	public static final int Message_Connect_Status_DisConnected=0;
+	
+	
 	private boolean bStartCommunicationWithBT=false;
 	private boolean isConnected=false;
 	//5秒钟没获取数据就认为收据发送完毕
 	private boolean bGetDataContinue=false;
-	private final int MaxSecond=5;
+	int mReceiveDataCount =0;
+	private final int MaxSecond=2;
 	private final static String UUID_KEY_WRITE_DATA = "00002a52-0000-1000-8000-00805f9b34fb";
 	private final static String UUID_KEY_READ_DATA = "00002a18-0000-1000-8000-00805f9b34fb";
 	private final String TAG="BluetoothLeControl";
@@ -152,10 +159,10 @@ public class BluetoothLeControl {
 						+" -> "
 						+SystemUtil.bytesToHexString(characteristic.getValue()));
 			 Log.d(TAG,"onCharacteristicRead() "+","+SystemUtil.bytesToHexString(characteristic.getValue()));
-			 count=0;
+			 mReceiveDataCount=0;
 		}
 		
-		int count =0;
+		
 	    /**
 	     * 收到BLE终端写入数据回调
 	     */
@@ -170,13 +177,14 @@ public class BluetoothLeControl {
 //					+" -> "
 //					+teStr);
 			bGetDataContinue=true;
-			count++;
+			mReceiveDataCount++;
 			Message msg = mHandler.obtainMessage(MessageReadDataFromBT);
-			Bundle b = new Bundle();
+			//Bundle b = new Bundle();
 			//b.putString("data", teStr);	
-			b.putByteArray("key_byte", byteData);
-			b.putInt("count", count);
-			msg.setData(b);
+			//b.putByteArray("key_byte", byteData);
+			//b.putInt("count", count);
+			//msg.setData(b);
+			msg.obj=byteData;
 			mHandler.sendMessage(msg);
 			bGetDataContinue=false;
 		}
@@ -284,7 +292,28 @@ public class BluetoothLeControl {
 			 download[2]=(byte) 0xd1;			
 			 download[3]=AxCount;
 			 download[4]= SensorType;
+		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_GetTemper)){
+			 download[0]=0x7f;
+			 download[1]=0x14;
+			 download[2]=(byte) 0xd6;			
+		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_GetCharge)){
+			 download[0]=0x7f;
+			 download[1]=0x14;
+			 download[2]=(byte) 0xd7;			
+		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_CaiJiZhuanSu)){
+			 download[0]=0x7f;
+			 download[1]=0x14;
+			 download[2]=(byte) 0xd3;			
+		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_SetSensorName)){
+			 download[0]=0x7f;
+			 download[1]=0x14;
+			 download[2]=(byte) 0xd4;			
+		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_SetSensorParams)){
+			 download[0]=0x7f;
+			 download[1]=0x14;
+			 download[2]=(byte) 0xd5;			
 		 }
+		 
 		
 		 byte[] temp=new byte[16];
 		 for(int i=0;i<temp.length;i++){
@@ -307,12 +336,13 @@ k++;
 	        public void run() { 
 	            recLen++; 
 	            Log.d(TAG, "Runnable() recLen="+recLen);
-	            if(recLen<21){
+	            if(recLen<MaxSecond){
 	            handler.postDelayed(this, 1000); 
 	            }else{
 	            	Message msg = mHandler.obtainMessage(Message_End_Upload_Data_From_BLE);
 	            		msg.arg1=	downloadCMDByte;
 	            	mHandler.sendMessage(msg);
+	            	mReceiveDataCount=0;
 	            }
 	        } 
 	    }; 

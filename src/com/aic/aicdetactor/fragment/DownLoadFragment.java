@@ -299,7 +299,20 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		devName.setOnClickListener(this);
 		TextView devIP = (TextView) settingViewList.get(0).findViewById(R.id.network_setting_device_ip);
 		TextView devMac = (TextView) settingViewList.get(0).findViewById(R.id.network_setting_device_mac);
-
+		
+		WifiManager wifiMan = (WifiManager) this.getActivity().getSystemService(Context.WIFI_SERVICE);  
+		WifiInfo info = wifiMan.getConnectionInfo();  
+		mPda_mac = info.getMacAddress();// 获得本机的MAC地址  
+		String ssid = info.getSSID();// 获得本机所链接的WIFI名称  
+		int ipAddress = info.getIpAddress();  
+		// 获得IP地址的方法一：  
+		if (ipAddress != 0) {  
+			mStr_Up_Pda_ip = ((ipAddress & 0xff) + "." + (ipAddress >> 8 & 0xff) + "."   
+		        + (ipAddress >> 16 & 0xff) + "." + (ipAddress >> 24 & 0xff));  
+		}  		
+		devMac.setText(mPda_mac);		
+		devIP.setText(mStr_Up_Pda_ip);
+		
 		EditText countid = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_countid);
 		EditText oldPassword = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_old_password);
 		EditText newPassword = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_new_password);

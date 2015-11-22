@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class DataAnalysis {
 	private static final String TAG = "DataAnalysis";
-
+    private boolean bPrintTestValue =true;
 	/*String str = "7d7d7d7d0101040009e5800080008000800080008000800080008000800080008000800080008000800"
 			+ "08000800080008000800080008000800080008000800080008000800080008000800080008000800080008"
 			+ "00080008000800080008000800080008000800080008000800080008000800080008000800080008000800"
@@ -65,7 +65,7 @@ public class DataAnalysis {
 	int temperature;
 	int electric;
 	int checkCode;
-	public byte cmdByte=0;
+	 byte cmdByte=0;
 	String StrValue="";
 	final static int MinLenth =10;
 	public DataAnalysis() {
@@ -84,45 +84,33 @@ public class DataAnalysis {
 	//获取得实际加速度数值
 	float getVoValue(String StrHex){
 		float value =0f;
-		/*if(StrHex.compareTo(StrZearo)>=0 && StrHex.compareTo(Str7f)<=0){
-			value=Integer.valueOf(StrHex,16)+mVmv;
-		}
-		
-		
-		if(StrHex.compareTo(Str80)>=0 && StrHex.compareTo(Str4f)<=0){
-			value=Integer.valueOf(StrHex,16)-mVmv;
-		}*/
-		value = (float)Integer.valueOf(StrHex,16);
-		if(value>50000) value = value-65536;
-		value= (value/65536)*5000;
-		
+		short plb=(short)(int)Integer.valueOf(StrHex,16);
+		value=plb;
+		value/=65536/5000;
 		value = value*macceleratedSpeed/mstandardMv;
-		
+
+		if(bPrintTestValue)Log.d(TAG, "getVoValue()value = "+value);
 		return value;
 	}
 	
-	public void getResult(String str,byte cmdtype) {
+	public void getResult() {
 		// TODO Auto-generated constructor stub
-		//this.str = str;
-		//String str = str1 +str2;
+		String  str =StrValue;
+		byte cmdtype = cmdByte;
 		Log.i(TAG, "str.length() = "+str.length());
 		Log.i(TAG, "analysis str = "+str.toString());
-		dataHead = new DataHead(str.substring(0, 20));
+		dataHead = new DataHead(str.substring(0, 20),cmdtype);
+		
 		waveformTypeA = new int[3];
 		waveformTypeB = new int[3];
-		StrValue=str;
-		cmdByte = cmdtype;
 		data = new float[dataHead.dataNum];
-	//	stringdata = new int[dataHead.dataNum];
+		if(cmdByte != BluetoothConstast.CMD_Type_CaiJi){return;}
 		int j=0;
 		for(int i=0;i<dataHead.dataNum*4;i+=4){
 		
 			//data[j] = ((float)Integer.valueOf(str.substring(i+20, i+24),16)/65536)*5000;
 			data[j] = getVoValue(str.substring(i+20, i+24));
-			//stringdata[j] = Integer.valueOf(str.substring(i+20, i+24),16);
 			j=j+1;
-			//Log.i(TAG, "data["+j+"] = "+data[j] + ", 0X ="+str.substring(i+20, i+24));
-			
 		}
 		
 		waveformTypeA[0] = Integer.valueOf(str.substring(str.length()-60, str.length()-58),16);
@@ -148,9 +136,11 @@ public class DataAnalysis {
 	}
 	
 	public float[] getData() {
+		if(bPrintTestValue)Log.d(TAG, "getData()data = "+data);
 		return data;
 	}	
 	public int getDataNum(){
+		if(bPrintTestValue)Log.d(TAG, "getDataNum()dataHead.dataNum = "+dataHead.dataNum);
 		return dataHead.dataNum;
 	}
 	
@@ -161,9 +151,10 @@ public class DataAnalysis {
 	public float getValidValue(){
 		double dValue=0;
 		for(int i=0;i<data.length;i++){
-			dValue=+Math.pow(data[i], 2);
+			dValue+=Math.pow(data[i], 2);
 		}
 		dValue=Math.sqrt(dValue/data.length);
+		if(bPrintTestValue)Log.d(TAG, "getValidValue()dValue = "+dValue);
 		return (float) dValue;
 	}
 	/**
@@ -177,6 +168,7 @@ public class DataAnalysis {
 				dValue=Math.abs(data[i]);
 			}
 		}
+		if(bPrintTestValue)Log.d(TAG, "getFabsMaxValue()dValue = "+dValue);
 		return dValue;
 	}
 	/**
@@ -195,11 +187,14 @@ public class DataAnalysis {
 				nValue=data[i];
 			}
 		}
+		if(bPrintTestValue)Log.d(TAG, "getFengFengValue()dValue-nValue = "+(dValue-nValue));
 		return dValue-nValue;
 	}
 	
-	public int  isValidate(){
+	public int  isValidate(String str,byte cmdtype){
 		int returnValue =-1;
+		StrValue = str;
+		cmdByte=cmdtype;
 		if(StrValue!=null && StrValue.length()>MinLenth){
 			switch(cmdByte){
 			case BluetoothConstast.CMD_Type_CaiJi:
@@ -237,40 +232,109 @@ public class DataAnalysis {
 				}
 			}
 				break;
+			case BluetoothConstast.CMD_Type_GetTemper:
+			{
+				if(StrValue.substring(0, 6).toLowerCase().equals("7d14d6")){
+					returnValue= 0;
+				}else{
+					returnValue= 1;
+				}
 			}
+			break;
+			case BluetoothConstast.CMD_Type_GetCharge:
+			{
+				if(StrValue.substring(0, 6).toLowerCase().equals("7d14d7")){
+					returnValue= 0;
+				}else{
+					returnValue= 1;
+				}
+			}
+			break;
+			case BluetoothConstast.CMD_Type_CaiJiZhuanSu:
+			{
+				if(StrValue.substring(0, 6).toLowerCase().equals("7d14d3")){
+					returnValue= 0;
+				}else{
+					returnValue= 1;
+				}
+			}
+			break;
+			}
+			
 		}
 		
+		if(bPrintTestValue)Log.d(TAG, "isValidate()returnValue = "+returnValue);
 		return returnValue ;
 	}
+	/**
+	 * 获取电量数值，根据下发的D7命令
+	 * @return
+	 */
+	public float getChargeValue(){
+		float chargeValue =0.0f;
+		if(BluetoothConstast.CMD_Type_GetCharge==cmdByte){
+			chargeValue=Integer.valueOf(StrValue.substring(7, 15),16);
+		}
+		if(bPrintTestValue)Log.d(TAG, "getChargeValue()chargeValue = "+chargeValue);
+		return chargeValue;
+	}
+	
+	/**
+	 * 获取温度数值，根据下发的D6命令
+	 * @return
+	 */
+	public float getTemperValue(){
+		float tempValue =0.0f;
+		if(BluetoothConstast.CMD_Type_GetTemper==cmdByte){
+			tempValue=Integer.valueOf(StrValue.substring(7, 15),16);
+		}
+		if(bPrintTestValue)Log.d(TAG, "getTemperValue()chargeValue = "+tempValue);
+		return tempValue;
+	}
+	
+	/**
+	 * 获取温度数值，根据下发的D6命令
+	 * @return
+	 */
+	public float getZhuanSuValue(){
+		float ZhuansuValue =0.0f;
+		if(BluetoothConstast.CMD_Type_CaiJiZhuanSu==cmdByte){
+			ZhuansuValue=Integer.valueOf(StrValue.substring(7, 15),16);
+		}
+		if(bPrintTestValue)Log.d(TAG, "getZhuanSuValue()ZhuansuValue = "+ZhuansuValue);
+		return ZhuansuValue;
+	}
+	
 	/**
 	 * 获取轴数
 	 * @return
 	 */
 	public int getAXCount(){
+		int b=0;
 		if(StrValue.length()<MinLenth){return 0;}
 		if(BluetoothConstast.CMD_Type_CaiJi==cmdByte){	
-			return Integer.valueOf(StrValue.substring(8, 10));
+			b= Integer.valueOf(StrValue.substring(8, 10));
 			}else if(BluetoothConstast.CMD_Type_ReadSensorParams==cmdByte){
 				String a = StrValue.substring(6, 8);
-				int b= Integer.valueOf(a,16);
-				return b;
+				b= Integer.valueOf(a,16);
 			}
-		
-		return 0;
+		if(bPrintTestValue)Log.d(TAG, "getAXCount()b = "+b);
+		return b;
 	}
 	/**
 	 * 获取采样点数
 	 * @return
 	 */
 	public int getDataPointCount(){
+		int b=0;
 		if(StrValue.length()<MinLenth){return 0;}
 		if(BluetoothConstast.CMD_Type_CaiJi==cmdByte){	
 			String a= StrValue.substring(12, 16);
 			
-			int b= Integer.valueOf(a,16);
-			return b;
+			b= Integer.valueOf(a,16);
 			}
-		return 0;
+		if(bPrintTestValue)Log.d(TAG, "getDataPointCount()b = "+b);
+		return b;
 	}
 	
 	/**
@@ -278,11 +342,14 @@ public class DataAnalysis {
 	 * @return
 	 */
 	public int getCaiYangFrequency(){
+		int frequency=0;
 		if(StrValue.length()<MinLenth){return 0;}
 		if(BluetoothConstast.CMD_Type_CaiJi==cmdByte){
-			return Integer.valueOf(StrValue.substring(16, 20),16);
+			frequency= Integer.valueOf(StrValue.substring(16, 20),16);
 			}
-		return 0;
+		
+		if(bPrintTestValue)Log.d(TAG, "getCaiYangFrequency()frequency = "+frequency);
+		return frequency;
 	}
 	
 	/**
@@ -294,7 +361,7 @@ public class DataAnalysis {
 		if(BluetoothConstast.CMD_Type_CaiJi==cmdByte){	
 		int count = getDataPointCount();
 		String waveDataB = StrValue.substring(20,count*4+20);
-		
+		if(bPrintTestValue)Log.d(TAG, "getWaveData()waveDataB = "+waveDataB);
 		return waveDataB;
 		}
 		return null;
@@ -307,6 +374,25 @@ public class DataAnalysis {
     public String getCRC32(){
     	if(StrValue.length()<MinLenth){return null;}
 		String StrCRC32=StrValue.substring(StrValue.length()-4*2,StrValue.length());
+		if(bPrintTestValue)Log.d(TAG, "getCRC32()StrCRC32 = "+StrCRC32);
 		return StrCRC32;
+    }
+    
+    public static long getReceiveDataLenth(String strFirstReceive,byte dlCmd){
+    	long lent=0;
+    	switch(dlCmd){
+    	case BluetoothConstast.CMD_Type_CaiJi:
+    		lent = Integer.valueOf(strFirstReceive.substring(12, 16),16)*4+20+(9+9+3*4)*2;
+    		break;
+    	case BluetoothConstast.CMD_Type_ReadSensorParams:
+    	case BluetoothConstast.CMD_Type_CaiJiZhuanSu:
+    	case BluetoothConstast.CMD_Type_SetSensorParams:
+    	case BluetoothConstast.CMD_Type_GetTemper:
+    	case BluetoothConstast.CMD_Type_GetCharge:
+    		lent=40;
+    		break;
+    	}
+    	
+    	return lent;
     }
 }

@@ -29,6 +29,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.check.PartItemActivity;
@@ -61,6 +62,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	private TextView mTextViewUnit;
 	private TextView mTextViewName;
 	private EditText mEditTextValue;
+	private TextView mTimeTV;
 	private Spinner mSpinner;
 	//DATA
 	//之间的通信接口
@@ -70,6 +72,8 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	private PartItemListAdapter AdapterList;
 	String mAbnormalStr="";
 	private int SpinnerSelectedIndex=0;
+	byte mDLCMD=0;
+	long mReceiveDataLenth=0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -128,6 +132,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		});
 		
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
+		mTimeTV = (TextView)view.findViewById(R.id.hint);
 		
 		mEditTextValue = (EditText)view.findViewById(R.id.check_temp);
 		mTextViewUnit = (TextView)view.findViewById(R.id.unit);
@@ -146,6 +151,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		switch(mType){
 		case 0://温度
 			mTextViewName.setText("温度:");
+			mDLCMD=(byte) 0XD6;
 			break;
 		case 1://录入
 			mTextViewName.setText("录入:");
@@ -159,6 +165,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			break;
 		case 6://转速
 			mTextViewName.setText("转速:");
+			mDLCMD=(byte) 0XD3;
 			break;
 		}
 	}
@@ -172,7 +179,8 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	
 	void getDataFromBLE(){
 		BLEControl.setParamates(handler);
-		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+		
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)0, (byte)0);
 		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
 	/**
@@ -207,7 +215,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     }
 
     
-   
+    int iFailedTime =0;
     Handler handler = new Handler(){
 
 		@Override
@@ -215,27 +223,50 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			// TODO Auto-generated method stub
 			switch(msg.what){
 		case BluetoothLeControl.MessageReadDataFromBT:
-			byte[]strbyte=msg.getData().getByteArray("key_byte");
+			byte[]strbyte=(byte[]) (msg.obj);
 			String str= SystemUtil.bytesToHexString(strbyte);
-			mStrReceiveData.append(str.toString());
-			int count=msg.getData().getInt("count");
-			Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-			Toast.makeText(MeasureTemperatureFragment.this.getActivity(), "Tmp "+count, Toast.LENGTH_SHORT).show();
+			if(mReceiveDataLenth==0){
+			mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+			}
+			if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
+				handler.sendMessage(handler.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+			}else{
+				
+				int count=msg.getData().getInt("count");
+				Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+			}
 			break;
 		case BluetoothLeControl.Message_Stop_Scanner:
+			mTimeTV.setVisibility(View.VISIBLE);
+			mTimeTV.setText("正在测量中");
 			break;
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
+			mTimeTV.setText("测量完毕");
 			mStrLastReceiveData = mStrReceiveData.toString();
 			mStrReceiveData.delete(0, mStrReceiveData.length());
 			DataAnalysis proxy = new DataAnalysis();
-			proxy.getResult(mStrLastReceiveData,(byte)0xd1);
-			int k = proxy.isValidate();
-//			Log.d(TAG,"AXCount ="+proxy.getAXCount());
-//			Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-//			mCheckedValue=proxy.getTemperatorValue();
-//			Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
+			
+			int k = proxy.isValidate(mStrLastReceiveData,(byte)mDLCMD);
+			if(k==0){
+				iFailedTime=0;
+			proxy.getResult();
+			if(mDLCMD == BluetoothConstast.CMD_Type_GetTemper){
+			mCheckedValue=proxy.getTemperValue();
+			}else if(mDLCMD == BluetoothConstast.CMD_Type_CaiJiZhuanSu){
+				mCheckedValue=proxy.getTemperValue();
+			}
 			mCanSendCMD=true;
 			measureAndDisplayData();
+			}else{
+				String strErr = mTimeTV.getText().toString();
+				if(!strErr.contains("数据丢失")){
+					strErr=strErr+"数据丢失,请重测";
+					;
+				}else{
+					iFailedTime++;
+				}
+				mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
+			}
 			break;
 		case BluetoothLeControl.Message_Connection_Status:
 			switch(msg.arg1){
@@ -331,9 +362,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}
 			break;
 		case PartItemContact.MEASURE_DATA:
-			if(mCanSendCMD){
+		//	if(mCanSendCMD){
 				getDataFromBLE();
-			}
+				mReceiveDataLenth=0;
+				mStrReceiveData.delete(0, mStrReceiveData.length());
+		//	}
 			
 			break;
 		}

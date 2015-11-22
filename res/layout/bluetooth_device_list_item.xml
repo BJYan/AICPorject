@@ -16,16 +16,33 @@
             android:gravity="center_vertical" 
             android:padding="5dip"
             android:src="@drawable/bluetooth_device_icon"/>
+         <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_weight="1">
         <TextView
             android:id="@+id/bluetooth_device_name"
             android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_height="wrap_content"           
             android:text="AIC3608" 
             android:textSize="@dimen/listview_group_text_size"
             android:textColor="@color/black"
             android:gravity="center_vertical" 
-            android:paddingLeft="10dip"/>
+            />
+         <TextView
+            android:id="@+id/bluetooth_mac"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"           
+            android:text="12:34:35:78:db" 
+            android:textSize="@dimen/listview_in_line_left_right_padding"
+            android:textColor="@color/black"
+            android:gravity="center_vertical" 
+            />
+         </LinearLayout>
          <TextView
             android:id="@+id/bluetooth_device_status"
             android:layout_width="wrap_content"
@@ -35,7 +52,7 @@
             android:textSize="@dimen/listview_group_text_size"
             android:textColor="@color/black"
             android:gravity="center_vertical" 
-            android:paddingLeft="10dip"/>
+            android:padding="3dip"/>
         <View 
             android:layout_height="fill_parent"
             android:layout_width="1dip"

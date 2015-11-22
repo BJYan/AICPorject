@@ -226,7 +226,7 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
-				Log.d(TAG, "HandleMessage() " +msg.getData().getString("data"));
+				Log.d(TAG, "HandleMessage() " +(msg.obj).toString());
 				break;
 			}
 			super.handleMessage(msg);

@@ -110,14 +110,21 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 				// TODO Auto-generated method stub
+				Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connected_BLE_Address);
 				if(arg1){
 					mBTControl.setParamates(mHandler);
-					mBTControl.Connection(bondedDevices.get(BTIndex).getAddress());
-	            	handler.sendEmptyMessageDelayed(6, 1000);
+					String Address = bondedDevices.get(BTIndex).getAddress();
+					mBTControl.Connection(Address);	
+					msg.arg1=BluetoothLeControl.Message_Connect_Status_Connected;
+					msg.obj=Address;
+					mHandler.sendMessage(msg);
 	            	bBTConnected=true;
 				}else{
 					mBTControl.disconnection();
 					bBTConnected=false;
+					msg.arg1=BluetoothLeControl.Message_Connect_Status_DisConnected;
+					msg.obj="";
+					mHandler.sendMessage(msg);
 				}
 			}
 			
@@ -125,6 +132,8 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 		
 		TextView DevName = (TextView) arg2.findViewById(R.id.bluetooth_device_name);
 		DevName.setText(bondedDevices.get(arg0).getName());
+		TextView DevMac = (TextView) arg2.findViewById(R.id.bluetooth_device_mac);
+		DevMac.setText(bondedDevices.get(arg0).getAddress());
 		return arg2;
 	}
 
@@ -140,22 +149,6 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 		return false;
 	}
 
-	Handler handler = new Handler(){
-
-		@Override
-		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			switch(msg.what){
-			case 6:
-				//mBTControl.Connection(bondedDevices.get(BTIndex).getAddress());
-				//byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);	            	 
-            	//mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmd);
-				break;
-			}
-			super.handleMessage(msg);
-		}
-		
-	};
 	
 	public void  sendCommmand2BLE(byte[]cmdByte){
 		if(cmdByte==null){return ;}
