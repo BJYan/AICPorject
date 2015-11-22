@@ -6,7 +6,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
-	<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -16,14 +16,16 @@
             android:layout_height="wrap_content"
             android:text="@string/check_name"
             android:textSize="@dimen/normal_text_size" />
+
         <TextView
             android:id="@+id/check_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
             android:singleLine="true"
-            android:textSize="@dimen/normal_text_size"/>
+            android:text=""
+            android:textSize="@dimen/normal_text_size" />
     </LinearLayout>
+
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
@@ -35,87 +37,191 @@
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/notification_current" 
-        android:visibility="gone"/>
+        android:src="@drawable/notification_current"
+        android:visibility="gone" />
 
-  <!-- 中间部分 -->
-	 <LinearLayout
-	     android:layout_width="match_parent"
-	     android:layout_height="wrap_content" 
-	     android:orientation="horizontal"
-	     android:gravity="center"
-	     android:weightSum="3">
-	     <!-- 左侧部分 -->
-		     <LinearLayout
-		     android:layout_width="match_parent"
-		     android:layout_height="wrap_content" 
-		     android:orientation="vertical"
-		     android:layout_weight="2"
-		     android:layout_marginLeft="20dp">
-		     <!-- X -->
-			     <LinearLayout
-			     android:layout_width="match_parent"
-			     android:layout_height="wrap_content" 
-			     android:orientation="horizontal"
-			     android:gravity="left">
+   
+ <!-- X -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.21" 
+        android:id="@+id/Xline"
+        android:layout_gravity="center">
 
-			         <TextView
-			             android:id="@+id/x"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text="@string/x"
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			         <TextView
-			             android:id="@+id/x_value"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text=""
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			     
-			     </LinearLayout>
-			     <!-- Y -->
-			     <LinearLayout
-			     android:layout_width="match_parent"
-			     android:layout_height="wrap_content" 
-			     android:orientation="horizontal"
-			     android:gravity="left"
-			     android:id="@+id/y_linear">
-			       <TextView
-			             android:id="@+id/y"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text="@string/y"
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			         <TextView
-			             android:id="@+id/y_value"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text=""
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			     </LinearLayout>
-			     <!-- Z -->
-			     <LinearLayout
-			     android:layout_width="match_parent"
-			     android:layout_height="wrap_content" 
-			     android:orientation="horizontal"
-			     android:gravity="left"
-			     android:id="@+id/z_linear">
-			       <TextView
-			             android:id="@+id/z"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text="@string/z"
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			         <TextView
-			             android:id="@+id/z_value"
-			             android:layout_width="wrap_content"
-			             android:layout_height="wrap_content"
-			             android:text=""
-			             android:textAppearance="?android:attr/textAppearanceMedium" />
-			     </LinearLayout>
-		     </LinearLayout>
-		     
-		     <!-- 右边部分，显示倒计时 -->
+        <TextView
+            android:id="@+id/x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="32dp"
+            android:text="@string/x"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/x_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/x"
+            android:layout_alignBottom="@+id/x"
+            android:layout_toRightOf="@+id/x"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/x_FengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/x"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="峰  值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/x_FengFengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/x_FengValue"
+            android:layout_marginTop="24dp"
+            android:text="峰峰值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/x_ValidValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/x_FengFengValue"
+            android:layout_marginTop="27dp"
+            android:text="有效值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+<!-- Y -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.21" 
+        android:id="@+id/Yline"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/y"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="32dp"
+            android:text="@string/y"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/y_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/y"
+            android:layout_alignBottom="@+id/y"
+            android:layout_toRightOf="@+id/y"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/y_FengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/y"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="峰  值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/y_FengFengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/y_FengValue"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="20dp"
+            android:text="峰峰值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/y_ValidValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/y_FengFengValue"
+            android:layout_marginTop="27dp"
+            android:layout_marginRight="20dp"
+            android:text="有效值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+    
+    <!-- Z -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.21" 
+        android:id="@+id/Zline"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/z"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="32dp"
+            android:text="@string/z"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/z_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/z"
+            android:layout_alignBottom="@+id/z"
+            android:layout_toRightOf="@+id/z"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/z_FengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/z"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="峰  值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/z_FengFengValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/z_FengValue"
+            android:layout_marginTop="24dp"
+            android:text="峰峰值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/z_ValidValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/z_FengFengValue"
+            android:layout_marginTop="27dp"
+            android:text="有效值"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+    <!-- 右边部分，显示倒计时 -->
 		     <LinearLayout
 		     android:layout_width="match_parent"
 		     android:layout_height="wrap_content" 
@@ -135,9 +241,7 @@
 	             android:text=""
 	             android:textAppearance="?android:attr/textAppearanceMedium" />
 		     </LinearLayout>
-	 
-	 </LinearLayout>
- <LinearLayout
+		     <LinearLayout
      android:layout_width="match_parent"
      android:layout_height="wrap_content" 
      android:orientation="horizontal"
@@ -161,5 +265,4 @@
 	        android:layout_marginRight="20dp"        
 	        />
  </LinearLayout>
-
 </LinearLayout>

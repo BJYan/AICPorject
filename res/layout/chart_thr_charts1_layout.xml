@@ -19,16 +19,16 @@
         <Spinner 
             android:layout_height="wrap_content"
             android:layout_width="70dip"
-            android:entries="@array/check_data_type"/>
+            android:entries="@array/CaiYangDianShu"/>
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="60dip"
-            android:text="采样点数"
+            android:text="采样频率"
             android:layout_marginLeft="10dip"/>
         <Spinner 
             android:layout_height="wrap_content"
             android:layout_width="70dip"
-            android:entries="@array/check_data_type"/>
+            android:entries="@array/CaiYangPinLv"/>
     </LinearLayout>
     <LinearLayout 
         android:layout_height="wrap_content"

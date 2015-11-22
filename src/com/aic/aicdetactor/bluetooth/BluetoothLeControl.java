@@ -159,7 +159,6 @@ public class BluetoothLeControl {
 						+" -> "
 						+SystemUtil.bytesToHexString(characteristic.getValue()));
 			 Log.d(TAG,"onCharacteristicRead() "+","+SystemUtil.bytesToHexString(characteristic.getValue()));
-			 mReceiveDataCount=0;
 		}
 		
 		
@@ -178,12 +177,8 @@ public class BluetoothLeControl {
 //					+teStr);
 			bGetDataContinue=true;
 			mReceiveDataCount++;
+			Log.d(TAG,"onCharacteristicWrite() "+mReceiveDataCount);
 			Message msg = mHandler.obtainMessage(MessageReadDataFromBT);
-			//Bundle b = new Bundle();
-			//b.putString("data", teStr);	
-			//b.putByteArray("key_byte", byteData);
-			//b.putInt("count", count);
-			//msg.setData(b);
 			msg.obj=byteData;
 			mHandler.sendMessage(msg);
 			bGetDataContinue=false;
@@ -231,7 +226,11 @@ public class BluetoothLeControl {
 //		        			}
 	        			
 	        			if(cmdByte!=null){
+	        				
+	        				Log.d(TAG,"Communication2Bluetooth "+ SystemUtil.bytesToHexString(cmdByte) +",last RunCounts = "+mReceiveDataCount);
+	        				mReceiveDataCount=0;
 	        			gattCharacteristic.setValue(cmdByte);
+	        			
 	        			}
 	        			else{
 	        				mHandler.sendEmptyMessage(MSG_ERROR);
@@ -240,7 +239,7 @@ public class BluetoothLeControl {
 	        			//往蓝牙模块写入数据
 	        			mBLE.writeCharacteristic(gattCharacteristic);
 	        			recLen=0;
-	        			handler.postDelayed(runnable, 1000);
+	        		//	handler.postDelayed(runnable, 1000);
 	        		}
 	        		
 	        		//read BLE data

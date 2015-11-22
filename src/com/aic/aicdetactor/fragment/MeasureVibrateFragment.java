@@ -23,10 +23,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,8 +80,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	private TextView mDeviceNameTextView = null;
 	private String TAG = "luotest";
 	private ImageView mHistoryImageView = null;
-	private LinearLayout MYLinear = null;
-	private LinearLayout MZLinear = null;
+	private RelativeLayout MXLinear = null;
+	private RelativeLayout MZLinear = null;
 	PartItemListAdapter AdapterList;
 	TextView mTimeTV=null;
 	private float mCheckValue =0.0f;
@@ -88,6 +90,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	LayoutInflater mInflater;
 	long mReceiveDataLenth=0;
 	byte mDLCMD=0;
+	DataAnalysis dataAnalysis;
+	StringBuffer mStrReceiveData=new StringBuffer();;
+	String mStrLastReceiveData="";
+	int iFailedTime =0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
@@ -172,14 +178,14 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		mYTextView = (TextView)views.get(0).findViewById(R.id.y_value);
 		mZTextView = (TextView)views.get(0).findViewById(R.id.z_value);
 		mTimeTextView = (TextView)views.get(0).findViewById(R.id.time_value);
-		MYLinear = (LinearLayout)views.get(0).findViewById(R.id.y_linear);
-		MZLinear = (LinearLayout)views.get(0).findViewById(R.id.z_linear);
+		MXLinear = (RelativeLayout)views.get(0).findViewById(R.id.Xline);
+		MZLinear = (RelativeLayout)views.get(0).findViewById(R.id.Zline);
 		mTimeTV = (TextView)views.get(0).findViewById(R.id.time);
 		if(mPartItemData.Axle_Number==0){
-			MYLinear.setVisibility(View.GONE);			
+			MXLinear.setVisibility(View.GONE);			
 		}
 		if(mPartItemData.Axle_Number==1){
-			MYLinear.setVisibility(View.GONE);
+			MXLinear.setVisibility(View.GONE);
 			MZLinear.setVisibility(View.GONE);
 		}
 		if(mPartItemData.Axle_Number==2){
@@ -197,6 +203,20 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		LinearLayout timeChartViewY = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_first_chart);
 		LinearLayout timeChartViewX = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_sec_chart);
 		LinearLayout timeChartViewZ = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_thr_chart);
+		EditText XetMax = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content1);
+		EditText XetFengFeng = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content2);
+		EditText XetValid = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content3);
+		XetMax.setText(""+dataAnalysis.getFabsMaxValue());
+		XetFengFeng.setText(""+dataAnalysis.getFengFengValue());		
+		XetMax.setText(""+dataAnalysis.getValidValue());
+		
+		TextView y_FengValue = (TextView) views.get(0).findViewById(R.id.y_FengValue);
+		TextView y_FengFengValue = (TextView) views.get(0).findViewById(R.id.y_FengFengValue);
+		TextView y_ValidValue = (TextView) views.get(0).findViewById(R.id.y_ValidValue);
+		
+		y_FengValue.setText("峰值:"+dataAnalysis.getFabsMaxValue());
+		y_FengFengValue.setText("峰峰值:"+dataAnalysis.getFengFengValue());
+		y_ValidValue.setText("有效值:"+dataAnalysis.getValidValue());
 		
 		LinearLayout axesChartViewX = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_first_chart);
 		LinearLayout axesChartViewY = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_sec_chart);
@@ -206,16 +226,23 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		//DataAnalysis dataAnalysis = new DataAnalysis();
 		float[] data = dataAnalysis.getData();
-		
-		timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
+		if(dataAnalysis.getAXCount()==1){
+			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
+			timeChartViewX.setVisibility(View.GONE);
+			timeChartViewZ.setVisibility(View.GONE);
+			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
+			axesChartViewX.setVisibility(View.GONE);
+			axesChartViewZ.setVisibility(View.GONE);
+			frequencyChartView.setVisibility(View.GONE);		
+		}else if(dataAnalysis.getAXCount()==3){			
 		timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
-		timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));
-		
+		timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));		
 		axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
-		axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
 		axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));
-		
 		frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data));
+		}
+		
+		
 	}
 
 	@Override
@@ -262,12 +289,22 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		  displayPic(null);
 			super.onStart();
 		}
-	  
-	Handler handler = new Handler(); 
+	  int recLen =0;
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
 			measureAndDisplayData();
+			if(recLen++<=700){
+				mHandle.postDelayed(this, 1100); 
+				getDataFromBLE();
+				mCanSendCMD=false;
+				mReceiveDataLenth=0;
+				mStrReceiveData.delete(0, mStrReceiveData.length());
+				Log.d(TAG, "run() " +recLen);
+				
+		}else{
+			mColorTextView.setText("测试完毕");
+		}
 		}
 	}; 
 	
@@ -352,7 +389,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	case 2:
     		break;
     	}
-    	mXTextView.setText(String.valueOf(mCheckValue));
+    	mXTextView.setText(String.valueOf(mCheckValue)+ " "+mPartItemData.Unit);
     	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		if(mColorTextView !=null)
@@ -433,35 +470,32 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			break;
 		case PartItemContact.MEASURE_DATA:
 	//		if(mCanSendCMD){
+			if(false){
+			mHandle.postDelayed(runnable, 1000);
+			}else{
+			
 				getDataFromBLE();
 				mCanSendCMD=false;
 				mReceiveDataLenth=0;
 				mStrReceiveData.delete(0, mStrReceiveData.length());
-		//	}
+			}
 			
 			break;
 		}
 		
 	}
 
-	@Override
-	protected Handler getHandler() {
-		// TODO Auto-generated method stub
-		//return super.getHandler();
-		return mHandle;
-	}
 	void getDataFromBLE(){
 		BLEControl.setParamates(mHandle);
 		mDLCMD=(byte) 0xd1;
 		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)1, (byte)1);
 		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
-	DataAnalysis dataAnalysis;
-	StringBuffer mStrReceiveData=new StringBuffer();;
-	String mStrLastReceiveData="";
-	int iFailedTime =0;
+	
+	byte []mDataBufferByte=null;
 	public Handler mHandle = new Handler(){
 
+		int receiveCount =0;
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
@@ -470,12 +504,18 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				byte[]strbyte=(byte[]) (msg.obj);
 				String str= SystemUtil.bytesToHexString(strbyte);
 				int count=msg.getData().getInt("count");
+				receiveCount++;
 				if(mReceiveDataLenth==0){
+					//String str= SystemUtil.bytesToHexString(strbyte);
 					mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+					mDataBufferByte = new byte[(int)mReceiveDataLenth];
+					//System.arraycopy(strbyte,0,mDataBufferByte,0,strbyte.length);
+					}else{
+						//System.arraycopy(strbyte,0,mDataBufferByte,0,strbyte.length);
 					}
 				
 				if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
-					handler.sendMessage(handler.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
 				}else{						
 					
 					Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
@@ -506,7 +546,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 							iFailedTime++;
 						}
 						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-						
+						Toast.makeText(getActivity(), strErr, Toast.LENGTH_LONG).show();
 						return ;
 					}else{
 						iFailedTime=0;
@@ -525,7 +565,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					String Wavedata=dataAnalysis.getWaveData().toString();
 					InsertMediaData(Wavedata,false);
 					
-					ifNeedAnalysisData((byte)msg.arg1);
+					ifNeedAnalysisData(mDLCMD);
 					}
 				}else{
 					Log.d(TAG,"mStrReceiveData is null");
@@ -552,8 +592,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	 */
 void ifNeedAnalysisData(byte type){
 	if(type != BluetoothConstast.CMD_Type_CaiJi){return ;}
-	
-	
 	float[] data = dataAnalysis.getData();
 	float[] MinMaxTemp = new float[]{data[0],data[0]};
 	for(int i=0;i<data.length;i++){
@@ -610,4 +648,6 @@ void ifNeedAnalysisData(byte type){
 		 
 		Event.UploadWaveDataRequestInfo_Event(null,null,null,null,bytedata);
 	}
+	
+	 
 }

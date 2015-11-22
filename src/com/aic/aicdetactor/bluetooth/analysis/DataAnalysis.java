@@ -1,5 +1,7 @@
 package com.aic.aicdetactor.bluetooth.analysis;
 
+import java.math.BigDecimal;
+
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 
 import android.util.Log;
@@ -154,6 +156,9 @@ public class DataAnalysis {
 			dValue+=Math.pow(data[i], 2);
 		}
 		dValue=Math.sqrt(dValue/data.length);
+		BigDecimal   b  =   new BigDecimal(dValue);  
+		dValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+		 
 		if(bPrintTestValue)Log.d(TAG, "getValidValue()dValue = "+dValue);
 		return (float) dValue;
 	}
@@ -168,6 +173,9 @@ public class DataAnalysis {
 				dValue=Math.abs(data[i]);
 			}
 		}
+		BigDecimal   b  =   new BigDecimal(dValue);  
+		dValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+		 
 		if(bPrintTestValue)Log.d(TAG, "getFabsMaxValue()dValue = "+dValue);
 		return dValue;
 	}
@@ -187,8 +195,11 @@ public class DataAnalysis {
 				nValue=data[i];
 			}
 		}
-		if(bPrintTestValue)Log.d(TAG, "getFengFengValue()dValue-nValue = "+(dValue-nValue));
-		return dValue-nValue;
+		BigDecimal   b  =   new BigDecimal(dValue-nValue);  
+		dValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+		 
+		if(bPrintTestValue)Log.d(TAG, "getFengFengValue()dValue = "+dValue);
+		return dValue;
 	}
 	
 	public int  isValidate(String str,byte cmdtype){
@@ -275,6 +286,9 @@ public class DataAnalysis {
 		if(BluetoothConstast.CMD_Type_GetCharge==cmdByte){
 			chargeValue=Integer.valueOf(StrValue.substring(7, 15),16);
 		}
+		BigDecimal   b  =   new BigDecimal(chargeValue);  
+		chargeValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+		
 		if(bPrintTestValue)Log.d(TAG, "getChargeValue()chargeValue = "+chargeValue);
 		return chargeValue;
 	}
@@ -288,12 +302,14 @@ public class DataAnalysis {
 		if(BluetoothConstast.CMD_Type_GetTemper==cmdByte){
 			tempValue=Integer.valueOf(StrValue.substring(7, 15),16);
 		}
+		BigDecimal   b  =   new BigDecimal(tempValue);  
+		tempValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
 		if(bPrintTestValue)Log.d(TAG, "getTemperValue()chargeValue = "+tempValue);
 		return tempValue;
 	}
 	
 	/**
-	 * 获取温度数值，根据下发的D6命令
+	 * 获取转速数值，根据下发的D3命令
 	 * @return
 	 */
 	public float getZhuanSuValue(){
