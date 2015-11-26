@@ -150,4 +150,7 @@
 <color name="transparent">#00000000</color><!--透明 --> 
 <color name="lisv_item_background">#55cccccc</color><!--半透明灰 -->
 <color name="listview_line_color">#DCDCDC</color>
+<color name="partitem_tabhost_color">#3399cc</color>
+
+
 </resources>

@@ -53,5 +53,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
 	    tv.setTextColor(Color.BLACK);
 	    return convertView;
 	  }
-
+	public void setListData(List<String> stringArray){
+		mStringArray=stringArray;
+	}
 	}

@@ -128,6 +128,9 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		super.onResume();
 		mAllBTDevices.clear();
 		scanLeDevice(true);
+		mBondedDevices = getBondedDevices();
+		btBindDevListAdapter.notifyDataSetChanged();
+		btBindDevListAdapter.notifyDataSetInvalidated();
 		
 		// Register the BroadcastReceiver
 		
@@ -227,9 +230,9 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				byte[]strbyte=(byte[]) (msg.obj);
 				String str= SystemUtil.bytesToHexString(strbyte);
 				mStrReceiveData.append(str.toString());
-				int count=msg.getData().getInt("count");
+				//int count=msg.getData().getInt("count");
 				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-				Toast.makeText(BlueTooth_Fragment.this.getActivity(), ""+count, Toast.LENGTH_SHORT).show();
+				Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mBluetoothAdapter.stopLeScan(mLeScanCallback);

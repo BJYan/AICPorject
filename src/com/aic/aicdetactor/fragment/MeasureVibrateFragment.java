@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -23,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,6 +34,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +59,7 @@ import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
 import com.aic.aicdetactor.util.SystemUtil;
 
 /**
@@ -84,6 +90,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	private RelativeLayout MZLinear = null;
 	PartItemListAdapter AdapterList;
 	TextView mTimeTV=null;
+	TabHost tabHost;
 	private float mCheckValue =0.0f;
 	
 	List<View> views;
@@ -93,7 +100,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	DataAnalysis dataAnalysis;
 	StringBuffer mStrReceiveData=new StringBuffer();;
 	String mStrLastReceiveData="";
-	int iFailedTime =0;
+	int iFailedTimes =0;
+	final int MAX_FAILED_TIMES=3;
+	private Timer mTimer=null;
+	private TimerTask mTimerTask=null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment :onCreate()");
@@ -113,7 +124,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				//已巡检的项的个数统计，暂时由是否有巡检时间来算，如果有的话，即已巡检过了，否则为未巡检。
 				mMapList.add(map);
 			}
-			
+			startTimer();
 			super.onCreate(savedInstanceState);
 	}
  
@@ -121,20 +132,74 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		this.AdapterList = AdapterList;
 	}
 	
+	void startTimer(){		
+		if(mTimerTask==null){
+		mTimerTask = new TimerTask(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				getDataFromBLE();
+			}
+			};
+		}
+		if(mTimer==null){
+			mTimer = new Timer();
+			mTimer.schedule(mTimerTask, 1000);
+			}
+		mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
+	}
+	
+	void closeTimer(){
+		if(mTimer!=null){
+			mTimer.cancel();
+			mTimer=null;
+		}
+		
+		if(mTimerTask!=null){
+			mTimerTask.cancel();
+			mTimerTask=null;
+		}
+		
+		mCanSendCMD=false;
+		mReceiveDataLenth=0;
+		if(mStrReceiveData!=null){
+		mStrReceiveData.delete(0, mStrReceiveData.length());
+		}
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.d(TAG,"Vibrate_fragment:onCreateView()");
+		
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
-		ViewPager view = (ViewPager) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
+		View view = (View) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
+		final ViewPager viewPager = (ViewPager)view.findViewById(R.id.vibrate_vPager);
+		tabHost = (TabHost)view.findViewById(R.id.vibrate_tabhost);  
+        // 如果没有继承TabActivity时，通过该种方法加载启动tabHost  
+        tabHost.setup();
+        tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("有效值")  
+                .setContent(  
+                R.id.view1));
+  
+        tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("时域")  
+                .setContent(R.id.view2));
+        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("频域")  
+                .setContent(  
+                R.id.view1));
+  
+        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
+                .setContent(R.id.view2));
+        
 		views.add(mInflater.inflate(R.layout.brivate, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
 		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
 		CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
-		view.setAdapter(DialogPagerAdapter);
-		
+		viewPager.setAdapter(DialogPagerAdapter);
+		 viewPager.setCurrentItem(0);
+	        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
 		mListView = (ListView)views.get(0).findViewById(R.id.listView1);
 		mListViewAdapter = new SimpleAdapter(this.getActivity().getApplicationContext(), mMapList,
 				R.layout.checkunit, new String[] { 			
@@ -165,7 +230,16 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				
 			}
 		});
-		
+		tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
+            @Override  
+            public void onTabChanged(String tabId){  
+                Log.i("DownLoadFragment--tabId--=", tabId);  
+                if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
+                if(tabId.equals("tab2")) viewPager.setCurrentItem(1);
+                if(tabId.equals("tab3")) viewPager.setCurrentItem(2);
+                if(tabId.equals("tab4")) viewPager.setCurrentItem(3);
+            }  
+        });
 		mImageView = (ImageView)views.get(0).findViewById(R.id.imageView1);
 		
 		mRadioButton = (RadioButton)views.get(0).findViewById(R.id.colorRadio);
@@ -194,6 +268,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		mColorTextView = (TextView)views.get(0).findViewById(R.id.colordiscrip);
 		initDisplayData();
 		AdapterList.getCurrentPartItem().setSartDate();
+		InitChart();
 		return view;
 	}
 	
@@ -203,92 +278,70 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		LinearLayout timeChartViewY = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_first_chart);
 		LinearLayout timeChartViewX = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_sec_chart);
 		LinearLayout timeChartViewZ = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_thr_chart);
+		
+		LinearLayout char1ZL = (LinearLayout) views.get(1).findViewById(R.id.zL);
+		LinearLayout char1YL = (LinearLayout) views.get(1).findViewById(R.id.yL);
+		LinearLayout char1XL = (LinearLayout) views.get(1).findViewById(R.id.xL);
+		
 		EditText XetMax = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content1);
 		EditText XetFengFeng = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content2);
 		EditText XetValid = (EditText) views.get(1).findViewById(R.id.dialog_thr_chart_first_option_content3);
-		XetMax.setText(""+dataAnalysis.getFabsMaxValue());
-		XetFengFeng.setText(""+dataAnalysis.getFengFengValue());		
-		XetMax.setText(""+dataAnalysis.getValidValue());
+		
+		
 		
 		TextView y_FengValue = (TextView) views.get(0).findViewById(R.id.y_FengValue);
 		TextView y_FengFengValue = (TextView) views.get(0).findViewById(R.id.y_FengFengValue);
 		TextView y_ValidValue = (TextView) views.get(0).findViewById(R.id.y_ValidValue);
 		
-		y_FengValue.setText("峰值:"+dataAnalysis.getFabsMaxValue());
-		y_FengFengValue.setText("峰峰值:"+dataAnalysis.getFengFengValue());
-		y_ValidValue.setText("有效值:"+dataAnalysis.getValidValue());
 		
 		LinearLayout axesChartViewX = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_first_chart);
 		LinearLayout axesChartViewY = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_sec_chart);
 		LinearLayout axesChartViewZ = (LinearLayout) views.get(2).findViewById(R.id.dialog_thr_chart2_thr_chart);
 		
+		LinearLayout axesXLL = (LinearLayout) views.get(2).findViewById(R.id.xLL);
+		LinearLayout axesYLL = (LinearLayout) views.get(2).findViewById(R.id.yLL);
+		LinearLayout axesZLL = (LinearLayout) views.get(2).findViewById(R.id.zLL);
+		
+		
 		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
 		
-		//DataAnalysis dataAnalysis = new DataAnalysis();
-		float[] data = dataAnalysis.getData();
-		if(dataAnalysis.getAXCount()==1){
-			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
-			timeChartViewX.setVisibility(View.GONE);
-			timeChartViewZ.setVisibility(View.GONE);
-			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data));
-			axesChartViewX.setVisibility(View.GONE);
-			axesChartViewZ.setVisibility(View.GONE);
-			frequencyChartView.setVisibility(View.GONE);		
-		}else if(dataAnalysis.getAXCount()==3){			
-		timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
-		timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));		
-		axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data));
-		axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data));
-		frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data));
+		if(dataAnalysis!=null){
+			y_FengValue.setText("峰值:"+dataAnalysis.getFabsMaxValue());
+			y_FengFengValue.setText("峰峰值:"+dataAnalysis.getFengFengValue());
+			y_ValidValue.setText("有效值:"+dataAnalysis.getValidValue());
+			
+			XetMax.setText(""+dataAnalysis.getFabsMaxValue());
+			XetFengFeng.setText(""+dataAnalysis.getFengFengValue());		
+			XetValid.setText(""+dataAnalysis.getValidValue());
+			
+			float[] data = dataAnalysis.getData();
+			if(dataAnalysis.getAXCount()==1){
+				timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+				char1XL.setVisibility(View.GONE);
+				char1ZL.setVisibility(View.GONE);
+				axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+				axesXLL.setVisibility(View.GONE);
+				axesZLL.setVisibility(View.GONE);
+				frequencyChartView.setVisibility(View.GONE);		
+			}else if(dataAnalysis.getAXCount()==3){			
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			}
+		}else{
+			float[] data = new float[1024];
+			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
+			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
 		}
-		
 		
 	}
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		Log.d(TAG,"Vibrate_fragment:onViewCreated()");
-		super.onViewCreated(view, savedInstanceState);
-		
-		//根据传入的PartItemIndex 索引 获取显示的数据项
-		Bundle args = this.getArguments();
-//		 partItemObject = ((myApplication) getApplication()).getPartItemObject(mStationIndex,mDeviceIndex);
-//		   Log.d(TAG, "partItemDataList IS " + partItemObject.toString());
-//		   List<Object> deviceItemList = ((myApplication) getApplication()).getDeviceItemList(mStationIndex);
-//		   
-//		   mCurrentDeviceObject = deviceItemList.get(mDeviceIndex);
-//		   mDeviceQueryNameStr =   ((myApplication) getApplication()).getDeviceQueryNumber(mCurrentDeviceObject);
-//		   Log.d(TAG, "mCurrentDeviceObject IS " + mCurrentDeviceObject.toString());
-//		   mPartItemSelectedList = ((myApplication) getApplication()).getPartItemListByItemDef(partItemObject,itemIndex);
-//			
-//		   if(updateAdapter){
-//			   mMapList.clear();
-//			   }
-//		   if(mBValue == null){
-//			   mBValue = new boolean[mPartItemSelectedList.size()];
-//			   for(int i = 0; i < mPartItemSelectedList.size(); i++){
-//				   mBValue[i]=false;
-//				   }
-//		   }
-		
-		//measureAndDisplayData();
-		//handler.postDelayed(runnable, 500);
-		displayPic(null);
-	}
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-	
-	  @Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-		  
-		  displayPic(null);
-			super.onStart();
-		}
 	  int recLen =0;
 	Runnable runnable = new Runnable() {
 		@Override
@@ -308,70 +361,13 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		}
 	}; 
 	
-	void displayPic(Uri path){
-		if(path == null ){
-			return ;
-		}
-		   try {  
-               // Bundle extra = data.getExtras(); 
-              //  Bitmap bmp = (Bitmap)data.getExtras().get("data");
-                Log.d(TAG, "displayPic()  1"); 
-              
-                //首先取得屏幕对象  
-                Display display = this.getActivity().getWindowManager().getDefaultDisplay();  
-                //获取屏幕的宽和高  
-                int dw = display.getWidth();  
-                int dh = display.getHeight();  
-                /** 
-                 * 为了计算缩放的比例，我们需要获取整个图片的尺寸，而不是图片 
-                 * BitmapFactory.Options类中有一个布尔型变量inJustDecodeBounds，将其设置为true 
-                 * 这样，我们获取到的就是图片的尺寸，而不用加载图片了。 
-                 * 当我们设置这个值的时候，我们接着就可以从BitmapFactory.Options的outWidth和outHeight中获取到值 
-                 */  
-                BitmapFactory.Options op = new BitmapFactory.Options(); 
-                Log.d("test", "displayPic()  2"); 
-                //op.inSampleSize = 8;  
-                op.inJustDecodeBounds = true;  
-                //Bitmap pic = BitmapFactory.decodeFile(imageFilePath, op);//调用这个方法以后，op中的outWidth和outHeight就有值了  
-                //由于使用了MediaStore存储，这里根据URI获取输入流的形式  
-                Bitmap pic = BitmapFactory.decodeStream(this.getActivity()
-                        .getContentResolver().openInputStream(path),  
-                        null, op);  
-                int wRatio = (int) Math.ceil(op.outWidth / (float) dw); //计算宽度比例  
-                int hRatio = (int) Math.ceil(op.outHeight / (float) dh); //计算高度比例  
-                Log.d(TAG, wRatio + "wRatio");  
-                Log.d(TAG, hRatio + "hRatio");  
-                /** 
-                 * 接下来，我们就需要判断是否需要缩放以及到底对宽还是高进行缩放。 
-                 * 如果高和宽不是全都超出了屏幕，那么无需缩放。 
-                 * 如果高和宽都超出了屏幕大小，则如何选择缩放呢》 
-                 * 这需要判断wRatio和hRatio的大小 
-                 * 大的一个将被缩放，因为缩放大的时，小的应该自动进行同比率缩放。 
-                 * 缩放使用的还是inSampleSize变量 
-                 */  
-                Log.d(TAG, "displayPic()  3"); 
-                if (wRatio > 1 && hRatio > 1) {  
-                    if (wRatio > hRatio) {  
-                        op.inSampleSize = wRatio;  
-                    } else {  
-                        op.inSampleSize = hRatio/2;  
-                    }  
-                }  
-                op.inJustDecodeBounds = false; //注意这里，一定要设置为false，因为上面我们将其设置为true来获取图片尺寸了  
-                pic = BitmapFactory.decodeStream(this.getActivity().getContentResolver().openInputStream(path), null, op);  
-                mImageView.setImageBitmap(pic);  
-            } catch (Exception e) {  
-            	Log.d(TAG,"displayPic() Exception "+e.toString());
-                e.printStackTrace();  
-            }   
-	}
 	 @Override
 	protected void initDisplayData(){
-		mXTextView.setText(getPartItemData());
+		 mYTextView.setText(getPartItemData());
 		if(mPartItemData.T_Item_Abnormal_Grade_Id!=AbnomalGradeIdConstant.NORMAL){
-			mXTextView.setTextColor(Color.RED);
+			mYTextView.setTextColor(Color.RED);
 		}else{
-			mXTextView.setTextColor(Color.BLACK);
+			mYTextView.setTextColor(Color.BLACK);
 		}
 	}
 	
@@ -389,7 +385,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	case 2:
     		break;
     	}
-    	mXTextView.setText(String.valueOf(mCheckValue)+ " "+mPartItemData.Unit);
+    	mYTextView.setText(String.valueOf(mCheckValue)+ " "+mPartItemData.Unit);
     	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		if(mColorTextView !=null)
@@ -470,15 +466,16 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			break;
 		case PartItemContact.MEASURE_DATA:
 	//		if(mCanSendCMD){
+			closeTimer();
+			startTimer();
 			if(false){
 			mHandle.postDelayed(runnable, 1000);
-			}else{
-			
-				getDataFromBLE();
-				mCanSendCMD=false;
-				mReceiveDataLenth=0;
-				mStrReceiveData.delete(0, mStrReceiveData.length());
 			}
+//			else{
+//			
+//				getDataFromBLE();
+//				
+//			}
 			
 			break;
 		}
@@ -534,22 +531,23 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					if(dataAnalysis==null){
 						dataAnalysis = new DataAnalysis();
 					}
-					int k = dataAnalysis.isValidate(mStrLastReceiveData,mDLCMD);
+					int isValide = dataAnalysis.isValidate(mStrLastReceiveData,mDLCMD);
 					mStrReceiveData.delete(0, mStrReceiveData.length());
-					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+k);
-					if(k!=0){
-						String strErr = mColorTextView.getText().toString();
-						if(!strErr.contains("数据丢失")){
-							strErr=strErr+"数据丢失,请重测";
-							;
+					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+isValide);
+					if(isValide!=0){
+						iFailedTimes++;	
+						if(iFailedTimes<=MAX_FAILED_TIMES){
+							closeTimer();
+							startTimer();
+							mColorTextView.setText("数据丢失,请重测"+" " +iFailedTimes);
+							Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 						}else{
-							iFailedTime++;
+							iFailedTimes=0;
 						}
-						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-						Toast.makeText(getActivity(), strErr, Toast.LENGTH_LONG).show();
+						
 						return ;
 					}else{
-						iFailedTime=0;
+						iFailedTimes=0;
 						dataAnalysis.getResult();
 					dataAnalysis.getAXCount();					
 					dataAnalysis.getCaiYangFrequency();
@@ -566,8 +564,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					InsertMediaData(Wavedata,false);
 					
 					ifNeedAnalysisData(mDLCMD);
+					closeTimer();
 					}
 				}else{
+					closeTimer();
 					Log.d(TAG,"mStrReceiveData is null");
 				}
 				
@@ -649,5 +649,25 @@ void ifNeedAnalysisData(byte type){
 		Event.UploadWaveDataRequestInfo_Event(null,null,null,null,bytedata);
 	}
 	
-	 
+	class MyOnPageChangeListener implements OnPageChangeListener{
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPageSelected(int arg0) {
+			// TODO Auto-generated method stub
+			tabHost.setCurrentTab(arg0);
+		}
+		
+	}
 }

@@ -9,10 +9,12 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
+import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.util.MLog;
 
 import android.app.AlertDialog;
@@ -110,7 +112,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	List<View> settingViewList;
 	LayoutInflater mInflater;
 	TextView devName;
-	
+	SpinnerAdapter mDLLineAdapter=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -121,9 +123,16 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			public void handleMessage(Message msg) {
 				// TODO Auto-generated method stub
 				switch (msg.what) {
-				case 0:
-					Toast.makeText(getActivity().getApplicationContext(), msg.obj.toString(),
+				case Event.LocalData_Init_Failed:
+					CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没本地巡检数据，请确认有/sdcard/AICLine.txt文件",null,null);
+					dialog.show();
+					break;
+				case  Event.LocalData_Init_Success:
+					
+					Toast.makeText(getActivity().getApplicationContext(),"更新成功",
 							Toast.LENGTH_SHORT).show();
+					mDLLineAdapter.setListData(getDownLoadRouteInfo());
+					mDLLineAdapter.notifyDataSetChanged();
 					break;
 				default:
 					break;
@@ -131,7 +140,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				super.handleMessage(msg);
 			}};
 	}
-
+	 
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -434,9 +443,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			}
 		});
 		ListView listView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
-		
-		listView.setAdapter(new ArrayAdapter<String>(this.getActivity(),
-                android.R.layout.simple_list_item_1, getDownLoadRouteInfo()));
+		mDLLineAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(),getDownLoadRouteInfo());
+//		listView.setAdapter(new ArrayAdapter<String>(this.getActivity(),
+//                android.R.layout.simple_list_item_1, getDownLoadRouteInfo()));
+		listView.setAdapter(mDLLineAdapter);
 		listView.setClickable(false);
 	}
 	

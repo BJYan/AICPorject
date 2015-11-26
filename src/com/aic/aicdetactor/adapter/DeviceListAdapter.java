@@ -107,19 +107,19 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 							float[] data = dataAnalysis.getData();
 
 							ChartBuilder chartBuilder = new ChartBuilder(context);
-							View chartView = chartBuilder.getBlackLineChartView("测试数据", data);
-							View chartView1 = chartBuilder.getBlackLineChartView("测试数据", data);
-							View chartView2 = chartBuilder.getBlackLineChartView("测试数据", data);
-
-							View dialogContent = mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null);
-							LinearLayout chart1Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_first_chart);
-							chart1Container.addView(chartView);
-							LinearLayout chart2Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_sec_chart);
-							chart2Container.addView(chartView1);
-							LinearLayout chart3Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_thr_chart);
-							chart3Container.addView(chartView2);
-							chartDialog.setChartView(dialogContent, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 680));
-							chartDialog.show();
+//							View chartView = chartBuilder.getBlackLineChartView("测试数据", data);
+//							View chartView1 = chartBuilder.getBlackLineChartView("测试数据", data);
+//							View chartView2 = chartBuilder.getBlackLineChartView("测试数据", data);
+//
+//							View dialogContent = mInflater.inflate(R.layout.dialog_content_thr_charts1_layout, null);
+//							LinearLayout chart1Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_first_chart);
+//							chart1Container.addView(chartView);
+//							LinearLayout chart2Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_sec_chart);
+//							chart2Container.addView(chartView1);
+//							LinearLayout chart3Container = (LinearLayout) dialogContent.findViewById(R.id.dialog_thr_chart_thr_chart);
+//							chart3Container.addView(chartView2);
+//							chartDialog.setChartView(dialogContent, new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, 680));
+//							chartDialog.show();
 						}
 						
 					});

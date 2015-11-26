@@ -27,7 +27,8 @@
             android:layout_marginLeft="10dip"/>
         <Spinner 
             android:layout_height="wrap_content"
-            android:layout_width="70dip"
+            android:layout_width="wrap_content"
+            android:padding="10dp"
             android:entries="@array/CaiYangPinLv"/>
     </LinearLayout>
     <LinearLayout 
@@ -36,6 +37,12 @@
         android:orientation="vertical"
         android:background="#99ccff"
         android:layout_marginTop="5dip">
+         <LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/yL">
+        
         <RelativeLayout 
 	    	android:layout_height="wrap_content"
 	    	android:layout_width="match_parent">
@@ -123,6 +130,13 @@
 	        	android:gravity="center"
 	        	android:textSize="12dp"/>
 		</RelativeLayout>
+		</LinearLayout>
+		<LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/xL">
+        
         <RelativeLayout 
 	    	android:layout_height="wrap_content"
 	    	android:layout_width="match_parent" >
@@ -210,6 +224,12 @@
 	        	android:gravity="center"
 	        	android:textSize="12dp"/>
 		</RelativeLayout>
+		</LinearLayout>
+		<LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/zL">
         <RelativeLayout 
 	    	android:layout_height="wrap_content"
 	    	android:layout_width="match_parent" >
@@ -297,5 +317,6 @@
 	        	android:gravity="center"
 	        	android:textSize="12dp"/>
 		</RelativeLayout>
+		</LinearLayout>
     </LinearLayout>
 </LinearLayout>

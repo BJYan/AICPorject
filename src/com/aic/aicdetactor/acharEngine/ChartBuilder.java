@@ -30,7 +30,7 @@ public class ChartBuilder {
 		this.context = context;
 	}
 	
-	 public View getBlackLineChartView(String title, final float[] y){
+	 public View getBlackLineChartView(String title, final float[] y,float Ymax,float ffValue){
 		    
 		 String[] titles = new String[]{title};
 		 List<float[]> yValues = new ArrayList<float[]>();
@@ -52,13 +52,13 @@ public class ChartBuilder {
 		    //renderer.setZoomButtonsVisible(true);
 		    //renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
 		    //renderer.setZoomLimits(new double[] { -10, 20, -10, 40 });
-		    renderer.setBackgroundColor(Color.WHITE);
-		    renderer.setMarginsColor(Color.WHITE);
+		    renderer.setBackgroundColor(Color.DKGRAY);
+		    renderer.setMarginsColor(Color.DKGRAY);
 		    renderer.setApplyBackgroundColor(true);
-		    renderer.setYAxisMin(-300);
-		    renderer.setYAxisMax(300);
+		    renderer.setYAxisMin(-(ffValue-Ymax));
+		    renderer.setYAxisMax(Ymax);
 		    renderer.setXAxisMin(0);
-		    renderer.setXAxisMax(200);
+		    renderer.setXAxisMax(y.length);
 		    renderer.setLegendHeight(5);
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
@@ -66,12 +66,12 @@ public class ChartBuilder {
 		    //renderer.setMargins(new int[] {0, 50, 10, 0});
 		    renderer.setMargins(new int[] {0, 20, 10, 0});
 		    renderer.setPanEnabled(true,true);
-		    renderer.setAxisTitleTextSize(20);
+		    renderer.setAxisTitleTextSize(30);
 		    //renderer.setYTitle("m/s*2");
 		    
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
-		    XYrenderer.setColor(Color.RED);
-		    XYrenderer.setPointStyle(PointStyle.CIRCLE);
+		    XYrenderer.setColor(Color.YELLOW);
+		    XYrenderer.setPointStyle(PointStyle.X);
 		    renderer.addSeriesRenderer(XYrenderer);
 		 View chartView = ChartFactory.getLineChartView(context, dataset, renderer);
 		 final XYChart lineChart = new LineChart(dataset, renderer);

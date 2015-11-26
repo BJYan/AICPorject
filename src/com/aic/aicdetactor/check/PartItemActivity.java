@@ -278,12 +278,12 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		mButton_Measurement.setOnClickListener(this);
 	}
 	
-	
+	boolean bNoFragement = false;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		
+		bNoFragement=false;
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
 		bundle.putInt("type", type);
@@ -380,6 +380,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			break;
 			   
 			   default:
+				   bNoFragement=true;
 //				   mButtion_Position.setText(getString(R.string.position));
 //					mButton_Measurement.setText(getString(R.string.measurement));
 //					mButton_Direction.setText(getString(R.string.direction));	
@@ -455,6 +456,10 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1,msg.obj);
 			   break;
 		   case MSG_CACHE_CURRENT_DEVICEITEM_DATA:
+			   break;
+		   case CommonDef.ENABLE_MEASUREMENT_BUTTON:			  
+		   case CommonDef.DISABLE_MEASUREMENT_BUTTON:
+			   controlButtonDisplayStatus(msg.what);				  
 			   break;
 		   
 		   }
@@ -669,6 +674,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 		{
 			//首先是显示上一测试点的数据。
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_PRE));
+			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
 		}
 			break;
 		case R.id.bottombutton1://位置信息
@@ -710,6 +716,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //			}
 			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
+			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
 			
 		}
 			break;		
@@ -730,7 +737,9 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 					}
 				}else{
 					mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+					
 				}
+				mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);
 				
 			}
 			break;
@@ -880,25 +889,7 @@ private int mZhouCounts=0;
 	@Override
 	public void OnClick(int genPartItemDataCounts, int xValue, int yValue,
 			int zValue) {
-		// TODO Auto-generated method stub
-//		if(genPartItemDataCounts==1){
-//			mCheckValue = String.valueOf(xValue);
-//		}
-		MLog.Logd(TAG, "OnClick() "+genPartItemDataCounts+","+xValue+","+yValue+","+zValue);
-		mCheckValue=String.valueOf(xValue)+","+String.valueOf(yValue)+","+String.valueOf(zValue);
-		mZhouCounts = genPartItemDataCounts;
-		MLog.Logd(TAG, "OnClick() mCheckValue"+mCheckValue);
-		//if(genPartItemDataCounts>1){
-			//Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
-			//msg.arg1 = TEXT_ZHOU_TYPE;
-			//msg.arg2=genPartItemDataCounts;
-			//msg.obj=String.valueOf(xValue)+","+String.valueOf(yValue)+","+String.valueOf(zValue);
-			//mHandler.sendMessage(msg);
-			
-			 
-		//}
-		
-		
+		mHandler.sendEmptyMessage(genPartItemDataCounts);
 	}
 	
 	void controlButtonDisplayStatus(int type){
@@ -933,6 +924,16 @@ private int mZhouCounts=0;
 			//mButton_Direction.setVisibility(View.VISIBLE);
 			//mButtion_Position.setVisibility(View.VISIBLE);
 			mButton_Measurement.setVisibility(View.VISIBLE);
+			break;
+		case CommonDef.ENABLE_MEASUREMENT_BUTTON:	
+			if(!mButton_Measurement.isEnabled()){
+				mButton_Measurement.setEnabled(true);
+			}
+			break;
+		case CommonDef.DISABLE_MEASUREMENT_BUTTON:
+			if(mButton_Measurement.isEnabled()){
+				mButton_Measurement.setEnabled(false);
+			}
 			break;
 		}
 	}
@@ -993,6 +994,11 @@ private int mZhouCounts=0;
         	Log.d(TAG,"+++++++++KEYCODE_VOLUME_MUTE++++++");
    
             return true;  
+        case KeyEvent.KEYCODE_BACK:
+//        	if(!bNoFragement){
+//        		return true;
+//        	}
+        	break;
         }  
         return super.onKeyDown(keyCode, event);  
     }  

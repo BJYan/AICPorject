@@ -239,7 +239,7 @@ public class BluetoothLeControl {
 	        			//往蓝牙模块写入数据
 	        			mBLE.writeCharacteristic(gattCharacteristic);
 	        			recLen=0;
-	        		//	handler.postDelayed(runnable, 1000);
+	        			handler.postDelayed(runnable, 1000);
 	        		}
 	        		
 	        		//read BLE data

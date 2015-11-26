@@ -7,6 +7,8 @@ import java.util.Set;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.BlueToothRenameActivity;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.view.BluetoothViewHolder;
+import com.aic.aicdetactor.view.GroupViewHolder;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -90,9 +92,22 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		BTIndex = arg0;
-		if(arg2==null) arg2 = mInflater.inflate(R.layout.bluetooth_binded_devlist_group_item, null);
-		ImageView GroupItemArror = (ImageView) arg2.findViewById(R.id.bluetooth_bind_dev_arrow);
-		GroupItemArror.setOnClickListener(new OnClickListener() {
+		BluetoothViewHolder viewHolder=null;
+		if(arg2==null) {
+			arg2 = mInflater.inflate(R.layout.bluetooth_binded_devlist_group_item, null);
+			viewHolder = new BluetoothViewHolder();
+			viewHolder.image = (ImageView) arg2.findViewById(R.id.bluetooth_bind_dev_arrow);
+			viewHolder.BTSwitch = (Switch) arg2.findViewById(R.id.bluetooth_device_status);
+			viewHolder.NameText = (TextView) arg2.findViewById(R.id.bluetooth_device_name);			
+			viewHolder.MacAddr = (TextView) arg2.findViewById(R.id.bluetooth_device_mac);
+			arg2.setTag(viewHolder);
+
+		}else{
+			viewHolder=(BluetoothViewHolder) arg2.getTag();
+			
+		}
+		
+		viewHolder.image.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -103,13 +118,13 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 				context.startActivity(intent);
 			}
 		});
-		Switch BTSwitch = (Switch) arg2.findViewById(R.id.bluetooth_device_status);
-		BTSwitch.setChecked(bBTConnected);
-		BTSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+		
+		viewHolder.BTSwitch.setChecked(viewHolder.bconnected);
+		viewHolder.BTSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
+				// TODO Auto-generated method stub				
 				Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connected_BLE_Address);
 				if(arg1){
 					mBTControl.setParamates(mHandler);
@@ -130,10 +145,8 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 			
 		});
 		
-		TextView DevName = (TextView) arg2.findViewById(R.id.bluetooth_device_name);
-		DevName.setText(bondedDevices.get(arg0).getName());
-		TextView DevMac = (TextView) arg2.findViewById(R.id.bluetooth_device_mac);
-		DevMac.setText(bondedDevices.get(arg0).getAddress());
+		viewHolder.MacAddr.setText(bondedDevices.get(arg0).getAddress());
+		viewHolder.NameText.setText(bondedDevices.get(arg0).getName());
 		return arg2;
 	}
 
@@ -150,8 +163,15 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	}
 
 	
+	@Override
+	public void notifyDataSetChanged() {
+		// TODO Auto-generated method stub
+		super.notifyDataSetChanged();
+	}
+
 	public void  sendCommmand2BLE(byte[]cmdByte){
 		if(cmdByte==null){return ;}
 		mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmdByte);
 	}
+	
 }

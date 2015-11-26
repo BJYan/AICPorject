@@ -35,9 +35,11 @@ import network.aic.xj.common.response.UploadWaveDataResponse;
 import network.com.citizensoft.common.util.DateUtil;
 import network.com.citizensoft.network.SocketCallTimeout;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -45,14 +47,19 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
+import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
 
 public class Event {
+	public static final int Envent_Init= 300;
+	public static final int LocalData_Init_Failed= Envent_Init+0;
+	public static final int LocalData_Init_Success= Envent_Init+1;
 	private int[] _lockCommandIds = null;
 	public static void UploadRFID_Event(View view,final Handler handler,final String MacStr) {
 
@@ -191,6 +198,12 @@ public class Event {
       }else{
     	 String  planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory()+"/AICLine.txt");
     	 boolean isSpecialLine = false;
+    	 if(planjson==null){
+    		 if(handler!=null){
+    			 handler.sendEmptyMessage(LocalData_Init_Failed);
+    		 }
+    		 return;
+    	 }
 			 //parse json data for insert databases
     	 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
 			 for(int i=0;i< Normaldata.StationInfo.size();i++){
@@ -218,15 +231,14 @@ public class Event {
 					 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
 					 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
 			 
-			 
-			 Message msg = new Message();
-				msg.what = 0;
-				msg.obj = "#ok";
-				handler.sendMessage(msg);
+			 if(handler!=null){
+    			 handler.sendEmptyMessage(LocalData_Init_Success);
+    		 }			
       }
 			}
 		}).start();
 	}
+	
 	
 	public void QueryCommandWithLock_Event(View view,final Activity activity,final String MACStr,final Handler handler) {
 
