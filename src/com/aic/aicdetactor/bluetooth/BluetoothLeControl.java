@@ -1,5 +1,9 @@
 package com.aic.aicdetactor.bluetooth;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import com.aic.aicdetactor.util.MyCRC32;
@@ -55,6 +59,9 @@ public class BluetoothLeControl {
 	    
 	private Handler mHandler=null;
 	private  byte downloadCMDByte=0;
+	//File mTestFile =null;
+	//FileOutputStream outStream=null;
+	private final  boolean isGetServiceByUuid=true;
 	/**
 	 * 单例
 	 * @param context
@@ -98,11 +105,29 @@ public class BluetoothLeControl {
 	 * @return
 	 */
 	public boolean Connection(String strAdress){
+//		if(mTestFile==null){
+//		mTestFile = new File("/sdcard/BLETest.txt");
+//			
+//				try {
+//					outStream = new FileOutputStream(mTestFile);
+//				} catch (FileNotFoundException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//				
+//		}
 		//if(isConnected) return isConnected;
 		return isConnected=mBLE.connect(strAdress);
 	}
 	
 	public boolean isConnected(){
+//		try {
+//			outStream.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return isConnected;
 	}
 	
@@ -175,8 +200,16 @@ public class BluetoothLeControl {
 //					+characteristic.getUuid().toString()
 //					+" -> "
 //					+teStr);
+			
 			bGetDataContinue=true;
 			mReceiveDataCount++;
+			
+//			try {
+//				outStream.write(byteData);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			Log.d(TAG,"onCharacteristicWrite() "+mReceiveDataCount);
 			Message msg = mHandler.obtainMessage(MessageReadDataFromBT);
 			msg.obj=byteData;
@@ -209,9 +242,8 @@ public class BluetoothLeControl {
 
 	                byte[] data = gattCharacteristic.getValue();
 	        		if (data != null && data.length > 0) {
-	        			Log.e(TAG,"---->char value:"+new String(data));
+	        			Log.e(TAG,"---->char value:"+SystemUtil.bytesToHexString(data));
 	        		}
-	        		Log.e("luotest","---->UUID:"+new String(gattCharacteristic.getUuid().toString()));
 	        		//UUID_KEY_DATA是可以跟蓝牙模块串口通信的Characteristic
 	        		if(gattCharacteristic.getUuid().toString().equals(UUID_KEY_WRITE_DATA)){        			
 	        			//测试读取当前Characteristic数据，会触发mOnDataAvailable.onCharacteristicRead()
@@ -239,7 +271,7 @@ public class BluetoothLeControl {
 	        			//往蓝牙模块写入数据
 	        			mBLE.writeCharacteristic(gattCharacteristic);
 	        			recLen=0;
-	        			handler.postDelayed(runnable, 1000);
+	        			handler.postDelayed(runnable, 100);
 	        		}
 	        		
 	        		//read BLE data

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.CRC32;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
@@ -127,10 +128,12 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		super.onResume();
 		mAllBTDevices.clear();
+		
 		scanLeDevice(true);
+		
 		mBondedDevices = getBondedDevices();
 		btBindDevListAdapter.notifyDataSetChanged();
-		btBindDevListAdapter.notifyDataSetInvalidated();
+		//btBindDevListAdapter.notifyDataSetInvalidated();
 		
 		// Register the BroadcastReceiver
 		
@@ -220,6 +223,13 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	}
 	StringBuffer mStrReceiveData=new StringBuffer();;
 	String mStrLastReceiveData="";
+	//wave data
+	float []mReceiveFloatData=null;
+	byte []mReceiveByteDataCRC=null;
+	boolean bStartReceiveData=false;
+	byte mCurReceivedCMD=0;
+	int mReceivedDataCounts=0;
+	int caiyangdian=0;
 	Handler mHandle = new Handler(){
 
 		@Override
@@ -228,11 +238,11 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
 				byte[]strbyte=(byte[]) (msg.obj);
-				String str= SystemUtil.bytesToHexString(strbyte);
-				mStrReceiveData.append(str.toString());
-				//int count=msg.getData().getInt("count");
-				Log.d(TAG, "HandleMessage() mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
-				Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
+				getDataFromBLE(strbyte,bStartReceiveData);
+				if(!bStartReceiveData){
+					bStartReceiveData=!bStartReceiveData;
+				}
+
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -247,11 +257,6 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				if(k==0){
 					k=proxy.getAXCount();
 					proxy.getResult();
-					//float b=proxy.getChargeValue();
-					//float t=proxy.getTemperatorValue();
-					//Log.d(TAG,"AXCount ="+proxy.getAXCount());
-					//Log.d(TAG,"ChargeValue ="+proxy.getChargeValue());
-					//Log.d(TAG,"TemperatorValue ="+proxy.getTemperatorValue());
 			    }
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
@@ -290,5 +295,61 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
             });
         }
     };
+    
+ void    getDataFromBLE(byte []strbyte,boolean bStartReceiveData){
+    	if(!bStartReceiveData){
+			bStartReceiveData = true;
+			mCurReceivedCMD=strbyte[2];
+			switch(mCurReceivedCMD)
+			{
+			case (byte)0xd2:
+				CRC32 crc = new CRC32();
+				crc.update(strbyte, 0, 16);
+				String s =Long.toHexString(crc.getValue());
+				byte[]crcValue = new byte[4];
+				for(int i=0;i<4;i++){
+					crcValue[i]=strbyte[strbyte.length-4+i];
+				}
+				String sa=SystemUtil.bytesToHexString(crcValue);
+				if(sa.equals(s)){
+					Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息 正确", Toast.LENGTH_SHORT).show();	
+				}
+				mReceiveByteDataCRC = new byte[20];
+				break;
+			case (byte)0x7d:
+				 caiyangdian=strbyte[7]<<8|strbyte[8];
+			mReceiveFloatData = new float[caiyangdian];
+			for(int k=0;k<5;k=k+2){
+				mReceiveFloatData[k]=strbyte[k+11]<<8|strbyte[k+12];
+			}
+			mReceiveByteDataCRC = new byte[caiyangdian +10+9+9+3*4];
+			
+				break;
+			}
+			
+		}else{
+			switch(mCurReceivedCMD)
+			{
+			case (byte)0xd2:
+				
+				break;
+			case (byte)0x7d:
+				int max=20;
+				if(20*mReceivedDataCounts>10+caiyangdian){
+					max = 0;
+				}
+				//收集波形数据
+				for(int k=0;k<max;k=k+2){
+					mReceiveFloatData[mReceivedDataCounts*20+k-15]=strbyte[k]<<8|strbyte[k+1];
+				}
+				break;
+			}
+		}
+		
+		//收集BLE发送过来的所有原始数据
+		System.arraycopy(strbyte,0,mReceiveByteDataCRC,mReceivedDataCounts*20,strbyte.length);	
+		Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
+		mReceivedDataCounts++;
+    }
     
 }

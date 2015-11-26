@@ -17,6 +17,9 @@
 package com.aic.aicdetactor.bluetooth;
 
 import java.util.List;
+import java.util.UUID;
+
+import com.aic.aicdetactor.util.SystemUtil;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -273,12 +276,14 @@ public class BluetoothLeClass{
     }
 
     public void writeCharacteristic(BluetoothGattCharacteristic characteristic){
+    	boolean bReadBLEDataSucess = false;
     	if(mBluetoothGatt!=null){
-    	 mBluetoothGatt.writeCharacteristic(characteristic);}else{
+    	bReadBLEDataSucess = mBluetoothGatt.writeCharacteristic(characteristic);
+    	}else{
     		 Log.e(TAG, "mBluetoothGatt is null error");
     	 }
     	
-    	Log.e(TAG, "luotest mBluetoothGatt is not null :"+characteristic.getValue());
+    	Log.e(TAG, "luotest mBluetoothGatt is not null :bReadBLEDataSucess="+bReadBLEDataSucess+","+SystemUtil.bytesToHexString(characteristic.getValue()));
     }
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be
