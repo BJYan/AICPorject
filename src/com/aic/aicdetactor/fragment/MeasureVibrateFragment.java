@@ -59,6 +59,7 @@ import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
 import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -69,6 +70,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  */
 public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnButtonListener{
 
+	protected static final int COUNTDOWN = 0;
 	private ListView mListView = null;
 	private ImageView mImageView = null;
 	//private GridView mGridView = null;
@@ -98,12 +100,16 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	long mReceiveDataLenth=0;
 	byte mDLCMD=0;
 	DataAnalysis dataAnalysis;
-	StringBuffer mStrReceiveData=new StringBuffer();;
+	StringBuffer mStrReceiveData=new StringBuffer();
 	String mStrLastReceiveData="";
 	int iFailedTimes =0;
 	final int MAX_FAILED_TIMES=3;
 	private Timer mTimer=null;
+	private Timer mCountdownTimer=null;
 	private TimerTask mTimerTask=null;
+	private TimerTask mCountdownTimerTask = null;
+	FlippingLoadingDialog mCountdownDialog;
+	Handler handler;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -124,12 +130,68 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				//已巡检的项的个数统计，暂时由是否有巡检时间来算，如果有的话，即已巡检过了，否则为未巡检。
 				mMapList.add(map);
 			}
-			startTimer();
+			
 			super.onCreate(savedInstanceState);
+			
+			handler = new Handler(){
+				int i = 11;
+				public void handleMessage(Message msg) {
+					
+					switch (msg.what) {
+					case COUNTDOWN:
+						int count = (Integer) msg.obj;
+						if(i==0) {
+							closeCountdownTimer();
+							if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
+						} else {
+							i=i-count;
+							if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
+							mCountdownDialog.setText("等待蓝牙连接 "+i+"秒");
+						}
+
+						break;
+
+					default:
+						break;
+					}
+				};
+			};
 	}
  
 	public  MeasureVibrateFragment(PartItemListAdapter AdapterList){
 		this.AdapterList = AdapterList;
+	}
+	
+	void startCountdownTimer(){		
+		if(mCountdownTimerTask==null){
+			mCountdownTimerTask = new TimerTask(){
+				
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Message msg = Message.obtain();
+				msg.obj=1;
+				msg.what = COUNTDOWN;
+				handler.sendMessage(msg);
+			}
+			};
+		}
+		if(mCountdownTimer==null){
+			mCountdownTimer = new Timer();
+			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
+			}
+	}
+	
+	void closeCountdownTimer(){
+		if(mCountdownTimer!=null){
+			mCountdownTimer.cancel();
+			mCountdownTimer=null;
+		}
+		
+		if(mCountdownTimerTask!=null){
+			mCountdownTimerTask.cancel();
+			mCountdownTimerTask=null;
+		}
 	}
 	
 	void startTimer(){		
@@ -269,7 +331,16 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		initDisplayData();
 		AdapterList.getCurrentPartItem().setSartDate();
 		InitChart();
+		mCountdownDialog = new FlippingLoadingDialog(getActivity(), "1");
 		return view;
+	}
+	
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		startCountdownTimer();
+		startTimer();
 	}
 	
 	private void InitChart() {
@@ -670,4 +741,5 @@ void ifNeedAnalysisData(byte type){
 		}
 		
 	}
+	
 }

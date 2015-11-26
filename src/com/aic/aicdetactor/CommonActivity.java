@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +42,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
-public class CommonActivity extends Activity{
+public class CommonActivity extends FragmentActivity{
 	protected static final String TAG = "CommonActivity";
 	protected FlippingLoadingDialog mLoadingDialog;
 	public myApplication app = null;
@@ -82,7 +83,7 @@ public class CommonActivity extends Activity{
 		if (text != null) {
 			mLoadingDialog.setText(text);
 		}
-		mLoadingDialog.show();
+		if(!mLoadingDialog.isShowing()) mLoadingDialog.show();
 	}
 
 	public void dismissLoadingDialog() {

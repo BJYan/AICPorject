@@ -58,6 +58,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import net.micode.soundrecorder.SoundRecorder;
 
+import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.LoginActivity;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
@@ -98,7 +99,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  * @author Administrator
  *
  */
-public class PartItemActivity extends FragmentActivity implements OnClickListener,
+public class PartItemActivity extends CommonActivity implements OnClickListener,
     OnVibateListener,
 	OnMediakListener,
 	OnTemperatureMeasureListener,
@@ -155,6 +156,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 	private PartItemListAdapter mAdapterList =null;
 	private List<String> mStatusList = new ArrayList<String>();
 	
+	private List<Fragment> fragmentsList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +167,7 @@ public class PartItemActivity extends FragmentActivity implements OnClickListene
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 		setContentView(R.layout.unitcheck);
 		mPartItemIndex =0;
+		fragmentsList = new ArrayList<Fragment>();
 		initViewAndData();
 	}
 
@@ -995,10 +998,8 @@ private int mZhouCounts=0;
    
             return true;  
         case KeyEvent.KEYCODE_BACK:
-//        	if(!bNoFragement){
-//        		return true;
-//        	}
-        	break;
+        	if(fragmentsList.size()>0) fragmentsList.remove(fragmentsList.size()-1);
+        	return true;
         }  
         return super.onKeyDown(keyCode, event);  
     }  
