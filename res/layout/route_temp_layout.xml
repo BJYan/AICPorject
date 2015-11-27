@@ -55,7 +55,7 @@
                 android:src="@drawable/search_con_result_diagram"
                 android:layout_weight="1"
                 android:padding="8dip"/>
-            <EditText 
+            <TextView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:text="5.62"
@@ -102,7 +102,7 @@
                 android:src="@drawable/search_con_result_diagram"
                 android:layout_weight="1"
                 android:padding="8dip"/>
-            <EditText 
+            <TextView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:text="5.62"
@@ -170,7 +170,7 @@
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:textSize="16dp"/>
-                <EditText 
+                <TextView 
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"
@@ -213,7 +213,7 @@
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:textSize="16dp"/>
-                <EditText 
+                <TextView 
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"
@@ -257,7 +257,7 @@
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:textSize="16dp"/>
-                <EditText 
+                <TextView 
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"

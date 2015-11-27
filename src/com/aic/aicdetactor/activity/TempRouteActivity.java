@@ -53,13 +53,13 @@ public class TempRouteActivity extends CommonActivity implements OnClickListener
 		switch (arg0.getId()) {
 		case R.id.route_temp_chart:
 			OneCtrlDialog chartDialog = new OneCtrlDialog(this);
-			//chartDialog.setCloseBtnVisibility(View.VISIBLE);
+			chartDialog.setCloseBtnVisibility(View.VISIBLE);
 			//chartDialog.setTitle("测试图谱");
 			chartDialog.setButtomBtn(this, "确定", "取消");
 
 			DataAnalysis dataAnalysis = new DataAnalysis();
 			float[] data = dataAnalysis.getData();
-			float[] MinMaxTemp = new float[]{data[0],data[0]};
+			//float[] MinMaxTemp = new float[]{data[0],data[0]};
 
 			dialogContent = (ViewPager) mInflater.inflate(R.layout.dialog_viewpager, null);
 			List<View> views = new ArrayList<View>();
