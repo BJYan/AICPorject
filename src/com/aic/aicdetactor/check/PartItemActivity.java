@@ -7,7 +7,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -157,6 +157,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	private List<String> mStatusList = new ArrayList<String>();
 	
 	private List<Fragment> fragmentsList;
+	FragmentManager fragmentManager;
+	FragmentTransaction fragmentTransaction;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +170,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		setContentView(R.layout.unitcheck);
 		mPartItemIndex =0;
 		fragmentsList = new ArrayList<Fragment>();
+		fragmentManager = getFragmentManager();
 		initViewAndData();
 	}
 
@@ -284,8 +287,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	boolean bNoFragement = false;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		
+		fragmentTransaction = fragmentManager.beginTransaction();
 		bNoFragement=false;
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
@@ -309,6 +312,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					}
 					fragmentTransaction.commit();
 					}
+			   fragmentsList.add(fragment);
 //			   mButtion_Position.setText(getString(R.string.position));
 //				mButton_Measurement.setText(getString(R.string.measurement));
 //				mButton_Direction.setText(getString(R.string.direction));	
@@ -330,6 +334,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					}					
 					fragmentTransaction.commit();
 					}
+			   fragmentsList.add(fragment);
 //			   mButtion_Position.setText(getString(R.string.position));
 //				mButton_Measurement.setText(getString(R.string.measurement));
 //				mButton_Direction.setText(getString(R.string.direction));	
@@ -343,6 +348,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					fragmentTransaction.replace(R.id.fragment_content,fragment);
 				}
 				fragmentTransaction.commit();
+				fragmentsList.add(fragment);
 			   break;
 //		   case CommonDef.checkUnit_Type.ENTERING:
 //		  
@@ -376,6 +382,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				fragmentTransaction.commit();
 			   
 		   }
+		   fragmentsList.add(fragment);
 		   break;
 		   case REMOVELASTFRAGMENT:
 			   fragmentTransaction.remove(fragment);
@@ -854,6 +861,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 
 	PopupWindow pw_Left = null;
 	
+	@SuppressLint("NewApi")
 	void initPopupWindowFliter(View parent) {
 		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -998,7 +1006,17 @@ private int mZhouCounts=0;
    
             return true;  
         case KeyEvent.KEYCODE_BACK:
-        	if(fragmentsList.size()>0) fragmentsList.remove(fragmentsList.size()-1);
+        	if(fragmentsList.size()==0) finish();
+        	else {
+        		fragmentTransaction = fragmentManager.beginTransaction();
+        		if(fragmentsList.size()>0) {
+        			fragmentTransaction.remove(fragmentsList.get(fragmentsList.size()-1));
+        			fragmentTransaction.commit();
+        		}
+        		mFirstLLayout.setVisibility(View.VISIBLE);
+        		mSecendLLayout.setVisibility(View.GONE);
+        		fragmentsList.clear();
+        	}
         	return true;
         }  
         return super.onKeyDown(keyCode, event);  

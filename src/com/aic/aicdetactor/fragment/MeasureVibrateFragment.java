@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.EditText;
@@ -110,6 +111,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	private TimerTask mCountdownTimerTask = null;
 	FlippingLoadingDialog mCountdownDialog;
 	Handler handler;
+	Button mButton_Measurement;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -140,9 +142,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					switch (msg.what) {
 					case COUNTDOWN:
 						int count = (Integer) msg.obj;
+						if(i==5) getDataFromBLE();
 						if(i==0) {
 							closeCountdownTimer();
 							if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
+							mButton_Measurement.setEnabled(true);
 						} else {
 							i=i-count;
 							if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
@@ -332,6 +336,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		AdapterList.getCurrentPartItem().setSartDate();
 		InitChart();
 		mCountdownDialog = new FlippingLoadingDialog(getActivity(), "1");
+		mCountdownDialog.setCancelable(false);
+		mButton_Measurement = (Button)getActivity().findViewById(R.id.bottombutton3);
+		mButton_Measurement.setEnabled(false);
 		return view;
 	}
 	
@@ -340,7 +347,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		// TODO Auto-generated method stub
 		super.onStart();
 		startCountdownTimer();
-		startTimer();
 	}
 	
 	private void InitChart() {
