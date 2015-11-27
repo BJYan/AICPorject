@@ -187,6 +187,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		// 路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
 		RouteNameTextView.setText(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
+		setActionBar(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name, true);
 		// 站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
 		stationTextView.setText(stationTextView.getText().toString()+app.mLineJsonData.StationInfo

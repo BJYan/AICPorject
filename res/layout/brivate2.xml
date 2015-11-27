@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_name"
+            android:textSize="@dimen/normal_text_size" />
+
+        <TextView
+            android:id="@+id/check_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text=""
+            android:textSize="@dimen/normal_text_size" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="134dp"
+        android:visibility="gone" >
+    </ListView>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_current"
+        android:visibility="gone" />
+
+<LinearLayout 
+    android:layout_height="310dip"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical">
+     <!-- X -->
+	<RelativeLayout 
+	    android:layout_height="100dip"
+	    android:layout_width="match_parent"
+	    android:id="@+id/Xline"
+	    android:background="@drawable/gray_border_bg_shape">
+	    <TextView 
+	        android:id="@+id/x"
+	        android:layout_height="wrap_content"
+	        android:layout_width="10dip"
+	        android:text="x"
+	        android:textSize="20dp"
+	        android:layout_marginLeft="10dip"/>
+	    <TextView 
+	        android:id="@+id/x_value"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:gravity="center"/>
+	    <TextView 
+	        android:id="@+id/x_FengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/x"
+	        android:text="峰  值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/x_FengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/x"
+	        android:layout_toRightOf="@id/x_FengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/x_FengFengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/x_FengValue_name"
+	        android:text="峰峰值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/x_FengFengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/x_FengValue_name"
+	        android:layout_toRightOf="@id/x_FengFengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/x_ValidValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/x_FengFengValue_name"
+	        android:text="有效值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/x_ValidValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/x_FengFengValue_name"
+	        android:layout_toRightOf="@id/x_ValidValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	</RelativeLayout>
+     <!-- Y -->
+	<RelativeLayout 
+	    android:layout_height="100dip"
+	    android:layout_width="match_parent"
+	    android:background="@drawable/gray_border_bg_shape"
+	    android:layout_marginTop="5dip"
+	    android:id="@+id/Yline">
+	    <TextView 
+	        android:id="@+id/y"
+	        android:layout_height="wrap_content"
+	        android:layout_width="10dip"
+	        android:text="y"
+	        android:textSize="20dp"
+	        android:layout_marginLeft="10dip"/>
+	    <TextView 
+	        android:id="@+id/y_value"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:gravity="center"/>
+	    <TextView 
+	        android:id="@+id/y_FengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/y"
+	        android:text="峰  值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/y_FengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/y"
+	        android:layout_toRightOf="@id/y_FengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/y_FengFengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/y_FengValue_name"
+	        android:text="峰峰值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/y_FengFengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/y_FengValue_name"
+	        android:layout_toRightOf="@id/y_FengFengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/y_ValidValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/y_FengFengValue_name"
+	        android:text="有效值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/y_ValidValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/y_FengFengValue_name"
+	        android:layout_toRightOf="@id/y_ValidValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	</RelativeLayout>
+     <!-- Z -->
+	<RelativeLayout 
+	    android:layout_height="100dip"
+	    android:layout_width="match_parent"
+	    android:background="@drawable/gray_border_bg_shape"
+	    android:id="@+id/Zline"
+	    android:layout_marginTop="5dip">
+	    <TextView 
+	        android:id="@+id/z"
+	        android:layout_height="wrap_content"
+	        android:layout_width="10dip"
+	        android:text="z"
+	        android:textSize="20dp"
+	        android:layout_marginLeft="10dip"/>
+	    <TextView 
+	        android:id="@+id/z_value"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:gravity="center"/>
+	    <TextView 
+	        android:id="@+id/z_FengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/z"
+	        android:text="峰  值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/z_FengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/z"
+	        android:layout_toRightOf="@id/z_FengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="3dip"/>
+	    <TextView 
+	        android:id="@+id/z_FengFengValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/z_FengValue_name"
+	        android:text="峰峰值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/z_FengFengValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/z_FengValue_name"
+	        android:layout_toRightOf="@id/z_FengFengValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/z_ValidValue_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="60dip"
+	        android:layout_below="@id/z_FengFengValue_name"
+	        android:text="有效值"
+	        android:layout_marginLeft="50dip"
+	        android:layout_marginTop="5dip"/>
+	    <TextView 
+	        android:id="@+id/z_ValidValue"
+	        android:layout_height="wrap_content"
+	        android:layout_width="150dip"
+	        android:layout_below="@id/z_FengFengValue_name"
+	        android:layout_toRightOf="@id/z_ValidValue_name"
+	        android:text="11111111"
+	        android:background="@drawable/deepblue_border_edittext_shape"
+	        android:padding="2dip"
+	        android:gravity="center"
+	        android:layout_marginTop="5dip"/>
+	</RelativeLayout>
+</LinearLayout>
+
+    <!-- 右边部分，显示倒计时 -->
+		     <LinearLayout
+		     android:layout_width="match_parent"
+		     android:layout_height="wrap_content" 
+		     android:orientation="vertical"
+		     android:gravity="center"
+		     android:layout_weight="1">
+		      <TextView
+	             android:id="@+id/time"
+	             android:layout_width="wrap_content"
+	             android:layout_height="wrap_content"
+	             android:text="@string/measurement_countdown"
+	             android:textAppearance="?android:attr/textAppearanceMedium" />
+	         <TextView
+	             android:id="@+id/time_value"
+	             android:layout_width="wrap_content"
+	             android:layout_height="wrap_content"
+	             android:text=""
+	             android:textAppearance="?android:attr/textAppearanceMedium" />
+		     </LinearLayout>
+		     <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content" 
+     android:orientation="horizontal"
+     android:gravity="center">
+
+     <!-- 巡检结果文字描述 -->
+     <TextView
+         android:id="@+id/colordiscrip"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"       
+         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+     <!-- 根据实际测量结果显示对应的颜色级别 -->
+	 <RadioButton
+	        android:id="@+id/colorRadio"        
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:button="@null"	        
+	        android:layout_centerVertical="true" 
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="20dp"        
+	        />
+ </LinearLayout>
+</LinearLayout>

@@ -258,7 +258,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
         tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
                 .setContent(R.id.view2));
         
-		views.add(mInflater.inflate(R.layout.brivate, null));
+		views.add(mInflater.inflate(R.layout.brivate2, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
 		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
