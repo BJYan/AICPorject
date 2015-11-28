@@ -71,7 +71,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView ExListView = new ExpandableListView(mContext);
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ExListView.setPadding(30, 0, 10, 0);
+		//ExListView.setPadding(30, 0, 0, 0);
 		ExListView.setLayoutParams(lp);
 		ExListView.setGroupIndicator(null);
 		return ExListView;
