@@ -195,7 +195,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 					LayoutParams.WRAP_CONTENT, true);
 			pw_Left.setBackgroundDrawable(null);
 			
-			Spinner mSpinner = (Spinner) rootview.findViewById(R.id.spinner1);
+/*			Spinner mSpinner = (Spinner) rootview.findViewById(R.id.spinner1);
 			String[] mItems = getResources().getStringArray(R.array.spinnername);
 			ArrayAdapter<String> _Adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
 		//	_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); 
@@ -204,7 +204,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			
 			Spinner mSpinnerPoint = (Spinner) rootview.findViewById(R.id.spinner2);
 			ArrayAdapter<String> _AdapterPoint=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
-			mSpinnerPoint.setAdapter(_AdapterPoint);
+			mSpinnerPoint.setAdapter(_AdapterPoint);*/
 
 			// // 显示popupWindow对话框
 			pw_Left.setTouchInterceptor(new View.OnTouchListener() {
