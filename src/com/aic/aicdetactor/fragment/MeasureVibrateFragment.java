@@ -74,7 +74,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	protected static final int COUNTDOWN = 0;
 	private ListView mListView = null;
 	private ImageView mImageView = null;
-	//private GridView mGridView = null;
 	private RadioButton mRadioButton = null;
 	private TextView mResultTipStr = null;
 	private OnVibateListener mCallback = null;
@@ -103,8 +102,13 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	//DataAnalysis dataAnalysis;
 	//StringBuffer mStrReceiveData=new StringBuffer();
 	//String mStrLastReceiveData="";
-	int iFailedTimes =0;
 	
+	////////////////////压力测试用/////////////////////////
+	boolean bPressTest=false;
+	int iTestSuccessTimes=0;
+	int iTestTimes=500;
+	////////////////////////////////////////
+	int iFailedTimes =0;	
 	private Timer mTimer=null;
 	private Timer mCountdownTimer=null;
 	private TimerTask mTimerTask=null;
@@ -229,9 +233,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		mCanSendCMD=false;
 		mReceiveDataLenth=0;
-//		if(mStrReceiveData!=null){
-//		mStrReceiveData.delete(0, mStrReceiveData.length());
-//		}
 		mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
 	}
 	@Override
@@ -347,8 +348,15 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	public void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		startCountdownTimer();
+		if(bPressTest){
+			mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);		
+		}else{
+			startCountdownTimer();
+			
+		}
 	}
+	
+	
 	
 	private void InitChart() {
 		// TODO Auto-generated method stub
@@ -425,12 +433,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		@Override
 		public void run() {
 			measureAndDisplayData();
-			if(recLen++<=700){
-				mHandle.postDelayed(this, 1100); 
+			if(recLen++<=iTestTimes){
+				mHandle.postDelayed(this, 2000); 
 				getDataFromBLE();
 				mCanSendCMD=false;
 				mReceiveDataLenth=0;
-				//mStrReceiveData.delete(0, mStrReceiveData.length());
 				Log.d(TAG, "run() " +recLen);
 				
 		}else{
@@ -453,10 +460,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	double MAX = super.mPartItemData.Up_Limit;
     	double MID = super.mPartItemData.Middle_Limit;
     	double LOW = super.mPartItemData.Down_Limit;
-    	
-    	
-//		mCheckValue = (int) (Math.random()*max_temperation);
-    	
     	switch(mPartItemData.Axle_Number){
     	case 1:
     		break;
@@ -543,10 +546,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			saveData(adapter);
 			break;
 		case PartItemContact.MEASURE_DATA:
-			closeTimer();
-			startTimer();
-			if(false){
+			
+			if(bPressTest){
 			mHandle.postDelayed(runnable, 1000);
+			}else{
+				closeTimer();
+				startTimer();
 			}
 			break;
 		}
@@ -573,12 +578,13 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				byte[]strbyte=(byte[]) (msg.obj);
 				if(!bStartReceiveData){
 					receiveCount=0;
+					iTestSuccessTimes=0;
 					mAnalysis.reset();					
 				}
 				receiveCount++;
 				mAnalysis.getDataFromBLE(strbyte,bStartReceiveData);
 				if(!bStartReceiveData){
-					bStartReceiveData=!bStartReceiveData;
+					bStartReceiveData=true;
 				}
 				if(mAnalysis.isReceivedAllData() ){
 					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
@@ -602,43 +608,34 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				bStartReceiveData = false;
 				
 				if(mAnalysis.isValidate()){
-					//
-					if(mAnalysis.isValidate()){
-						 max=mAnalysis.getFabsMaxValue();
-						 ff=mAnalysis.getFengFengValue();
-						 fabs=mAnalysis.getFabsMaxValue();
-						 mCheckValue=mAnalysis.getValidValue();
-						 measureAndDisplayData();
-							String Wavedata=mAnalysis.getWaveByteData().toString();
-							InsertMediaData(Wavedata,false);
-							
-							InitChart();
-							UpLoadWaveData();
-							
-							closeTimer();
-							
-					}else{
-						iFailedTimes++;	
-						if(iFailedTimes<=MAX_FAILED_TIMES){
-							closeTimer();
-							startTimer();
-							mColorTextView.setText("A 数据丢失,请重测"+" " +iFailedTimes);
-							Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
-						}else{
-							iFailedTimes=0;
-						}
-					}
+					iTestSuccessTimes++;
+					max=mAnalysis.getFabsMaxValue();
+					ff=mAnalysis.getFengFengValue();
+					fabs=mAnalysis.getFabsMaxValue();
+					mCheckValue=mAnalysis.getValidValue();
+					measureAndDisplayData();
+					String Wavedata=mAnalysis.getWaveByteData().toString();
+					InsertMediaData(Wavedata,false);
+					InitChart();
+					UpLoadWaveData();							
+					closeTimer();
+						
 				}else{
+					if(!bPressTest){
 					iFailedTimes++;	
 					if(iFailedTimes<=MAX_FAILED_TIMES){
 						closeTimer();
 						startTimer();
-						mColorTextView.setText("B  数据丢失,请重测"+" " +iFailedTimes);
+						mColorTextView.setText("A 数据丢失,请重测"+" " +iFailedTimes);
 						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 					}else{
 						iFailedTimes=0;
-						closeTimer();
 					}
+					}
+				}
+				
+				if(bPressTest){
+					mColorTextView.setText("压力测试成功结果:"+" " +iTestSuccessTimes/iTestTimes);
 				}
 				break;
 			case BluetoothLeControl.Message_Connection_Status:

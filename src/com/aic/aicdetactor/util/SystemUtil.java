@@ -366,5 +366,20 @@ public class  SystemUtil {
 	    	return Long.toHexString(crc32.getValue());
 	    	
 	    }
-		
+	 
+	 
+	 final static int JianGe=6;
+	 /**
+	  * 
+	  * @param CaiyangDian
+	  * @param CaiyangPinLv
+	  * @param ZhouShu
+	  * @return
+	  */
+	 public long getReceiveBLEDataTimeOut(int CaiyangDian,int CaiyangPinLv,int ZhouShu){
+		 
+		 long timeOut=0;
+		 timeOut = ZhouShu*1000*(CaiyangDian/CaiyangPinLv)+(CaiyangDian/20 +2)*JianGe+1500;
+		 return timeOut;
+	 }
 }
