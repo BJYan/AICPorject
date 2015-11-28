@@ -50,27 +50,30 @@
                 android:layout_marginRight="10dip"
                 android:textSize="16dp"/>
             <ImageView 
+                android:id="@+id/temperature_chart"
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:src="@drawable/search_con_result_diagram"
                 android:layout_weight="1"
                 android:padding="8dip"/>
             <TextView 
-                android:layout_height="fill_parent"
+                android:layout_height="32dip"
                 android:layout_width="wrap_content"
                 android:text="5.62"
                 android:background="@drawable/blue_border_edittext_shape"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_marginTop="5dip"
-                android:layout_marginBottom="5dip"/>
+                android:layout_marginBottom="5dip"
+                android:layout_gravity="center_vertical"/>
             <TextView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:text="℃"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:textSize="16dp"/>
+                android:textSize="16dp"
+                android:layout_marginLeft="5dip"/>
             <ImageView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
@@ -101,29 +104,33 @@
                 android:layout_width="wrap_content"
                 android:src="@drawable/search_con_result_diagram"
                 android:layout_weight="1"
-                android:padding="8dip"/>
+                android:padding="8dip"
+                android:visibility="invisible"/>
             <TextView 
-                android:layout_height="fill_parent"
+                android:layout_height="32dip"
                 android:layout_width="wrap_content"
                 android:text="5.62"
                 android:background="@drawable/blue_border_edittext_shape"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_marginTop="5dip"
-                android:layout_marginBottom="5dip"/>
+                android:layout_marginBottom="5dip"
+                android:layout_gravity="center_vertical"/>
             <TextView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
-                android:text="℃"
+                android:text="R/min"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:textSize="16dp"/>
+                android:textSize="16dp"
+                android:layout_marginLeft="5dip"/>
             <ImageView 
                 android:layout_height="fill_parent"
                 android:layout_width="wrap_content"
                 android:src="@drawable/save_icon"
                 android:layout_weight="1"
-                android:padding="8dip"/>
+                android:padding="8dip"
+                android:visibility="gone"/>
         </LinearLayout>
         <LinearLayout 
             android:layout_height="wrap_content"
@@ -157,6 +164,7 @@
                     android:text="加速度"
                     android:layout_weight="1"/>
                 <ImageView 
+                    android:id="@+id/acceleration_chart"
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:src="@drawable/search_con_result_diagram"
@@ -171,12 +179,13 @@
                 	android:gravity="center"
                 	android:textSize="16dp"/>
                 <TextView 
-                	android:layout_height="fill_parent"
+                	android:layout_height="32dip"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"
                 	android:background="@drawable/blue_border_edittext_shape"
                 	android:layout_weight="1"
                 	android:gravity="center"
+                	android:layout_gravity="center_vertical"
                 	android:layout_marginTop="5dip"
                 	android:layout_marginBottom="5dip"/>
                 <TextView 
@@ -201,6 +210,7 @@
                     android:text="速度"
                     android:layout_weight="1"/>
                 <ImageView 
+                    android:id="@+id/temp_chart"
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:src="@drawable/search_con_result_diagram"
@@ -214,14 +224,15 @@
                 	android:gravity="center"
                 	android:textSize="16dp"/>
                 <TextView 
-                	android:layout_height="fill_parent"
+                	android:layout_height="32dip"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"
                 	android:background="@drawable/blue_border_edittext_shape"
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:layout_marginTop="5dip"
-                	android:layout_marginBottom="5dip"/>
+                	android:layout_marginBottom="5dip"
+                	android:layout_gravity="center_vertical"/>
                 <TextView 
                 	android:layout_height="fill_parent"
                 	android:layout_width="30dip"
@@ -245,6 +256,7 @@
                     android:text="位移"
                     android:layout_weight="1"/>
                 <ImageView 
+                    android:id="@+id/displacemen_chart"
                 	android:layout_height="fill_parent"
                 	android:layout_width="wrap_content"
                 	android:src="@drawable/search_con_result_diagram"
@@ -258,14 +270,15 @@
                 	android:gravity="center"
                 	android:textSize="16dp"/>
                 <TextView 
-                	android:layout_height="fill_parent"
+                	android:layout_height="32dip"
                 	android:layout_width="wrap_content"
                 	android:text="5.62"
                 	android:background="@drawable/blue_border_edittext_shape"
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:layout_marginTop="5dip"
-                	android:layout_marginBottom="5dip"/>
+                	android:layout_marginBottom="5dip"
+                	android:layout_gravity="center_vertical"/>
                 <TextView 
                 	android:layout_height="fill_parent"
                 	android:layout_width="30dip"

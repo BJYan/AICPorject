@@ -83,6 +83,9 @@ public class DataAnalysis {
 	String Str80="8000";
 	String Str4f="ffff";
 	
+	float FabsMaxValue;
+	float FengFengValue;
+	
 	//获取得实际加速度数值
 	float getVoValue(String StrHex){
 		float value =0f;
@@ -135,6 +138,9 @@ public class DataAnalysis {
 		Log.i(TAG, "electric = "+electric + ", 0X ="+str.substring(str.length()-16, str.length()-8));
 		//checkCode  = Integer.valueOf(str.substring(str.length()-8, str.length()),16);
 		Log.i(TAG, "checkCode = "+checkCode + ", 0X ="+str.substring(str.length()-8, str.length()));
+		
+		FabsMaxValue = computeFabsMaxValue();
+		FengFengValue = computeFengFengValue();
 	}
 	
 	public float[] getData() {
@@ -166,7 +172,7 @@ public class DataAnalysis {
 	 * 峰值
 	 * @return
 	 */
-	public float getFabsMaxValue(){
+	public float computeFabsMaxValue(){
 		float dValue=0;
 		for(int i=0;i<data.length;i++){
 			if(dValue<Math.abs(data[i])){
@@ -179,11 +185,14 @@ public class DataAnalysis {
 		if(bPrintTestValue)Log.d(TAG, "getFabsMaxValue()dValue = "+dValue);
 		return dValue;
 	}
+	public float getFabsMaxValue(){
+		return FabsMaxValue;
+	}
 	/**
 	 * 获取峰峰数值
 	 * @return
 	 */
-	public float getFengFengValue(){
+	public float computeFengFengValue(){
 		float dValue=0;
 		float nValue=0;
 		for(int i=0;i<data.length;i++){
@@ -200,6 +209,10 @@ public class DataAnalysis {
 		 
 		if(bPrintTestValue)Log.d(TAG, "getFengFengValue()dValue = "+dValue);
 		return dValue;
+	}
+	
+	public float getFengFengValue(){
+		return FabsMaxValue;	
 	}
 	
 	public int  isValidate(String str,byte cmdtype){

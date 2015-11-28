@@ -7,11 +7,12 @@
    	android:gravity="right">
 
     <LinearLayout
-        android:layout_width="120dp"
+        android:layout_width="135dp"
         android:layout_height="match_parent" 
         android:orientation="vertical"
         android:gravity="end"
         android:background="#6699cc">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,24 +20,28 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:gravity="center_horizontal" 
             android:textColor="#ffffff"/>
-        <TextView
-            android:layout_width="match_parent"
+        <RadioGroup 
             android:layout_height="wrap_content"
-            android:text="站点"
-            android:textAppearance="?android:attr/textAppearanceLarge" 
-            android:background="@drawable/darkgray_border_edittext_shape"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="设备"
-            android:textAppearance="?android:attr/textAppearanceLarge" 
-            android:background="@drawable/darkgray_border_edittext_shape"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="测点"
-            android:textAppearance="?android:attr/textAppearanceLarge" 
-            android:background="@drawable/darkgray_border_edittext_shape"/>
+            android:layout_width="match_parent">
+            <RadioButton 
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="站点"
+                android:textSize="18dp"
+            	android:background="@drawable/darkgray_border_edittext_shape"/>
+            <RadioButton 
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="设备"
+                android:textSize="18dp"
+            	android:background="@drawable/darkgray_border_edittext_shape"/>
+            <RadioButton 
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="测点" 
+                android:textSize="18dp"
+            	android:background="@drawable/darkgray_border_edittext_shape"/>
+        </RadioGroup>
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
@@ -51,22 +56,37 @@
             android:layout_height="wrap_content"
             android:text="@string/station_menu_device"
             android:textAppearance="?android:attr/textAppearanceLarge" 
-            android:background="@drawable/darkgray_border_edittext_shape"/>
-        <Spinner
+            android:gravity="right"/>
+<!--         <Spinner
         	android:id="@+id/spinner1"
         	android:layout_width="match_parent"
-        	android:layout_height="wrap_content" />
+        	android:layout_height="wrap_content" 
+        	android:spinnerMode="dialog"/> -->
+        <Switch 
+            android:id="@+id/switch1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOn="正序"
+            android:textOff="反序"/>
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/station_menu_point"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-        <Spinner
+            android:textAppearance="?android:attr/textAppearanceLarge"
+             />
+<!--         <Spinner
         	android:id="@+id/spinner2"
         	android:layout_width="match_parent"
-        	android:layout_height="wrap_content"  />
-           <TextView
+        	android:layout_height="wrap_content"  
+        	android:spinnerMode="dialog"/> -->
+        <Switch 
+            android:id="@+id/switch2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOn="正序"
+            android:textOff="反序"/>
+        <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

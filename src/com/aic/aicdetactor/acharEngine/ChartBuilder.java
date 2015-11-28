@@ -12,12 +12,17 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import com.aic.aicdetactor.dialog.BigChartDialog;
+import com.aic.aicdetactor.dialog.OneCtrlDialog;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 
 public class ChartBuilder {
@@ -30,7 +35,7 @@ public class ChartBuilder {
 		this.context = context;
 	}
 	
-	 public View getBlackLineChartView(String title, final float[] y,float Ymax,float ffValue){
+	 public View getBlackLineChartView(final String title, final float[] y,final float Ymax,final float ffValue){
 		    
 		 String[] titles = new String[]{title};
 		 List<float[]> yValues = new ArrayList<float[]>();
@@ -61,13 +66,100 @@ public class ChartBuilder {
 		    renderer.setXAxisMax(y.length);
 		    renderer.setLegendHeight(5);
 		    //renderer.setXLabels(200);
-		    renderer.setPanEnabled(true, true);
+		    renderer.setPanEnabled(false, false);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
 		    //renderer.setMargins(new int[] {0, 50, 10, 0});
 		    renderer.setMargins(new int[] {0, 20, 10, 0});
 		    renderer.setPanEnabled(true,true);
 		    renderer.setAxisTitleTextSize(30);
 		    //renderer.setYTitle("m/s*2");
+		    
+		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
+		    XYrenderer.setColor(Color.YELLOW);
+		    XYrenderer.setPointStyle(PointStyle.X);
+		    renderer.addSeriesRenderer(XYrenderer);
+		 View chartView = ChartFactory.getLineChartView(context, dataset, renderer);
+		 final XYChart lineChart = new LineChart(dataset, renderer);
+/*		 chartView.setOnTouchListener(new OnTouchListener() {
+			boolean moved = false;
+			XYMultipleSeriesRenderer movedRenderer = lineChart.getRenderer();
+			@Override
+			public boolean onTouch(View arg0, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_MOVE:
+					moved = true;
+					break;
+				case MotionEvent.ACTION_UP:
+					if(moved) { 
+						float[] MinMaxData = getRangeMaxMin(y,(int)movedRenderer.getXAxisMin(),(int)movedRenderer.getXAxisMax());
+						Log.i(TAG, "XAxisMin = "+movedRenderer.getXAxisMin()+" XAxisMax = "+movedRenderer.getXAxisMax());
+						String MinMax = "Min:"+MinMaxData[0]+"\nMax:"+MinMaxData[1];
+						renderer.setXTitle(MinMax);
+					}
+					break;
+				default:
+					break;
+				}
+				return false;
+			}
+		});*/
+		 chartView.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_UP:
+					BigChartDialog bigCtrlDialog = new BigChartDialog(context);
+					bigCtrlDialog.setChartView(getBigChartView(title,y,Ymax, ffValue));
+					bigCtrlDialog.show();
+					break;
+				default:
+					break;
+				}
+				return false;
+			}
+		});
+		 return chartView;
+	 }
+	 
+	 public View getBigChartView(String title, final float[] y,float Ymax,float ffValue){
+		 String[] titles = new String[]{title};
+		 List<float[]> yValues = new ArrayList<float[]>();
+		 yValues.add(y);
+		 List<float[]> xValues = new ArrayList<float[]>(); 
+		 float[] x= new float[y.length];
+		 for(int i=0;i<y.length;i++){
+			 x[i]=i;
+		 }
+		 xValues.add(x);
+		 XYMultipleSeriesDataset dataset = buildDataset(titles, xValues, yValues);
+
+		 final XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
+		    renderer.setXLabels(12);
+		    renderer.setYLabels(10);
+		    renderer.setShowGrid(true);
+		    renderer.setXLabelsAlign(Align.RIGHT);
+		    renderer.setYLabelsAlign(Align.RIGHT);
+		    renderer.setZoomButtonsVisible(true);
+		    //renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
+		    //renderer.setZoomLimits(new double[] { -10, 20, -10, 40 });
+		    renderer.setBackgroundColor(Color.DKGRAY);
+		    renderer.setMarginsColor(Color.DKGRAY);
+		    renderer.setApplyBackgroundColor(true);
+		    renderer.setYAxisMin(-(ffValue-Ymax));
+		    renderer.setYAxisMax(Ymax);
+		    renderer.setXAxisMin(0);
+		    renderer.setXAxisMax(y.length);
+		    renderer.setLegendHeight(130);
+		    //renderer.setXLabels(200);
+		    renderer.setPanEnabled(true, true);
+		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
+		    renderer.setMargins(new int[] {0, 50, 10, 0});
+		    renderer.setPanEnabled(true,true);
+		    renderer.setAxisTitleTextSize(30);
+		    renderer.setYTitle("m/s*2");
 		    
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();
 		    XYrenderer.setColor(Color.YELLOW);

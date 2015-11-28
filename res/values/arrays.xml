@@ -131,8 +131,7 @@
 </string-array> 
  <string-array name="search_class">  
     <item>正序</item>  
-    <item>正序</item> 
-    <item>正序</item>  
+    <item>反序</item>  
 </string-array>
  <string-array name="route_temp_factory">  
     <item>中煤旭阳焦化厂</item>  
