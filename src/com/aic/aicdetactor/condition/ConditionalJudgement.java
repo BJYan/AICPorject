@@ -34,7 +34,7 @@ class T_Period_Code {
 };
 //条件判断函数
 public class ConditionalJudgement {
-
+boolean isTest=true;
 //m_WorkerInfoJson	登录用户
 //T_Line 用户选择的常规线路号
 //m_PeriodInfo  用户选择的线路周期
@@ -164,11 +164,18 @@ public class ConditionalJudgement {
 				 gc.setTime(new Date()); 
 				 
 				 gc.add(Calendar.DATE,CpNum+m_PeriodInfo.Periods.get(ii).Start_Point); 
+				 if(isTest){
+					 StartDate="2015-11-28 12:00:00";
+				 }else{
 				 StartDate=SimpleDate.format(gc.getTime())+" 00:00:00";	
-				 
+				 }
 				 gc.setTime(new Date()); 
 				 gc.add(Calendar.DATE,CpNum+m_PeriodInfo.Periods.get(ii).Start_Point+m_PeriodInfo.Periods.get(ii).Span-1); 
-				 EndDate=SimpleDate.format(gc.getTime())+" 23:59:59";	
+				 if(isTest){
+					 EndDate="2015-11-28 23:59:59";
+				 }else{
+					 EndDate=SimpleDate.format(gc.getTime())+" 23:59:59";	
+				 }
 			}		
 			else
 			{		
