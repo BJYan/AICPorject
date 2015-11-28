@@ -82,8 +82,6 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/relateve1"
         android:layout_weight="1"
-       android:layout_marginLeft="5dip"
-       android:layout_marginRight="5dip"
        android:divider="#ffffff"
        android:dividerHeight="2dip"
        android:childDivider="#ffffff"/>
