@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
@@ -29,9 +30,13 @@ public abstract class MeasureBaseFragment extends Fragment {
 	private String TAG="AIC.MeasureBaseFragment";
 	//protected DeviceItemJson mDeviceItemData=null;
 	BluetoothLeControl BLEControl = null;
-   StringBuffer mStrReceiveData = new StringBuffer();
-   String mStrLastReceiveData="";
+   //StringBuffer mStrReceiveData = new StringBuffer();
+   //String mStrLastReceiveData="";
+	final int MAX_FAILED_TIMES=3;
    boolean mCanSendCMD=false;
+   
+   boolean bStartReceiveData=false;
+   ReceivedDataAnalysis mAnalysis =new ReceivedDataAnalysis();
 	/**
 	 * 数据的类型
 	 */

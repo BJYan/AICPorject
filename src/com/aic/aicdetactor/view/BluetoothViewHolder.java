@@ -11,4 +11,5 @@ public final class BluetoothViewHolder {
 	  public TextView MacAddr;
 	  public boolean bconnected;
 	  public Switch BTSwitch;
+	  public int index;
 }

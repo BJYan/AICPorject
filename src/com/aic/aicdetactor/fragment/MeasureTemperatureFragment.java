@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -64,6 +66,9 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	private EditText mEditTextValue;
 	private TextView mTimeTV;
 	private Spinner mSpinner;
+	private Timer mTimer=null;
+	private TimerTask mTimerTask=null;
+	
 	//DATA
 	//之间的通信接口
 	private OnTemperatureMeasureListener mCallback = null;
@@ -73,7 +78,6 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	String mAbnormalStr="";
 	private int SpinnerSelectedIndex=0;
 	byte mDLCMD=0;
-	long mReceiveDataLenth=0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -216,6 +220,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 
     
     int iFailedTime =0;
+    int receiveCount =0;
     Handler handler = new Handler(){
 
 		@Override
@@ -224,17 +229,41 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			switch(msg.what){
 		case BluetoothLeControl.MessageReadDataFromBT:
 			byte[]strbyte=(byte[]) (msg.obj);
-			String str= SystemUtil.bytesToHexString(strbyte);
-			if(mReceiveDataLenth==0){
-			mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+			
+			if(!bStartReceiveData){
+				mAnalysis.reset();					
 			}
-			if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
+			mAnalysis.getDataFromBLE(strbyte,bStartReceiveData);
+			if(!bStartReceiveData){
+				bStartReceiveData=!bStartReceiveData;
+			}
+			if(mAnalysis.isReceivedAllData() ){
 				handler.sendMessage(handler.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
-			}else{
-				
-				int count=msg.getData().getInt("count");
-				Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
 			}
+			
+			Log.d(TAG, "receive count="+receiveCount +", received data is  "+SystemUtil.bytesToHexString(strbyte));
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+//			String str= SystemUtil.bytesToHexString(strbyte);
+//			if(mReceiveDataLenth==0){
+//			mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+//			}
+//			if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
+//				handler.sendMessage(handler.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+//			}else{
+//				
+//				int count=msg.getData().getInt("count");
+//				Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+//			}
 			break;
 		case BluetoothLeControl.Message_Stop_Scanner:
 			mTimeTV.setVisibility(View.VISIBLE);
@@ -242,31 +271,76 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			break;
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mTimeTV.setText("测量完毕");
-			mStrLastReceiveData = mStrReceiveData.toString();
-			mStrReceiveData.delete(0, mStrReceiveData.length());
-			DataAnalysis proxy = new DataAnalysis();
 			
-			int k = proxy.isValidate(mStrLastReceiveData,(byte)mDLCMD);
-			if(k==0){
-				iFailedTime=0;
-			proxy.getResult();
-			if(mDLCMD == BluetoothConstast.CMD_Type_GetTemper){
-			mCheckedValue=proxy.getTemperValue();
-			}else if(mDLCMD == BluetoothConstast.CMD_Type_CaiJiZhuanSu){
-				mCheckedValue=proxy.getTemperValue();
-			}
-			mCanSendCMD=true;
-			measureAndDisplayData();
-			}else{
-				String strErr = mTimeTV.getText().toString();
-				if(!strErr.contains("数据丢失")){
-					strErr=strErr+"数据丢失,请重测";
-					;
+			boolean isvalide = mAnalysis.isValidate();
+			float valideValue = mAnalysis.getValidValue();
+			float max=mAnalysis.getFabsMaxValue();
+			float ff=mAnalysis.getFengFengValue();
+			float fabs=mAnalysis.getFabsMaxValue();
+			
+			bStartReceiveData = false;
+			
+			if(mAnalysis.isReceivedAllData()){
+				//
+				if(mAnalysis.isValidate()){
+					 valideValue = mAnalysis.getValidValue();
+					 max=mAnalysis.getFabsMaxValue();
+					 ff=mAnalysis.getFengFengValue();
+					 fabs=mAnalysis.getFabsMaxValue();
+					 mCheckedValue=mAnalysis.getValidValue();
+					 measureAndDisplayData();
+						
 				}else{
-					iFailedTime++;
+					iFailedTime++;	
+					if(iFailedTime<=MAX_FAILED_TIMES){
+						startTimer();
+						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
+						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+					}else{
+						iFailedTime=0;
+					}
 				}
-				mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
+			}else{
+				iFailedTime++;	
+				if(iFailedTime<=MAX_FAILED_TIMES){
+					startTimer();
+					mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
+					Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+				}else{
+					iFailedTime=0;
+				}
 			}
+			
+			
+			
+			
+			
+			
+//			mStrLastReceiveData = mStrReceiveData.toString();
+//			mStrReceiveData.delete(0, mStrReceiveData.length());
+//			DataAnalysis proxy = new DataAnalysis();
+//			
+//			int k = proxy.isValidate(mStrLastReceiveData,(byte)mDLCMD);
+//			if(k==0){
+//				iFailedTime=0;
+//			proxy.getResult();
+//			if(mDLCMD == BluetoothConstast.CMD_Type_GetTemper){
+//			mCheckedValue=proxy.getTemperValue();
+//			}else if(mDLCMD == BluetoothConstast.CMD_Type_CaiJiZhuanSu){
+//				mCheckedValue=proxy.getTemperValue();
+//			}
+//			mCanSendCMD=true;
+//			measureAndDisplayData();
+//			}else{
+//				String strErr = mTimeTV.getText().toString();
+//				if(!strErr.contains("数据丢失")){
+//					strErr=strErr+"数据丢失,请重测";
+//					;
+//				}else{
+//					iFailedTime++;
+//				}
+//				mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
+//			}
 			break;
 		case BluetoothLeControl.Message_Connection_Status:
 			switch(msg.arg1){
@@ -362,18 +436,44 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}
 			break;
 		case PartItemContact.MEASURE_DATA:
-		//	if(mCanSendCMD){
 				getDataFromBLE();
-				mReceiveDataLenth=0;
-				mStrReceiveData.delete(0, mStrReceiveData.length());
-		//	}
 			
 			break;
 		}
 		
 	}
 
+	void startTimer(){		
+		if(mTimerTask==null){
+		mTimerTask = new TimerTask(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				getDataFromBLE();
+			}
+			};
+		}
+		if(mTimer==null){
+			mTimer = new Timer();
+			mTimer.schedule(mTimerTask, 1000);
+			}
+		//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
+	}
 	
+	void closeTimer(){
+		if(mTimer!=null){
+			mTimer.cancel();
+			mTimer=null;
+		}
+		
+		if(mTimerTask!=null){
+			mTimerTask.cancel();
+			mTimerTask=null;
+		}
+		
+		mCanSendCMD=false;
+	}
 //	@Override
 //	public void saveCheckValue() {
 //		// TODO Auto-generated method stub

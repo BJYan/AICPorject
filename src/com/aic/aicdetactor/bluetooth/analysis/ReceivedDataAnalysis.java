@@ -22,32 +22,50 @@ import com.aic.aicdetactor.util.SystemUtil;
  *
  */
 public class ReceivedDataAnalysis {
-	float []mReceiveFloatData=null;
+	float []mReceiveWaveFloatData=null;
+	byte []mReceiveWaveByteData=null;
+	
 	byte []mReceiveByteDataCRC=null;
 	int mReceivedDataCounts=0;
 	int caiyangdian=0;
 	int mAxCounts=0;
 	byte mDLCmd=0;
 	final String TAG="ReceivedDataAnalysis";
-	
+	int mReceivedDataByteSizes=0;
+	int mShoudReceivedByteSizes=0;
 	/**
 	  * 获取wave数据
 	  */
-	 void getWaveData(){
+	public float[] getWaveFloatData(){
 		 switch(mDLCmd){
 		 case BluetoothConstast.CMD_Type_ReadSensorParams:
 			 break;
 		 case BluetoothConstast.CMD_Type_CaiJi:
-			 for(int i=10;i<mReceiveByteDataCRC.length;i=i+2){
-				 mReceiveFloatData[i]=mReceiveByteDataCRC[i+11]<<8|mReceiveByteDataCRC[i+12];
+			 for(int i=0;i<mReceiveWaveFloatData.length;i=i+2){
+				 mReceiveWaveFloatData[i]=mReceiveByteDataCRC[i+11]<<8|mReceiveByteDataCRC[i+12];
 			 }
 			 break;
 		 }
-		 	 
+		 	return mReceiveWaveFloatData; 
+	 }
+	 
+	 /**
+	  * 
+	  */
+	public  byte[] getWaveByteData(){
+		 switch(mDLCmd){
+		 case BluetoothConstast.CMD_Type_ReadSensorParams:
+			 break;
+		 case BluetoothConstast.CMD_Type_CaiJi:
+			 System.arraycopy(mReceiveByteDataCRC, 10, mReceiveWaveByteData, 0, getDataPointCount()*2);
+			 break;
+		 }
+		 	return mReceiveByteDataCRC; 
 	 }
 	 //获取轴数
-	 void getAxCount(){
+	 public int getAxCount(){
 		 mAxCounts= mReceiveByteDataCRC[4];
+		 return mAxCounts;
 	 }
 	 int getDataPointCount(){
 		return  mReceiveByteDataCRC[6]<<8|mReceiveByteDataCRC[7];
@@ -64,10 +82,10 @@ public class ReceivedDataAnalysis {
 			 case BluetoothConstast.CMD_Type_ReadSensorParams:
 				 break;
 			 case BluetoothConstast.CMD_Type_CaiJi:
-				 for(int i=0;i<mReceiveFloatData.length;i++){
-						dValue+=Math.pow(mReceiveFloatData[i], 2);
+				 for(int i=0;i<mReceiveWaveFloatData.length;i++){
+						dValue+=Math.pow(mReceiveWaveFloatData[i], 2);
 					}
-					dValue=Math.sqrt(dValue/mReceiveFloatData.length);
+					dValue=Math.sqrt(dValue/mReceiveWaveFloatData.length);
 					BigDecimal   b  =   new BigDecimal(dValue);  
 					dValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
 				 break;
@@ -88,9 +106,9 @@ public class ReceivedDataAnalysis {
 			 case BluetoothConstast.CMD_Type_ReadSensorParams:
 				 break;
 			 case BluetoothConstast.CMD_Type_CaiJi:
-				 for(int i=0;i<mReceiveFloatData.length;i++){
-						if(dValue<Math.abs(mReceiveFloatData[i])){
-							dValue=Math.abs(mReceiveFloatData[i]);
+				 for(int i=0;i<mReceiveWaveFloatData.length;i++){
+						if(dValue<Math.abs(mReceiveWaveFloatData[i])){
+							dValue=Math.abs(mReceiveWaveFloatData[i]);
 						}
 					}
 					BigDecimal   b  =   new BigDecimal(dValue);  
@@ -114,13 +132,13 @@ public class ReceivedDataAnalysis {
 			 case BluetoothConstast.CMD_Type_ReadSensorParams:
 				 break;
 			 case BluetoothConstast.CMD_Type_CaiJi:
-				 for(int i=0;i<mReceiveFloatData.length;i++){
-						if(dValue<mReceiveFloatData[i]){
-							dValue=mReceiveFloatData[i];
+				 for(int i=0;i<mReceiveWaveFloatData.length;i++){
+						if(dValue<mReceiveWaveFloatData[i]){
+							dValue=mReceiveWaveFloatData[i];
 						}
 						
-						if(nValue>=mReceiveFloatData[i]){
-							nValue=mReceiveFloatData[i];
+						if(nValue>=mReceiveWaveFloatData[i]){
+							nValue=mReceiveWaveFloatData[i];
 						}
 					}
 					BigDecimal   b  =   new BigDecimal(dValue-nValue);  
@@ -141,7 +159,7 @@ public class ReceivedDataAnalysis {
 		 * @param shuldLenth
 		 * @return 1 有效，其他无效
 		 */
-		public static  boolean  isValidate(byte[] receivedAllBytes,byte cmdtype,int shuldLenth){
+		public static  boolean  isValidate(byte[] receivedAllBytes,byte cmdtype){
 			boolean  returnValue =false;
 			if(receivedAllBytes!=null && receivedAllBytes.length>=20){
 				switch(cmdtype){
@@ -261,6 +279,21 @@ public class ReceivedDataAnalysis {
 			if(true)Log.d(TAG, "isValidate()returnValue = "+returnValue);
 			return returnValue ;
 		}
+		
+	 int getReceivedByteSizes(){
+		return mReceivedDataByteSizes;
+	}
+	
+	 int getShoudReceivedByteSizes(){
+		return mShoudReceivedByteSizes;
+	}
+	
+	public boolean isReceivedAllData(){
+		if(mReceivedDataByteSizes==mShoudReceivedByteSizes){
+			return true;
+		}
+		return false;
+	}
 	
 		
 		/**
@@ -313,30 +346,30 @@ public class ReceivedDataAnalysis {
 					if(mReceiveByteDataCRC!=null){
 						mReceiveByteDataCRC=null;
 					}
+					mShoudReceivedByteSizes=20;
+					mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
 					
-					mReceiveByteDataCRC = new byte[20];
 					break;
 				case (byte)0xd1:
 					caiyangdian=strbyte[6]<<8|strbyte[7];
 					mAxCounts= strbyte[4];
-					if(mReceiveFloatData!=null){
-						mReceiveFloatData=null;						
+					if(mReceiveWaveFloatData!=null){
+						mReceiveWaveFloatData=null;						
 					}
-					mReceiveFloatData = new float[caiyangdian];
-					for(int k=0;k<5;k=k+2){
-						mReceiveFloatData[k]=strbyte[k+11]<<8|strbyte[k+12];
-					}
-					int datasize = caiyangdian*2 +10+9+9+3*4;
+					mReceiveWaveFloatData = new float[caiyangdian];
+					mReceiveWaveByteData = new byte[caiyangdian*2];
+							
+					mShoudReceivedByteSizes = caiyangdian*2 +10+9+9+3*4;
 					if(mReceiveByteDataCRC!=null){
 						mReceiveByteDataCRC=null;
 					}
 				
-					 mReceiveByteDataCRC = new byte[datasize];
+					 mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
 					break;
 				}
 				
 			}
-			
+	    	mReceivedDataByteSizes=mReceivedDataByteSizes+strbyte.length;
 			//收集BLE发送过来的所有原始数据
 			System.arraycopy(strbyte,0,mReceiveByteDataCRC,mReceivedDataCounts*20,strbyte.length);	
 			//Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
@@ -347,8 +380,8 @@ public class ReceivedDataAnalysis {
 	 * 重置数据
 	 */
 	public void reset(){
-		if(mReceiveFloatData!=null){
-			mReceiveFloatData=null;
+		if(mReceiveWaveFloatData!=null){
+			mReceiveWaveFloatData=null;
 		}
 		mReceivedDataCounts=0;
 		caiyangdian=0;

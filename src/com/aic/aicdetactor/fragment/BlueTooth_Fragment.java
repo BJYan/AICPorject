@@ -224,8 +224,6 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		pbar_text.setVisibility(View.INVISIBLE);
 		pbar.setVisibility(View.INVISIBLE);		
 	}
-	StringBuffer mStrReceiveData=new StringBuffer();;
-	String mStrLastReceiveData="";
 	//wave data
 	boolean bStartReceiveData=false;
 

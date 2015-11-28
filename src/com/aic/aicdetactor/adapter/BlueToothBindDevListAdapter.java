@@ -86,12 +86,12 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 		return arg0;
 	}
 
-	int BTIndex=0;
+	//int BTIndex=0;
 	boolean bBTConnected=false;
 	@Override
 	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
-		BTIndex = arg0;
+	//	BTIndex = arg0;
 		BluetoothViewHolder viewHolder=null;
 		if(arg2==null) {
 			arg2 = mInflater.inflate(R.layout.bluetooth_binded_devlist_group_item, null);
@@ -106,7 +106,7 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 			viewHolder=(BluetoothViewHolder) arg2.getTag();
 			
 		}
-		
+		viewHolder.index=arg0;
 		viewHolder.image.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -128,7 +128,9 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 				Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connected_BLE_Address);
 				if(arg1){
 					mBTControl.setParamates(mHandler);
-					String Address = bondedDevices.get(BTIndex).getAddress();
+					String Address = "";//bondedDevices.get(viewHolder.index).getAddress();
+					Address="b0:b4:48:cc:2d:84";
+					Address="B0:B4:48:CC:2D:84";
 					mBTControl.Connection(Address);	
 					msg.arg1=BluetoothLeControl.Message_Connect_Status_Connected;
 					msg.obj=Address;

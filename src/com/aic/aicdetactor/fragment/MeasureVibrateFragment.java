@@ -100,11 +100,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	LayoutInflater mInflater;
 	long mReceiveDataLenth=0;
 	byte mDLCMD=0;
-	DataAnalysis dataAnalysis;
-	StringBuffer mStrReceiveData=new StringBuffer();
-	String mStrLastReceiveData="";
+	//DataAnalysis dataAnalysis;
+	//StringBuffer mStrReceiveData=new StringBuffer();
+	//String mStrLastReceiveData="";
 	int iFailedTimes =0;
-	final int MAX_FAILED_TIMES=3;
+	
 	private Timer mTimer=null;
 	private Timer mCountdownTimer=null;
 	private TimerTask mTimerTask=null;
@@ -229,9 +229,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		mCanSendCMD=false;
 		mReceiveDataLenth=0;
-		if(mStrReceiveData!=null){
-		mStrReceiveData.delete(0, mStrReceiveData.length());
-		}
+//		if(mStrReceiveData!=null){
+//		mStrReceiveData.delete(0, mStrReceiveData.length());
+//		}
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -382,30 +382,30 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
 		
-		if(dataAnalysis!=null){
-			y_FengValue.setText("峰值:"+dataAnalysis.getFabsMaxValue());
-			y_FengFengValue.setText("峰峰值:"+dataAnalysis.getFengFengValue());
-			y_ValidValue.setText("有效值:"+dataAnalysis.getValidValue());
+		if(mAnalysis.isValidate()){
+			y_FengValue.setText("峰值:"+mAnalysis.getFabsMaxValue());
+			y_FengFengValue.setText("峰峰值:"+mAnalysis.getFengFengValue());
+			y_ValidValue.setText("有效值:"+mAnalysis.getValidValue());
 			
-			XetMax.setText(""+dataAnalysis.getFabsMaxValue());
-			XetFengFeng.setText(""+dataAnalysis.getFengFengValue());		
-			XetValid.setText(""+dataAnalysis.getValidValue());
+			XetMax.setText(""+mAnalysis.getFabsMaxValue());
+			XetFengFeng.setText(""+mAnalysis.getFengFengValue());		
+			XetValid.setText(""+mAnalysis.getValidValue());
 			
-			float[] data = dataAnalysis.getData();
-			if(dataAnalysis.getAXCount()==1){
-				timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			float[] data = mAnalysis.getWaveFloatData();
+			if(mAnalysis.getAxCount()==1){
+				timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
 				char1XL.setVisibility(View.GONE);
 				char1ZL.setVisibility(View.GONE);
-				axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+				axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data,mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
 				axesXLL.setVisibility(View.GONE);
 				axesZLL.setVisibility(View.GONE);
 				frequencyChartView.setVisibility(View.GONE);		
-			}else if(dataAnalysis.getAXCount()==3){			
-			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
-			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));		
-			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
-			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
-			frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data,dataAnalysis.getFabsMaxValue(),dataAnalysis.getFengFengValue()));
+			}else if(mAnalysis.getAxCount()==3){			
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
+			frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", data,mAnalysis.getFabsMaxValue(),mAnalysis.getFengFengValue()));
 			}
 		}else{
 			float[] data = new float[1024];
@@ -429,7 +429,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				getDataFromBLE();
 				mCanSendCMD=false;
 				mReceiveDataLenth=0;
-				mStrReceiveData.delete(0, mStrReceiveData.length());
+				//mStrReceiveData.delete(0, mStrReceiveData.length());
 				Log.d(TAG, "run() " +recLen);
 				
 		}else{
@@ -576,25 +576,34 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
 				byte[]strbyte=(byte[]) (msg.obj);
-				String str= SystemUtil.bytesToHexString(strbyte);
-				int count=msg.getData().getInt("count");
-				receiveCount++;
-				if(mReceiveDataLenth==0){
-					//String str= SystemUtil.bytesToHexString(strbyte);
-					mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
-					mDataBufferByte = new byte[(int)mReceiveDataLenth];
-					//System.arraycopy(strbyte,0,mDataBufferByte,0,strbyte.length);
-					}else{
-						//System.arraycopy(strbyte,0,mDataBufferByte,0,strbyte.length);
-					}
-				
-				if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
-					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
-				}else{						
-					
-					Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+				if(!bStartReceiveData){
+					mAnalysis.reset();					
 				}
-				Log.d(TAG, "receive count="+count +", mReceiveDataLenth = "+mReceiveDataLenth +",mStrReceiveData lenth= " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+				mAnalysis.getDataFromBLE(strbyte,bStartReceiveData);
+				if(!bStartReceiveData){
+					bStartReceiveData=!bStartReceiveData;
+				}
+				if(mAnalysis.isReceivedAllData() ){
+					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+				}
+				
+				Log.d(TAG, "receive count="+receiveCount +", received data is  "+SystemUtil.bytesToHexString(strbyte));
+				
+//				String str= SystemUtil.bytesToHexString(strbyte);
+//				int count=msg.getData().getInt("count");
+//				receiveCount++;
+//				if(mReceiveDataLenth==0){
+//					mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
+//					mDataBufferByte = new byte[(int)mReceiveDataLenth];
+//					}
+//				
+//				if(mReceiveDataLenth == mStrReceiveData.append(str.toString()).length()){
+//					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
+//				}else{						
+//					
+//					Log.d(TAG, "HandleMessage() count ="+count +" mStrReceiveData is " +mStrReceiveData.length()+","+mStrReceiveData.toString());
+//				}
+				//Log.d(TAG, "receive count="+receiveCount +", mReceiveDataLenth = "+mReceiveDataLenth +",mStrReceiveData lenth= " +mStrReceiveData.length()+","+mStrReceiveData.toString());
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mTimeTV.setVisibility(View.VISIBLE);
@@ -602,16 +611,32 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mTimeTV.setText("测量完毕");
-				if(mStrReceiveData.length()>0){
-					mStrLastReceiveData = mStrReceiveData.toString();
-					InsertMediaData(mStrLastReceiveData,true);					
-					if(dataAnalysis==null){
-						dataAnalysis = new DataAnalysis();
-					}
-					int isValide = dataAnalysis.isValidate(mStrLastReceiveData,mDLCMD);
-					mStrReceiveData.delete(0, mStrReceiveData.length());
-					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+isValide);
-					if(isValide!=0){
+				boolean isvalide = mAnalysis.isValidate();
+				float valideValue = mAnalysis.getValidValue();
+				float max=mAnalysis.getFabsMaxValue();
+				float ff=mAnalysis.getFengFengValue();
+				float fabs=mAnalysis.getFabsMaxValue();
+				
+				bStartReceiveData = false;
+				
+				if(mAnalysis.isReceivedAllData()){
+					//
+					if(mAnalysis.isValidate()){
+						 valideValue = mAnalysis.getValidValue();
+						 max=mAnalysis.getFabsMaxValue();
+						 ff=mAnalysis.getFengFengValue();
+						 fabs=mAnalysis.getFabsMaxValue();
+						 mCheckValue=mAnalysis.getValidValue();
+						 measureAndDisplayData();
+							String Wavedata=mAnalysis.getWaveByteData().toString();
+							InsertMediaData(Wavedata,false);
+							
+							InitChart();
+							UpLoadWaveData();
+							
+							closeTimer();
+							
+					}else{
 						iFailedTimes++;	
 						if(iFailedTimes<=MAX_FAILED_TIMES){
 							closeTimer();
@@ -621,32 +646,67 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 						}else{
 							iFailedTimes=0;
 						}
-						
-						return ;
-					}else{
-						iFailedTimes=0;
-						dataAnalysis.getResult();
-					dataAnalysis.getAXCount();					
-					dataAnalysis.getCaiYangFrequency();
-					dataAnalysis.getCRC32();
-					dataAnalysis.getDataNum();
-					dataAnalysis.getDataPointCount();
-					dataAnalysis.getFabsMaxValue();
-					dataAnalysis.getFengFengValue();
-					
-					mCheckValue=dataAnalysis.getValidValue();
-					dataAnalysis.getWaveData();
-					measureAndDisplayData();
-					String Wavedata=dataAnalysis.getWaveData().toString();
-					InsertMediaData(Wavedata,false);
-					
-					ifNeedAnalysisData(mDLCMD);
-					closeTimer();
 					}
 				}else{
-					closeTimer();
-					Log.d(TAG,"mStrReceiveData is null");
+					iFailedTimes++;	
+					if(iFailedTimes<=MAX_FAILED_TIMES){
+						closeTimer();
+						startTimer();
+						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTimes);
+						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+					}else{
+						iFailedTimes=0;
+					}
 				}
+				
+				
+				//////////////////////////////////////////////
+				
+//				if(mStrReceiveData.length()>0){
+//					mStrLastReceiveData = mStrReceiveData.toString();
+//					InsertMediaData(mStrLastReceiveData,true);					
+//					if(dataAnalysis==null){
+//						dataAnalysis = new DataAnalysis();
+//					}
+//					int isValide = dataAnalysis.isValidate(mStrLastReceiveData,mDLCMD);
+//					mStrReceiveData.delete(0, mStrReceiveData.length());
+//					Log.d(TAG, "receive data lenth = "+mStrLastReceiveData.length() +"and ValidValue ="+isValide);
+//					if(isValide!=0){
+//						iFailedTimes++;	
+//						if(iFailedTimes<=MAX_FAILED_TIMES){
+//							closeTimer();
+//							startTimer();
+//							mColorTextView.setText("数据丢失,请重测"+" " +iFailedTimes);
+//							Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+//						}else{
+//							iFailedTimes=0;
+//						}
+//						
+//						return ;
+//					}else{
+//						iFailedTimes=0;
+//						dataAnalysis.getResult();
+//					dataAnalysis.getAXCount();					
+//					dataAnalysis.getCaiYangFrequency();
+//					dataAnalysis.getCRC32();
+//					dataAnalysis.getDataNum();
+//					dataAnalysis.getDataPointCount();
+//					dataAnalysis.getFabsMaxValue();
+//					dataAnalysis.getFengFengValue();
+//					
+//					mCheckValue=dataAnalysis.getValidValue();
+//					dataAnalysis.getWaveData();
+//					measureAndDisplayData();
+//					String Wavedata=dataAnalysis.getWaveData().toString();
+//					InsertMediaData(Wavedata,false);
+//					
+//					ifNeedAnalysisData(mDLCMD);
+//					closeTimer();
+//					}
+//				}else{
+//					closeTimer();
+//					Log.d(TAG,"mStrReceiveData is null");
+//				}
 				
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
@@ -663,23 +723,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 	};
 	
-	/**
-	 * 只针对采集D1类型的数据进行图形分析
-	 * @param type
-	 */
-void ifNeedAnalysisData(byte type){
-	if(type != BluetoothConstast.CMD_Type_CaiJi){return ;}
-	float[] data = dataAnalysis.getData();
-	float[] MinMaxTemp = new float[]{data[0],data[0]};
-	for(int i=0;i<data.length;i++){
-		if(data[i]<=MinMaxTemp[0]) MinMaxTemp[0] = data[i];
-		if(data[i]>MinMaxTemp[1]) MinMaxTemp[1] = data[i];
-	}
 	
-	InitChart();
-	
-	UpLoadWaveData(data);
-}
 	void InsertMediaData(String data,boolean test){
 		String guid = SystemUtil.createGUID();
 		if(test){
@@ -713,10 +757,11 @@ void ifNeedAnalysisData(byte type){
 		dao.execSQL(StrSql);
 	}
 	
-	void UpLoadWaveData(float[] testData){
-		 byte[] bytedata=new byte[testData.length*4];;
-		 for(int i=0;i<testData.length;i++){
-			 byte[] data=SystemUtil.float2byte(testData[i]);
+	void UpLoadWaveData(){
+	float[]waveData=	mAnalysis.getWaveFloatData();
+		 byte[] bytedata=new byte[waveData.length*4];;
+		 for(int i=0;i<waveData.length;i++){
+			 byte[] data=SystemUtil.float2byte(waveData[i]);
 			 for(int k=0;k<data.length;k++){
 				 bytedata[i*4+k]=data[k];
 			 }
