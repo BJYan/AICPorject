@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.fragment;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,8 +14,10 @@ import com.aic.aicdetactor.activity.BlueToothBindDevListActivity;
 import com.aic.aicdetactor.adapter.BlueToothBindDevListAdapter;
 import com.aic.aicdetactor.adapter.BlueToothDevListAdapter;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
+import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Fragment;
@@ -224,12 +227,9 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	StringBuffer mStrReceiveData=new StringBuffer();;
 	String mStrLastReceiveData="";
 	//wave data
-	float []mReceiveFloatData=null;
-	byte []mReceiveByteDataCRC=null;
 	boolean bStartReceiveData=false;
-	byte mCurReceivedCMD=0;
-	int mReceivedDataCounts=0;
-	int caiyangdian=0;
+
+	ReceivedDataAnalysis mAnalysis =new ReceivedDataAnalysis();
 	Handler mHandle = new Handler(){
 
 		@Override
@@ -238,26 +238,28 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			switch(msg.what){
 			case BluetoothLeControl.MessageReadDataFromBT:
 				byte[]strbyte=(byte[]) (msg.obj);
-				getDataFromBLE(strbyte,bStartReceiveData);
+				
+				if(!bStartReceiveData){
+					mAnalysis.reset();					
+				}
+				mAnalysis.getDataFromBLE(strbyte,bStartReceiveData);
 				if(!bStartReceiveData){
 					bStartReceiveData=!bStartReceiveData;
 				}
-
 				break;
 			case BluetoothLeControl.Message_Stop_Scanner:
 				mBluetoothAdapter.stopLeScan(mLeScanCallback);
 				dismissProgressBar();
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
-				mStrLastReceiveData = mStrReceiveData.toString();
-				mStrReceiveData.delete(0, mStrReceiveData.length());
-				DataAnalysis proxy = new DataAnalysis();
-				
-				int k = proxy.isValidate(mStrLastReceiveData,(byte)msg.arg1);
-				if(k==0){
-					k=proxy.getAXCount();
-					proxy.getResult();
-			    }
+				boolean isvalide = mAnalysis.isValidate();
+				float valideValue = mAnalysis.getValidValue();
+				float max=mAnalysis.getFabsMaxValue();
+				float ff=mAnalysis.getFengFengValue();
+				float fabs=mAnalysis.getFabsMaxValue();
+				int k=0;
+				k++;
+				bStartReceiveData = false;
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
 				switch(msg.arg1){
@@ -295,61 +297,4 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
             });
         }
     };
-    
- void    getDataFromBLE(byte []strbyte,boolean bStartReceiveData){
-    	if(!bStartReceiveData){
-			bStartReceiveData = true;
-			mCurReceivedCMD=strbyte[2];
-			switch(mCurReceivedCMD)
-			{
-			case (byte)0xd2:
-				CRC32 crc = new CRC32();
-				crc.update(strbyte, 0, 16);
-				String s =Long.toHexString(crc.getValue());
-				byte[]crcValue = new byte[4];
-				for(int i=0;i<4;i++){
-					crcValue[i]=strbyte[strbyte.length-4+i];
-				}
-				String sa=SystemUtil.bytesToHexString(crcValue);
-				if(sa.equals(s)){
-					Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息 正确", Toast.LENGTH_SHORT).show();	
-				}
-				mReceiveByteDataCRC = new byte[20];
-				break;
-			case (byte)0x7d:
-				 caiyangdian=strbyte[7]<<8|strbyte[8];
-			mReceiveFloatData = new float[caiyangdian];
-			for(int k=0;k<5;k=k+2){
-				mReceiveFloatData[k]=strbyte[k+11]<<8|strbyte[k+12];
-			}
-			mReceiveByteDataCRC = new byte[caiyangdian +10+9+9+3*4];
-			
-				break;
-			}
-			
-		}else{
-			switch(mCurReceivedCMD)
-			{
-			case (byte)0xd2:
-				
-				break;
-			case (byte)0x7d:
-				int max=20;
-				if(20*mReceivedDataCounts>10+caiyangdian){
-					max = 0;
-				}
-				//收集波形数据
-				for(int k=0;k<max;k=k+2){
-					mReceiveFloatData[mReceivedDataCounts*20+k-15]=strbyte[k]<<8|strbyte[k+1];
-				}
-				break;
-			}
-		}
-		
-		//收集BLE发送过来的所有原始数据
-		System.arraycopy(strbyte,0,mReceiveByteDataCRC,mReceivedDataCounts*20,strbyte.length);	
-		Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
-		mReceivedDataCounts++;
-    }
-    
 }

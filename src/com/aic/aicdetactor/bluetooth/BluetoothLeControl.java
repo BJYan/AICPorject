@@ -367,7 +367,7 @@ k++;
 	        public void run() { 
 	            recLen++; 
 	            Log.d(TAG, "Runnable() recLen="+recLen);
-	            if(recLen<MaxSecond){
+	            if(recLen<=MaxSecond){
 	            handler.postDelayed(this, 1000); 
 	            }else{
 	            	Message msg = mHandler.obtainMessage(Message_End_Upload_Data_From_BLE);
