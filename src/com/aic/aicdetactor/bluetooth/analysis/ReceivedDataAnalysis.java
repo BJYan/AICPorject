@@ -42,7 +42,7 @@ public class ReceivedDataAnalysis {
 			 break;
 		 case BluetoothConstast.CMD_Type_CaiJi:
 			 for(int i=0;i<mReceiveWaveFloatData.length;i=i+2){
-				 mReceiveWaveFloatData[i]=mReceiveByteDataCRC[i+11]<<8|mReceiveByteDataCRC[i+12];
+				 mReceiveWaveFloatData[i]=(mReceiveByteDataCRC[i+11]<<8|mReceiveByteDataCRC[i+12]);
 			 }
 			 break;
 		 }
@@ -230,16 +230,19 @@ public class ReceivedDataAnalysis {
 						//CRC32校验
 						CRC32 crc = new CRC32();
 						crc.update(mReceiveByteDataCRC, 0, mReceiveByteDataCRC.length-4);
-						String s =Long.toHexString(crc.getValue());
+						String strGetCRC32 =Long.toHexString(crc.getValue());
 						
 						byte[]crcValue = new byte[4];
 						for(int i=0;i<4;i++){
 							crcValue[i]=mReceiveByteDataCRC[mReceiveByteDataCRC.length-4+i];
 						}
 						String sa=SystemUtil.bytesToHexString(crcValue);
-						if(sa.equals(s)){
+						if(sa.equals(strGetCRC32)){
 							returnValue=true;
 						}
+						Log.d(TAG," isValidate() strGetCRC32 is "+strGetCRC32 +"and calc CRC32 is "+sa);
+					}else{
+						Log.e(TAG," isValidate() head data error");
 					}
 					
 				}
@@ -289,6 +292,7 @@ public class ReceivedDataAnalysis {
 	}
 	
 	public boolean isReceivedAllData(){
+		Log.d(TAG,"isReceivedAllData() mReceivedDataByteSizes=" +mReceivedDataByteSizes +",mShoudReceivedByteSizes="+mShoudReceivedByteSizes);
 		if(mReceivedDataByteSizes==mShoudReceivedByteSizes){
 			return true;
 		}
@@ -329,6 +333,7 @@ public class ReceivedDataAnalysis {
 	public	void getDataFromBLE(byte []strbyte,boolean bStartReceiveData){
 	    	if(!bStartReceiveData){
 	    		mDLCmd=getCMDTypeFromFirstReceivedPacageData(strbyte);
+	    		
 				switch(mDLCmd)
 				{
 				case (byte)0xd2:
@@ -383,6 +388,7 @@ public class ReceivedDataAnalysis {
 		if(mReceiveWaveFloatData!=null){
 			mReceiveWaveFloatData=null;
 		}
+		mReceivedDataByteSizes=0;
 		mReceivedDataCounts=0;
 		caiyangdian=0;
 		mAxCounts=0;
