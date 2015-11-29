@@ -6,6 +6,7 @@ import java.util.List;
 import network.com.citizensoft.networkdemo.MainActivity;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Config.Config;
 import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
@@ -15,6 +16,7 @@ import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.util.MLog;
 
 import android.app.AlertDialog;
@@ -392,7 +394,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 
 	private void uploadInit() {
 		// TODO Auto-generated method stub
-		EditText[] ipEditText = new EditText[4];
+		final EditText[] ipEditText = new EditText[4];
 		ipEditText[0] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_1);
 		ipEditText[1] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_2);
 		ipEditText[2] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_3);
@@ -401,6 +403,44 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		ipEditText[1].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
 		ipEditText[2].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
 		ipEditText[3].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
+		
+		
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(DownLoadFragment.this.getActivity());
+        String StrIP=settings.getString(CommonDef.APP_Settings.ServiceIP, Config.getServiceIP());
+        String []StrList=StrIP.split("\\.");
+        for(int i=0;i<StrList.length;i++){
+        	ipEditText[i].setText(StrList[i]);	
+        }
+		Button SaveBT = (Button) listViews.get(0).findViewById(R.id.button1);
+		SaveBT.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				if(IpIsValide(ipEditText[0].getText().toString())&&
+						IpIsValide(ipEditText[1].getText().toString())&&
+						IpIsValide(ipEditText[2].getText().toString())&&
+						IpIsValide(ipEditText[3].getText().toString())){
+					
+					SharedPreferences mSharedPreferences= PreferenceManager.getDefaultSharedPreferences(DownLoadFragment.this.getActivity());		
+					
+					SharedPreferences.Editor editor = mSharedPreferences.edit();
+					
+					editor.putString(CommonDef.APP_Settings.ServiceIP,
+							ipEditText[0].getText().toString()+"."+
+									ipEditText[1].getText().toString()+"."+
+									ipEditText[2].getText().toString()+"."+
+									ipEditText[3].getText().toString()+".");
+					editor.commit();
+					
+					Toast.makeText(DownLoadFragment.this.getActivity(), "IP地址保存成功", Toast.LENGTH_LONG).show();
+				}else{
+					Toast.makeText(DownLoadFragment.this.getActivity(), "请输入正确的IP地址", Toast.LENGTH_LONG).show();
+				}
+						
+				
+			}});
+		
 		CheckBox normalData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb1);
 		CheckBox specialData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb2);
 		CheckBox tempData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb3);
@@ -666,5 +706,13 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			}
 		}
 		return list;
+	}
+	
+	boolean IpIsValide(String str){
+		if(str.length()==0)return false;
+		if(Integer.valueOf(str)>=0 &&Integer.valueOf(str)<256 ){
+			return true;
+		}
+		return false;
 	}
 }

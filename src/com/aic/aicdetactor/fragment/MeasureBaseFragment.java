@@ -55,7 +55,11 @@ public abstract class MeasureBaseFragment extends Fragment {
 		m++;
 		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
 		//BLEControl.setParamates(mhandler);
-		
+		if(app.mCurLinkedBLEAddress.length()<2){
+			Toast.makeText(this.getActivity(), "请重新连接BLE", Toast.LENGTH_LONG).show();
+			}else{
+				BLEControl.Connection(app.mCurLinkedBLEAddress);
+			}
 	}
 	
 	@Override
@@ -63,11 +67,7 @@ public abstract class MeasureBaseFragment extends Fragment {
 		// TODO Auto-generated method stub
 	//	initDisplayData();
 		super.onResume();
-		if(app.mCurLinkedBLEAddress.length()<2){
-			Toast.makeText(this.getActivity(), "请重新连接BLE", Toast.LENGTH_LONG).show();
-			}else{
-				BLEControl.Connection(app.mCurLinkedBLEAddress);
-			}
+		
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public abstract class MeasureBaseFragment extends Fragment {
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		BLEControl.disconnection();
+		
 	}
 
 	/**

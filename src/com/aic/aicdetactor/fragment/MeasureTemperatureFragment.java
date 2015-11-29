@@ -141,7 +141,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}
 			
 		});
-		
+		mCountdownDialog = new FlippingLoadingDialog(this.getActivity(),"");
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
 		mTimeTV = (TextView)view.findViewById(R.id.hint);
 		
@@ -335,7 +335,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 					if(iFailedTime<=MAX_FAILED_TIMES){
 						startCountdownTimer();
 						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+						//Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 					}else{
 						iFailedTime=0;
 					}
@@ -345,7 +345,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 				if(iFailedTime<=MAX_FAILED_TIMES){
 					startCountdownTimer();
 					mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-					Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+					//Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 				}else{
 					iFailedTime=0;
 				}

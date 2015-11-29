@@ -264,5 +264,11 @@ public class CommonDef {
 	public static final int  FILE_TYPE_WORKER  =3;
 	public static final String AUDIO_PATH= "audioPath";
 	public static final String TEXT_RECORD_PATH= "textPath";
-
+	
+	
+	public class APP_Settings {
+		public static final String ServiceIP="ServiceIp";
+	}
+	
+    
 }

@@ -84,6 +84,15 @@
 	        android:layout_below="@id/network_upload_ip"
 	        android:layout_marginRight="5dip"
 	        android:layout_marginTop="5dip" />
+
+	    <Button
+	        android:id="@+id/button1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentLeft="true"
+	        android:text="保存" />
+
 	</RelativeLayout>
 	<LinearLayout 
 	    android:layout_height="wrap_content"

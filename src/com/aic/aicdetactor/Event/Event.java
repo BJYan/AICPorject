@@ -50,6 +50,7 @@ import android.view.View;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
+import com.aic.aicdetactor.data.DownloadNormalRootDataEx;
 import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
@@ -69,8 +70,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				UploadRFIDRequest request = new UploadRFIDRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -108,8 +109,8 @@ public class Event {
 			public void run() {
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;
-				sp.Port = Config.server_port;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 				String planjson="";
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -146,7 +147,8 @@ public class Event {
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								 //parse json data for insert databases
-								 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
+								 DownloadNormalRootDataEx NormaldataEx=JSON.parseObject(planjson,DownloadNormalRootDataEx.class);
+								 DownloadNormalRootData Normaldata = NormaldataEx.Message;
 								 for(int i=0;i< Normaldata.StationInfo.size();i++){
 									 if(isSpecialLine){break;}
 									 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
@@ -248,8 +250,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -312,8 +314,8 @@ public class Event {
 				synchronized (this) {
 					if (_lockCommandIds != null && _lockCommandIds.length != 0) {
 						ServiceProvider sp = new ServiceProvider();
-						sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-						sp.Port = Config.server_port;//10000;
+						sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+						sp.Port = Config.getServicePort();//10000;
 
 						AckServerCommandRequest request = new AckServerCommandRequest();
 						request.CreateTime = DateUtil.getCurrentDate();
@@ -352,8 +354,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				QueryServerInfoRequest request = new QueryServerInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -387,8 +389,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				QueryOrganizationRequest request = new QueryOrganizationRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -442,8 +444,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.server_Ip;//"222.128.3.208";
-				sp.Port = Config.server_port;//10000;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				UploadMobilePhoneInfoRequest request = new UploadMobilePhoneInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -482,8 +484,8 @@ public class Event {
 				ServiceProvider sp = new ServiceProvider();
 				//sp.ServerIP = "222.128.3.208";//公网
 				
-				sp.ServerIP = Config.server_Ip;//内网
-				sp.Port = Config.server_port;
+				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+				sp.Port = Config.getServicePort();//10000;
 
 				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -512,7 +514,9 @@ public class Event {
 					Message msg = new Message();
 					msg.what = 0;
 					msg.obj = response.Info.Code;
+					if(handler!=null){
 					handler.sendMessage(msg);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -531,8 +535,8 @@ public class Event {
 				public void run() {
 
 					ServiceProvider sp = new ServiceProvider();
-					sp.ServerIP = Config.server_Ip;
-					sp.Port = Config.server_port;
+					sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
+					sp.Port = Config.getServicePort();//10000;
 
 					UploadWaveDataRequest request = new UploadWaveDataRequest();
 					request.CreateTime = DateUtil.getCurrentDate();
@@ -563,7 +567,9 @@ public class Event {
 						Message msg = new Message();
 						msg.what = 0;
 						msg.obj = response.Info.Code;
-						//handler.sendMessage(msg);
+						if(handler!=null){
+						handler.sendMessage(msg);
+						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
