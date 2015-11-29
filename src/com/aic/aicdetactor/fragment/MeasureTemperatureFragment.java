@@ -41,6 +41,7 @@ import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -51,6 +52,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  */
 public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements OnButtonListener{
 
+	protected static final int COUNTDOWN = 0;
 	//UI
 	//示意图片显示
 	private ImageView mImageView = null;
@@ -78,6 +80,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	String mAbnormalStr="";
 	private int SpinnerSelectedIndex=0;
 	byte mDLCMD=0;
+	
+	private Timer mCountdownTimer=null;
+	private TimerTask mCountdownTimerTask = null;
+	FlippingLoadingDialog mCountdownDialog;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -146,6 +153,38 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		Log.d(TAG, "getName is "+mTextViewName.getText());
 		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
+	}
+	
+	void startCountdownTimer(){		
+		if(mCountdownTimerTask==null){
+			mCountdownTimerTask = new TimerTask(){
+				
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Message msg = Message.obtain();
+				msg.obj=1;
+				msg.what = COUNTDOWN;
+				handler.sendMessage(msg);
+			}
+			};
+		}
+		if(mCountdownTimer==null){
+			mCountdownTimer = new Timer();
+			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
+			}
+	}
+	
+	void closeCountdownTimer(){
+		if(mCountdownTimer!=null){
+			mCountdownTimer.cancel();
+			mCountdownTimer=null;
+		}
+		
+		if(mCountdownTimerTask!=null){
+			mCountdownTimerTask.cancel();
+			mCountdownTimerTask=null;
+		}
 	}
     
 	 @Override
@@ -225,6 +264,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 
 		@Override
 		public void dispatchMessage(Message msg) {
+			int i = 0;
 			// TODO Auto-generated method stub
 			switch(msg.what){
 		case BluetoothLeControl.MessageReadDataFromBT:
@@ -293,7 +333,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 				}else{
 					iFailedTime++;	
 					if(iFailedTime<=MAX_FAILED_TIMES){
-						startTimer();
+						startCountdownTimer();
 						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
 						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 					}else{
@@ -303,7 +343,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}else{
 				iFailedTime++;	
 				if(iFailedTime<=MAX_FAILED_TIMES){
-					startTimer();
+					startCountdownTimer();
 					mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
 					Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 				}else{
@@ -349,6 +389,20 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			case 0://BLE has disconnected
 				break;
 			}
+			break;
+			
+		case COUNTDOWN:
+			int count = (Integer) msg.obj;
+			if(i==5) getDataFromBLE();
+			if(i==0) {
+				closeCountdownTimer();
+				if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
+			} else {
+				i=i-count;
+				if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
+				mCountdownDialog.setText("等待蓝牙连接 "+i+"秒");
+			}
+
 			break;
 			}
 			super.dispatchMessage(msg);
