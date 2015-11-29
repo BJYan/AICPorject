@@ -323,6 +323,7 @@ public class ReceivedDataAnalysis {
 			if(SystemUtil.bytesToHexString(strbyte).substring(0, 6).toLowerCase().equals("7d14d3")){
 				cmd=(byte) 0xd3;
 			}
+			Log.d(TAG, "first package data is "+SystemUtil.bytesToHexString(strbyte));
 			return cmd;
 		}
 		/**
@@ -333,7 +334,7 @@ public class ReceivedDataAnalysis {
 	public	void getDataFromBLE(byte []strbyte,boolean bStartReceiveData){
 	    	if(!bStartReceiveData){
 	    		mDLCmd=getCMDTypeFromFirstReceivedPacageData(strbyte);
-	    		
+	    		if(mDLCmd==0){mDLCmd=(byte) 0xd1;}
 				switch(mDLCmd)
 				{
 				case (byte)0xd2:
@@ -346,12 +347,11 @@ public class ReceivedDataAnalysis {
 					}
 					String sa=SystemUtil.bytesToHexString(crcValue);
 					if(sa.equals(s)){
-					//	Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息 正确", Toast.LENGTH_SHORT).show();	
 					}
 					if(mReceiveByteDataCRC!=null){
 						mReceiveByteDataCRC=null;
 					}
-					mShoudReceivedByteSizes=20;
+					mShoudReceivedByteSizes=strbyte.length;
 					mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
 					
 					break;
@@ -375,9 +375,15 @@ public class ReceivedDataAnalysis {
 				
 			}
 	    	mReceivedDataByteSizes=mReceivedDataByteSizes+strbyte.length;
+	    	int len=strbyte.length;
+	    	int lastTimes=mReceivedDataCounts;
 			//收集BLE发送过来的所有原始数据
-			System.arraycopy(strbyte,0,mReceiveByteDataCRC,mReceivedDataCounts*20,strbyte.length);	
-			//Toast.makeText(BlueTooth_Fragment.this.getActivity(), "收到信息", Toast.LENGTH_SHORT).show();
+	    	Log.d(TAG, "mDLCmd = "+mDLCmd + "strbyte.length = "+strbyte.length);
+	    	if(mReceivedDataCounts*strbyte.length>mShoudReceivedByteSizes){
+	    		len = mReceivedDataCounts*strbyte.length-mShoudReceivedByteSizes;
+	    		lastTimes--;
+	    	}
+			System.arraycopy(strbyte,0,mReceiveByteDataCRC,lastTimes*20,len);	
 			mReceivedDataCounts++;
 	    }
 	
