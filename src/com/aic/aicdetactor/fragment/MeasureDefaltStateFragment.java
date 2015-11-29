@@ -131,7 +131,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements
     }
 
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		//开始测量
 		if("".equals(Value)){

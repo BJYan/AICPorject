@@ -184,7 +184,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	void getDataFromBLE(){
 		BLEControl.setParamates(handler);
 		
-		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)0, (byte)0);
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)0, (byte)0,0,0);
 		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
 	/**
@@ -422,7 +422,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     	}
     }
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:

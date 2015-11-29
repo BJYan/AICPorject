@@ -538,15 +538,18 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId);
     }
 
+    int CaiYangShu=0;
+    int CAiYangPinLv=0;
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:
 			saveData(adapter);
 			break;
 		case PartItemContact.MEASURE_DATA:
-			
+			CaiYangShu=CaiYangDian;
+			CAiYangPinLv= CaiyangPinLv;
 			if(bPressTest){
 			mHandle.postDelayed(runnable, 1000);
 			}else{
@@ -561,7 +564,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	void getDataFromBLE(){
 		BLEControl.setParamates(mHandle);
 		mDLCMD=(byte) 0xd1;
-		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)1, (byte)1);
+		byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) mDLCMD, (byte)1, (byte)1,CaiYangShu,CAiYangPinLv);
 		super.BLEControl.Communication2Bluetooth(BLEControl.getSupportedGattServices(),cmd);
 	}
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -21,6 +22,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -160,6 +162,13 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	FragmentManager fragmentManager;
 	FragmentTransaction fragmentTransaction;
 	
+	LinearLayout mParamsLineLayout;
+	Spinner mCaiYangDianSpinner;
+	Spinner mCaiYangPinLvSpinner;
+	int CaiYangDianIndex=0;
+	int CaiYangPinLvIndex=0;
+	String[] mCaiyangPinLvDataList=null;
+	String[] mCaiyangDianshuDataList=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -183,7 +192,54 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		// 计划巡检还是特别巡检
 		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
 		planNameTextView.setText(app.gRouteClassName);
-
+		mParamsLineLayout = (LinearLayout)findViewById(R.id.paramsL);
+		mCaiYangDianSpinner =(Spinner)findViewById(R.id.dianshu);
+		mCaiYangPinLvSpinner =(Spinner)findViewById(R.id.pinlv);
+		Resources res=getResources();
+		mCaiyangDianshuDataList=res.getStringArray(R.array.CaiYangDianShu);
+		mCaiyangPinLvDataList=res.getStringArray(R.array.CaiYangPinLv_Value);
+		ArrayAdapter adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mCaiyangDianshuDataList);    
+	        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
+	        mCaiYangDianSpinner.setAdapter(adapter);    
+	        mCaiYangDianSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){    
+	            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {    
+	                // TODO Auto-generated method stub    
+	            	CaiYangDianIndex=Integer.valueOf(mCaiyangDianshuDataList[mCaiYangDianSpinner.getSelectedItemPosition()]);
+	            }    
+	            public void onNothingSelected(AdapterView<?> arg0) {    
+	                // TODO Auto-generated method stub    
+	            }    
+	        });    
+	        
+	        mCaiYangDianSpinner.setOnFocusChangeListener(new Spinner.OnFocusChangeListener(){    
+	        public void onFocusChange(View v, boolean hasFocus) {    
+	            // TODO Auto-generated method stub    
+	  
+	        }    
+	        });    
+	        mCaiYangDianSpinner.setSelection(2);
+	        
+	        String[] pinlv=res.getStringArray(R.array.CaiYangDianShu);
+			ArrayAdapter PLadapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, pinlv);    
+			PLadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);    
+		        mCaiYangPinLvSpinner.setAdapter(adapter);    
+		        mCaiYangPinLvSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){    
+		            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {    
+		                // TODO Auto-generated method stub    
+		            	CaiYangPinLvIndex=Integer.valueOf(mCaiyangPinLvDataList[mCaiYangPinLvSpinner.getSelectedItemPosition()]);
+		            }    
+		            public void onNothingSelected(AdapterView<?> arg0) {    
+		                // TODO Auto-generated method stub    
+		            }    
+		        });    
+		        /*下拉菜单弹出的内容选项焦点改变事件处理*/    
+		        mCaiYangPinLvSpinner.setOnFocusChangeListener(new Spinner.OnFocusChangeListener(){    
+		        public void onFocusChange(View v, boolean hasFocus) {    
+		            // TODO Auto-generated method stub    
+		  
+		        }    
+		        });  
+		        mCaiYangPinLvSpinner.setSelection(3);
 		// 路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
 		RouteNameTextView.setText(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
@@ -294,12 +350,13 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
 		bundle.putInt("type", type);
+		mParamsLineLayout.setVisibility(View.GONE);
 		  switch(type){
 		   case CommonDef.checkUnit_Type.ACCELERATION:
 		   case CommonDef.checkUnit_Type.SPEED:	
 		   case CommonDef.checkUnit_Type.DISPLACEMENT:
 			  // 需要方向
-	
+			   mParamsLineLayout.setVisibility(View.VISIBLE);
 			   mButton_Direction.setEnabled(true);
 			   mButton_Direction.setText(getString(R.string.direction));
 			   {
@@ -778,11 +835,11 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
-		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA);
+		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA,CaiYangDianIndex,CaiYangPinLvIndex);
     }
     
     void saveValue(){
-		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.SAVE_DATA);
+		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.SAVE_DATA,0,0);
     }
     
     @Override  
@@ -794,7 +851,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			
 				Bundle bundle = new Bundle();
 				bundle.putString("pictureUri", imageFilePath.toString());
-				mFragmentCallBack.OnButtonDown(0, mAdapterList,"",2);
+				mFragmentCallBack.OnButtonDown(0, mAdapterList,"",2,0,0);
 				// imageView.setImageBitmap(pic);
 				Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
 				msg.arg1 = CAMERA_TYPE;
@@ -856,7 +913,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		 * @param Value
 		 * @param measureOrSave 1 measure,2 save data
 		 */
-		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value,int measureOrSave);
+		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv);
 	};
 	
 
@@ -1016,6 +1073,7 @@ private int mZhouCounts=0;
         		}
         		mFirstLLayout.setVisibility(View.VISIBLE);
         		mSecendLLayout.setVisibility(View.GONE);
+        		mParamsLineLayout.setVisibility(View.GONE);
         		fragmentsList.clear();
         	}
         	return true;

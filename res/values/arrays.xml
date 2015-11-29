@@ -320,9 +320,19 @@
     <item>256Hz</item> 
     <item>512Hz</item> 
     <item>1.28Hz</item> 
-    <item>12.0kHz</item> 
+    <item>2.56kHz</item> 
+     <item>5.12kHz</item> 
     <item>12.8kHz</item> 
     <item>25.6kHz</item>      
+</string-array>
+ <string-array name="CaiYangPinLv_Value">  
+    <item>256</item> 
+    <item>512</item> 
+    <item>1280</item> 
+    <item>2560</item> 
+    <item>5120</item> 
+    <item>12800</item>   
+    <item>25600</item>         
 </string-array>
 
      <string-array name="CaiYangDianShu">  

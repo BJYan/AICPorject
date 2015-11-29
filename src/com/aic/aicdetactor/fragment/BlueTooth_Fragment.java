@@ -132,21 +132,25 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		super.onResume();
 		mAllBTDevices.clear();
 		
-		scanLeDevice(true);
+		//scanLeDevice(true);
 		
 		mBondedDevices = getBondedDevices();
 		btBindDevListAdapter.notifyDataSetChanged();
 		//btBindDevListAdapter.notifyDataSetInvalidated();
 		
 		// Register the BroadcastReceiver
-		
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		getActivity().registerReceiver(mReceiver, filter);
+		mBluetoothAdapter.startDiscovery();
+		showProgressBar();
 	}
 	
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		scanLeDevice(false);
+		//scanLeDevice(false);
+		getActivity().unregisterReceiver(mReceiver);
 		
 	}
 	private boolean mScanning=false;
@@ -174,6 +178,22 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
       //  BlueTooth_Fragment.this.getActivity().invalidateOptionsMenu();
     }
 	
+	
+	BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+	            mAllBTDevices.add(device);
+	            blueToothDevListAdapter.notifyDataSetChanged();
+	        }
+	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+	        	dismissProgressBar();
+	        	Toast.makeText(getActivity(), "搜索完成！", Toast.LENGTH_SHORT).show();
+	        }
+	    }
+	};
 	 public List<BluetoothDevice> getBondedDevices(){
 		 List<BluetoothDevice> bondedDevs = new ArrayList<BluetoothDevice>();
 		 Set<BluetoothDevice> devicesSet = new HashSet<BluetoothDevice>();
@@ -207,7 +227,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 			scanLeDevice(true);
 			break;
 		case R.id.send:
-			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1);
+			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd1, (byte)1, (byte)1,1024,2560);
 			btBindDevListAdapter.sendCommmand2BLE(cmd);
 			break;
 		default:

@@ -9,7 +9,8 @@
         android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dip">
+        android:layout_marginLeft="10dip"
+        android:visibility="gone">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="60dip"
@@ -34,7 +35,7 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:background="#ffffff"
-        android:layout_marginTop="5dip" >
+        android:layout_marginTop="5dip">
 	    	<TextView 
 	        	android:id="@+id/dialog_thr_chart_first_title"
 	        	android:layout_height="wrap_content"

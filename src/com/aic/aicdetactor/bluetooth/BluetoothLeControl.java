@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import com.aic.aicdetactor.util.MyCRC32;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -40,7 +41,7 @@ public class BluetoothLeControl {
 	//5秒钟没获取数据就认为收据发送完毕
 	private boolean bGetDataContinue=false;
 	int mReceiveDataCount =0;
-	private final int MaxSecond=2;
+	private final int MaxSecond=4;
 	private final static String UUID_KEY_WRITE_DATA = "00002a52-0000-1000-8000-00805f9b34fb";
 	private final static String UUID_KEY_READ_DATA = "00002a18-0000-1000-8000-00805f9b34fb";
 	private final String TAG="BluetoothLeControl";
@@ -159,7 +160,7 @@ public class BluetoothLeControl {
 
 		@Override
 		public void onServiceDiscover(BluetoothGatt gatt) {
-			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0);	            	 
+			byte[]cmd=BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0,0,0);	            	 
         	Communication2Bluetooth(getSupportedGattServices(),cmd);
 		}
     	
@@ -306,7 +307,8 @@ public class BluetoothLeControl {
 	 }
 	 }
 	 
-	 public static  byte[] genDownLoadCommand(byte frameHead,byte commandLenth,byte readSensorParams,byte AxCount,byte SensorType){
+	 public static  byte[] genDownLoadCommand(byte frameHead,byte commandLenth,byte readSensorParams,byte AxCount,byte SensorType
+			 ,int caiyangdian,int caiyangpinlv){
 		 byte[] download=new byte[16];
 //		 if(frameHead==null||frameHead.length()==0
 //				 ||commandLenth==null||commandLenth.length()==0
@@ -323,6 +325,10 @@ public class BluetoothLeControl {
 			 download[2]=(byte) 0xd1;			
 			 download[3]=AxCount;
 			 download[4]= SensorType;
+			 download[5]=(byte)((caiyangdian&0xffff)>>8);
+			 download[6]=(byte)((caiyangdian&0xffff)<<8);
+			 download[7]=(byte)((caiyangpinlv&0xffff)>>8);
+			 download[8]=(byte)((caiyangpinlv&0xffff)<<8);
 		 }else if(readSensorParams==(BluetoothConstast.CMD_Type_GetTemper)){
 			 download[0]=0x7f;
 			 download[1]=0x14;
@@ -345,27 +351,27 @@ public class BluetoothLeControl {
 			 download[2]=(byte) 0xd5;			
 		 }
 		 
-		
-		 byte[] temp=new byte[16];
-		 for(int i=0;i<temp.length;i++){
-			 temp[i]=download[i];
-		 }
-String last=MyCRC32.getCRC32(temp)	;
-byte[]b=last.getBytes();
-last=SystemUtil.getCRC32(download);
-byte[]d=last.getBytes();
-int k =0;
-k++;
+		 mMaxTimeOutMSecond =SystemUtil.getReceiveBLEDataTimeOut(caiyangdian,caiyangpinlv,AxCount);
+//		 CRC32 crc = new CRC32();
+//		 crc.update(download, 0, 16);
+//		 
+//		String strcrc= Long.toHexString(crc.getValue());
+//		for(int m=16;m<20;m++){
+//		//	download[m]=(byte)(Integer.valueOf(strcrc.substring((m-16)*2, (m+1-16)*2))&0xff);
+//		}
+		 
 		 return download;
 	 }
 	 
 	 //设置倒计时来控制或判断BLE发送数据完毕
 	 int recLen =0;
+	 static int mMaxTimeOutMSecond=0;
 	 Handler handler = new Handler(); 
 	    Runnable runnable = new Runnable() { 
 	        @Override 
 	        public void run() { 
 	            recLen++; 
+	            int k =(int) Math.rint(mMaxTimeOutMSecond/1000);
 	            Log.d(TAG, "Runnable() recLen="+recLen);
 	            if(recLen<=MaxSecond){
 	            handler.postDelayed(this, 1000); 

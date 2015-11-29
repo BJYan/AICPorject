@@ -139,7 +139,8 @@ public class myApplication extends Application
        Event.UploadWaveDataRequestInfo_Event(null,null,null,null,atest);
        k++;
        
-       BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0);
+       BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0,0,0);   
+      
     }
     
     

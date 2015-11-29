@@ -376,10 +376,10 @@ public class  SystemUtil {
 	  * @param ZhouShu
 	  * @return
 	  */
-	 public long getReceiveBLEDataTimeOut(int CaiyangDian,int CaiyangPinLv,int ZhouShu){
+	 public static int getReceiveBLEDataTimeOut(int CaiyangDian,int CaiyangPinLv,int ZhouShu){
 		 
-		 long timeOut=0;
-		 timeOut = ZhouShu*1000*(CaiyangDian/CaiyangPinLv)+(CaiyangDian/20 +2)*JianGe+1500;
+		 int timeOut=0;
+		 timeOut = ZhouShu*1000*(CaiyangDian/(CaiyangPinLv>0?CaiyangPinLv:1))+(CaiyangDian/20 +2)*JianGe+1500;
 		 return timeOut;
 	 }
 }

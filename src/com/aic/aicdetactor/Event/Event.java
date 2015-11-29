@@ -108,8 +108,8 @@ public class Event {
 			public void run() {
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = "222.128.3.208";
-				sp.Port = 10000;
+				sp.ServerIP = Config.server_Ip;
+				sp.Port = Config.server_port;
 				String planjson="";
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -482,8 +482,8 @@ public class Event {
 				ServiceProvider sp = new ServiceProvider();
 				//sp.ServerIP = "222.128.3.208";//公网
 				
-				sp.ServerIP = "192.168.1.130";//内网
-				sp.Port = 10000;
+				sp.ServerIP = Config.server_Ip;//内网
+				sp.Port = Config.server_port;
 
 				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -531,10 +531,8 @@ public class Event {
 				public void run() {
 
 					ServiceProvider sp = new ServiceProvider();
-					//sp.ServerIP = "222.128.3.208";//公网
-					
-					sp.ServerIP = "192.168.1.130";//内网
-					sp.Port = 10000;
+					sp.ServerIP = Config.server_Ip;
+					sp.Port = Config.server_port;
 
 					UploadWaveDataRequest request = new UploadWaveDataRequest();
 					request.CreateTime = DateUtil.getCurrentDate();

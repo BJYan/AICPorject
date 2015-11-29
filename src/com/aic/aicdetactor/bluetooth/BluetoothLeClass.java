@@ -141,7 +141,8 @@ public class BluetoothLeClass{
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-        	Log.d(TAG,"Callback write");
+        	byte[] byteData=characteristic.getValue();
+        	Log.d(TAG,"Callback write lenth = "+byteData.length+",data is "+SystemUtil.bytesToHexString(characteristic.getValue()));
         	if (mOnDataAvailableListener!=null)
         		mOnDataAvailableListener.onCharacteristicWrite(gatt, characteristic);
         }

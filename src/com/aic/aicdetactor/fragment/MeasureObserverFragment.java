@@ -206,7 +206,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 
   
 	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave) {
+	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:

@@ -37,6 +37,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -396,7 +397,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		ipEditText[1] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_2);
 		ipEditText[2] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_3);
 		ipEditText[3] = (EditText) listViews.get(0).findViewById(R.id.network_upload_ip_4);
-		
+		ipEditText[0].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
+		ipEditText[1].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
+		ipEditText[2].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
+		ipEditText[3].setInputType(EditorInfo.TYPE_CLASS_PHONE);  
 		CheckBox normalData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb1);
 		CheckBox specialData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb2);
 		CheckBox tempData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb3);

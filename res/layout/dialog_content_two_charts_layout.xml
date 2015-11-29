@@ -9,7 +9,8 @@
         android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dip">
+        android:layout_marginLeft="10dip"
+        android:visibility="gone">
         <TextView 
             android:layout_height="wrap_content"
             android:layout_width="60dip"
