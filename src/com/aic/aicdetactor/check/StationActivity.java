@@ -69,6 +69,7 @@ import com.aic.aicdetactor.adapter.TreeViewTest;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemItem;
+import com.aic.aicdetactor.dataBean.JsonData;
 import com.aic.aicdetactor.dialog.NFCDialog;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -110,10 +111,22 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			
 			handler = new Handler(){
 				public void handleMessage(android.os.Message msg) {
+					switch (msg.what) {
+					case JsonData.INIT_JSON_DATA_FINISHED:
+						dismissLoadingDialog();
+						break;
+
+					default:
+						break;
+					}
 					String res = (String) msg.obj;
 					Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
 				};
 			};
+			
+			JsonData jsonData = new JsonData();
+			jsonData.InitJsonData("/sdcard/AICLine.txt", handler);
+			showLoadingDialog("正在初始化数据…");
 			
 			app = (myApplication) getApplication();
 			Intent intent =getIntent();
