@@ -118,6 +118,7 @@ public class BluetoothLeControl {
 //				
 //				
 //		}
+		boolean status=isConnected=mBLE.connect(strAdress);
 		//if(isConnected) return isConnected;
 		return isConnected=mBLE.connect(strAdress);
 	}

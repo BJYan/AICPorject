@@ -37,18 +37,38 @@ public class ReceivedDataAnalysis {
 	  * 获取wave数据
 	  */
 	public float[] getWaveFloatData(){
+		 int JumpByteN=10;
+		 short plb;
 		 switch(mDLCmd){
 		 case BluetoothConstast.CMD_Type_ReadSensorParams:
 			 break;
 		 case BluetoothConstast.CMD_Type_CaiJi:
-			 for(int i=0;i<mReceiveWaveFloatData.length;i=i+2){
-				 mReceiveWaveFloatData[i]=(mReceiveByteDataCRC[i+11]<<8|mReceiveByteDataCRC[i+12]);
+			 for(int i=0;i<mReceiveWaveFloatData.length;i++){
+				  plb=mReceiveByteDataCRC[i*2+JumpByteN];
+				  plb=(short)(int)((plb<<8)&0xff00);
+				 
+				 plb+=mReceiveByteDataCRC[i*2+JumpByteN+1]&0xff;
+				 float a=plb;
+				 if(true)Log.d(TAG, "getWaveFloatData() 1 a = "+a +","+mReceiveByteDataCRC[i*2+JumpByteN]+","+mReceiveByteDataCRC[i*2+JumpByteN+1]);
+				 mReceiveWaveFloatData[i]=getVoValue(a);
 			 }
 			 break;
 		 }
 		 	return mReceiveWaveFloatData; 
 	 }
-	 
+	
+	float getVoValue(float v){
+		float value =0f;
+		int mstandardMv=30;
+		int macceleratedSpeed=10;
+		value=v;
+		if(true)Log.d(TAG, "getVoValue() 1 value = "+value);
+		value/=65536/5000;
+		value = value*macceleratedSpeed/mstandardMv;
+
+		if(true)Log.d(TAG, "getVoValue()value = "+value);
+		return value;
+	}
 	 /**
 	  * 
 	  */
@@ -291,8 +311,27 @@ public class ReceivedDataAnalysis {
 		return mShoudReceivedByteSizes;
 	}
 	
+	 public int getPackagesCounts(){
+		 int counts=0;
+		 switch(mDLCmd){
+		 case BluetoothConstast.CMD_Type_CaiJi:
+			{
+				
+				counts=(int) ((caiyangdian*2+10+30)/2 +0.5);
+			}
+			break;
+			case BluetoothConstast.CMD_Type_ReadSensorParams:
+			
+			case BluetoothConstast.CMD_Type_GetTemper:
+			
+			case BluetoothConstast.CMD_Type_GetCharge:
+				counts=1;
+			break;
+			}
+		 return counts;
+	 }
 	public boolean isReceivedAllData(){
-		Log.d(TAG,"isReceivedAllData() mReceivedDataByteSizes=" +mReceivedDataByteSizes +",mShoudReceivedByteSizes="+mShoudReceivedByteSizes);
+		Log.d(TAG,"isReceivedAllData() = "+ (mReceivedDataByteSizes==mShoudReceivedByteSizes?1:0)+",,"+mReceivedDataByteSizes +",mShoudReceivedByteSizes="+mShoudReceivedByteSizes);
 		if(mReceivedDataByteSizes==mShoudReceivedByteSizes){
 			return true;
 		}

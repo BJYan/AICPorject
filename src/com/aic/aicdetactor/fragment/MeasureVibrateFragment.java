@@ -164,6 +164,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					}
 				};
 			};
+			
+			mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
 	}
  
 	public  MeasureVibrateFragment(PartItemListAdapter AdapterList){
@@ -188,9 +190,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			mCountdownTimer = new Timer();
 			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
 			}
+			
+			
 	}
 	
 	void closeCountdownTimer(){
+		
 		if(mCountdownTimer!=null){
 			mCountdownTimer.cancel();
 			mCountdownTimer=null;
@@ -200,6 +205,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			mCountdownTimerTask.cancel();
 			mCountdownTimerTask=null;
 		}
+		mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
+		
 	}
 	
 	void startTimer(){		
@@ -589,7 +596,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				if(!bStartReceiveData){
 					bStartReceiveData=true;
 				}
-				if(mAnalysis.isReceivedAllData() ){
+				if(mAnalysis.getPackagesCounts() ==receiveCount){
 					mHandle.sendMessage(mHandle.obtainMessage(BluetoothLeControl.Message_End_Upload_Data_From_BLE));
 				}
 				
@@ -602,20 +609,20 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mTimeTV.setText("测量完毕");
-				boolean isvalide = mAnalysis.isValidate();
-				float valideValue = mAnalysis.getValidValue();
-				float max=mAnalysis.getFabsMaxValue();
-				float ff=mAnalysis.getFengFengValue();
-				float fabs=mAnalysis.getFabsMaxValue();
-				
+//				boolean isvalide = mAnalysis.isValidate();
+//				float valideValue = mAnalysis.getValidValue();
+//				float max=mAnalysis.getFabsMaxValue();
+//				float ff=mAnalysis.getFengFengValue();
+//				float fabs=mAnalysis.getFabsMaxValue();
 				bStartReceiveData = false;
 				
 				if(mAnalysis.isValidate()){
 					iTestSuccessTimes++;
-					max=mAnalysis.getFabsMaxValue();
-					ff=mAnalysis.getFengFengValue();
-					fabs=mAnalysis.getFabsMaxValue();
+					mAnalysis.getWaveFloatData();
 					mCheckValue=mAnalysis.getValidValue();
+					mAnalysis.getFabsMaxValue();
+					mAnalysis.getFengFengValue();
+					
 					measureAndDisplayData();
 					String Wavedata=mAnalysis.getWaveByteData().toString();
 					InsertMediaData(Wavedata,false);
