@@ -50,7 +50,6 @@ import android.view.View;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
-import com.aic.aicdetactor.data.DownloadNormalRootDataEx;
 import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
@@ -147,8 +146,7 @@ public class Event {
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								 //parse json data for insert databases
-								 DownloadNormalRootDataEx NormaldataEx=JSON.parseObject(planjson,DownloadNormalRootDataEx.class);
-								 DownloadNormalRootData Normaldata = NormaldataEx.Message;
+								 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
 								 for(int i=0;i< Normaldata.StationInfo.size();i++){
 									 if(isSpecialLine){break;}
 									 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
