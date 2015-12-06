@@ -280,16 +280,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				bStartReceiveData = false;
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
-				switch(msg.arg1){
-				case 1://BLE has connected
-					break;
-				case 0://BLE has disconnected
-					break;
-				}
-				break;
-				
-			case BluetoothLeControl.Message_Connected_BLE_Address:
 				app.mCurLinkedBLEAddress=(String) msg.obj;
+				app.mBLEIsConnected=msg.arg1>0?true:false;
 				break;
 			}
 			super.handleMessage(msg);

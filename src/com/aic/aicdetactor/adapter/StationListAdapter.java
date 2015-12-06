@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -25,9 +25,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
-import com.alibaba.fastjson.JSON;
 
 public class StationListAdapter extends BaseExpandableListAdapter {
 
@@ -38,13 +36,15 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater mInflater;
 	private final String TAG = "luotest.StationListAdapter";
 	private boolean mIsSpecial =false;
+	public final static int INIT_JSON_DATA_FINISHED =10;
 	// groupView data
 	private List<Map<String, String>> mStationDisplayDataList = null;
 	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int secExlistItemHigh,thrExlistItemHigh;
-
-	public StationListAdapter(CommonActivity av, Context context, int routeIndex) {
+    Handler mHandler;
+	public StationListAdapter(CommonActivity av, Context context, int routeIndex,Handler handler) {
 		mContext = context;
+		mHandler= handler;
 		this.mrouteIndex = routeIndex;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
@@ -53,7 +53,9 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		this.mIsSpecial =app.isSpecialLine;
 		thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
 		secExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level2); 
-		InitStationData();
+		InitJsonDataThread InitThread = new InitJsonDataThread();
+		InitThread.start();
+		//InitStationData();
 	}
 
 	@Override
@@ -190,6 +192,56 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+class InitJsonDataThread extends Thread{
+		
+		
+		public InitJsonDataThread() {
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			super.run();
+			long g=System.currentTimeMillis();
+			MLog.Logd(TAG, " InitData()>> "+g);
+			try {
+				app.getLineDataClassifyFromOneFile(mIsSpecial);
+				mStationDisplayDataList.clear();
+				mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
+				for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
+					
+					Map<String, String> map = new HashMap<String, String>();
+					map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
+					if(!app.gIsDataChecked){
+					map.put(CommonDef.station_info.DEADLINE, "2015");
+					}
+					map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
+					mStationDisplayDataList.add(map);
+					try {
+						ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
+						for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+									Map<String, String> mapDevice = new HashMap<String, String>();
+									mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+									deviceDisplayDataList.add(mapDevice);	
+						}
+						mDeviceArrayDisplayDataList.add(deviceDisplayDataList);					
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
+			
+			mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
+		}
+	}
+
 
 	void InitStationData() {
 

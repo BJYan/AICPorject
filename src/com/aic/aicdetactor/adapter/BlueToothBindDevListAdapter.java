@@ -87,7 +87,6 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 	}
 
 	//
-	boolean bBTConnected=false;
 	@Override
 	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
@@ -124,20 +123,17 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub		
-				Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connected_BLE_Address);
+				// TODO Auto-generated method stub	
+				Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connection_Status);
 				if(arg1){
 					mBTControl.setParamates(mHandler);
 					String Address = bondedDevices.get(BTIndex).getAddress();
-				//	Address="B0:B4:48:D9:AF:7D";
-					mBTControl.Connection(Address);	
-					msg.arg1=BluetoothLeControl.Message_Connect_Status_Connected;
+					boolean status=mBTControl.Connection(Address);	
+					msg.arg1=status==true?BluetoothLeControl.Message_Connect_Status_Connected:BluetoothLeControl.Message_Connect_Status_DisConnected; ;
 					msg.obj=Address;
 					mHandler.sendMessage(msg);
-	            	bBTConnected=true;
 				}else{
 					mBTControl.disconnection();
-					bBTConnected=false;
 					msg.arg1=BluetoothLeControl.Message_Connect_Status_DisConnected;
 					msg.obj="";
 					mHandler.sendMessage(msg);
@@ -145,6 +141,7 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 			}
 			
 		});
+		
 		
 		viewHolder.MacAddr.setText(bondedDevices.get(arg0).getAddress());
 		viewHolder.NameText.setText(bondedDevices.get(arg0).getName());

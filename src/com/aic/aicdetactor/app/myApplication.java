@@ -54,6 +54,7 @@ public class myApplication extends Application
     private int mIScreenHeight=0;
     private String gCurGsonFilePath="";
     public String mCurLinkedBLEAddress="";
+    public boolean mBLEIsConnected=false;
     public  ArrayList<PartItemJsonUp> gCurPartItemList=null;
     //当前日常巡检数据，不包括特巡数据
    // private DownloadNormalRootData mNormalLineJsonData=null;

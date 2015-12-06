@@ -30,7 +30,7 @@ public class BluetoothLeControl {
 	public static final int Message_Start_Scanner=Message_Beigin+5;
 	public static final int Message_Stop_Scanner=Message_Beigin+6;
 	public static final int Message_End_Upload_Data_From_BLE=Message_Beigin+7;
-	public static final int Message_Connected_BLE_Address=Message_Beigin+8;
+	//public static final int Message_Connected_BLE_Address=Message_Beigin+8;
 	
 	public static final int Message_Connect_Status_Connected=1;
 	public static final int Message_Connect_Status_DisConnected=0;

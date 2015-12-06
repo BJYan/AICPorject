@@ -69,7 +69,6 @@ import com.aic.aicdetactor.adapter.TreeViewTest;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemItem;
-import com.aic.aicdetactor.dataBean.JsonData;
 import com.aic.aicdetactor.dialog.NFCDialog;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -112,7 +111,8 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			handler = new Handler(){
 				public void handleMessage(android.os.Message msg) {
 					switch (msg.what) {
-					case JsonData.INIT_JSON_DATA_FINISHED:
+					case StationListAdapter.INIT_JSON_DATA_FINISHED:
+						mListViewAdapter.notifyDataSetChanged();
 						dismissLoadingDialog();
 						break;
 
@@ -123,10 +123,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 					Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
 				};
 			};
-			
-			JsonData jsonData = new JsonData();
-			jsonData.InitJsonData("/sdcard/AICLine.txt", handler);
-			showLoadingDialog("正在初始化数据…");
+           showLoadingDialog("正在初始化数据…");
 			
 			app = (myApplication) getApplication();
 			Intent intent =getIntent();
@@ -183,7 +180,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,handler);
 			mListView.setAdapter(mListViewAdapter);
 			
 
@@ -196,18 +193,18 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 		super.onResume();
 	}
 
-	    void initPopupWindowFliter(View parent) {
-			LayoutInflater inflater = (LayoutInflater) this
-					.getApplicationContext()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    void initPopupWindowFliter(View parent) {
+		LayoutInflater inflater = (LayoutInflater) this
+				.getApplicationContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			final View rootview = inflater.inflate(
-					R.layout.station_menu, null, false);
+		final View rootview = inflater.inflate(
+				R.layout.station_menu, null, false);
 
-			final PopupWindow pw_Left = new PopupWindow(rootview, LayoutParams.WRAP_CONTENT,
-					LayoutParams.WRAP_CONTENT, true);
-			pw_Left.setBackgroundDrawable(null);
-			
+		final PopupWindow pw_Left = new PopupWindow(rootview, LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT, true);
+		pw_Left.setBackgroundDrawable(null);
+		
 /*			Spinner mSpinner = (Spinner) rootview.findViewById(R.id.spinner1);
 			String[] mItems = getResources().getStringArray(R.array.spinnername);
 			ArrayAdapter<String> _Adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
@@ -219,82 +216,81 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			ArrayAdapter<String> _AdapterPoint=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
 			mSpinnerPoint.setAdapter(_AdapterPoint);*/
 
-			// // 显示popupWindow对话框
-			pw_Left.setTouchInterceptor(new View.OnTouchListener() {
+		// // 显示popupWindow对话框
+		pw_Left.setTouchInterceptor(new View.OnTouchListener() {
 
-				@Override
-				public boolean onTouch(View arg0, MotionEvent arg1) {
-					// TODO Auto-generated method stub
-					if (arg1.getAction() == MotionEvent.ACTION_OUTSIDE) {
-						pw_Left.dismiss();
-						return true;
-					}
-					return false;
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				// TODO Auto-generated method stub
+				if (arg1.getAction() == MotionEvent.ACTION_OUTSIDE) {
+					pw_Left.dismiss();
+					return true;
 				}
+				return false;
+			}
 
-			});
-			ColorDrawable dw = new ColorDrawable(Color.GRAY);
-			pw_Left.setBackgroundDrawable(dw);
-			pw_Left.setOutsideTouchable(true);
-			pw_Left.showAsDropDown(parent, Gravity.CENTER, 0);
-			pw_Left.update();
+		});
+		ColorDrawable dw = new ColorDrawable(Color.GRAY);
+		pw_Left.setBackgroundDrawable(dw);
+		pw_Left.setOutsideTouchable(true);
+		pw_Left.showAsDropDown(parent, Gravity.CENTER, 0);
+		pw_Left.update();
 
-		}
+	}
 
-	    @Override  
-	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
-	        // TODO Auto-generated method stub  
-	        super.onActivityResult(requestCode, resultCode, data);  
-	        if (resultCode == Activity.RESULT_OK && resultCode==TAKE_PIC) {  
-	            String sdStatus = Environment.getExternalStorageState();  
-	            if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用  
-	                Log.i("TestFile",  
-	                        "SD card is not avaiable/writeable right now.");  
-	                return;  
-	            }  
-	            String name = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
-	            Toast.makeText(this, name, Toast.LENGTH_LONG).show();  
-	            Bundle bundle = data.getExtras();  
-	            Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式  
-	          
-	            FileOutputStream b = null;  
-	           //???????????????????????????????为什么不能直接保存在系统相册位置呢？？？？？？？？？？？？  
-	            File file = new File("/sdcard/myImage/");  
-	            file.mkdirs();// 创建文件夹  
-	            String fileName = "/sdcard/myImage/"+name;  
-	  
-	            try {  
-	                b = new FileOutputStream(fileName);  
-	                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件  
-	            } catch (FileNotFoundException e) {  
-	                e.printStackTrace();  
-	            } finally {  
-	                try {  
-	                    b.flush();  
-	                    b.close();  
-	                } catch (IOException e) {  
-	                    e.printStackTrace();  
-	                }  
-	            }  
-	            
-	        }  
-	        if(resultCode == Activity.RESULT_OK && resultCode==RECORD){
-	        	Toast.makeText(this, "RECORD", Toast.LENGTH_LONG).show();
-	        }
-	    }  
+//	    @Override  
+//	    protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
+//	        // TODO Auto-generated method stub  
+//	        super.onActivityResult(requestCode, resultCode, data);  
+//	        if (resultCode == Activity.RESULT_OK && resultCode==TAKE_PIC) {  
+//	            String sdStatus = Environment.getExternalStorageState();  
+//	            if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用  
+//	                Log.i("TestFile",  
+//	                        "SD card is not avaiable/writeable right now.");  
+//	                return;  
+//	            }  
+//	            String name = new DateFormat().format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";     
+//	            Toast.makeText(this, name, Toast.LENGTH_LONG).show();  
+//	            Bundle bundle = data.getExtras();  
+//	            Bitmap bitmap = (Bitmap) bundle.get("data");// 获取相机返回的数据，并转换为Bitmap图片格式  
+//	          
+//	            FileOutputStream b = null;  
+//	            File file = new File("/sdcard/myImage/");  
+//	            file.mkdirs();// 创建文件夹  
+//	            String fileName = "/sdcard/myImage/"+name;  
+//	  
+//	            try {  
+//	                b = new FileOutputStream(fileName);  
+//	                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, b);// 把数据写入文件  
+//	            } catch (FileNotFoundException e) {  
+//	                e.printStackTrace();  
+//	            } finally {  
+//	                try {  
+//	                    b.flush();  
+//	                    b.close();  
+//	                } catch (IOException e) {  
+//	                    e.printStackTrace();  
+//	                }  
+//	            }  
+//	            
+//	        }  
+//	        if(resultCode == Activity.RESULT_OK && resultCode==RECORD){
+//	        	Toast.makeText(this, "RECORD", Toast.LENGTH_LONG).show();
+//	        }
+//	    }  
 
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
 			switch (arg0.getId()) {
-			case R.id.station_record:
-				Intent intent_record = new Intent(Media.RECORD_SOUND_ACTION);
-				startActivity(intent_record);
-				break;
-			case R.id.station_take_pic:
-                Intent intent_takepic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
-                startActivityForResult(intent_takepic, TAKE_PIC);
-				break;
+//			case R.id.station_record:
+//				Intent intent_record = new Intent(Media.RECORD_SOUND_ACTION);
+//				startActivity(intent_record);
+//				break;
+//			case R.id.station_take_pic:
+//                Intent intent_takepic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
+//                startActivityForResult(intent_takepic, TAKE_PIC);
+//				break;
 			case R.id.dialog_nfc_cancel_btn:
 				if(nfcdialog!=null) nfcdialog.dismiss();
 				break;

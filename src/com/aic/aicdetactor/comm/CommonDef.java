@@ -262,6 +262,8 @@ public class CommonDef {
 	public static final int  FILE_TYPE_AUDIO  =1;
 	public static final int  FILE_TYPE_TEXTRECORD  =2;
 	public static final int  FILE_TYPE_WORKER  =3;
+	public static final int  FILE_TYPE_OriginaJson  =4;
+	public static final int  FILE_TYPE_UploadJson  =5;
 	public static final String AUDIO_PATH= "audioPath";
 	public static final String TEXT_RECORD_PATH= "textPath";
 	

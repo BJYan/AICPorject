@@ -388,7 +388,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		setOtherDataIfNeeded();
 		String sonStr=JSON.toJSONString(app.mLineJsonData);
 		Event ex = new Event();
-		ex.UploadNormalPlanResultInfo_Event(null,null,null,mHandler,sonStr);
+		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
 		
 		
 		

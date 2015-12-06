@@ -6,6 +6,7 @@ import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.data.PartItemJson;
@@ -54,18 +55,19 @@ public abstract class MeasureBaseFragment extends Fragment {
 		int m=0;
 		m++;
 		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
-		//BLEControl.setParamates(mhandler);
-		if(app.mCurLinkedBLEAddress.length()<2){
-			Toast.makeText(this.getActivity(), "请重新连接BLE", Toast.LENGTH_LONG).show();
-			}else{
-				BLEControl.Connection(app.mCurLinkedBLEAddress);
-			}
+		if(shouldConnectBLE()){
+			if(app.mCurLinkedBLEAddress!=null &&app.mCurLinkedBLEAddress.length()<2 &&!app.mBLEIsConnected ){
+				Toast.makeText(this.getActivity(), "请重新连接BLE", Toast.LENGTH_LONG).show();
+				}else{
+					
+					BLEControl.Connection(app.mCurLinkedBLEAddress);
+				}
+		}
 	}
 	
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-	//	initDisplayData();
 		super.onResume();
 		
 	}
@@ -113,17 +115,6 @@ public abstract class MeasureBaseFragment extends Fragment {
 		return mPartItemData.Down_Limit;
 	}
 	
-//	//设置测量的数据结果
-//	protected void setPartItemData(String value){
-//		Log.d("atest"," PartItemMeasureBaseFragment: value="+value);
-//		mPartItemData.Extra_Information = value;
-//	}
-	
-//	//判断是否从上到下顺序测量完，
-//	public  boolean isCheckedFinish(){
-//		return(mPartItemIndex+1)== app.gCurPartItemList.size()?true:false;
-//	}
-	
 	/**
 	 * 初始化显示的数据及其颜色，在onResume函数中会调用，之类不需要显示调用
 	 */
@@ -152,4 +143,18 @@ public abstract class MeasureBaseFragment extends Fragment {
 		return mhandler;
 	}
 	protected Handler mhandler=null;
+	
+	boolean shouldConnectBLE(){
+		boolean connect=false;
+		
+		int type=Integer.valueOf(mPartItemData.T_Measure_Type_Code);
+		switch(type){
+		 case CommonDef.checkUnit_Type.ACCELERATION:
+		   case CommonDef.checkUnit_Type.SPEED:	
+		   case CommonDef.checkUnit_Type.DISPLACEMENT:
+		   case CommonDef.checkUnit_Type.TEMPERATURE:
+			   connect=true;
+		}
+		return connect;
+	}
 }

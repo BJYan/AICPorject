@@ -103,6 +103,11 @@ public class RouteDao {
 	public Cursor execSQL(String StrSql){
 	return	mDB.rawQuery(StrSql, null);
 	}
+	
+	public void execSQLUpdate(String StrSql){
+			mDB.execSQL(StrSql);
+		}
+	
 	/**
 	 * 
 	 * @param name
@@ -1256,5 +1261,17 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 			}
 		}
 		return list;
+	}
+	
+	public boolean  isOriginalLineExit(String StrGuid,String path){
+		boolean isExit=false;
+		String sqlStr= "select * from " +DBHelper.TABLE_SOURCE_FILE + " where  "+DBHelper.SourceTable.PLANGUID +" is '"+StrGuid+"' and "
+				+DBHelper.SourceTable.Path +" is '" +path +"'";
+		Cursor cursor = mDB.rawQuery(sqlStr, null);
+		if(cursor!=null){
+			isExit=cursor.getCount()>0?true:false;
+		}
+		
+		return isExit;
 	}
 }

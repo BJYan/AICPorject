@@ -717,7 +717,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		 }
 		 
 		 
-		Event.UploadWaveDataRequestInfo_Event(null,null,null,null,bytedata);
+		Event.UploadWaveDataRequestInfo_Event(null,null,bytedata);
 	}
 	
 	class MyOnPageChangeListener implements OnPageChangeListener{

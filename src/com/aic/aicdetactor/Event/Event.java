@@ -36,10 +36,12 @@ import network.com.citizensoft.common.util.DateUtil;
 import network.com.citizensoft.network.SocketCallTimeout;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -49,10 +51,15 @@ import android.view.View;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.T_Temporary_Line;
+import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonDialog;
+import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -61,7 +68,7 @@ public class Event {
 	public static final int LocalData_Init_Failed= Envent_Init+0;
 	public static final int LocalData_Init_Success= Envent_Init+1;
 	private int[] _lockCommandIds = null;
-	public static void UploadRFID_Event(View view,final Handler handler,final String MacStr) {
+	public static void UploadRFID_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -74,7 +81,7 @@ public class Event {
 
 				UploadRFIDRequest request = new UploadRFIDRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 				// request.User = "";当前使用用户，保留
 				request.Args = new UploadRFIDRequestArgs();
 				request.Args.Read_Time = DateUtil.getCurrentDate();
@@ -100,12 +107,13 @@ public class Event {
 		}).start();
 	}
 
-	public static void QueryCommand_Event(View view,final Activity activity,final String MacStr,final Handler handler) {
-		final boolean isLocalDebug =true;
+	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
+		final boolean isLocalDebug =false;
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				Setting setting = new Setting();
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
 				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
@@ -113,7 +121,7 @@ public class Event {
 				String planjson="";
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 				// request.User = "";当前使用用户，保留
 				request.Args = new QueryServerCommandRequestArgs();
 				request.Args.LockSeconds = 0;
@@ -126,6 +134,8 @@ public class Event {
 				try {
 					QueryServerCommandResponse response = sp.Execute(request,
 							timeout);
+				
+					
 					if (response.Info.Code.equals(ResponseCode.OK)) {
 						// 正确
 						NotificationManager mNotificationManager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -157,15 +167,23 @@ public class Event {
 									 }
 								 }
 								 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
-								//save data as local file
-								 String filePath = Environment.getExternalStorageDirectory()+"/"+Normaldata.T_Line.T_Line_Guid+".txt";
+								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
+								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
+							      boolean isExit =dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
+							      if(!isExit){
+							      
+								 //save data as local file
+								
 								 SystemUtil.writeFileToSD(filePath, planjson);
 								 //insert line information to correspondence databases
-								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
+								 
 								 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 										 Normaldata.getItemCounts(0,0,false,true),
 										 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
 										 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
+								 }else{
+									 
+								 }
 							}
 							else if(ci.Name.equals("DeliverTempPlan"))
 							{
@@ -195,52 +213,113 @@ public class Event {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-      }else{
-    	 String  planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory()+"/AICLine.txt");
-    	 boolean isSpecialLine = false;
-    	 if(planjson==null){
-    		 if(handler!=null){
-    			 handler.sendEmptyMessage(LocalData_Init_Failed);
-    		 }
-    		 return;
-    	 }
-			 //parse json data for insert databases
-    	 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
-			 for(int i=0;i< Normaldata.StationInfo.size();i++){
-				 if(isSpecialLine){break;}
-				 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
-					 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
-						 isSpecialLine=true;
-						 break;
-					 }
-				 }
-			 }
-			 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
-			//save data as local file
-			 String filePath = Environment.getExternalStorageDirectory()+"/"+Normaldata.T_Line.T_Line_Guid+".txt";
-			 try {
-				SystemUtil.writeFileToSD(filePath, planjson);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			 //insert line information to correspondence databases
-			 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
-			 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-					 Normaldata.getItemCounts(0,0,false,true),
-					 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
-					 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
-			 
-			 if(handler!=null){
-    			 handler.sendEmptyMessage(LocalData_Init_Success);
-    		 }			
-      }
+				} else {
+					String planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory() + "/AICLine.txt");
+					boolean isSpecialLine = false;
+					if (planjson == null) {
+						if (handler != null) {
+							handler.sendEmptyMessage(LocalData_Init_Failed);
+						}
+						return;
+					}
+					// parse json data for insert databases
+					final DownloadNormalRootData Normaldata = JSON.parseObject(planjson, DownloadNormalRootData.class);
+					for (int i = 0; i < Normaldata.StationInfo.size(); i++) {
+						if (isSpecialLine) {
+							break;
+						}
+						for (int j = 0; j < Normaldata.StationInfo.get(i).DeviceItem.size(); j++) {
+							if (Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection > 0) {
+								isSpecialLine = true;
+								break;
+							}
+						}
+					}
+					Log.d("AICtest", "name:" + Normaldata.T_Line.Name+ ",guid:" + Normaldata.T_Line.T_Line_Guid	+ ",T_Line_Content_Guid:"
+							+ Normaldata.T_Line.T_Line_Content_Guid);
+					final RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
+					String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) + Normaldata.T_Line.T_Line_Guid + ".txt";
+					boolean isExit = dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
+					if (!isExit) {
+						try {
+							SystemUtil.writeFileToSD(filePath, planjson);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						// insert line information to correspondence databases
+						dao.insertNormalLineInfo(Normaldata.T_Line.Name,
+								filePath, Normaldata.T_Line.T_Line_Guid,
+								Normaldata.getItemCounts(0, 0, false, true),
+								Normaldata.getItemCounts(0, 0, true, true),
+								Normaldata.getItemCounts(0, 0, true, true),
+								Normaldata.T_Worker, Normaldata.T_Turn,
+								Normaldata.T_Period, Normaldata.T_Organization,
+								isSpecialLine);
+
+						if (handler != null) {
+							handler.sendEmptyMessage(LocalData_Init_Success);
+						}
+					} else {
+//						AlertDialog.Builder builder = new Builder(activity.getApplicationContext());
+//						builder.setMessage("确认要覆盖现有的巡检路线吗?");
+//						builder.setTitle("提示");
+//						builder.setPositiveButton("确认", new OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialog, int which) {
+//							String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
+//									+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
+//									+" , set "+DBHelper.SourceTable.Checked_Count+"='0'"
+//									+" , set "+DBHelper.SourceTable.NormalItemCounts+"='"+Normaldata.getItemCounts(0, 0, false, true)
+//									+" , set "+DBHelper.SourceTable.SPecialItemCounts+"='"+Normaldata.getItemCounts(0, 0, true, true)										
+//									+" where "+DBHelper.SourceTable.PLANGUID +" is '"+Normaldata.T_Line.T_Line_Guid+"'";
+//							
+//							dao.execSQLUpdate(StrSql);
+//							dialog.dismiss();}
+//						 });
+//						builder.setNegativeButton("取消", new OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialog, int which) {
+//							dialog.dismiss();
+//							}
+//						});
+//						builder.create().show();
+						
+						
+//						CommonDialog acceleChart = new CommonDialog(activity.getApplicationContext());
+//						acceleChart.setTitle("警告");
+//						acceleChart.setCloseBtnVisibility(View.VISIBLE);
+//						acceleChart.setButtomBtn(new CommonDialogBtnListener() {
+//
+//							@Override
+//							public void onClickBtn2Listener(CommonDialog dialog) {
+//								// TODO Auto-generated method stub
+//								String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
+//										+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
+//										+" , set "+DBHelper.SourceTable.Checked_Count+"='0'"
+//										+" , set "+DBHelper.SourceTable.NormalItemCounts+"='"+Normaldata.getItemCounts(0, 0, false, true)
+//										+" , set "+DBHelper.SourceTable.SPecialItemCounts+"='"+Normaldata.getItemCounts(0, 0, true, true)										
+//										+" where "+DBHelper.SourceTable.PLANGUID +" is '"+Normaldata.T_Line.T_Line_Guid+"'";
+//								
+//								dao.execSQLUpdate(StrSql);
+//							}
+//
+//							@Override
+//							public void onClickBtn1Listener(CommonDialog dialog) {
+//								// TODO Auto-generated method stub
+//
+//							}
+//						}, "确认覆盖", "取消");
+
+					}
+						
+				}
 			}
 		}).start();
 	}
 	
 	
-	public void QueryCommandWithLock_Event(View view,final Activity activity,final String MACStr,final Handler handler) {
+	public void QueryCommandWithLock_Event(View view,final Activity activity,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -253,7 +332,7 @@ public class Event {
 
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MACStr;//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 				// request.User = "";当前使用用户，保留
 				request.Args = new QueryServerCommandRequestArgs();
 				request.Args.LockSeconds = 30;
@@ -302,7 +381,7 @@ public class Event {
 		}).start();
 	}
 
-	public void AckCommand_Event(View view,final String MacStr,final Handler handler) {
+	public void AckCommand_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -317,7 +396,7 @@ public class Event {
 
 						AckServerCommandRequest request = new AckServerCommandRequest();
 						request.CreateTime = DateUtil.getCurrentDate();
-						request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
+						request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 						// request.User = "";当前使用用户，保留
 						request.Args = new AckServerCommandRequestArgs();
 						request.Args.IDs = _lockCommandIds;
@@ -344,7 +423,7 @@ public class Event {
 		}).start();
 	}
 
-	public void QueryServerInfo_Event(View view,final String MacStr,final Handler handler) {
+	public void QueryServerInfo_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -357,7 +436,7 @@ public class Event {
 
 				QueryServerInfoRequest request = new QueryServerInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 
 				SocketCallTimeout timeout = new SocketCallTimeout();
 				timeout.ConnectTimeoutSeconds = 30;
@@ -379,7 +458,7 @@ public class Event {
 		}).start();
 	}
 
-	public void QueryOrganization_Event(View view,final Activity activity,final String MacStr,final Handler handler) {
+	public void QueryOrganization_Event(View view,final Activity activity,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -392,7 +471,7 @@ public class Event {
 
 				QueryOrganizationRequest request = new QueryOrganizationRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
 
 				SocketCallTimeout timeout = new SocketCallTimeout();
 				timeout.ConnectTimeoutSeconds = 30;
@@ -434,7 +513,7 @@ public class Event {
 		}).start();
 	}
 
-	public void UploadMobilePhoneInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler) {
+	public void UploadMobilePhoneInfo_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
 
@@ -447,8 +526,8 @@ public class Event {
 
 				UploadMobilePhoneInfoRequest request = new UploadMobilePhoneInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = MacStr;//"F9-2C-15-00-12-FC";// 本机MAC
-				request.Source_IP = IpStr;//"2.2.2.2";
+				request.Source_MAC = Config.getMACAddress();//"F9-2C-15-00-12-FC";// 本机MAC
+				request.Source_IP =Config.getLocalIPAddress();
 				request.Args = new UploadMobilePhoneInfoRequestArgs();
 				request.Args.Name = "TestAndroidAPP";
 
@@ -472,7 +551,7 @@ public class Event {
 		}).start();
 	}
 	//UploadNormalPlanResultRequest
-	public void UploadNormalPlanResultInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final String UploadData) {
+	public void UploadNormalPlanResultInfo_Event(View view,final Handler handler,final String UploadData) {
 
 		new Thread(new Runnable() {
 
@@ -487,8 +566,8 @@ public class Event {
 
 				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
-				request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
-				request.Source_IP = "2.2.2.2";
+				request.Source_MAC = Config.getMACAddress();// 本机MAC
+				request.Source_IP = Config.getLocalIPAddress();
 				request.Args = new UploadNormalPlanResultRequestArgs();
 				
 				String planjson=null;
@@ -525,7 +604,7 @@ public class Event {
 	
 	
 	//UploadWaveDataRequest
-		public static void  UploadWaveDataRequestInfo_Event(View view,final String MacStr,final String IpStr,final Handler handler,final byte[] UploadData) {
+		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData) {
 
 			new Thread(new Runnable() {
 
@@ -538,8 +617,8 @@ public class Event {
 
 					UploadWaveDataRequest request = new UploadWaveDataRequest();
 					request.CreateTime = DateUtil.getCurrentDate();
-					request.Source_MAC = "F9-2C-15-00-12-FC";// 本机MAC
-					request.Source_IP = "2.2.2.2";
+					request.Source_MAC = Config.getMACAddress();// 本机MAC
+					request.Source_IP = Config.getLocalIPAddress();
 					request.Args = new UploadWaveDataRequestArgs();
 					
 					String planjson=null;

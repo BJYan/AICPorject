@@ -570,7 +570,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		case R.id.up_up:
 			break;
 		case R.id.network_download_button:
-			Event.QueryCommand_Event(arg0,getActivity(),getAddress(WifiMacType.MAcAddr),mHandler);
+			Event.QueryCommand_Event(arg0,getActivity(),mHandler);
 			break;
 		case R.id.network_setting_device_name:
 			showReNameDialog();
