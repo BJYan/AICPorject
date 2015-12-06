@@ -20,6 +20,7 @@ import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
 import com.aic.aicdetactor.util.SystemUtil;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -27,9 +28,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -280,8 +284,14 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				bStartReceiveData = false;
 				break;
 			case BluetoothLeControl.Message_Connection_Status:
+				if(msg.arg2>0){
 				app.mCurLinkedBLEAddress=(String) msg.obj;
+				}
 				app.mBLEIsConnected=msg.arg1>0?true:false;
+				SharedPreferences preference = BlueTooth_Fragment.this.getActivity().getSharedPreferences(BluetoothConstast.BLEXML, Activity.MODE_PRIVATE); 
+				Editor editor = preference.edit();
+		        editor.putString(BluetoothConstast.BLEAddress, app.mCurLinkedBLEAddress);
+		        editor.commit();
 				break;
 			}
 			super.handleMessage(msg);

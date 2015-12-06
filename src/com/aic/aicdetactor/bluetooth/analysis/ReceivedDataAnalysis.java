@@ -72,7 +72,7 @@ public class ReceivedDataAnalysis {
 	 /**
 	  * 
 	  */
-	public  byte[] getWaveByteData(){
+	public  String getWaveByteData(){
 		 switch(mDLCmd){
 		 case BluetoothConstast.CMD_Type_ReadSensorParams:
 			 break;
@@ -80,7 +80,8 @@ public class ReceivedDataAnalysis {
 			 System.arraycopy(mReceiveByteDataCRC, 10, mReceiveWaveByteData, 0, getDataPointCount()*2);
 			 break;
 		 }
-		 	return mReceiveByteDataCRC; 
+		 String str = SystemUtil.bytesToHexString(mReceiveByteDataCRC);
+		 	return str; 
 	 }
 	 //获取轴数
 	 public int getAxCount(){

@@ -11,15 +11,20 @@ import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonDialog;
+import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -132,10 +137,29 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					break;
 				case  Event.LocalData_Init_Success:
 					
-					Toast.makeText(getActivity().getApplicationContext(),"更新成功",
+					Toast.makeText(getActivity().getApplicationContext(),(String)(msg.obj),
 							Toast.LENGTH_SHORT).show();
 					mDLLineAdapter.setListData(getDownLoadRouteInfo());
 					mDLLineAdapter.notifyDataSetChanged();
+					break;
+				case  Event.UpdateRouteLine_Message:
+					showOKCancel((String)msg.obj);
+					
+					break;
+				case Event.UpdateRouteLineData_Message:
+					String str = (String)msg.obj;
+					String []ParamsStr=str.split("\\*");
+					SystemUtil.renameFile(ParamsStr[0],ParamsStr[0].substring(0, ParamsStr[0].length()-4));
+					myApplication app = myApplication.getApplication();
+					RouteDao dao = RouteDao.getInstance(app.getApplicationContext());
+					 String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
+								+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
+								+" ,  "+DBHelper.SourceTable.Checked_Count+"='0'"
+								+",  "+DBHelper.SourceTable.NormalItemCounts+"='"+ParamsStr[1]
+								+"',  "+DBHelper.SourceTable.SPecialItemCounts+"='"+ParamsStr[2]									
+								+"' where "+DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"'";
+						
+						dao.execSQLUpdate(StrSql);
 					break;
 				default:
 					break;
@@ -145,6 +169,31 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	}
 	 
 
+	void showOKCancel(final String str){
+		 CommonDialog acceleChart = new CommonDialog(this.getActivity());
+			acceleChart.setTitle("警告");
+			acceleChart.setContent("确认要覆盖现有的巡检路线?\n如点击确认即将退出应用");
+			acceleChart.setCloseBtnVisibility(View.VISIBLE);
+			acceleChart.setButtomBtn(new CommonDialogBtnListener() {
+
+				@Override
+				public void onClickBtn2Listener(CommonDialog dialog) {
+					// TODO Auto-generated method stub
+					
+					 Message msg = mHandler.obtainMessage(Event.UpdateRouteLineData_Message);
+					 msg.obj=str;
+					 mHandler.sendMessage(msg);
+					 dialog.dismiss();
+				}
+
+				@Override
+				public void onClickBtn1Listener(CommonDialog dialog) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
+				}
+			}, "确认覆盖", "取消");
+			acceleChart.show();
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -153,7 +202,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		//View view = inflater.inflate(R.layout.downup_fragment, container, false);
 		networkView = inflater.inflate(R.layout.network_fragment, container, false);
         networkTabviewInit(inflater);
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 		
 		uploadInit();
 		downloadInit();   

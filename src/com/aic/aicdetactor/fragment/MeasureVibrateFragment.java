@@ -632,7 +632,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 					
 					measureAndDisplayData();
 					String Wavedata=mAnalysis.getWaveByteData().toString();
-					InsertMediaData(Wavedata,false);
+					InsertMediaData(Wavedata,true);
 					InitChart();
 					UpLoadWaveData();							
 					closeTimer();

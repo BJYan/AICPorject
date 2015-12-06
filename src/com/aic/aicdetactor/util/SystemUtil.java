@@ -120,6 +120,15 @@ public class  SystemUtil {
 	        return false;
 	    }
 	
+	public static void renameFile(String oldFileName,String destFileName){
+		deleteFile(destFileName);
+		File from =new File(oldFileName) ;
+		if(from!=null){
+		File to=new File(destFileName) ;
+		from.renameTo(to) ;
+		}
+		
+	}
 	public static boolean deleteDirectory(String filePath) {
 	    boolean flag = false;
 	        //如果filePath不以文件分隔符结尾，自动添加文件分隔符

@@ -25,4 +25,7 @@ public class BluetoothConstast {
 	//代表加速度、速度、位移都有，数据顺序也相同
 	public final static byte CMD_Sensor_Type_All=0x04;
 	
+	public final static String BLEAddress="BLEAddress";
+	public final static String BLEXML="BLEXML";
+	
 }

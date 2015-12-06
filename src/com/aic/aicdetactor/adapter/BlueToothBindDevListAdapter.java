@@ -131,10 +131,12 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 					boolean status=mBTControl.Connection(Address);	
 					msg.arg1=status==true?BluetoothLeControl.Message_Connect_Status_Connected:BluetoothLeControl.Message_Connect_Status_DisConnected; ;
 					msg.obj=Address;
+					msg.arg2=1;
 					mHandler.sendMessage(msg);
 				}else{
 					mBTControl.disconnection();
 					msg.arg1=BluetoothLeControl.Message_Connect_Status_DisConnected;
+					msg.arg2=0;
 					msg.obj="";
 					mHandler.sendMessage(msg);
 				}

@@ -51,6 +51,7 @@ import android.view.View;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.T_Temporary_Line;
@@ -67,7 +68,10 @@ public class Event {
 	public static final int Envent_Init= 300;
 	public static final int LocalData_Init_Failed= Envent_Init+0;
 	public static final int LocalData_Init_Success= Envent_Init+1;
+	public final static int UpdateRouteLine_Message=Envent_Init+2;
+	public final static int UpdateRouteLineData_Message=Envent_Init+3;
 	private int[] _lockCommandIds = null;
+	private static String TAG = "AICEvent";
 	public static void UploadRFID_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
@@ -108,7 +112,7 @@ public class Event {
 	}
 
 	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
-		final boolean isLocalDebug =false;
+		final boolean isLocalDebug =true;
 		new Thread(new Runnable() {
 
 			@Override
@@ -149,8 +153,8 @@ public class Event {
 							mNotificationManager.notify(ci.Name.hashCode(), notification);
 							
 							//zhengyangyong 2015-10-06
-							if(ci.Name.equals("DeliverNormalPlan"))
-							{ boolean isSpecialLine = false;
+							if(ci.Name.equals("DeliverNormalPlan")){ 
+								boolean isSpecialLine = false;
 								 //ci.Data
 								DeliverNormalPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverNormalPlanRequestArgs.class);
 								//处理Base64之后的巡检计划
@@ -166,9 +170,9 @@ public class Event {
 										 }
 									 }
 								 }
-								 Log.d("AICtest","name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
+								 Log.d(TAG,"name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
-								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
+								  String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
 							      boolean isExit =dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
 							      if(!isExit){
 							      
@@ -181,33 +185,44 @@ public class Event {
 										 Normaldata.getItemCounts(0,0,false,true),
 										 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
 										 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
+								 response.Info.Code="日常巡检下载更新成功!";
 								 }else{
+									 response.Info.Code="已有相同的日常巡检路线，是否要更新?";
 									 
+									 
+									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
+									 filePath=filePath+"temp";
+									 SystemUtil.writeFileToSD(filePath, planjson);
+									 //绝对路径+\\+日常巡检总数+\\+特殊巡检总数+巡检路线guid
+									 final String StrObj=filePath+"\\"+Normaldata.getItemCounts(0, 0, false, true) +"\\"+Normaldata.getItemCounts(0, 0, true, true)
+											 +"\\"+Normaldata.T_Line.T_Line_Guid;
+
+									 
+									 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
+									 msg.obj=StrObj;
+									 handler.sendMessage(msg);
 								 }
-							}
-							else if(ci.Name.equals("DeliverTempPlan"))
-							{
+							}else if(ci.Name.equals("DeliverTempPlan")){
 								//ci.Data
 								DeliverTempPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverTempPlanRequestArgs.class);
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
 								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
-							}
-							else
-							{
+								 response.Info.Code="临时路线更新成功!";
+							}else{
 								//其他消息：ClearAllPlan、ClearNormalPlan、ClearTempPlan。。。	
-								Log.i("aicCommand","command Name :"+ci.Name);
-								
+								Log.i(TAG,"command Name :"+ci.Name);
+								response.Info.Code="其他信息!";
 							}
-							Log.d("parseAic","parseAic:"+planjson);
+							Log.d(TAG,"parseAic:"+planjson);
 						}
 					} else {
-						Log.e("parseAic","ParseAic fail:"+response.Info.Code);
+						Log.e(TAG,"ParseAic fail:"+response.Info.Code);
 					}
 					Message msg = new Message();
 					msg.what = 0;
-					msg.obj = response.Info.Code;
+					msg.obj = response.Info.Code!=null?response.Info.Code:"服务器下发的状态为空";
 					handler.sendMessage(msg);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -235,7 +250,7 @@ public class Event {
 							}
 						}
 					}
-					Log.d("AICtest", "name:" + Normaldata.T_Line.Name+ ",guid:" + Normaldata.T_Line.T_Line_Guid	+ ",T_Line_Content_Guid:"
+					Log.d(TAG, "name:" + Normaldata.T_Line.Name+ ",guid:" + Normaldata.T_Line.T_Line_Guid	+ ",T_Line_Content_Guid:"
 							+ Normaldata.T_Line.T_Line_Content_Guid);
 					final RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 					String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) + Normaldata.T_Line.T_Line_Guid + ".txt";
@@ -261,56 +276,15 @@ public class Event {
 							handler.sendEmptyMessage(LocalData_Init_Success);
 						}
 					} else {
-//						AlertDialog.Builder builder = new Builder(activity.getApplicationContext());
-//						builder.setMessage("确认要覆盖现有的巡检路线吗?");
-//						builder.setTitle("提示");
-//						builder.setPositiveButton("确认", new OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int which) {
-//							String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
-//									+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
-//									+" , set "+DBHelper.SourceTable.Checked_Count+"='0'"
-//									+" , set "+DBHelper.SourceTable.NormalItemCounts+"='"+Normaldata.getItemCounts(0, 0, false, true)
-//									+" , set "+DBHelper.SourceTable.SPecialItemCounts+"='"+Normaldata.getItemCounts(0, 0, true, true)										
-//									+" where "+DBHelper.SourceTable.PLANGUID +" is '"+Normaldata.T_Line.T_Line_Guid+"'";
-//							
-//							dao.execSQLUpdate(StrSql);
-//							dialog.dismiss();}
-//						 });
-//						builder.setNegativeButton("取消", new OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.dismiss();
-//							}
-//						});
-//						builder.create().show();
-						
-						
-//						CommonDialog acceleChart = new CommonDialog(activity.getApplicationContext());
-//						acceleChart.setTitle("警告");
-//						acceleChart.setCloseBtnVisibility(View.VISIBLE);
-//						acceleChart.setButtomBtn(new CommonDialogBtnListener() {
-//
-//							@Override
-//							public void onClickBtn2Listener(CommonDialog dialog) {
-//								// TODO Auto-generated method stub
-//								String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
-//										+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
-//										+" , set "+DBHelper.SourceTable.Checked_Count+"='0'"
-//										+" , set "+DBHelper.SourceTable.NormalItemCounts+"='"+Normaldata.getItemCounts(0, 0, false, true)
-//										+" , set "+DBHelper.SourceTable.SPecialItemCounts+"='"+Normaldata.getItemCounts(0, 0, true, true)										
-//										+" where "+DBHelper.SourceTable.PLANGUID +" is '"+Normaldata.T_Line.T_Line_Guid+"'";
-//								
-//								dao.execSQLUpdate(StrSql);
-//							}
-//
-//							@Override
-//							public void onClickBtn1Listener(CommonDialog dialog) {
-//								// TODO Auto-generated method stub
-//
-//							}
-//						}, "确认覆盖", "取消");
+						 filePath=filePath+"temp";
+						 //绝对路径+*+日常巡检总数+*+特殊巡检总数+*+巡检路线guid
+						 final String StrObj=filePath+"*"+Normaldata.getItemCounts(0, 0, false, true) +"*"+Normaldata.getItemCounts(0, 0, true, true)
+								 +"*"+Normaldata.T_Line.T_Line_Guid;
 
+						 
+						 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
+						 msg.obj=StrObj;
+						 handler.sendMessage(msg);
 					}
 						
 				}
@@ -423,6 +397,11 @@ public class Event {
 		}).start();
 	}
 
+	/**
+	 * APP查询服务器信息
+	 * @param view
+	 * @param handler
+	 */
 	public void QueryServerInfo_Event(View view,final Handler handler) {
 
 		new Thread(new Runnable() {
@@ -458,6 +437,12 @@ public class Event {
 		}).start();
 	}
 
+	/**
+	 * 1.APP查询自身三级组织机构信息（总厂、分厂、车间）
+	 * @param view
+	 * @param activity
+	 * @param handler
+	 */
 	public void QueryOrganization_Event(View view,final Activity activity,final Handler handler) {
 
 		new Thread(new Runnable() {
@@ -653,6 +638,5 @@ public class Event {
 					}
 				}
 			}).start();
-		}
-		
+		}	
 }

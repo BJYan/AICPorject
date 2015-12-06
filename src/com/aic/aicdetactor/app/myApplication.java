@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.aic.aicdetactor.Event.Event;
+import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
@@ -135,13 +138,9 @@ public class myApplication extends Application
         super.onCreate(); 
         mApplication = this;
         Setting set= new Setting();
-     //  byte[]atest= WaveDataTest.getTestData();
-     //  int k=0;      
-      // Event.UploadWaveDataRequestInfo_Event(null,null,null,null,atest);
-     //  k++;
-       
        BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0,0,0);   
-      
+       SharedPreferences sharedPreferences = getSharedPreferences(BluetoothConstast.BLEXML, this.getApplicationContext().MODE_PRIVATE);
+       mCurLinkedBLEAddress = sharedPreferences.getString(BluetoothConstast.BLEAddress, "B0:B4:48:CC:2D:84");
     }
     
     

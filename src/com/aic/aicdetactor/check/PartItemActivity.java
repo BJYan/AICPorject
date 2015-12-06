@@ -446,7 +446,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   fragmentTransaction.remove(fragment);
 			   fragmentTransaction.commit();
 			break;
-			   
 			   default:
 				   bNoFragement=true;
 //				   mButtion_Position.setText(getString(R.string.position));
@@ -724,7 +723,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	
 	
 	private Uri imageFilePath = null;
-    
+	BluetoothLeControl BLEControl = null;
 
    String[] direction_item={"X-Y","X-Z","Y-Z"};
     @Override
@@ -732,11 +731,26 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		switch(arg0.getId()){
 		case R.id.config:
-			 if( mAdapterList.getCount()>0&&mSpinner.getSelectedItemPosition()>0){
-					mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
-				  }else{
-					  Toast.makeText(getApplicationContext(), "请选择状态", Toast.LENGTH_LONG).show();
-				  }
+			 if( mAdapterList.getCount()>0){
+				 if(mSpinner.getSelectedItemPosition()>0){
+					 BLEControl = BluetoothLeControl.getInstance(this);
+					 boolean bleConnected=false;
+					 if(app.mCurLinkedBLEAddress!=null &&app.mCurLinkedBLEAddress.length()<2 &&!app.mBLEIsConnected ){
+						 Toast.makeText(this, "请在应用蓝牙界面手动连接", Toast.LENGTH_LONG).show();
+						 }else{
+							 bleConnected=BLEControl.Connection(app.mCurLinkedBLEAddress);
+							 }
+					 if(bleConnected){
+						 mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
+						 }else{
+							 Toast.makeText(this, "连接失败，请在应用蓝牙界面手动连接", Toast.LENGTH_LONG).show();
+						 }
+				 }else{
+					Toast.makeText(getApplicationContext(), "请选择状态", Toast.LENGTH_LONG).show();
+				}
+			  }else {
+					  Toast.makeText(getApplicationContext(), "设备下没有巡检项", Toast.LENGTH_LONG).show();
+			   }
 			break;
 		case R.id.bottombutton_pre://上一测试点
 		{
@@ -897,10 +911,13 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	
 	@Override
 	public void onAttachFragment(Fragment fragment) {
+		boolean res = fragment instanceof BlueTooth_Fragment;
+		if(!res){
 		try {
 			mFragmentCallBack = (OnButtonListener) fragment;
 		} catch (Exception e) {
 			throw new ClassCastException(this.toString()+ " must OnButtonListener");
+		}
 		}
 		super.onAttachFragment(fragment);
 	}

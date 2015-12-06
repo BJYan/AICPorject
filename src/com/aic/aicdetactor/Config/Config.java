@@ -15,7 +15,7 @@ public class Config {
 //private  String server_IpC="192.168.1.145";
 public  int server_port=10000;
 /**
- * »ñÈ¡·şÎñÆ÷µÄIPµØÖ·
+ * è·å–æœåŠ¡å™¨çš„IPåœ°å€
  * @return
  */
 public static String  getServiceIP(){	
@@ -25,7 +25,7 @@ public static String  getServiceIP(){
 }
 
 /**
- * ºóÈ¥·şÎñÆ÷¶Ë¿Ú
+ * åå»æœåŠ¡å™¨ç«¯å£
  * @return
  */
 public static int  getServicePort(){	
@@ -33,7 +33,7 @@ public static int  getServicePort(){
 }
 
 /**
- * »ñÈ¡ÖÕ¶ËMACµØÖ·
+ * è·å–ç»ˆç«¯MACåœ°å€
  * @return
  */
 public static String getMACAddress(){
@@ -44,7 +44,7 @@ public static String getMACAddress(){
 }
 
 /**
- * »ñÈ¡ÖÕ¶ËIPµØÖ·
+ * è·å–ç»ˆç«¯IPåœ°å€
  * @return
  */
 public static String getLocalIPAddress(){
