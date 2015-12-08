@@ -71,7 +71,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  */
 public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnButtonListener{
 
-	protected static final int COUNTDOWN = 0;
+	protected static final int VIBRATE_COUNTDOWN = 0;
 	private ListView mListView = null;
 	private ImageView mImageView = null;
 	private RadioButton mRadioButton = null;
@@ -140,21 +140,21 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			super.onCreate(savedInstanceState);
 			
 			handler = new Handler(){
-				int i = 11;
+				int countdownSec = 11;
 				public void handleMessage(Message msg) {
 					
 					switch (msg.what) {
-					case COUNTDOWN:
+					case VIBRATE_COUNTDOWN:
 						int count = (Integer) msg.obj;
-						if(i==5) getDataFromBLE();
-						if(i==0) {
+						if(countdownSec==5) getDataFromBLE();
+						if(countdownSec==0) {
 							closeCountdownTimer();
 							if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
 							mButton_Measurement.setEnabled(true);
 						} else {
-							i=i-count;
+							countdownSec=countdownSec-count;
 							if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
-							mCountdownDialog.setText("等待蓝牙连接 "+i+"秒");
+							mCountdownDialog.setText("等待蓝牙连接 "+countdownSec+"秒");
 						}
 
 						break;

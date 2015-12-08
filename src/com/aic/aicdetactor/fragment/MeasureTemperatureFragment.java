@@ -52,7 +52,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  */
 public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements OnButtonListener{
 
-	protected static final int COUNTDOWN = 0;
+	protected static final int TEMP_COUNTDOWN = 1000;
 	//UI
 	//示意图片显示
 	private ImageView mImageView = null;
@@ -125,6 +125,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			
 		});
 		mCountdownDialog = new FlippingLoadingDialog(this.getActivity(),"");
+		mCountdownDialog.setCancelable(false);
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
 		mTimeTV = (TextView)view.findViewById(R.id.hint);
 		
@@ -137,6 +138,12 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
 	}
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		startCountdownTimer();
+	}
 	
 	void startCountdownTimer(){		
 		if(mCountdownTimerTask==null){
@@ -147,7 +154,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
 				msg.obj=1;
-				msg.what = COUNTDOWN;
+				msg.what = TEMP_COUNTDOWN;
 				handler.sendMessage(msg);
 			}
 			};
@@ -201,6 +208,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		// TODO Auto-generated method stub
 		MLog.Logd(TAG," Temperature_fragment:onPause()");
 		super.onPause();
+		closeCountdownTimer();
 	}
 	
 	void getDataFromBLE(){
@@ -243,7 +251,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     int iFailedTime =0;
     int receiveCount =0;
     Handler handler = new Handler(){
-
+    	int countdownSec = 11;
 		@Override
 		public void dispatchMessage(Message msg) {
 			int i = 0;
@@ -346,18 +354,19 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			}
 			break;
 			
-		case COUNTDOWN:
+		case TEMP_COUNTDOWN:
 			int count = (Integer) msg.obj;
-			if(i==5) getDataFromBLE();
-			if(i==0) {
+			if(countdownSec==5) getDataFromBLE();
+			if(countdownSec==0) {
+				mCountdownDialog.show();
 				closeCountdownTimer();
 				if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
 			} else {
-				i=i-count;
+				countdownSec=countdownSec-count;
 				if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
-				mCountdownDialog.setText("等待蓝牙连接 "+i+"秒");
+				mCountdownDialog.setText("等待蓝牙连接 "+countdownSec+"秒");
 			}
-
+			
 			break;
 			}
 			super.dispatchMessage(msg);
