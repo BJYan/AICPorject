@@ -88,29 +88,12 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		MLog.Logd(TAG," Temperature_fragment:onCreate()");
-//		mMapList = new ArrayList<Map<String, Object>>();
-//		//初始化ListVew 数据项
-//		String [] arraryStr = new String[]{this.getString(R.string.electric_device_parameters),
-//				this.getString(R.string.electric_device_spectrum)};
-//			for (int i = 0; i < arraryStr.length; i++) {
-//				Map<String, Object> map = new HashMap<String, Object>();				
-//				map.put(CommonDef.check_item_info.NAME,arraryStr[i] );								
-//				map.put(CommonDef.check_item_info.DEADLINE, "2015-06-20 10:00");
-//
-//				//已检查项的检查数值怎么保存？并显示出来
-//				//已巡检的项的个数统计，暂时由是否有巡检时间来算，如果有的话，即已巡检过了，否则为未巡检。
-//				mMapList.add(map);
-//			}
-//			
-		
 		super.onCreate(savedInstanceState);
 		
 	}
 	public  MeasureTemperatureFragment(PartItemListAdapter AdapterList){
 		this.AdapterList = AdapterList;
 	}
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -234,7 +217,6 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     	double MAX = super.mPartItemData.Up_Limit;;
     	double MID = super.mPartItemData.Middle_Limit;
     	double LOW = super.mPartItemData.Down_Limit;
-    	double max_mTemperatureeration=100;
 		
     //	mCheckedValue = (float)(Math.random()*max_mTemperatureeration);
     	
@@ -286,13 +268,6 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			
 			
 			
-			
-			
-			
-			
-			
-			
-			
 //			String str= SystemUtil.bytesToHexString(strbyte);
 //			if(mReceiveDataLenth==0){
 //			mReceiveDataLenth =DataAnalysis.getReceiveDataLenth(str, mDLCMD);
@@ -311,22 +286,9 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			break;
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mTimeTV.setText("测量完毕");
-			
-			boolean isvalide = mAnalysis.isValidate();
-			float valideValue = mAnalysis.getValidValue();
-			float max=mAnalysis.getFabsMaxValue();
-			float ff=mAnalysis.getFengFengValue();
-			float fabs=mAnalysis.getFabsMaxValue();
-			
 			bStartReceiveData = false;
-			
 			if(mAnalysis.isReceivedAllData()){
-				//
 				if(mAnalysis.isValidate()){
-					 valideValue = mAnalysis.getValidValue();
-					 max=mAnalysis.getFabsMaxValue();
-					 ff=mAnalysis.getFengFengValue();
-					 fabs=mAnalysis.getFabsMaxValue();
 					 mCheckedValue=mAnalysis.getValidValue();
 					 measureAndDisplayData();
 						
@@ -335,7 +297,6 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 					if(iFailedTime<=MAX_FAILED_TIMES){
 						startCountdownTimer();
 						mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-						//Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 					}else{
 						iFailedTime=0;
 					}
@@ -345,16 +306,10 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 				if(iFailedTime<=MAX_FAILED_TIMES){
 					startCountdownTimer();
 					mColorTextView.setText("数据丢失,请重测"+" " +iFailedTime);
-					//Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 				}else{
 					iFailedTime=0;
 				}
 			}
-			
-			
-			
-			
-			
 			
 //			mStrLastReceiveData = mStrReceiveData.toString();
 //			mStrReceiveData.delete(0, mStrReceiveData.length());

@@ -209,7 +209,6 @@ class InitJsonDataThread extends Thread{
 			MLog.Logd(TAG, " InitData()>> "+g);
 			try {
 				if(app.getLineDataClassifyFromOneFile(mIsSpecial)==null){
-					 Toast.makeText(StationListAdapter.this.mActivity.getApplicationContext(), StationListAdapter.this.app.getCurGsonPath()+"巡检文件不存在",Toast.LENGTH_LONG).show();
 					return;
 				};
 				mStationDisplayDataList.clear();

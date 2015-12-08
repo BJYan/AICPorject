@@ -281,10 +281,14 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				app.mCurLinkedBLEAddress=(String) msg.obj;
 				}
 				app.mBLEIsConnected=msg.arg1>0?true:false;
+				try{
 				SharedPreferences preference = BlueTooth_Fragment.this.getActivity().getSharedPreferences(BluetoothConstast.BLEXML, Activity.MODE_PRIVATE); 
 				Editor editor = preference.edit();
 		        editor.putString(BluetoothConstast.BLEAddress, app.mCurLinkedBLEAddress);
 		        editor.commit();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 				break;
 			}
 			super.handleMessage(msg);

@@ -58,7 +58,7 @@ public class CommonDialog extends Dialog implements android.view.View.OnClickLis
 	}
 	
 	public void setContent(CharSequence content){
-		TextView DialogTitle = (TextView) contentView.findViewById(R.id.dialog_title);
+		TextView DialogTitle = (TextView) contentView.findViewById(R.id.content);
 		DialogTitle.setVisibility(View.VISIBLE);
 		DialogTitle.setText(content);
 	}

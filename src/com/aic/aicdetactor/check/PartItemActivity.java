@@ -782,20 +782,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			break;
 		case R.id.next://下一测试点
 		{
-//			if(mButton_Next.getText().equals(getString(R.string.save_and_finish))){
-//				//
-//				Message msg = mHandler.obtainMessage(MSG_ADD_A_PARTITEMDATA);
-//				msg.arg1 = RF_TYPE;
-//				mHandler.sendMessage(msg);
-//				mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
-//			}else{	
-//				if(mCheckUnit_DataType ==CommonDef.checkUnit_Type.RECORD
-//						||mCheckUnit_DataType ==CommonDef.checkUnit_Type.DEFAULT_CONDITION){
-//					mFragmentCallBack.OnButtonDown(1, null);
-//				}
-//	        mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
-//	        mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
-//			}
 			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
 			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
@@ -803,27 +789,18 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		}
 			break;		
 		case R.id.bottombutton3://测量
-			if(mButton_Measurement.getText().equals(getString(R.string.textrecord))){
-			//	Intent intent = new Intent();
-			//	JSONObject json = (JSONObject) mPartItemList.get(mCheckIndex);
-//				String value = app.getPartItemCheckUnitName(json, CommonDef.partItemData_Index.PARTITEM_CHECKPOINT_NAME);
-//				intent.putExtra(CommonDef.check_unit_info.NAME, value);
-				//intent.setClass(PartItemActivity.this, NotepadActivity.class);
-				//startActivityForResult(intent,PartItem_Contact.PARTITEM_NOTEPAD_RESULT);
-			}else{
-				if(!app.isTest){
-					if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
-					 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
-					}else {
-						Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
-					}
-				}else{
-					mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
-					
+			if(!app.isTest){
+				if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
+				 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+				}else {
+					Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
 				}
-				mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);
-				
+			}else{
+				mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
 			}
+			//mButton_Measurement.setEnabled(false);
+			mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
+			
 			break;
 		case R.id.bottombutton2://方向
 			if(mButton_Direction.getText().equals(getString(R.string.soundrecord))){
@@ -850,7 +827,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
 		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA,CaiYangDianIndex,CaiYangPinLvIndex);
-		mButton_Measurement.setEnabled(false);
     }
     
     void saveValue(){
@@ -971,7 +947,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 
 	}
 	
-private int mZhouCounts=0;
 
 	@Override
 	public void OnClick(int genPartItemDataCounts, int xValue, int yValue,
@@ -990,8 +965,6 @@ private int mZhouCounts=0;
 		
 		case CommonDef.checkUnit_Type.TEMPERATURE:
 		case CommonDef.checkUnit_Type.ROTATION_RATE:
-			//mButton_Direction.setVisibility(iInvisibleOrGone);
-			//mButtion_Position.setVisibility(iInvisibleOrGone);
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			mButton_Next.setVisibility(View.VISIBLE);
 			
@@ -1000,16 +973,12 @@ private int mZhouCounts=0;
 		case CommonDef.checkUnit_Type.METER_READING:
 		case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
 		case  CommonDef.checkUnit_Type.OBSERVATION:
-			//mButton_Direction.setVisibility(iInvisibleOrGone);
-			//mButtion_Position.setVisibility(iInvisibleOrGone);
 			mButton_Measurement.setVisibility(iInvisibleOrGone);
 			mButton_Next.setVisibility(View.VISIBLE);
 			break;
 		case CommonDef.checkUnit_Type.ACCELERATION:		
 		case CommonDef.checkUnit_Type.SPEED:		
 		case CommonDef.checkUnit_Type.DISPLACEMENT:
-			//mButton_Direction.setVisibility(View.VISIBLE);
-			//mButtion_Position.setVisibility(View.VISIBLE);
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			break;
 		case CommonDef.ENABLE_MEASUREMENT_BUTTON:	

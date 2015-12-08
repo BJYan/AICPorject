@@ -26,12 +26,21 @@ public class ReceivedDataAnalysis {
 	byte []mReceiveWaveByteData=null;
 	
 	byte []mReceiveByteDataCRC=null;
-	int mReceivedDataCounts=0;
+	/**
+	 * 数据包数
+	 */
+	int mReceivedPackageCounts=0;
 	int caiyangdian=0;
 	int mAxCounts=0;
 	byte mDLCmd=0;
 	final String TAG="ReceivedDataAnalysis";
+	/**
+	 * 已经接收到的数据长度
+	 */
 	int mReceivedDataByteSizes=0;
+	/**
+	 * 应该获取的数据长度
+	 */
 	int mShoudReceivedByteSizes=0;
 	/**
 	  * 获取wave数据
@@ -94,7 +103,7 @@ public class ReceivedDataAnalysis {
 	    
 	 
 	 /**
-		 * 有效数值
+		 * 有效数值或温度
 		 * @return
 		 */
 		public float getValidValue(){
@@ -109,6 +118,9 @@ public class ReceivedDataAnalysis {
 					dValue=Math.sqrt(dValue/mReceiveWaveFloatData.length);
 					BigDecimal   b  =   new BigDecimal(dValue);  
 					dValue  =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); 
+				 break;
+			 case BluetoothConstast.CMD_Type_GetTemper:
+				 dValue=getTemperature();
 				 break;
 			 }
 			 
@@ -373,11 +385,13 @@ public class ReceivedDataAnalysis {
 		 */
 	public	void getDataFromBLE(byte []strbyte,boolean bStartReceiveData){
 	    	if(!bStartReceiveData){
+	    		//获取参数及数据采样点 采样频率 及其数据长度信息
 	    		mDLCmd=getCMDTypeFromFirstReceivedPacageData(strbyte);
 	    		if(mDLCmd==0){mDLCmd=(byte) 0xd1;}
 				switch(mDLCmd)
 				{
 				case (byte)0xd2:
+				{
 					CRC32 crc = new CRC32();
 					crc.update(strbyte, 0, 16);
 					String s =Long.toHexString(crc.getValue());
@@ -393,7 +407,7 @@ public class ReceivedDataAnalysis {
 					}
 					mShoudReceivedByteSizes=strbyte.length;
 					mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
-					
+				}
 					break;
 				case (byte)0xd1:
 					caiyangdian=strbyte[6]<<8|strbyte[7];
@@ -411,20 +425,46 @@ public class ReceivedDataAnalysis {
 				
 					 mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
 					break;
+				case (byte)0xd6:
+				{
+					CRC32 crc = new CRC32();
+					crc.update(strbyte, 0, 16);
+					String s =Long.toHexString(crc.getValue());
+					byte[]crcValue = new byte[4];
+					for(int i=0;i<4;i++){
+						crcValue[i]=strbyte[strbyte.length-4+i];
+					}
+					String sa=SystemUtil.bytesToHexString(crcValue);
+					if(sa.equals(s)){
+					}
+					if(mReceiveByteDataCRC!=null){
+						mReceiveByteDataCRC=null;
+					}
+					mShoudReceivedByteSizes=strbyte.length;
+					mReceiveByteDataCRC = new byte[mShoudReceivedByteSizes];
+				}
+					break;
 				}
 				
 			}
-	    	mReceivedDataByteSizes=mReceivedDataByteSizes+strbyte.length;
+	    	
 	    	int len=strbyte.length;
-	    	int lastTimes=mReceivedDataCounts;
+	    	//统计已经接受到的数据长度
+	    	
+	    	
 			//收集BLE发送过来的所有原始数据
 	    	Log.d(TAG, "mDLCmd = "+mDLCmd + "strbyte.length = "+strbyte.length);
-	    	if(mReceivedDataCounts*strbyte.length>mShoudReceivedByteSizes){
-	    		len = mReceivedDataCounts*strbyte.length-mShoudReceivedByteSizes;
-	    		lastTimes--;
+	    	Log.d(TAG, "mReceivedDataByteSizes = "+mReceivedDataByteSizes + ",mShoudReceivedByteSizes = "+mShoudReceivedByteSizes);
+	    	
+	    	if( mReceivedDataByteSizes>=mShoudReceivedByteSizes){
+	    		len=mShoudReceivedByteSizes-(mReceivedPackageCounts-1)*20;
+	    		if(len<=0){len =0;}
+	    		System.arraycopy(strbyte,0,mReceiveByteDataCRC,(mReceivedPackageCounts-1)*20,len);	
+	    	}else{
+	    		System.arraycopy(strbyte,0,mReceiveByteDataCRC,mReceivedPackageCounts*20,len);	
 	    	}
-			System.arraycopy(strbyte,0,mReceiveByteDataCRC,lastTimes*20,len);	
-			mReceivedDataCounts++;
+	    	mReceivedDataByteSizes=mReceivedDataByteSizes+len;
+			mReceivedPackageCounts++;
 	    }
 	
 	/**
@@ -435,78 +475,29 @@ public class ReceivedDataAnalysis {
 			mReceiveWaveFloatData=null;
 		}
 		mReceivedDataByteSizes=0;
-		mReceivedDataCounts=0;
+		mReceivedPackageCounts=0;
 		caiyangdian=0;
 		mAxCounts=0;
 		if(mReceiveByteDataCRC!=null){
 			mReceiveByteDataCRC=null;
 		}
 	}
-}
-
-class ReceivedDataHead {
-	public int[] head;
+	
 	/**
-	 * 轴数
-	 * 单轴 1，双轴2,三轴3
+	 * 获取温度数值
 	 */
-	public int sensorType;
-	/**
-	 * 数据类型
-	 *  加速度1,速度2,位移3
-	 */
-	public int dataType;
-	/**
-	 * 采样点个数
-	 */
-	public int dataNum;
-	/**
-	 * 采样点频率
-	 */
-	public int frequency;
-
-
-	public ReceivedDataHead(String str,byte DLCMD) {
-		// TODO Auto-generated constructor stub
-		switch(DLCMD){
-		case BluetoothConstast.CMD_Type_CaiJi:
-		{
-			head = new int[4];
-			for(int i=0;i<8;i+=2){
-				head[i/2] = Integer.valueOf(str.substring(i, i+2),16);
-			}
-			sensorType = Integer.valueOf(str.substring(8, 10),16);
-			dataType =  Integer.valueOf(str.substring(10, 12),16);
-			dataNum = Integer.valueOf(str.substring(12, 16),16);
-			frequency = Integer.valueOf(str.substring(16, 20),16);
+    float getTemperature(){
+		float tem=0;
+		if(mReceiveByteDataCRC[2]==(byte)0xd6){
+			byte[]tempByte=new byte[4];
+			System.arraycopy(mReceiveByteDataCRC, 3, tempByte, 0, tempByte.length);
+			tem=SystemUtil.ByteArrayToFloat(tempByte);
 		}
-		break;
-		case BluetoothConstast.CMD_Type_ReadSensorParams:
-		{
-			head = new int[2];
-			for(int i=0;i<4;i+=2){
-				head[i/2] = Integer.valueOf(str.substring(i, i+2),16);
-			}
-			sensorType = Integer.valueOf(str.substring(6,8),16);
-			dataType =  0;
-			dataNum = 0;
-			frequency = 0;
-		}
-		break;
-		
-		case BluetoothConstast.CMD_Type_GetTemper:
-		case BluetoothConstast.CMD_Type_GetCharge:
-		{
-			head = new int[3];
-			for(int i=0;i<6;i+=2){
-				head[i/2] = Integer.valueOf(str.substring(i, i+2),16);
-			}
-			sensorType = 0;
-			dataType =  0;
-			dataNum = 0;
-			frequency = 0;
-		}
-		break;
-		}
+		return tem;
 	}
+
 }
+
+
+
+

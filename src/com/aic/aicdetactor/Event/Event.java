@@ -119,7 +119,7 @@ public class Event {
 	}
 
 	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
-		final boolean isLocalDebug =true;
+		final boolean isLocalDebug =false;
 		new Thread(new Runnable() {
 
 			@Override
@@ -196,9 +196,9 @@ public class Event {
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
 									 filePath=filePath+"temp";
 									 SystemUtil.writeFileToSD(filePath, planjson);
-									 //绝对路径+\\+日常巡检总数+\\+特殊巡检总数+巡检路线guid
-									 final String StrObj=filePath+"\\"+Normaldata.getItemCounts(0, 0, false, true) +"\\"+Normaldata.getItemCounts(0, 0, true, true)
-											 +"\\"+Normaldata.T_Line.T_Line_Guid;
+									 //绝对路径+*+日常巡检总数+*+特殊巡检总数+巡检路线guid
+									 final String StrObj=filePath+"*"+Normaldata.getItemCounts(0, 0, false, true) +"*"+Normaldata.getItemCounts(0, 0, true, true)
+											 +"*"+Normaldata.T_Line.T_Line_Guid;
 									 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
 									 msg.obj=StrObj;
 									 handler.sendMessage(msg);
