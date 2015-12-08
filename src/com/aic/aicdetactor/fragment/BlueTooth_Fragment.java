@@ -128,7 +128,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		super.onResume();
 		mAllBTDevices.clear();
-		
+		mBondedDevices.clear();
 		//scanLeDevice(true);
 		
 		// Register the BroadcastReceiver
