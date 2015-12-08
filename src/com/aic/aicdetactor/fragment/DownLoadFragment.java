@@ -132,8 +132,19 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				// TODO Auto-generated method stub
 				switch (msg.what) {
 				case Event.LocalData_Init_Failed:
-					CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没本地巡检数据，请确认有/sdcard/AICLine.txt文件",null,null);
+					{
+						CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没本地巡检数据，请确认有/sdcard/AICLine.txt文件",null,null);
+					
 					dialog.show();
+					}
+					break;
+				case Event.NetWork_Connecte_Timeout:
+				case Event.NetWork_MSG_Tips:
+				case Event.Server_No_Data:
+					{
+						CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
+						dialog.show();
+					}
 					break;
 				case  Event.LocalData_Init_Success:
 					
@@ -479,7 +490,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 							ipEditText[0].getText().toString()+"."+
 									ipEditText[1].getText().toString()+"."+
 									ipEditText[2].getText().toString()+"."+
-									ipEditText[3].getText().toString()+".");
+									ipEditText[3].getText().toString());
 					editor.commit();
 					
 					Toast.makeText(DownLoadFragment.this.getActivity(), "IP地址保存成功", Toast.LENGTH_LONG).show();

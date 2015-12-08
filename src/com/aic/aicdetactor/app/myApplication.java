@@ -7,6 +7,7 @@ import java.util.Map;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
@@ -182,6 +183,10 @@ public class myApplication extends Application
   //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离
     public DownloadNormalRootData getLineDataClassifyFromOneFile(boolean IsSpecial){
   		 String planjson = SystemUtil.openFile(getCurGsonPath());
+  		 if(planjson==null){
+  			
+  			 return null;
+  		 }
   		 if(mLineJsonData!=null){mLineJsonData=null;}
   		if(!IsSpecial){ 
   			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);  		

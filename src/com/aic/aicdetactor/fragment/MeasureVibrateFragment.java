@@ -224,7 +224,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			mTimer = new Timer();
 			mTimer.schedule(mTimerTask, 1000);
 			}
-		mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
+		//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
 	}
 	
 	void closeTimer(){
@@ -639,15 +639,15 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 						
 				}else{
 					if(!bPressTest){
-					iFailedTimes++;	
-					if(iFailedTimes<=MAX_FAILED_TIMES){
-						closeTimer();
-						startTimer();
-						mColorTextView.setText("校验失败"+" " +iFailedTimes);
-						Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
-					}else{
-						iFailedTimes=0;
-					}
+						iFailedTimes++;	
+						if(iFailedTimes<=MAX_FAILED_TIMES){
+							closeTimer();
+							startTimer();
+							mColorTextView.setText("校验失败"+" " +iFailedTimes);
+							Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+						}else{
+							iFailedTimes=0;
+						}
 					}
 				}
 				

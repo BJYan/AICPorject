@@ -15,6 +15,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
@@ -207,7 +208,10 @@ class InitJsonDataThread extends Thread{
 			long g=System.currentTimeMillis();
 			MLog.Logd(TAG, " InitData()>> "+g);
 			try {
-				app.getLineDataClassifyFromOneFile(mIsSpecial);
+				if(app.getLineDataClassifyFromOneFile(mIsSpecial)==null){
+					 Toast.makeText(StationListAdapter.this.mActivity.getApplicationContext(), StationListAdapter.this.app.getCurGsonPath()+"巡检文件不存在",Toast.LENGTH_LONG).show();
+					return;
+				};
 				mStationDisplayDataList.clear();
 				mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
 				for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {

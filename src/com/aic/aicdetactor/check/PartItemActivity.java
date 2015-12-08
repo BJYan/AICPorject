@@ -850,6 +850,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
 		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA,CaiYangDianIndex,CaiYangPinLvIndex);
+		mButton_Measurement.setEnabled(false);
     }
     
     void saveValue(){

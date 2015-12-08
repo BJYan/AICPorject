@@ -2,8 +2,11 @@ package com.aic.aicdetactor.Event;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.UUID;
+
+import org.apache.http.conn.ConnectTimeoutException;
 
 import network.aic.xj.client.ServiceProvider;
 import network.aic.xj.common.ResponseCode;
@@ -70,6 +73,10 @@ public class Event {
 	public static final int LocalData_Init_Success= Envent_Init+1;
 	public final static int UpdateRouteLine_Message=Envent_Init+2;
 	public final static int UpdateRouteLineData_Message=Envent_Init+3;
+	public final static int NetWork_Connecte_Timeout=Envent_Init+4;
+	public final static int NetWork_MSG_Tips=Envent_Init+5;
+	public final static int TEMP_ROUTELINE_DOWNLOAD_MSG=Envent_Init+6;
+	public final static int Server_No_Data=Envent_Init+7;
 	private int[] _lockCommandIds = null;
 	private static String TAG = "AICEvent";
 	public static void UploadRFID_Event(View view,final Handler handler) {
@@ -138,11 +145,15 @@ public class Event {
 				try {
 					QueryServerCommandResponse response = sp.Execute(request,
 							timeout);
-				
-					
-					if (response.Info.Code.equals(ResponseCode.OK)) {
-						// 正确
+					if (response.Info.Code.equals(ResponseCode.OK)) {						
 						NotificationManager mNotificationManager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
+						if(response.Args.Commands.length<=0){
+							//服务器上没数据
+							 Message msg = handler.obtainMessage(Server_No_Data);
+							 msg.obj="服务器上没巡检数据!";
+							 handler.sendMessage(msg);
+							 return;
+						}
 						for (CommandInfo ci : response.Args.Commands) {
 							int icon = android.R.drawable.sym_action_email;
 							Notification notification = new Notification.Builder(
@@ -155,11 +166,9 @@ public class Event {
 							//zhengyangyong 2015-10-06
 							if(ci.Name.equals("DeliverNormalPlan")){ 
 								boolean isSpecialLine = false;
-								 //ci.Data
 								DeliverNormalPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverNormalPlanRequestArgs.class);
 								//处理Base64之后的巡检计划
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
-								 //parse json data for insert databases
 								 DownloadNormalRootData Normaldata=JSON.parseObject(planjson,DownloadNormalRootData.class);
 								 for(int i=0;i< Normaldata.StationInfo.size();i++){
 									 if(isSpecialLine){break;}
@@ -172,35 +181,28 @@ public class Event {
 								 }
 								 Log.d(TAG,"name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
-								  String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
-							      boolean isExit =dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
-							      if(!isExit){
-							      
-								 //save data as local file
-								
-								 SystemUtil.writeFileToSD(filePath, planjson);
-								 //insert line information to correspondence databases
-								 
-								 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-										 Normaldata.getItemCounts(0,0,false,true),
-										 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
-										 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
-								 response.Info.Code="日常巡检下载更新成功!";
+								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
+								 boolean isFileExist= SystemUtil.isFileExist(filePath);
+							     boolean isExit =dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
+							     if(!isFileExist){
+									 SystemUtil.writeFileToSD(filePath, planjson);
+									 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
+											 Normaldata.getItemCounts(0,0,false,true),
+											 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
+									 response.Info.Code="日常巡检下载更新成功!";
 								 }else{
 									 response.Info.Code="已有相同的日常巡检路线，是否要更新?";
-									 
-									 
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
 									 filePath=filePath+"temp";
 									 SystemUtil.writeFileToSD(filePath, planjson);
 									 //绝对路径+\\+日常巡检总数+\\+特殊巡检总数+巡检路线guid
 									 final String StrObj=filePath+"\\"+Normaldata.getItemCounts(0, 0, false, true) +"\\"+Normaldata.getItemCounts(0, 0, true, true)
 											 +"\\"+Normaldata.T_Line.T_Line_Guid;
-
-									 
 									 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
 									 msg.obj=StrObj;
 									 handler.sendMessage(msg);
+									 return;
 								 }
 							}else if(ci.Name.equals("DeliverTempPlan")){
 								//ci.Data
@@ -209,7 +211,12 @@ public class Event {
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
 								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
-								 response.Info.Code="临时路线更新成功!";
+								 response.Info.Code="临时路线更新成功!";								 
+								 Message msg = handler.obtainMessage(TEMP_ROUTELINE_DOWNLOAD_MSG);
+								 msg.obj=response.Info.Code;
+								 handler.sendMessage(msg);
+								 return;
+								 
 							}else{
 								//其他消息：ClearAllPlan、ClearNormalPlan、ClearTempPlan。。。	
 								Log.i(TAG,"command Name :"+ci.Name);
@@ -219,13 +226,26 @@ public class Event {
 						}
 					} else {
 						Log.e(TAG,"ParseAic fail:"+response.Info.Code);
+						response.Info.Code="服务器上无数据可下载!";
 					}
-					Message msg = new Message();
-					msg.what = 0;
+					Message msg = handler.obtainMessage(NetWork_MSG_Tips);
 					msg.obj = response.Info.Code!=null?response.Info.Code:"服务器下发的状态为空";
 					handler.sendMessage(msg);
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时2";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常";
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 				} else {
@@ -254,8 +274,9 @@ public class Event {
 							+ Normaldata.T_Line.T_Line_Content_Guid);
 					final RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 					String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) + Normaldata.T_Line.T_Line_Guid + ".txt";
+					boolean isFileExist= SystemUtil.isFileExist(filePath);
 					boolean isExit = dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
-					if (!isExit) {
+					if(!isFileExist){
 						try {
 							SystemUtil.writeFileToSD(filePath, planjson);
 						} catch (IOException e) {
@@ -273,15 +294,22 @@ public class Event {
 								isSpecialLine);
 
 						if (handler != null) {
-							handler.sendEmptyMessage(LocalData_Init_Success);
+							Message msg = handler.obtainMessage(LocalData_Init_Success);
+							msg.obj="本地数据更新成功!";
+							handler.sendMessage(msg);
 						}
-					} else {
+					}else {
 						 filePath=filePath+"temp";
 						 //绝对路径+*+日常巡检总数+*+特殊巡检总数+*+巡检路线guid
 						 final String StrObj=filePath+"*"+Normaldata.getItemCounts(0, 0, false, true) +"*"+Normaldata.getItemCounts(0, 0, true, true)
 								 +"*"+Normaldata.T_Line.T_Line_Guid;
 
-						 
+						 try {
+							SystemUtil.writeFileToSD(filePath, planjson);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
 						 msg.obj=StrObj;
 						 handler.sendMessage(msg);

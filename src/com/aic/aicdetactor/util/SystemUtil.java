@@ -325,6 +325,15 @@ public class  SystemUtil {
 			  out.write(text);
 			  out.close();
 			}
+	public static boolean  isFileExist(String canonicalFilename) 
+			
+			{
+			  File file = new File (canonicalFilename);
+			  if(file.exists()){
+				  return true;
+			  }
+			  return false;
+			}
 	
 	public static String bytesToHexString(byte[] src){  
         StringBuilder stringBuilder = new StringBuilder("");  
