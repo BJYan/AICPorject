@@ -105,13 +105,6 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		Button mSendButton = (Button)BlueToothView.findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
-//		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-//		getActivity().registerReceiver(mReceiver, filter);
-//		mBluetoothAdapter.startDiscovery();
-		
-		mBondedDevices = getBondedDevices();
-		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), mBondedDevices,mHandle);
-		DevBindedlist.setAdapter(btBindDevListAdapter);
 		
 		mAllBTDevices.clear();
 		blueToothDevListAdapter.notifyDataSetChanged();
@@ -138,14 +131,14 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		//scanLeDevice(true);
 		
-		mBondedDevices = getBondedDevices();
-		btBindDevListAdapter.notifyDataSetChanged();
-		//btBindDevListAdapter.notifyDataSetInvalidated();
-		
 		// Register the BroadcastReceiver
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		getActivity().registerReceiver(mReceiver, filter);
 		mBluetoothAdapter.startDiscovery();
+		mBondedDevices = getBondedDevices();
+		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), mBondedDevices,mHandle);
+		DevBindedlist.setAdapter(btBindDevListAdapter);
+		
 		showProgressBar();
 	}
 	
@@ -189,7 +182,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	        String action = intent.getAction();
 	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	            mAllBTDevices.add(device);
+	            if(device.getBondState()==BluetoothDevice.BOND_NONE) mAllBTDevices.add(device);
 	            blueToothDevListAdapter.notifyDataSetChanged();
 	        }
 	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){

@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +31,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BlueToothRenameActivity extends CommonActivity implements OnClickListener,
 		AltDialogOKListener,AltDialogCancelListener{
@@ -52,14 +54,21 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
                 switch (device.getBondState()) {  
                 case BluetoothDevice.BOND_BONDING:  
-                    Log.d(TAG, "正在配对......");  
+                    Log.d(TAG, "正在配对......");
+                    Toast.makeText(BlueToothRenameActivity.this, "正在绑定请稍后…", Toast.LENGTH_SHORT).show();
                     break;  
                 case BluetoothDevice.BOND_BONDED:  
                     Log.d(TAG, "完成配对");  
                     //connect(device);//连接设备  
+        			isbinded = true;
+        			bindBtn.setText("取消绑定");
+        			Toast.makeText(BlueToothRenameActivity.this, "绑定成功！", Toast.LENGTH_SHORT).show();
                     break;  
                 case BluetoothDevice.BOND_NONE:  
                     Log.d(TAG, "取消配对");  
+        			isbinded = false;
+        			bindBtn.setText("绑定");
+        			Toast.makeText(BlueToothRenameActivity.this, "已取消配对！！", Toast.LENGTH_SHORT).show();
                 default:  
                     break;  
                 }  
@@ -91,6 +100,21 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
 			bindBtn.setText("绑定");
 		}
 		//mBTControl = BluetoothLeControl.getInstance(this.getApplicationContext());
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+		registerReceiver(searchDevices, filter);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		unregisterReceiver(searchDevices);
 	}
 	
     private void connect(BluetoothDevice btDev) {  
@@ -187,7 +211,7 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
             	//mBTControl.setParamates(mHandle);
             	//mBTControl.Communication2Bluetooth(BluetoothLeControl.fta,BluetoothLeControl.fta.length);
             }
-			if(!isbinded) bindBtn.setText("绑定");
+			//if(!isbinded) bindBtn.setText("绑定");
 		} else {  
             if (Dev.getBondState() == BluetoothDevice.BOND_NONE) {  
                 //利用反射方法调用BluetoothDevice.createBond(BluetoothDevice remoteDevice);  
@@ -214,7 +238,7 @@ public class BlueToothRenameActivity extends CommonActivity implements OnClickLi
                 //connect(Dev);  
             	Log.d(TAG," BANDDING");
             } 
-			if(isbinded) bindBtn.setText("取消绑定");
+			//if(isbinded) bindBtn.setText("取消绑定");
 		}
 		dialog.dismiss();
 	}
