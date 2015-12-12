@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.StationActivity;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.check.StationActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.util.SystemUtil;
 

@@ -4,9 +4,6 @@ import com.aic.aicdetactor.util.SystemUtil;
 
 public class PartItemJsonUp
 {
- //   public String Fast_Record_Item_Name ;
-
-    //#if KEYREPLACEASTERISK
     public String Check_Content ;
     public long T_Measure_Type_Id ;
     public String T_Measure_Type_Code ;
@@ -72,7 +69,7 @@ public class PartItemJsonUp
     	if(Is3TypeData()>0){
     		VMSDir=XYZ;
     	}else{
-    		VMSDir=-1;
+    		VMSDir=0;
     	}
     		
     }
@@ -195,7 +192,7 @@ public class PartItemJsonUp
 	       SaveLab="";
 	       RecordLab="";
 	       SensorType=0;//始终为0
-	       VMSDir=-1;
+	       VMSDir=0;
 	      SignalType=-1;
 	      SampleFre=-1;
 	       SamplePoint=-1;
@@ -206,4 +203,51 @@ public class PartItemJsonUp
 	       T_Item_Abnormal_Grade_Id=-1;
 	       T_Item_Abnormal_Grade_Code="";
     }
+   
+   
+   public void Clone(PartItemJsonUp up){
+	   Check_Content=up.Check_Content;
+	      T_Measure_Type_Id=up.T_Measure_Type_Id;
+	      T_Measure_Type_Code=up.T_Measure_Type_Code;
+	      Unit =up.Unit;
+	      Start_Stop_Flag=up.Start_Stop_Flag;
+	      Up_Limit=up.Up_Limit;
+	      Middle_Limit=up.Middle_Limit;
+	      Down_Limit=up.Down_Limit;
+	      Emissivity=up.Emissivity;
+	      Hint_Status=up.Hint_Status;
+	      Axle_Number=up.Axle_Number;
+	      Check_Mode=up.Check_Mode;
+	      Extra_Information =up.Extra_Information;
+	      T_Maintenance_Status_Id=up.T_Maintenance_Status_Id;
+	      Fault_Diagnosis=up.Fault_Diagnosis;
+	      Default_RPM=up.Default_RPM;
+	      Is_Normal=up.Is_Normal;
+	      
+	       Item_Define=up.Item_Define;
+	      
+	       Start_Check_Datetime=up.Start_Check_Datetime;
+	       End_Check_Datetime=up.End_Check_Datetime;
+	       Total_Check_Time=up.Total_Check_Time;
+	       SaveLab=up.SaveLab;
+	       RecordLab=up.RecordLab;
+	       SensorType=up.SensorType;
+	       VMSDir=up.VMSDir;
+	      SignalType=up.SignalType;
+	      SampleFre=up.SampleFre;
+	       SamplePoint=up.SamplePoint;
+	       RPM=up.RPM;
+	       Diagnose_Conclusion=up.Diagnose_Conclusion;
+	       Remarks=up.Remarks;
+	       Is_Timeout=up.Is_Timeout;
+	       T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
+	       T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
+	       RPM=up.RPM;
+	       Diagnose_Conclusion=up.Diagnose_Conclusion;
+	       Remarks=up.Remarks;
+	       Is_Timeout=up.Is_Timeout;
+	       T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
+	       T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
+
+   }
 }

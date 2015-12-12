@@ -58,7 +58,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.aic.aicdetactor.check.StationActivity"
+            android:name="com.aic.aicdetactor.activity.StationActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
@@ -126,12 +126,12 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.aic.aicdetactor.check.TempPlanActivity"
+            android:name="com.aic.aicdetactor.activity.TempPlanActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
         </activity>
         
-        <activity android:name="com.aic.aicdetactor.check.PartItemActivity" 
+        <activity android:name="com.aic.aicdetactor.activity.PartItemActivity" 
             android:screenOrientation="portrait" 
             android:windowSoftInputMode="adjustPan|stateHidden"/>        
          <activity android:name="org.achartengine.GraphicalActivity" />
@@ -139,7 +139,7 @@
               android:screenOrientation="portrait" />
          
         <activity
-            android:name="com.aic.aicdetactor.check.ElectricParameteActivity"
+            android:name="com.aic.aicdetactor.activity.ElectricParameteActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
         </activity>
@@ -149,12 +149,12 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.aic.aicdetactor.check.SearchResultActivity"
+            android:name="com.aic.aicdetactor.activity.SearchResultActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait" >
         </activity>  
         <activity
-            android:name="com.aic.aicdetactor.check.SearchResultConActivity"
+            android:name="com.aic.aicdetactor.activity.SearchResultConActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait" >
         </activity>

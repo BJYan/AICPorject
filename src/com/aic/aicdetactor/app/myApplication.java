@@ -2,22 +2,15 @@ package com.aic.aicdetactor.app;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.widget.Toast;
 
-import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.PartItemJsonUp;
-import com.aic.aicdetactor.data.WaveDataTest;
-import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;

@@ -34,22 +34,11 @@ public class Setting {
 	 * 日常巡检后的文件存储位置
 	 */
 	public  static final String UploadJson="UploadJson/";
+		
 	/**
-	 * 巡检过程中产生的音频文件 例如 录音
+	 * 巡检过程中产生的振动 音频、图片 数据文件存储位置 
 	 */
-	public  static final String Audio="Audio/";
-	/**
-	 * 巡检过程中产生的拍照文件
-	 */
-	public  static final String Image="Image/";
-	/**
-	 * 巡检过程中产生的稳步文件
-	 */
-	public  static final String Text="Text/";
-	/**
-	 * 巡检过程中产生的振动数据文件
-	 */
-	public  static final String WaveData="WaveData/";
+	public  static final String Extral="Extral/";
 	
 	public Setting() {
 		mDataDirector = Environment.getExternalStorageDirectory() + RootPath;
@@ -79,29 +68,29 @@ public class Setting {
 			destDir = null;
 		}
 		
-		destDir = new File(mDataDirector + WaveData);
+		destDir = new File(mDataDirector + Extral);
 		if (!destDir.exists()) {
 			destDir.mkdirs();
 			destDir = null;
 		}
 
-		destDir = new File(mDataDirector + Audio);
-		if (!destDir.exists()) {
-			destDir.mkdirs();
-			destDir = null;
-		}
-
-		destDir = new File(mDataDirector + Image);
-		if (!destDir.exists()) {
-			destDir.mkdirs();
-			destDir = null;
-		}
-
-		destDir = new File(mDataDirector + Text);
-		if (!destDir.exists()) {
-			destDir.mkdirs();
-			destDir = null;
-		}
+//		destDir = new File(mDataDirector + Audio);
+//		if (!destDir.exists()) {
+//			destDir.mkdirs();
+//			destDir = null;
+//		}
+//
+//		destDir = new File(mDataDirector + Image);
+//		if (!destDir.exists()) {
+//			destDir.mkdirs();
+//			destDir = null;
+//		}
+//
+//		destDir = new File(mDataDirector + Text);
+//		if (!destDir.exists()) {
+//			destDir.mkdirs();
+//			destDir = null;
+//		}
 		
 	}
 //	public void setData_Root_Director(String director){
@@ -124,13 +113,13 @@ public class Setting {
 		String path = null;
 		switch(fileType){
 		case CommonDef.FILE_TYPE_PICTRUE:
-			path = mDataDirector +Image;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_AUDIO:
-			path = mDataDirector +Audio;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_TEXTRECORD:
-			path = mDataDirector +Text;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_OriginaJson:
 			path = mDataDirector +OriginalJson;
@@ -156,13 +145,13 @@ public class Setting {
 		String path = null;
 		switch(fileType){
 		case CommonDef.FILE_TYPE_PICTRUE:
-			path = mDataDirector +Image;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_AUDIO:
-			path = mDataDirector +Audio;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_TEXTRECORD:
-			path = mDataDirector +Text;
+			path = mDataDirector +Extral;
 			break;
 		case CommonDef.FILE_TYPE_OriginaJson:
 			path = mDataDirector +OriginalJson;
@@ -180,6 +169,11 @@ public class Setting {
 	public static String getUpLoadJsonPath(){
 		String path = Environment.getExternalStorageDirectory() + RootPath;
 		return path+UploadJson;
+	}
+	
+	public static String getExtralDataPath(){
+		String path = Environment.getExternalStorageDirectory() + RootPath;
+		return path+Extral;
 	}
 	
 	

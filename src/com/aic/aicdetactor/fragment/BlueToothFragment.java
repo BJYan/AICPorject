@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.NetTestActivity;
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.btwifi_setting_activity;
 
 public class BlueToothFragment extends Fragment implements OnClickListener{
 	private ListView mListView =null;

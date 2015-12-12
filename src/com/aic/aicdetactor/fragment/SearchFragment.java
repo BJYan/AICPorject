@@ -8,11 +8,12 @@ import java.util.Map;
 
 import com.aic.aicdetactor.CommonFragment;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.SearchResultActivity;
+import com.aic.aicdetactor.activity.SearchResultConActivity;
 import com.aic.aicdetactor.adapter.SearchAdapter;
 import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
 import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
-import com.aic.aicdetactor.check.SearchResultActivity;
-import com.aic.aicdetactor.check.SearchResultConActivity;
+
 
 
 import android.app.Fragment;

@@ -1,4 +1,4 @@
-package com.aic.aicdetactor.check;
+package com.aic.aicdetactor.activity;
 
 import com.aic.aicdetactor.R;
 

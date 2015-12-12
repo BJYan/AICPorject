@@ -3,7 +3,11 @@ package com.aic.aicdetactor.data;
 import java.util.List;
 
 
-
+/**
+ * 下载解析日常巡检数据类
+ * @author AIC
+ *
+ */
 public  class DownloadNormalRootData
 {
     public GlobalInfoJson GlobalInfo ;
@@ -17,12 +21,6 @@ public  class DownloadNormalRootData
     public List<WorkerInfoJson> T_Worker ;
   
 
-    public int getStationCount(){
-    	if(StationInfo!=null){
-    		return StationInfo.size();
-    	}
-    	return 0;
-    }
     /**
      * 
      * @param type; line 0;station 1; device 2

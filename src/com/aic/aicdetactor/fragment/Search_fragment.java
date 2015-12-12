@@ -31,11 +31,10 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
-import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
 
 
-public class Search_fragment extends Fragment  implements OnButtonListener,OnClickListener,OnCheckedChangeListener{
+public class Search_fragment extends Fragment  implements OnClickListener,OnCheckedChangeListener{
 
 
 	private Button mButtonFliter = null;
@@ -125,12 +124,6 @@ public class Search_fragment extends Fragment  implements OnButtonListener,OnCli
 //                    + " must implement OnMeasureListener");
 //        }
     }
-
-	@Override
-	public void OnButtonDown(int buttonId, PartItemListAdapter bundle,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	void initPopupWindowFliter(View parent) {
 		LayoutInflater inflater = (LayoutInflater) this.getActivity()

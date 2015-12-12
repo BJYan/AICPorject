@@ -69,60 +69,7 @@ public class DeviceItemJson//:ICloneable
     public String T_Worker_Guid ;
     public List<PartItemJsonUp> PartItem ;
     
-    /**
-     * 获取PartItemSize
-     * @return
-     */
-    public int getPartItemSize(){
-    	if(PartItem!=null){
-    		return PartItem.size();
-    	}
-    	return 0;
-    }
     
-    public static DeviceItemJson clone(DeviceItemJson device){
-    	DeviceItemJson DeviceClone = new DeviceItemJson();
-    	DeviceClone.	Asset_Number	=	device.	Asset_Number;
-    	DeviceClone.	Installation_Site	=	device.	Installation_Site	;
-    	DeviceClone.	Is_Device_Checked	=	device.	Is_Device_Checked	;
-    	DeviceClone.	Is_In_Place	=	device.	Is_In_Place	;
-    	DeviceClone.	Is_Omission_Check	=	device.	Is_Omission_Check	;
-    	DeviceClone.	Is_RFID_Checked	=	device.	Is_RFID_Checked	;
-    	DeviceClone.	Is_Special_Inspection	=	device.	Is_Special_Inspection	;
-    	DeviceClone.	Item_Define	=	device.	Item_Define	;
-    	DeviceClone.	Inspection_Type	=	device.	Inspection_Type	;
-    	DeviceClone.	Status_Array	=	device.	Status_Array	;
-    	DeviceClone.	Guid	=	device.	Guid	;
-    	DeviceClone.	Manufacturer	=	device.	Manufacturer	;
-    	DeviceClone.	Material	=	device.	Material	;
-    	DeviceClone.	Model	=	device.	Model	;
-    	DeviceClone.	Name	=	device.	Name	;
-    	DeviceClone.	Person_In_Charge	=	device.	Person_In_Charge	;
-    	DeviceClone.	Precision	=	device.	Precision	;
-    	DeviceClone.	Price	=	device.	Price	;
-    	DeviceClone.	Processing_Size	=	device.	Processing_Size	;
-    	DeviceClone.	Rated_Power	=	device.	Rated_Power	;
-    	DeviceClone.	Rated_RPM	=	device.	Rated_RPM	;
-    	DeviceClone.	Rated_Voltage	=	device.	Rated_Voltage	;
-    	DeviceClone.	Rated_Current	=	device.	Rated_Current	;
-    	DeviceClone.	Remarks	=	device.	Remarks	;
-    	DeviceClone.	Safety_Coefficient	=	device.	Safety_Coefficient	;
-    	DeviceClone.	Second_Maintenance	=	device.	Second_Maintenance	;
-    	DeviceClone.	Serial_Number	=	device.	Serial_Number	;
-    	DeviceClone.	Start_Check_Datetime	=	device.	Start_Check_Datetime	;
-    	DeviceClone.	Status	=	device.	Status	;
-    	DeviceClone.	Third_Maintenance	=	device.	Third_Maintenance	;
-    	DeviceClone.	Total_Check_Time	=	device.	Total_Check_Time	;
-    	DeviceClone.	Vendor	=	device.	Vendor	;
-    	DeviceClone.	T_Worker_Class_Group	=	device.	T_Worker_Class_Group	;
-    	DeviceClone.	T_Worker_Class_Shift	=	device.	T_Worker_Class_Shift	;
-    	DeviceClone.	T_Worker_Number	=	device.	T_Worker_Number	;
-    	DeviceClone.	T_Worker_Name	=	device.	T_Worker_Name	;
-    	DeviceClone.	T_Worker_Guid	=	device.	T_Worker_Guid	;
-    	DeviceClone.	PartItem	=	device.	PartItem	;
-
-    	return DeviceClone;
-    }
     /**
      * 设置巡检开始时间
      */

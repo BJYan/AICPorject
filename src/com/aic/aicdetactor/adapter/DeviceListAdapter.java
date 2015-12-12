@@ -24,9 +24,9 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
+import com.aic.aicdetactor.activity.PartItemActivity;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
-import com.aic.aicdetactor.check.PartItemActivity;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
@@ -134,12 +134,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 					@Override
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
-					//	mChildrenList.get(arg0).get(arg1)
-						//拉起测量等数据的检测界面
-						//TextView typeT= (TextView) arg0.findViewById(R.id.type);
-						//获取测试项的类型
-						//int itype = Integer.valueOf(typeT.getText().toString());
-						//根据类型选择显示不同的UI，调用界面类似于PartItemActivity:switchFragment函数
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_In_Place!=1){
 						
 						Intent intent = new Intent();
@@ -319,9 +313,14 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	
 	//如果是 在位管理的话 ，需要在partitem数组中新增添一项partitem
 	void addIs_InPlacePartItem(int deviceIndex){
-		PartItemJsonUp partitem = new PartItemJsonUp();
+		PartItemJsonUp InPlacePartitem = new PartItemJsonUp();		
+		InPlacePartitem.Start_Check_Datetime=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);		
+		InPlacePartitem.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;
+		InPlacePartitem.Extra_Information="到位";
+		InPlacePartitem.T_Item_Abnormal_Grade_Id=2;
+		InPlacePartitem.T_Item_Abnormal_Grade_Code="01";
+		InPlacePartitem.Item_Define="";			
 		
-		partitem.Start_Check_Datetime=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Device_Checked=1;
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_RFID_Checked=1;
 		if(app.isTest){
@@ -332,12 +331,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		}
 		if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem !=null
 				&&app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.size()>0){
-			List<PartItemJsonUp> PartItem = app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem;
-			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.removeAll(PartItem);
-			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.add(partitem);
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.clear();
+			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem.add(InPlacePartitem);
 		}else{
 			List<PartItemJsonUp>list = new ArrayList<PartItemJsonUp>();
-			list.add(partitem);
+			list.add(InPlacePartitem);
 			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem=list;
 		}
 		

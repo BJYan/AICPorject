@@ -2,9 +2,6 @@ package com.aic.aicdetactor.data;
 
 public class PartItemJson
 {
- //   public String Fast_Record_Item_Name ;
-
-    //#if KEYREPLACEASTERISK
     public String Check_Content ;
     public long T_Measure_Type_Id ;
     public String T_Measure_Type_Code ;
@@ -40,11 +37,7 @@ public class PartItemJson
     public int T_Maintenance_Status_Id ;
     public String Fault_Diagnosis ;
     public float Default_RPM ;
-    //#else
     public String PartItemData ;
-    //#endif
-    //  
-   
     
     public boolean IsNoNeedHint(){
     	return Hint_Status==2?true:false;
@@ -69,8 +62,6 @@ public class PartItemJson
 	      T_Maintenance_Status_Id=0 ;
 	      Fault_Diagnosis="" ;
 	      Default_RPM=0 ;
-	    //#else
 	      PartItemData="" ;
-	    //#endif
     }
 }

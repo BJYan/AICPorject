@@ -8,7 +8,6 @@ public class KEY {
 	public static String KEY_STATIONINFO = "StationInfo";
 	public static String KEY_WORKERINFO = "WorkerInfor";
 	public static String KEY_TRUNINFO = "TurnInfo";
-	//public static String KEY_STATIONITEM = "StationItem";
 	public static String KEY_DEVICEITEM = "DeviceItem";
 	public static String KEY_DEVICENAME = "DeviceName";
 	public static String KEY_PARTITEM = "PartItem";

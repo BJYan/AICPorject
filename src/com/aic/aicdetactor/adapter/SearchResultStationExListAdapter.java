@@ -94,7 +94,7 @@ public class SearchResultStationExListAdapter extends BaseExpandableListAdapter 
 	@Override
 	public int getChildrenCount(int arg0) {
 		// TODO Auto-generated method stub
-		return app.mLocalSearchLineJsonData.getStationCount();
+		return app.mLocalSearchLineJsonData.StationInfo.size();
 	}
 
 	@Override

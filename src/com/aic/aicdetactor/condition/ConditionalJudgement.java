@@ -571,4 +571,25 @@ public  static boolean Is_NoTimeout(RoutePeroid m_RoutePeroid)
 		 
 	 return nRe;
  }
+ 
+ class NormalStatus{
+		
+		public static final String MinCode="00";
+		public static final String NormalCode= "01";
+		public static final String MaxCode="09";
+		
+	};
+	
+	//Code来自PartItem。T_Item_Abnormal_Grade_Code；
+	//返回值赋给PartItem.Is_Normal；
+	public static int  GetRusultStatus(String Code)
+	{
+		int Normal=-1;
+		if(NormalStatus.NormalCode.equals(Code))
+			Normal=1;
+		else
+			Normal=0;
+		;
+		return Normal;
+	}
 }

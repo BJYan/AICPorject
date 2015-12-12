@@ -47,14 +47,14 @@ import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
+import com.aic.aicdetactor.activity.ElectricParameteActivity;
 import com.aic.aicdetactor.adapter.CommonViewPagerAdapter;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
-import com.aic.aicdetactor.check.ElectricParameteActivity;
-import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
@@ -70,7 +70,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  * @author AIC
  *
  */
-public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnButtonListener{
+public class MeasureVibrateFragment extends MeasureBaseFragment{
 
 	protected static final int VIBRATE_COUNTDOWN = 0;
 	private ListView mListView = null;
@@ -401,7 +401,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		
 		
 		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
-		
+		FengValue=200;
 		if(mAnalysis.isValidate()){
 			
 			y_FengValue.setText("峰值:"+FengValue);
@@ -527,30 +527,36 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     	double MAX = super.mPartItemData.Up_Limit;
     	double MID = super.mPartItemData.Middle_Limit;
     	double LOW = super.mPartItemData.Down_Limit;
-    	int isNormal=0;
     	int AbnormalId=0;
-    	String Abnormalcode="-1";
     	
+    	isRecultNormal = false;
     	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
-    		isNormal=AbnormalConst.Abnormal;
     		AbnormalId=AbnormalConst.JingGao_Id;
     		Abnormalcode=AbnormalConst.JingGao_Code;
     		
     	}else if((mCheckValue >= LOW) && (mCheckValue<MID)){
-    		isNormal=AbnormalConst.Normal;
     		AbnormalId=AbnormalConst.ZhengChang_Id;
     		Abnormalcode=AbnormalConst.ZhengChang_Code;
+    		isRecultNormal = true;
     	}else if(mCheckValue <LOW){
-    		isNormal=AbnormalConst.Abnormal;
     		AbnormalId=AbnormalConst.WuXiao_Id;
     		Abnormalcode=AbnormalConst.WuXiao_Code;
     	}else if(mCheckValue>=MAX){
-    		isNormal=AbnormalConst.Abnormal;
     		AbnormalId=AbnormalConst.WeiXian_Id;
     		Abnormalcode=AbnormalConst.WeiXian_Code;
     	}    	
-		
-    	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId,0,0);
+		if(!isRecultNormal){
+			ParamsPartItemFragment params = new ParamsPartItemFragment();
+			params.TypeCode=11;
+			params.IsNormal=false;
+			params.RecordLab=SystemUtil.createGUID();
+			params.SaveLab=SystemUtil.createGUID();
+			params.ValidValue=mCheckValue;
+			params.AbnormalCode=Abnormalcode;
+			params.object=mAnalysis.getWaveByteData();
+			adapter.addNewMediaPartItem(params);
+		}
+    	adapter.saveData(String.valueOf(mCheckValue),Abnormalcode,AbnormalId,CaiYangShu,CAiYangPinLv);
     }
 
     int CaiYangShu=0;
@@ -572,8 +578,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				startTimer();
 			}
 			break;
-		}
-		
+		}		
 	}
 
 	void getDataFromBLE(){
@@ -742,6 +747,13 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			tabHost.setCurrentTab(arg0);
 		}
 		
+	}
+
+	@Override
+	public void addNewMediaPartItem(ParamsPartItemFragment params,PartItemListAdapter object) {
+		// TODO Auto-generated method stub
+		//保存音频 ，图片信息,波形数据在saveData中保存
+		object.addNewMediaPartItem(params);
 	}
 	
 }

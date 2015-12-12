@@ -1,19 +1,5 @@
 package com.aic.aicdetactor.fragment;
 
-import java.io.IOException;
-
-import com.aic.aicdetactor.adapter.PartItemListAdapter;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
-import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.DeviceItemJson;
-import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.data.PartItemJson;
-import com.aic.aicdetactor.data.PartItemJsonUp;
-import com.aic.aicdetactor.util.SystemUtil;
-import com.google.gson.Gson;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,20 +9,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public abstract class MeasureBaseFragment extends Fragment {
+import com.aic.aicdetactor.Interface.OnButtonListener;
+import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.PartItemJsonUp;
 
-	//int mPartItemIndex=0;
+public abstract class MeasureBaseFragment extends Fragment implements OnButtonListener  {
+
 	protected PartItemJsonUp mPartItemData=null;
 	protected myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
-	//protected DeviceItemJson mDeviceItemData=null;
+	/**
+	 * 仅为显示只用
+	 */
+	protected int PartItemIndex=0;
 	BluetoothLeControl BLEControl = null;
-   //StringBuffer mStrReceiveData = new StringBuffer();
-   //String mStrLastReceiveData="";
 	final int MAX_FAILED_TIMES=3;
    boolean mCanSendCMD=false;
-   
+   boolean isRecultNormal=false;
    boolean bStartReceiveData=false;
+   String Abnormalcode="-1";
    ReceivedDataAnalysis mAnalysis =new ReceivedDataAnalysis();
 	/**
 	 * 数据的类型
@@ -48,12 +43,9 @@ public abstract class MeasureBaseFragment extends Fragment {
 		Log.i(TAG,"onCreate()");
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		//mPartItemIndex =getArguments().getInt("partItemIndex");
 		mType = getArguments().getInt("type");
 		app =(myApplication) MeasureBaseFragment.this.getActivity().getApplication();
-		mPartItemData = app.gCurPartItemList.get(getArguments().getInt("partItemIndex"));//mDeviceItemData.PartItem.get(mPartItemIndex);
-		int m=0;
-		m++;
+		mPartItemData = app.gCurPartItemList.get(getArguments().getInt("partItemIndex"));
 		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
 		if(shouldConnectBLE()){
 			if(app.mCurLinkedBLEAddress!=null &&app.mCurLinkedBLEAddress.length()<2 &&!app.mBLEIsConnected ){
@@ -81,8 +73,7 @@ public abstract class MeasureBaseFragment extends Fragment {
 	
 	//测量项名称
 	protected String getPartItemName(){
-		return mPartItemData.Check_Content + "类型："+mPartItemData.T_Measure_Type_Code ;
-		//return mPartItemData.Check_Content + "类型："+mPartItemData.T_Measure_Type_Code +"\t\t"+mPartItemIndex +"/"+app.gCurPartItemList.size();
+		return mPartItemData.Check_Content + "\t\t\n类型："+mPartItemData.T_Measure_Type_Code +"\n\t"+PartItemIndex+"/"+app.gCurPartItemList.size();
 	}
 	
 	
@@ -94,7 +85,6 @@ public abstract class MeasureBaseFragment extends Fragment {
 		{
 		return "";
 		}
-		//return mPartItemData.Check_Content + "类型："+mPartItemData.T_Measure_Type_Code +"\t\t"+mPartItemIndex +"/"+app.gCurPartItemList.size();
 	}
 	
 	//数据有效范围，上限
@@ -123,6 +113,15 @@ public abstract class MeasureBaseFragment extends Fragment {
 	}
 	
 	
+
+	@Override
+	public void OnButtonDown(int buttonId, PartItemListAdapter object,
+			String Value, int measureOrSave, int CaiYangDian, int CaiyangPinLv) {
+		// TODO Auto-generated method stub
+		if(buttonId>0){
+			
+		}
+	}
 
 	@Override
 	public void onPause() {

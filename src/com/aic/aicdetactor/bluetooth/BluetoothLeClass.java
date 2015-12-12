@@ -17,9 +17,6 @@
 package com.aic.aicdetactor.bluetooth;
 
 import java.util.List;
-import java.util.UUID;
-
-import com.aic.aicdetactor.util.SystemUtil;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -31,6 +28,8 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
+
+import com.aic.aicdetactor.util.SystemUtil;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a

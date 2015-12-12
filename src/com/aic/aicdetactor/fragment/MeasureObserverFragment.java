@@ -28,8 +28,8 @@ import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.util.MLog;
@@ -39,7 +39,7 @@ import com.aic.aicdetactor.util.MLog;
  * @author AIC
  *
  */
-public class MeasureObserverFragment extends MeasureBaseFragment implements OnButtonListener{
+public class MeasureObserverFragment extends MeasureBaseFragment{
 
 	
 	//UI
@@ -224,7 +224,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 Value=mSpinnerData.get(0);;
 			String code = Value.substring(mSelectValue.length());
 			int id = AbnormalInfo.getIdByCode(app.mLineJsonData.T_Item_Abnormal_Grade, code);
-			adapter.saveData(mSelectValue, id == 2 ? 1 : 0, code, id,0,0);
+			adapter.saveData(mSelectValue, code, id,0,0);
 		}
 			break;
 		case PartItemContact.MEASURE_DATA:
@@ -308,6 +308,11 @@ Value=mSpinnerData.get(0);;
 		}else{
 			//SmCallback.OnClick(mExternalInfoEditText.getText().toString());
 		}
+	}
+	@Override
+	public void addNewMediaPartItem(ParamsPartItemFragment params,PartItemListAdapter object) {
+		// TODO Auto-generated method stub
+		object.addNewMediaPartItem(params);
 	}
 
 //	@Override

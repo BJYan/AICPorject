@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.check.SearchResultActivity;
+import com.aic.aicdetactor.activity.SearchResultActivity;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.setting.Setting;

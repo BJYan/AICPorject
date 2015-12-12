@@ -1,7 +1,7 @@
 package com.aic.aicdetactor.media;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.check.TempPlanActivity;
+import com.aic.aicdetactor.activity.TempPlanActivity;
 import com.aic.aicdetactor.util.MLog;
 
 import android.app.Activity;

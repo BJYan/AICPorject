@@ -30,15 +30,15 @@ import android.widget.Toast;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
+import com.aic.aicdetactor.activity.PartItemActivity;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
-import com.aic.aicdetactor.check.PartItemActivity;
-import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
+import com.aic.aicdetactor.comm.CommonDef.checkUnit_Type;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
@@ -50,7 +50,7 @@ import com.aic.aicdetactor.util.SystemUtil;
  * @author AIC
  *
  */
-public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements OnButtonListener{
+public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 
 	protected static final int TEMP_COUNTDOWN = 1000;
 	//UI
@@ -145,7 +145,8 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		startCountdownTimer();
 	}
 	
-	void startCountdownTimer(){		
+	void startCountdownTimer(){	
+		if(mType==0 || mType==6){
 		if(mCountdownTimerTask==null){
 			mCountdownTimerTask = new TimerTask(){
 				
@@ -163,9 +164,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			mCountdownTimer = new Timer();
 			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
 			}
+		}
 	}
 	
 	void closeCountdownTimer(){
+		if(mType==0 || mType==6){
 		if(mCountdownTimer!=null){
 			mCountdownTimer.cancel();
 			mCountdownTimer=null;
@@ -174,6 +177,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 		if(mCountdownTimerTask!=null){
 			mCountdownTimerTask.cancel();
 			mCountdownTimerTask=null;
+		}
 		}
 	}
     
@@ -374,12 +378,12 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			
     	
     };
-	Runnable runnable = new Runnable() {
-		@Override
-		public void run() {
-			getDataFromBLE();
-		}
-	}; 
+//	Runnable runnable = new Runnable() {
+//		@Override
+//		public void run() {
+//			getDataFromBLE();
+//		}
+//	}; 
     
     public interface OnTemperatureMeasureListener{
     	
@@ -403,15 +407,13 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     void savePartItemData(PartItemListAdapter adapter){
     	  int abnormalId=0;
           String abnormalCode="";
-          int isNormal=-1;
           
     	if(adapter.getCurrentPartItemType()==checkUnit_Type.ENTERING
     			||adapter.getCurrentPartItemType()==checkUnit_Type.METER_READING){
     		String[]code =this.getResources().getStringArray(R.array.enter_abnormal_code);
     		abnormalCode= code[SpinnerSelectedIndex];
     		abnormalId= Integer.valueOf(abnormalCode)+1;
-    		isNormal= AbnormalConst.ZhengChang_Code.equals(abnormalCode)?1:0;
-    		adapter.saveData(mEditTextValue.getText().toString(),isNormal,abnormalCode,abnormalId,0,0);
+    		adapter.saveData(mEditTextValue.getText().toString(),abnormalCode,abnormalId,0,0);
     	}else if(adapter.getCurrentPartItemType()==checkUnit_Type.TEMPERATURE
     			|| adapter.getCurrentPartItemType()==checkUnit_Type.ROTATION_RATE){
     	final double  MAX = super.mPartItemData.Up_Limit;;
@@ -420,24 +422,20 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
       
     	
     	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
-    		isNormal=AbnormalConst.Abnormal;
     		abnormalId=AbnormalConst.JingGao_Id;
     		abnormalCode=AbnormalConst.JingGao_Code;
     	}else if((mCheckedValue >= LOW) && (mCheckedValue<MID)){
-    		isNormal=AbnormalConst.Normal;
     		abnormalId=AbnormalConst.ZhengChang_Id;
     		abnormalCode=AbnormalConst.ZhengChang_Code;
     	}else if(mCheckedValue <LOW){
-    		isNormal=AbnormalConst.Abnormal;
     		abnormalId=AbnormalConst.WuXiao_Id;
     		abnormalCode=AbnormalConst.WuXiao_Code;
     	}else if(mCheckedValue>=MAX){
-    		isNormal=AbnormalConst.Abnormal;
     		abnormalId=AbnormalConst.WeiXian_Id;
     		abnormalCode=AbnormalConst.WeiXian_Code;
     	}
     	
-    	adapter.saveData(String.valueOf(mCheckedValue),isNormal,abnormalCode,abnormalId,0,0);
+    	adapter.saveData(String.valueOf(mCheckedValue),abnormalCode,abnormalId,0,0);
     	}
     }
 	@Override
@@ -500,4 +498,9 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 //		Log.d("atest", "温度2222   saveCheckValue()");
 //		super.setPartItemData("温度2222");
 //	}
+	@Override
+	public void addNewMediaPartItem(ParamsPartItemFragment params,PartItemListAdapter object) {
+		// TODO Auto-generated method stub
+		object.addNewMediaPartItem(params);
+	}
 }

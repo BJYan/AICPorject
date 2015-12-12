@@ -1,10 +1,11 @@
-package com.aic.aicdetactor;
+package com.aic.aicdetactor.nouse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.comm.Bluetooth;
 import com.aic.aicdetactor.service.BluetoothService;
 

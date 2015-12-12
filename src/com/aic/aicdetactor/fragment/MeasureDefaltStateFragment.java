@@ -19,7 +19,7 @@ import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.check.PartItemActivity.OnButtonListener;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
 
@@ -28,7 +28,7 @@ import com.aic.aicdetactor.data.KEY;
  * @author AIC
  *
  */
-public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements OnButtonListener{
+public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 
 	//测量温度结果对应的文字描述
 	private TextView mDeviceNameTextView = null;
@@ -133,51 +133,48 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
-		//开始测量
-		if("".equals(Value)){
-			Value="Measurement";
-		}
-		switch(measureOrSave){
-		case PartItemContact.MEASURE_DATA:
-			break;
-		case PartItemContact.SAVE_DATA:
-		{
-			int AbnormalId=-1;
-			String AbnormalCode="";
-			int IsNormal =0;
-			Value="";
-			int i=0;
-			for(int m:mCheckedIndex){
-				if(m==1){
-					if(Value.length()!=0){
-						Value = Value+"/"+mOrigObseverList[i].toString();
-					}else{
-						Value = mOrigObseverList[i].toString();
+		
+			//开始测量
+			if("".equals(Value)){
+				Value="Measurement";
+			}
+			switch(measureOrSave){
+			case PartItemContact.MEASURE_DATA:
+				break;
+			case PartItemContact.SAVE_DATA:
+			{
+				int AbnormalId=-1;
+				String AbnormalCode="";
+				Value="";
+				int i=0;
+				for(int m:mCheckedIndex){
+					if(m==1){
+						if(Value.length()!=0){
+							Value = Value+"/"+mOrigObseverList[i].toString();
+						}else{
+							Value = mOrigObseverList[i].toString();
+						}
+						
 					}
 					
 				}
-				
+				//没选任何选项时,设置信息为normal
+				if(Value==""){
+					Value=this.getActivity().getString(R.string.normal);
+					AbnormalId=AbnormalConst.ZhengChang_Id;
+					AbnormalCode=AbnormalConst.ZhengChang_Code;
+				}else{
+					AbnormalCode="-1";
+					AbnormalId=-1;
+				}
+				adapter.saveData(Value,AbnormalCode,AbnormalId,0,0);
 			}
-			//没选任何选项时,设置信息为normal
-			if(Value==""){
-				Value=this.getActivity().getString(R.string.normal);
-				AbnormalId=AbnormalConst.ZhengChang_Id;
-				AbnormalCode=AbnormalConst.ZhengChang_Code;
-				IsNormal=AbnormalConst.Normal;
-			}else{
-				
-//				AbnormalCode =  Value.substring(mSelectValue.length());
-//				AbnormalId=AbnormalInfo.getId(app.mLineJsonData.T_Item_Abnormal_Grade,code);
-				
-				
-				AbnormalCode="-1";
-				AbnormalId=-1;
-				IsNormal=AbnormalConst.Abnormal;
-			}
-			adapter.saveData(Value,IsNormal,AbnormalCode,AbnormalId,0,0);
-		}
-			break;
-		}
-		
+				break;
+			}	
+	}
+	@Override
+	public void addNewMediaPartItem(ParamsPartItemFragment params,PartItemListAdapter object) {
+		// TODO Auto-generated method stub
+		object.addNewMediaPartItem(params);
 	}
 }

@@ -1,25 +1,20 @@
 
-package com.aic.aicdetactor.check;
+package com.aic.aicdetactor.activity;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import net.micode.soundrecorder.SoundRecorder;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -31,7 +26,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -43,42 +37,31 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import net.micode.soundrecorder.SoundRecorder;
 
 import com.aic.aicdetactor.CommonActivity;
-import com.aic.aicdetactor.LoginActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Interface.OnButtonListener;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
-import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
-import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
-import com.aic.aicdetactor.data.RoutePeroid;
-import com.aic.aicdetactor.data.T_Device_Item;
-import com.aic.aicdetactor.dialog.CommonAlterDialog;
-import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
-import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.MeasureBaseFragment;
 import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment;
@@ -89,9 +72,8 @@ import com.aic.aicdetactor.fragment.MeasureTemperatureFragment;
 import com.aic.aicdetactor.fragment.MeasureTemperatureFragment.OnTemperatureMeasureListener;
 import com.aic.aicdetactor.fragment.MeasureVibrateFragment;
 import com.aic.aicdetactor.fragment.MeasureVibrateFragment.OnVibateListener;
-import com.aic.aicdetactor.media.MediaMainActivity;
-import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.media.SoundRecordActivity;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -519,7 +501,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   mHandler.sendMessage(mHandler.obtainMessage(MSG_NEXT));
 			   break;
 		   case MSG_ADD_NEW_PARTITEMDATA:
-			   addAPartItemData(msg.arg1,msg.arg2,msg.obj);
 			   break;
 		   case MSG_CHANGE_LISTVIEWDATA:
 			   revertPartItemDataList();
@@ -551,31 +532,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
    final int AUDIO_TYPE =2;
    final int TEXT_RECORD_TYPE =3;
    final int TEXT_ZHOU_TYPE =4;//轴数据
-	/**
-	 * 用户选择完启停机后（如"运行/停机/备用/其它"中的一项），要生成一个新的PartItemData：
-	 */
-   void addAPartItemData(int type,int zhouCounts,Object msgobject){
-	   switch(type){
-	   case RF_TYPE:
-		   break;
-	   case CAMERA_TYPE:
-	   {
-		
-	   }
-		   break;
-	   case AUDIO_TYPE:
-	   {
-	   }
-		   break;
-	   case TEXT_RECORD_TYPE:
-	   {
-	   }
-		   break;
-	   case TEXT_ZHOU_TYPE:
-		   break;
-	   }
-	  
-   }
+	
 	String mCheckValue = "测量数值";
 	
 	/**
@@ -654,7 +611,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	}
 	
 	
-	private Uri imageFilePath = null;
+	private Uri mediaFilePath = null;
 	BluetoothLeControl BLEControl = null;
 
    String[] direction_item={"X-Y","X-Z","Y-Z"};
@@ -701,10 +658,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				values.put(MediaStore.Images.Media.DESCRIPTION,
 						"this is description");
 				values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-				imageFilePath = getContentResolver().insert(
+				mediaFilePath = getContentResolver().insert(
 						MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-				MLog.Logd("test", "main_media imageFilePath is " + imageFilePath);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); // 这样就将文件的存储方式和uri指定到了Camera应用中
+				MLog.Logd("test", "main_media imageFilePath is " + mediaFilePath);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaFilePath); // 这样就将文件的存储方式和uri指定到了Camera应用中
 
 				startActivityForResult(intent, PartItemContact.PARTITEM_CAMERA_RESULT);
 			} else {
@@ -758,55 +715,50 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	
     void getMeasureValue(){
     	//获取当前系统时间作为开始测量时间
-		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.MEASURE_DATA,CaiYangDianIndex,CaiYangPinLvIndex);
+		mFragmentCallBack.OnButtonDown(OnButtonListener.ModifyData, mAdapterList,"",PartItemContact.MEASURE_DATA,CaiYangDianIndex,CaiYangPinLvIndex);
     }
     
     void saveValue(){
-		mFragmentCallBack.OnButtonDown(0, mAdapterList,"",PartItemContact.SAVE_DATA,0,0);
+		mFragmentCallBack.OnButtonDown(OnButtonListener.ModifyData, mAdapterList,"",PartItemContact.SAVE_DATA,0,0);
     }
     
     @Override  
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		MLog.Logd("test", "onActivityResult() 00" + requestCode + ",resultCode= "
 				+ resultCode);
+		ParamsPartItemFragment params = new ParamsPartItemFragment();
+		params.SaveLab=SystemUtil.createGUID();
+		params.RecordLab=SystemUtil.createGUID();
+		
 		if (requestCode == PartItemContact.PARTITEM_CAMERA_RESULT) {
-			mCheckValue = imageFilePath.toString();
-			
-				Bundle bundle = new Bundle();
-				bundle.putString("pictureUri", imageFilePath.toString());
-				mFragmentCallBack.OnButtonDown(0, mAdapterList,"",2,0,0);
-				// imageView.setImageBitmap(pic);
-				Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
-				msg.arg1 = CAMERA_TYPE;
-				mHandler.sendMessage(msg);
-			
-			
+			mCheckValue = mediaFilePath.toString();
+			params.Path=mediaFilePath.toString();
+			params.TypeCode=OnButtonListener.PictureDataType;
+			mFragmentCallBack.addNewMediaPartItem(params, mAdapterList);
 		}
 
-		if (PartItemContact.PARTITEM_NOTEPAD_RESULT == requestCode) {
-
-			SharedPreferences mSharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(getApplicationContext());
-			// 实例化SharedPreferences.Editor对象（第二步）
-			String timeStr = mSharedPreferences.getString(
-					CommonDef.PartItemData_Shered_info.Time,
-					SystemUtil.getSystemTime(0));
-
-			mCheckValue = mSharedPreferences.getString(
-					CommonDef.PartItemData_Shered_info.Content, "");
-
-			// 重新生成一个parItemData数据项目
-			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
-			msg.arg1 = TEXT_RECORD_TYPE;
-			mHandler.sendMessage(msg);
-		}
+//		if (PartItemContact.PARTITEM_NOTEPAD_RESULT == requestCode) {
+//
+//			SharedPreferences mSharedPreferences = PreferenceManager
+//					.getDefaultSharedPreferences(getApplicationContext());
+//			// 实例化SharedPreferences.Editor对象（第二步）
+//			String timeStr = mSharedPreferences.getString(
+//					CommonDef.PartItemData_Shered_info.Time,
+//					SystemUtil.getSystemTime(0));
+//
+//			mCheckValue = mSharedPreferences.getString(
+//					CommonDef.PartItemData_Shered_info.Content, "");
+//
+////			// 重新生成一个parItemData数据项目
+////			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
+////			msg.arg1 = TEXT_RECORD_TYPE;
+////			mHandler.sendMessage(msg);
+//		}
 
 		if (PartItemContact.PARTITEM_SOUNDRECORD_RESULT == requestCode) {
-			Intent intent = data;
-			mCheckValue = intent.getExtras().getString(CommonDef.AUDIO_PATH);
-			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
-			msg.arg1 = AUDIO_TYPE;
-			mHandler.sendMessage(msg);
+			params.TypeCode=OnButtonListener.AudioDataType;
+			params.Path=mediaFilePath.toString();
+      		mFragmentCallBack.addNewMediaPartItem(params, mAdapterList);
 		}
 
 	}  
@@ -831,16 +783,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		super.onAttachFragment(fragment);
 	}
 	
-	public interface OnButtonListener{
-		/**
-		 * 
-		 * @param buttonId
-		 * @param object
-		 * @param Value
-		 * @param measureOrSave 1 measure,2 save data
-		 */
-		void OnButtonDown(int buttonId,PartItemListAdapter object,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv);
-	};
+
 	
 
 	PopupWindow pw_Left = null;
@@ -952,31 +895,54 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		return mStatusList;
 		
 	}
-	private static final int RESULT_CODE = 1;
     @Override  
     public boolean onKeyDown(int keyCode, KeyEvent event) {  
         switch (keyCode) {  
    
         case KeyEvent.KEYCODE_VOLUME_DOWN:  
-        	Log.d(TAG,"+++++++++KEYCODE_VOLUME_DOWN++++++");
+        	{
+        		Log.d(TAG,"+++++++++KEYCODE_VOLUME_DOWN++++++");
+        	
         	Intent intent_down = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
-        	ContentValues values = new ContentValues(3);  
-        	values.put(MediaStore.Images.Media.DISPLAY_NAME, "testing");  
-        	values.put(MediaStore.Images.Media.DESCRIPTION, "this is description");  
-        	values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");  
-        	imageFilePath = PartItemActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
-        	MLog.Logd("test","main_media imageFilePath is "+imageFilePath);
-        	intent_down.putExtra(MediaStore.EXTRA_OUTPUT, imageFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
-        	//Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 			  
-        	startActivityForResult(intent_down, RESULT_CODE);  
-
+        	Setting setting = new Setting();
+        	String path = setting.getData_Media_Director(CommonDef.FILE_TYPE_PICTRUE);
+        	File outputImage = new File(path,SystemUtil.createGUID()+".jpg");
+            try {
+                if(outputImage.exists()) {
+                    outputImage.delete();
+                }
+                outputImage.createNewFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+            
+            mediaFilePath = Uri.fromFile(outputImage);
+        	MLog.Logd("test","main_media imageFilePath is "+mediaFilePath);
+        	intent_down.putExtra(MediaStore.EXTRA_OUTPUT, mediaFilePath); //这样就将文件的存储方式和uri指定到了Camera应用中  
+        	startActivityForResult(intent_down, PartItemContact.PARTITEM_CAMERA_RESULT);  
+        	}
             return true;  
    
         case KeyEvent.KEYCODE_VOLUME_UP:  
+        {
         	Log.d(TAG,"+++++++++KEYCODE_VOLUME_UP++++++");
         	Intent intent_up = new Intent();
         	intent_up.setClass(PartItemActivity.this, SoundRecorder.class);
-        	startActivity(intent_up);
+        	Setting setting = new Setting();
+        	String path = setting.getData_Media_Director(CommonDef.FILE_TYPE_AUDIO);
+        	File outputAudio = new File(path,SystemUtil.createGUID()+".audio");
+            try {
+                if(outputAudio.exists()) {
+                	outputAudio.delete();
+                }
+                outputAudio.createNewFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+            mediaFilePath = Uri.fromFile(outputAudio);
+            intent_up.putExtra(MediaStore.EXTRA_OUTPUT, mediaFilePath);
+        	startActivityForResult(intent_up,PartItemContact.PARTITEM_SOUNDRECORD_RESULT);
+        }
             return true;  
         case KeyEvent.KEYCODE_VOLUME_MUTE:  
         	Log.d(TAG,"+++++++++KEYCODE_VOLUME_MUTE++++++");
