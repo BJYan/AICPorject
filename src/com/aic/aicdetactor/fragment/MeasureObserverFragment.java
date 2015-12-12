@@ -158,7 +158,8 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 		mSpinnerData.add("请选择状态");
 		StatusNameArray = str.split(mSplitFlag);
 		for(int k=0;k<StatusNameArray.length;k++){
-			mSpinnerData.add(StatusNameArray[k].substring(0, StatusNameArray[k].length()-2));
+			int lenth=StatusNameArray[k].length()>2?StatusNameArray[k].length()-2:StatusNameArray[k].length();
+			mSpinnerData.add(StatusNameArray[k].substring(0, lenth));
 		}
 		return mSpinnerData;
 		
@@ -169,15 +170,15 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 	 * 当上一点时 ，需要显示上次选中的数据
 	 */
 	protected void displaySelectedData(){
-		String[] strArray=AdapterList.getCurOriPartItem().Extra_Information.split(mSplitFlag);
-		int i=0;
-		for(String oriStr:strArray){
-			i++;
-			if(oriStr.substring(0, oriStr.length()-2).equals(AdapterList.getCurrentPartItem().Extra_Information)){
-				break;
-			}			
-		}
-		mSpinner.setSelection(i);
+//		String[] strArray=AdapterList.getCurOriPartItem().Extra_Information.split(mSplitFlag);
+//		int i=0;
+//		for(String oriStr:strArray){
+//			i++;
+//			if(oriStr.substring(0, oriStr.length()-2).equals(AdapterList.getCurrentPartItem().Extra_Information)){
+//				break;
+//			}			
+//		}
+//		mSpinner.setSelection(i);
 	}
     @Override
 	protected void initDisplayData() {
@@ -211,7 +212,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:
  {
-			Value = "";
+		//	Value = "";
 
 			String[] oriArrary = AdapterList.getCurOriPartItem().Extra_Information.split("\\/");
 			for (String str : oriArrary) {
@@ -220,10 +221,10 @@ public class MeasureObserverFragment extends MeasureBaseFragment implements OnBu
 					break;
 				}
 			}
-
+Value=mSpinnerData.get(0);;
 			String code = Value.substring(mSelectValue.length());
 			int id = AbnormalInfo.getIdByCode(app.mLineJsonData.T_Item_Abnormal_Grade, code);
-			adapter.saveData(mSelectValue, id == 2 ? 1 : 0, code, id);
+			adapter.saveData(mSelectValue, id == 2 ? 1 : 0, code, id,0,0);
 		}
 			break;
 		case PartItemContact.MEASURE_DATA:

@@ -174,7 +174,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment  implements
 				AbnormalId=-1;
 				IsNormal=AbnormalConst.Abnormal;
 			}
-			adapter.saveData(Value,IsNormal,AbnormalCode,AbnormalId);
+			adapter.saveData(Value,IsNormal,AbnormalCode,AbnormalId,0,0);
 		}
 			break;
 		}

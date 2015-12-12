@@ -209,6 +209,7 @@ class InitJsonDataThread extends Thread{
 			MLog.Logd(TAG, " InitData()>> "+g);
 			try {
 				if(app.getLineDataClassifyFromOneFile(mIsSpecial)==null){
+					mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
 					return;
 				};
 				mStationDisplayDataList.clear();

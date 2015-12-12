@@ -111,6 +111,8 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	private TextView mDownMacTextView = null;
 	private TextView mUpIPTextView = null;
 	private TextView mDownIPTextView = null;
+	
+	private ListView mDownLoadListView;
 	List<View> listViews;
 	TabHost tabHost;
 	ViewPager viewPager;
@@ -150,6 +152,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					
 					Toast.makeText(getActivity().getApplicationContext(),(String)(msg.obj),
 							Toast.LENGTH_SHORT).show();
+					mDLLineAdapter = new SpinnerAdapter(DownLoadFragment.this.getActivity().getApplicationContext(),getDownLoadRouteInfo());
+					mDownLoadListView.setAdapter(mDLLineAdapter);
+					mDownLoadListView.setClickable(false);
+					
 					mDLLineAdapter.setListData(getDownLoadRouteInfo());
 					mDLLineAdapter.notifyDataSetChanged();
 					break;
@@ -546,12 +552,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				else mDown_Button.setVisibility(View.VISIBLE);
 			}
 		});
-		ListView listView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
+		mDownLoadListView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
 		mDLLineAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(),getDownLoadRouteInfo());
-//		listView.setAdapter(new ArrayAdapter<String>(this.getActivity(),
-//                android.R.layout.simple_list_item_1, getDownLoadRouteInfo()));
-		listView.setAdapter(mDLLineAdapter);
-		listView.setClickable(false);
+		mDownLoadListView.setAdapter(mDLLineAdapter);
+		mDownLoadListView.setClickable(false);
 	}
 	
 	

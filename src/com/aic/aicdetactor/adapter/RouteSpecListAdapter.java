@@ -17,6 +17,7 @@ import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.fragment.RouteFragment;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
@@ -113,7 +114,7 @@ public class RouteSpecListAdapter extends BaseAdapter{
 							app.setCurGsonPath(p);
 						}else{
 							app.gIsDataChecked=true;
-							app.setCurGsonPath("/sdcard/aic/data/"+filePath);
+							app.setCurGsonPath(Setting.getUpLoadJsonPath()+filePath);
 						}
 						
 					}else{

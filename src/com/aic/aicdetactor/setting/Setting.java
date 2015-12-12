@@ -177,5 +177,10 @@ public class Setting {
 		SystemUtil.DeleteFolder(path);
 	}
 	
+	public static String getUpLoadJsonPath(){
+		String path = Environment.getExternalStorageDirectory() + RootPath;
+		return path+UploadJson;
+	}
+	
 	
 }

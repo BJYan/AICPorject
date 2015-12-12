@@ -267,8 +267,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				}else{
 					isReverseDetection = false;
 				}
-				Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATA);
-				msg.arg1=isReverseDetection==true?1:0;
+//				Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATA);
+//				msg.arg1=isReverseDetection==true?1:0;
 				mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATA);
 				
 			}
@@ -279,35 +279,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		mAdapterList = new PartItemListAdapter(PartItemActivity.this,mStationIndex,mDeviceIndex);
 		mListView.setAdapter(mAdapterList);
 		
-		getDeviceStatusArray(mStationIndex, mDeviceIndex);
-		spinnerAdapter = new SpinnerAdapter(this, mStatusList);
-		mSpinner.setAdapter(spinnerAdapter);
-		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-			
-				String str=mSpinner.getSelectedItem().toString();
-			
-			
-				if(mSpinner.getSelectedItemPosition()>0){
-					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
-					msg.arg1=mSpinner.getSelectedItemPosition();
-					msg.obj=mSpinner.getSelectedItem().toString();
-					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
-				}else{
-					mAdapterList.initListViewAndData(true);
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
+		initSpinnerAdapterData();
 
 		// 返回图标
 		ImageView imageView = (ImageView) findViewById(R.id.backImage);
@@ -341,6 +313,37 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		mButton_Measurement.setOnClickListener(this);
 	}
 	
+	void initSpinnerAdapterData(){
+		getDeviceStatusArray(mStationIndex, mDeviceIndex);
+		spinnerAdapter = new SpinnerAdapter(this, mStatusList);
+		mSpinner.setAdapter(spinnerAdapter);
+		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+			
+				String str=mSpinner.getSelectedItem().toString();
+			
+			
+				if(mSpinner.getSelectedItemPosition()>0){
+//					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
+//					msg.arg1=mSpinner.getSelectedItemPosition();
+//					msg.obj=mSpinner.getSelectedItem().toString();
+					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
+				}else{
+					mAdapterList.initListViewAndData(true);
+				}
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+	}
 	boolean bNoFragement = false;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
@@ -481,6 +484,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   if(msg.arg1==1){
 				   mFirstLLayout.setVisibility(View.VISIBLE);
 				   mSecendLLayout.setVisibility(View.GONE);
+				   mSpinner.setSelection(0);
+				   initSpinnerAdapterData();
 				  if( !mAdapterList.gotoNextDeviceItem()){
 					  finish();
 					  return;
@@ -552,95 +557,21 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
    void addAPartItemData(int type,int zhouCounts,Object msgobject){
 	   switch(type){
 	   case RF_TYPE:
-//	   {
-//		   JSONObject object = new JSONObject();
-//		   String value = app.gDeviceName+ff
-//				   +((JSONObject)mCurrentDeviceItem).optString(T_Device_Item.Device_Array_Item_Const.Key_Code)+ff
-//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-//				   +"设备"+ff
-//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-//				   +ff+ff+ff+ff+ff+ff+ff+ff+ff+ff
-//				   +"2"+ff+"01"+ff+ff+ff;
-//		   try {
-//			object.put(KEY.KEY_PARTITEMDATA, value);
-//			object.put(KEY.KEY_Fast_Record_Item_Name, "111111111");
-//			mNewArrayJSON.put(object);
-//		} catch (JSONException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		 //  mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_DEVICEITEM));
-//	   }
 		   break;
 	   case CAMERA_TYPE:
 	   {
-//		   JSONObject object = new JSONObject();
-//		   try {
-//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-//			mNewArrayJSON.put(object);
-//			MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+mJSONArray.length());
-//			//mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
-//		} catch (JSONException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}		   
 		
 	   }
 		   break;
 	   case AUDIO_TYPE:
 	   {
-//		   JSONObject object = new JSONObject();
-//		   try {
-//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-//			mNewArrayJSON.put(object);
-//		} catch (JSONException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}		   
-		
 	   }
 		   break;
 	   case TEXT_RECORD_TYPE:
 	   {
-//		   JSONObject object = new JSONObject();
-//		   try {
-//			String data=  mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-//			object.put(KEY.KEY_Fast_Record_Item_Name, mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-//			object.put(KEY.KEY_PARTITEMDATA,addUpdata(data,mCheckValue,null));
-//			mNewArrayJSON.put(object);
-//		} catch (JSONException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}		   
-		
 	   }
 		   break;
 	   case TEXT_ZHOU_TYPE:
-//			if (zhouCounts > 1) {
-//				String guid = SystemUtil.createGUID();
-//				String values = msgobject.toString();
-//				String[] array = values.split(",");
-//				for (int i = 0; i < array.length; i++) {
-//					// 需要保存X，Y的数据，相同的GUID，不同的checkValue
-//					JSONObject object = new JSONObject();
-//					try {
-//						String data = mCurPartItemobject.optString(KEY.KEY_PARTITEMDATA);
-//						object.put(
-//								KEY.KEY_Fast_Record_Item_Name,
-//								mCurPartItemobject.optString(KEY.KEY_Fast_Record_Item_Name));
-//						object.put(KEY.KEY_PARTITEMDATA,addUpdata(data, array[i], guid));
-//						mNewArrayJSON.put(object);
-//						MLog.Logd(TAG, "addAPartItemData() mJSONArray.size ="+ mJSONArray.length());
-//					} catch (JSONException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//				}
-//			}
 		   break;
 	   }
 	  
@@ -652,17 +583,16 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	 */
 	void preCheckItem(){	
 		//显示数据
-		mPartItemIndex = mAdapterList.setCurPartItemIndex(--mPartItemIndex);
-		mPartItemIndex = mAdapterList.resetMaxPartItemIndex();
-		switchFragment(mAdapterList.getPrevPartItemType(), false);	
-		if(mPartItemIndex<0){
-			switchFragment(REMOVELASTFRAGMENT, false);
-			mPartItemIndex = mAdapterList.setCurPartItemIndex(0);		
-			mFirstLLayout.setVisibility(View.VISIBLE);
-			mSecendLLayout.setVisibility(View.GONE);			
-			mSpinner.setSelection(0);
-			mSpinner.setSelected(true);
-		}
+		mPartItemIndex = mAdapterList.getPrevPartItemIndex();
+		switchFragment(mAdapterList.getCurrentPartItemType(), false);	
+//		if(mPartItemIndex<0){
+//			switchFragment(REMOVELASTFRAGMENT, false);
+//			mPartItemIndex = mAdapterList.setCurPartItemIndex(0);		
+//			mFirstLLayout.setVisibility(View.VISIBLE);
+//			mSecendLLayout.setVisibility(View.GONE);			
+//			mSpinner.setSelection(0);
+//			mSpinner.setSelected(true);
+//		}
 		
 	}
 	
@@ -678,14 +608,15 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	private void nextCheckItem() {
 		if (!isTimeOut()) {
 			//判断是否是已经巡检完毕
-			mPartItemIndex = mAdapterList.setCurPartItemIndex(++mPartItemIndex);
+			mPartItemIndex = mAdapterList.getNextPartItemIndex();
 			if (!mAdapterList.isCurrentDeviceItemFinish()) {
 				//获取下一点的 数据类型并进行fragment 切换显示数据							
-					switchFragment(mAdapterList.getNextPartItemType(), false);	
+					switchFragment(mAdapterList.getCurrentPartItemType(), false);	
 				if (mCheckIndex != 0 && !mButton_Pre.isEnabled()) {
 					mButton_Pre.setEnabled(true);
 				}
 			}else {
+			
 				ShowDialog();
 			}
 		} else {
@@ -702,7 +633,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		       .setPositiveButton("确认", new DialogInterface.OnClickListener() { 
 		           public void onClick(DialogInterface dialog, int id) { 
 		        	   
-		        	   
+		        		mPartItemIndex=0;
+						mDeviceIndex++;
 		        	   mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
 		        	   //fragment.saveDataToFile();
 						Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();

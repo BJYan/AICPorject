@@ -1,10 +1,12 @@
-package com.aic.aicdetactor.data;
+﻿package com.aic.aicdetactor.data;
 
 public class RoutePeroid {
 
 	public String T_Line_Name; //线路名称
 	public String T_Period_Name;
 	public String T_Line_Guid;
+        public String T_Line_Content_Guid ;//2015-12-06添加
+	public String T_Turn_Guid;  //2015-12-06添加
 	public int Task_Mode;;
 	public int Start_Point;
 	public int Span;

@@ -383,7 +383,8 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     
     public interface OnTemperatureMeasureListener{
     	
-    	void OnClick(String IndexButton);
+    //	void OnClick(String IndexButton);
+    	void OnClick(int genPartItemDataCounts,int xValue,int yValue,int zValue);
     }
     
     @Override
@@ -410,7 +411,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     		abnormalCode= code[SpinnerSelectedIndex];
     		abnormalId= Integer.valueOf(abnormalCode)+1;
     		isNormal= AbnormalConst.ZhengChang_Code.equals(abnormalCode)?1:0;
-    		adapter.saveData(mEditTextValue.getText().toString(),isNormal,abnormalCode,abnormalId);
+    		adapter.saveData(mEditTextValue.getText().toString(),isNormal,abnormalCode,abnormalId,0,0);
     	}else if(adapter.getCurrentPartItemType()==checkUnit_Type.TEMPERATURE
     			|| adapter.getCurrentPartItemType()==checkUnit_Type.ROTATION_RATE){
     	final double  MAX = super.mPartItemData.Up_Limit;;
@@ -436,7 +437,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
     		abnormalCode=AbnormalConst.WeiXian_Code;
     	}
     	
-    	adapter.saveData(String.valueOf(mCheckedValue),isNormal,abnormalCode,abnormalId);
+    	adapter.saveData(String.valueOf(mCheckedValue),isNormal,abnormalCode,abnormalId,0,0);
     	}
     }
 	@Override
@@ -455,6 +456,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment  implements
 			break;
 		case PartItemContact.MEASURE_DATA:
 				getDataFromBLE();
+				mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
 			
 			break;
 		}

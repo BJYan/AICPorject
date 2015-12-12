@@ -198,6 +198,7 @@ boolean isTest=true;
        {
     	   m_RoutePeroid.T_Line_Name=T_Line.Name;
     	   m_RoutePeroid.T_Line_Guid=T_Line.T_Line_Guid;
+    	   m_RoutePeroid.T_Line_Content_Guid=T_Line.T_Line_Content_Guid;
     	   m_RoutePeroid.Task_Mode=m_CurPeriodJson.Task_Mode; 
     	   m_RoutePeroid.Start_Point=m_CurPeriodJson.Start_Point;
     	   m_RoutePeroid.Span=m_CurPeriodJson.Span;
@@ -211,6 +212,7 @@ boolean isTest=true;
     	   m_RoutePeroid.Turn_Number=m_TurnInfoJson.Number;
     	   m_RoutePeroid.Start_Time=m_TurnInfoJson.Start_Time;
     	   m_RoutePeroid.End_Time=m_TurnInfoJson.End_Time;
+    	   m_RoutePeroid.T_Turn_Guid=m_TurnInfoJson.Guid;
     	   m_RoutePeroid.File_Guid=(String)nInfo.get("FileName");
     	   m_RoutePeroid.Is_Omission_Check=m_CurPeriodJson.Is_Omission_Check;
     	   m_RoutePeroid.Is_Permission_Timeout=m_CurPeriodJson.Is_Permission_Timeout;

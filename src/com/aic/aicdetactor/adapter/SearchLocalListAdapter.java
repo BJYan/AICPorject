@@ -7,6 +7,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.check.SearchResultActivity;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
 import android.app.Activity;
@@ -99,7 +100,7 @@ public class SearchLocalListAdapter extends BaseAdapter{
 		while(cur!=null && cur.moveToNext()){
 			HashMap<String, Object> map = new HashMap<String, Object>();  
             map.put("Name", cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.T_Line_Name)));
-            map.put("Path", "/sdcard/aic/data/"+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.File_Guid)));
+            map.put("Path", Setting.getUpLoadJsonPath()+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.File_Guid)));
             map.put("Process",cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Checked_Count))+"/"+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.ItemCounts)));
             map.put("Date", cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Date)));
             listItem.add(map);  

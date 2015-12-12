@@ -62,6 +62,7 @@ import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
 import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.SystemUtil;
 
 /**
@@ -116,6 +117,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 	FlippingLoadingDialog mCountdownDialog;
 	Handler handler;
 	Button mButton_Measurement;
+	float FengValue =0;
+	float FengFengValue = 0;
+	float ValidValue = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -363,9 +367,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 		}
 	}
 	
-	float FengValue =mAnalysis.getFabsMaxValue();
-	float FengFengValue = mAnalysis.getFengFengValue();
-	float ValidValue = mAnalysis.getValidValue();
+	
 	
 	private void InitChart() {
 		// TODO Auto-generated method stub
@@ -548,7 +550,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
     		Abnormalcode=AbnormalConst.WeiXian_Code;
     	}    	
 		
-    	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId);
+    	adapter.saveData(String.valueOf(mCheckValue),isNormal,Abnormalcode,AbnormalId,0,0);
     }
 
     int CaiYangShu=0;
@@ -644,7 +646,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 							closeTimer();
 							startTimer();
 							mColorTextView.setText("校验失败"+" " +iFailedTimes);
-							Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
+						//	Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 						}else{
 							iFailedTimes=0;
 						}
@@ -676,7 +678,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 			guid="2.txt";
 		}
 		try {
-			SystemUtil.writeFile("/sdcard/aic/data/"+guid, data);
+			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+guid, data);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -697,7 +699,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment  implements OnBu
 				+super.app.mLineJsonData.T_Line.T_Line_Guid+"','"
 				+"image"+"','"
 				+guid+"','"				
-				+"/sdcard/aic/data/"+guid+"','"
+				+Setting.getUpLoadJsonPath()+guid+"','"
 				+"0"+"');";
 				
 		dao.execSQL(StrSql);

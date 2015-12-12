@@ -11,8 +11,10 @@ import com.aic.aicdetactor.data.DeviceItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.StationInfoJson;
+import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -51,7 +53,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
 	private int mPartItemIndex = 0;
-	
+	private String mStrItemDef;
 	private Handler mHandler=null;
 	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex){
 		this.mDeviceIndex=mDeviceIndex;
@@ -59,7 +61,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		this.mActivity = av;
 		app = ((myApplication)av. getApplication());
 		
-		mPartItemAfterItemDef = new PartItemJsonUp();
+		
 		
 		
 		mHandler =new Handler(){
@@ -115,29 +117,37 @@ public class PartItemListAdapter extends BaseAdapter {
 	}
 	
 	
-	public int  setCurPartItemIndex(int partItemIndex){
-		if(mDeviceItemCahce.PartItem.size()>=partItemIndex){
-		mPartItemIndex=partItemIndex;
+	public int  getNextPartItemIndex(){
+		if(mPartItemIndex<mPartItemList.size()){
+		mPartItemIndex++;
 		}
 		return mPartItemIndex;
 	}
 	
-	public int  resetMaxPartItemIndex(){
-		if(mDeviceItemCahce.PartItem.size()<=mPartItemIndex){
-			if(mDeviceItemCahce.PartItem.size()==mPartItemIndex){
-			mPartItemIndex--;
-			}else{
-				mPartItemIndex = mDeviceItemCahce.PartItem.size()-1;	
-			}
+	public int  getPrevPartItemIndex(){
+		if(mPartItemIndex>0){
+		mPartItemIndex--;
 		}
 		return mPartItemIndex;
 	}
+	
+//	public int  resetMaxPartItemIndex(){
+//		if(mDeviceItemCahce.PartItem.size()<=mPartItemIndex){
+//			if(mDeviceItemCahce.PartItem.size()==mPartItemIndex){
+//			mPartItemIndex--;
+//			}else{
+//				mPartItemIndex = mDeviceItemCahce.PartItem.size()-1;	
+//			}
+//		}
+//		return mPartItemIndex;
+//	}
 	/**
 	 * 判断当前的deviceItem是否已经巡检完成了，true 表示已巡检完毕，否则没巡检完。
 	 * @return
 	 */
 	public boolean isCurrentDeviceItemFinish(){
-		if(mPartItemIndex>=mPartItemList.size()-1){
+		if(mPartItemIndex>(mPartItemList.size()-1)){
+			mPartItemIndex=mPartItemList.size()-1;
 			return true;
 		}		
 		return false;
@@ -272,7 +282,7 @@ public class PartItemListAdapter extends BaseAdapter {
 			mDeviceItemCahce.setIsOmissionCheck(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Omission_Check);
 			}
 		}
-		
+		mPartItemIndex=0;
 		saveDeviceItemData();
 
 	}
@@ -287,27 +297,26 @@ public class PartItemListAdapter extends BaseAdapter {
 		return (int)type;
 		}
 		
-	public int getPrevPartItemType(){
-		long type =-1;
-		
-		if(mPartItemIndex>=0 && mPartItemIndex<mPartItemList.size()){
-		type=Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
-		}else{
-			MLog.Loge(TAG, "getPrevPartItemType() error:out of arrayList");
-		}
-		return (int)type;
-	}
-	
-	
-	public int getNextPartItemType(){
-		long type =-1;
-		if(mPartItemIndex<mPartItemList.size()){
-		type=Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
-		}else{
-			MLog.Loge(TAG, "getNextPartItemType() error:out of arrayList");
-		}
-		return (int)type;
-	}
+//	public int getPrevPartItemType(){
+//		long type =-1;
+//		
+//		if(mPartItemIndex>=0 && mPartItemIndex<mPartItemList.size()){
+//		type=Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
+//		}else{
+//			MLog.Loge(TAG, "getPrevPartItemType() error:out of arrayList");
+//		}
+//		return (int)type;
+//	}
+//	
+//	public int getNextPartItemType(){
+//		long type =-1;
+//		if(mPartItemIndex<mPartItemList.size()){
+//		type=Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
+//		}else{
+//			MLog.Loge(TAG, "getNextPartItemType() error:out of arrayList");
+//		}
+//		return (int)type;
+//	}
 	
 	public PartItemJsonUp getCurrentPartItem(){
 		return mPartItemList.get(mPartItemIndex);
@@ -320,11 +329,16 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * @param AbnormaCode  异常情况下对应的异常code
 	 * @param AbormalId  异常情况下对应的异常id
 	 */
-	public void saveData(String ExValue,int checkIsNormal,String AbnormaCode,int AbormalId){
+	public void saveData(String ExValue,int checkIsNormal,String AbnormaCode,int AbormalId,int CaiYangShu,int CaiyangPinLv){
+		if(mPartItemIndex<mPartItemList.size()){
 		mPartItemList.get(mPartItemIndex).Extra_Information = ExValue;
 		mPartItemList.get(mPartItemIndex).Is_Normal=checkIsNormal;
 		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Code = AbnormaCode;
 		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Id=AbormalId;
+		mPartItemList.get(mPartItemIndex).SampleFre =CaiyangPinLv;
+		mPartItemList.get(mPartItemIndex).SamplePoint =CaiYangShu;
+		
+		}
 		setPartItemEndTimeAndTotalTime();
 	}
 	
@@ -364,6 +378,10 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * 选择运行/停机/备用后生成的PartItem对象
 	 */
 	private void genPartItemDataAfterItemDef(){
+		if(mPartItemAfterItemDef!=null){
+			mPartItemAfterItemDef=null;
+		}
+		mPartItemAfterItemDef = new PartItemJsonUp();
 		mPartItemAfterItemDef.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;
 		mPartItemAfterItemDef.Extra_Information="设备";
 		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Id=2;
@@ -377,6 +395,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		setLineGlobalInfo();
 		mDeviceItemCahce.PartItem.clear();
 		for(PartItemJsonUp part:mPartItemList){
+			part.Item_Define=mStrItemDef;
 			mDeviceItemCahce.PartItem.add(part);
 		}
 		//genPartItemDataAfterItemDef();
@@ -405,7 +424,7 @@ public class PartItemListAdapter extends BaseAdapter {
 				fileGuid=SystemUtil.createGUID();
 			}
 			app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.File_Guid=fileGuid;
-			SystemUtil.writeFile("/sdcard/AIC/data/"+fileGuid, sonStr);
+			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+fileGuid, sonStr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -453,5 +472,9 @@ public class PartItemListAdapter extends BaseAdapter {
 		dao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid,app.gIsDataChecked,true,true);
 		}
 		app.gIsDataChecked=true;
+	}
+	
+	public void setPartItemItemDef(String str){
+		mStrItemDef=str;
 	}
 }
