@@ -18,10 +18,13 @@ import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
+import com.aic.aicdetactor.comm.Bluetooth;
 import com.aic.aicdetactor.util.SystemUtil;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -83,8 +86,39 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		mBluetoothAdapter.enable();
 		mBondedDevices = new ArrayList<BluetoothDevice>();
 		mAllBTDevices = new ArrayList<BluetoothDevice>();
+		
+		IntentFilter filter_dynamic = new IntentFilter();  
+        filter_dynamic.addAction(Bluetooth.BLEStatus);  
+        this.getActivity().registerReceiver(dynamicReceiver, filter_dynamic);  
+        // 注册系统动态广播消息  
 	}
-	
+	 private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {  
+         
+	        @Override  
+	        public void onReceive(Context context, Intent intent) {  
+	            Log.e("MainActivity", "接收自定义动态注册广播消息");  
+	            if(intent.getAction().equals(Bluetooth.BLEStatus)){  
+	                boolean BTIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
+	                Notification  baseNF = new Notification();   
+	                NotificationManager nm = (NotificationManager) BlueTooth_Fragment.this.getActivity().getSystemService(BlueTooth_Fragment.this.getActivity().NOTIFICATION_SERVICE);   
+	            	
+	               if(BTIsConnected) {
+	                    
+	                baseNF.icon =R.drawable.connection;  
+	                baseNF.tickerText = "BLE蓝牙已连接";  
+	                
+	               }else{
+	            	   baseNF.icon =R.drawable.disconnection;  
+		               baseNF.tickerText = "BLE蓝牙未连接，请连接";  
+	               }
+	               
+	               baseNF.defaults = Notification.DEFAULT_ALL;  
+	               baseNF.setLatestEventInfo(BlueTooth_Fragment.this.getActivity(),"AIC", baseNF.tickerText, null);  
+	               nm.notify(MeasureBaseFragment.Notification_ID_BASE, baseNF); 
+	               Toast.makeText(context, "蓝牙连接状态"+BTIsConnected, Toast.LENGTH_SHORT).show();  
+	            }  
+	        }  
+	    };  
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -118,7 +152,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		//getActivity().unregisterReceiver(mReceiver);
+		this.getActivity().unregisterReceiver(dynamicReceiver);
 		super.onDestroy();
 	}
 

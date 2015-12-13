@@ -11,4 +11,7 @@ public class Bluetooth {
 	public static final int MESSAGE_START_DISCOVERY =106;
 	public static final int MESSAGE_START_CONNECT =107;
 	
+	
+	public static final String BLEStatus="com.android.aic.detactor.blestatus";
+	public static final String IsConneted="IsConneted";
 }

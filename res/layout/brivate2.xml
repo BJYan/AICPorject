@@ -41,13 +41,13 @@
         android:visibility="gone" />
 
 <LinearLayout 
-    android:layout_height="310dip"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical">
      <!-- X -->
 	<RelativeLayout 
-	    android:layout_height="100dip"
+	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:id="@+id/Xline"
 	    android:background="@drawable/gray_border_bg_shape">
@@ -127,7 +127,7 @@
 	</RelativeLayout>
      <!-- Y -->
 	<RelativeLayout 
-	    android:layout_height="100dip"
+	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:background="@drawable/gray_border_bg_shape"
 	    android:layout_marginTop="5dip"
@@ -207,7 +207,7 @@
 	</RelativeLayout>
      <!-- Z -->
 	<RelativeLayout 
-	    android:layout_height="100dip"
+	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:background="@drawable/gray_border_bg_shape"
 	    android:id="@+id/Zline"

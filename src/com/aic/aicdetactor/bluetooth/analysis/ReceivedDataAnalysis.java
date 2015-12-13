@@ -455,7 +455,7 @@ public class ReceivedDataAnalysis {
 			//收集BLE发送过来的所有原始数据
 	    	Log.d(TAG, "mDLCmd = "+mDLCmd + "strbyte.length = "+strbyte.length);
 	    	Log.d(TAG, "mReceivedDataByteSizes = "+mReceivedDataByteSizes + ",mShoudReceivedByteSizes = "+mShoudReceivedByteSizes);
-	    	
+	    	try{
 	    	if( mReceivedDataByteSizes>=mShoudReceivedByteSizes){
 	    		len=mShoudReceivedByteSizes-(mReceivedPackageCounts-1)*20;
 	    		if(len<=0){len =0;}
@@ -465,6 +465,9 @@ public class ReceivedDataAnalysis {
 	    	}
 	    	mReceivedDataByteSizes=mReceivedDataByteSizes+len;
 			mReceivedPackageCounts++;
+	    	}catch(Exception e){
+	    		e.printStackTrace();
+	    	}
 	    }
 	
 	/**

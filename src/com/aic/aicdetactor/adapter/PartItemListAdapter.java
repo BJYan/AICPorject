@@ -262,8 +262,8 @@ public class PartItemListAdapter extends BaseAdapter {
 		for(int m= 0;m<mOriPartItemList.size();m++){
 			if(((mOriPartItemList.get(m).Start_Stop_Flag>>index)&0x01)==1)	{
 				if(mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.AudioDataId
-						||mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.PictureDataId
-						||mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.WaveDataId){
+						&&mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.PictureDataId
+						&&mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.WaveDataId){
 				mPartItemList.add(mOriPartItemList.get(m));
 				mPartItemAfterSelectedList.add(mOriPartItemList.get(m));}
 				}
@@ -325,12 +325,14 @@ public class PartItemListAdapter extends BaseAdapter {
 	 */
 	public void saveData(String ExValue,String AbnormaCode,int AbormalId,int CaiYangShu,int CaiyangPinLv){
 		if(mPartItemIndex<mPartItemList.size()){
-		mPartItemList.get(mPartItemIndex).Extra_Information = ExValue;
+		mPartItemList.get(mPartItemIndex).setExtralInfor(ExValue);
 		mPartItemList.get(mPartItemIndex).Is_Normal=ConditionalJudgement.GetRusultStatus(AbnormaCode);
 		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Code = AbnormaCode;
 		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Id=AbormalId;
 		mPartItemList.get(mPartItemIndex).SampleFre =CaiyangPinLv;
 		mPartItemList.get(mPartItemIndex).SamplePoint =CaiYangShu;
+		mPartItemList.get(mPartItemIndex).setVMSDir();
+		mPartItemList.get(mPartItemIndex).setSignalType();	
 		
 		}
 		setPartItemEndTimeAndTotalTime();
@@ -349,10 +351,9 @@ public class PartItemListAdapter extends BaseAdapter {
 		//先clone一份当前partitem数据
 		PartItemJsonUp PartItemItem = new PartItemJsonUp();
 		PartItemItem.Clone(mPartItemList.get(mPartItemIndex)); 
+		PartItemItem.SaveLab= params.SaveLab;
+		PartItemItem.RecordLab=params.RecordLab;
 		if(params.TypeCode==OnButtonListener.AudioDataType||params.TypeCode==OnButtonListener.PictureDataType){
-		
-			PartItemItem.SaveLab= params.SaveLab;
-			PartItemItem.RecordLab=params.RecordLab;
 			PartItemItem.T_Measure_Type_Code=""+params.TypeCode;
 			PartItemItem.T_Measure_Type_Id=params.TypeCode+1;
 			PartItemItem.Extra_Information="";
@@ -559,7 +560,7 @@ public class PartItemListAdapter extends BaseAdapter {
 				+"'0'" +",'"
 				+Setting.getExtralDataPath()+mPartItemList.get(k).RecordLab
 				+"')";
-			dao.execSQL(SqlStr);
+			dao.execSQLUpdate(SqlStr);
 		} 
 	}
 	

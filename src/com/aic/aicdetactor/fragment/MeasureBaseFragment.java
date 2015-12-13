@@ -1,6 +1,12 @@
 package com.aic.aicdetactor.fragment;
 
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,12 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Interface.OnButtonListener;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
 import com.aic.aicdetactor.bluetooth.analysis.ReceivedDataAnalysis;
+import com.aic.aicdetactor.comm.Bluetooth;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 
 public abstract class MeasureBaseFragment extends Fragment implements OnButtonListener  {
@@ -22,6 +31,8 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	protected PartItemJsonUp mPartItemData=null;
 	protected myApplication app = null;
 	private String TAG="AIC.MeasureBaseFragment";
+	public static final int Notification_ID_BASE=10101034;
+	public static final int NotificationTIPS=10101035;
 	/**
 	 * 仅为显示只用
 	 */
@@ -47,6 +58,7 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 		app =(myApplication) MeasureBaseFragment.this.getActivity().getApplication();
 		mPartItemData = app.gCurPartItemList.get(getArguments().getInt("partItemIndex"));
 		BLEControl = BluetoothLeControl.getInstance(MeasureBaseFragment.this.getActivity());
+				 
 		if(shouldConnectBLE()){
 			if(app.mCurLinkedBLEAddress!=null &&app.mCurLinkedBLEAddress.length()<2 &&!app.mBLEIsConnected ){
 				Toast.makeText(this.getActivity(), "请重新连接BLE", Toast.LENGTH_LONG).show();
@@ -54,9 +66,44 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 					
 					BLEControl.Connection(app.mCurLinkedBLEAddress);
 				}
+			Notification  baseNF = new Notification();   
+	         NotificationManager nm = (NotificationManager) MeasureBaseFragment.this.getActivity().getSystemService(MeasureBaseFragment.this.getActivity().NOTIFICATION_SERVICE);   
+	         baseNF.icon =R.drawable.ble_status_tips;  
+	         baseNF.tickerText = "需要连接蓝牙"; 
+	         baseNF.defaults = Notification.DEFAULT_ALL;  
+	         baseNF.setLatestEventInfo(MeasureBaseFragment.this.getActivity(),"AIC", baseNF.tickerText, null);  
+	         nm.notify(MeasureBaseFragment.NotificationTIPS, baseNF); 
 		}
+		 
+         
+         
+		IntentFilter filter_dynamic = new IntentFilter();  
+        filter_dynamic.addAction(Bluetooth.BLEStatus);  
+        this.getActivity().registerReceiver(dynamicReceiver, filter_dynamic);  
 	}
-	
+	 private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {  
+         
+	        @Override  
+	        public void onReceive(Context context, Intent intent) {  
+	            Log.e("MainActivity", "接收自定义动态注册广播消息");  
+	            if(intent.getAction().equals(Bluetooth.BLEStatus)){  
+	                boolean BTIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
+	                Notification  baseNF = new Notification();   
+	                NotificationManager nm = (NotificationManager) MeasureBaseFragment.this.getActivity().getSystemService(MeasureBaseFragment.this.getActivity().NOTIFICATION_SERVICE);   
+	               if(BTIsConnected) {
+	                baseNF.icon =R.drawable.connection;  
+	                baseNF.tickerText = "BLE蓝牙已连接";  
+	               }else{
+	            	   baseNF.icon =R.drawable.disconnection;  
+		               baseNF.tickerText = "BLE蓝牙未连接，请连接";  
+	               }
+	               baseNF.defaults = Notification.DEFAULT_ALL;  
+	               baseNF.setLatestEventInfo(MeasureBaseFragment.this.getActivity(),"AIC", baseNF.tickerText, null);  
+	               nm.notify(MeasureBaseFragment.Notification_ID_BASE, baseNF); 
+	                Toast.makeText(context, "蓝牙连接状态"+BTIsConnected, Toast.LENGTH_SHORT).show();  
+	            }  
+	        }  
+	    };  
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -113,6 +160,20 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	}
 	
 	
+
+	@Override
+	public void addNewMediaPartItem(ParamsPartItemFragment params,
+			PartItemListAdapter object) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		this.getActivity().unregisterReceiver(dynamicReceiver);
+		super.onDestroy();
+	}
 
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter object,

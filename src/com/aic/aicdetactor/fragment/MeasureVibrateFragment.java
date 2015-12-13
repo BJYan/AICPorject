@@ -71,7 +71,6 @@ import com.aic.aicdetactor.util.SystemUtil;
  *
  */
 public class MeasureVibrateFragment extends MeasureBaseFragment{
-
 	protected static final int VIBRATE_COUNTDOWN = 0;
 	private ListView mListView = null;
 	private ImageView mImageView = null;
@@ -116,7 +115,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	private TimerTask mCountdownTimerTask = null;
 	FlippingLoadingDialog mCountdownDialog;
 	Handler handler;
-	Button mButton_Measurement;
+	Button mMeasurementButton;
 	float FengValue =0;
 	float FengFengValue = 0;
 	float ValidValue = 0;
@@ -154,7 +153,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 						if(countdownSec==0) {
 							closeCountdownTimer();
 							if(mCountdownDialog.isShowing()) mCountdownDialog.dismiss();
-							mButton_Measurement.setEnabled(true);
+							mMeasurementButton.setEnabled(true);
 						} else {
 							countdownSec=countdownSec-count;
 							if(!mCountdownDialog.isShowing()) mCountdownDialog.show();
@@ -169,7 +168,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				};
 			};
 			
-			mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
+			//mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
 	}
  
 	public  MeasureVibrateFragment(PartItemListAdapter AdapterList){
@@ -209,7 +208,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			mCountdownTimerTask.cancel();
 			mCountdownTimerTask=null;
 		}
-		mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
+		mMeasurementButton.setEnabled(true);
 		*/
 	}
 	
@@ -228,7 +227,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			mTimer = new Timer();
 			mTimer.schedule(mTimerTask, 1000);
 			}
-		//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
+		mMeasurementButton.setEnabled(false);
 	}
 	
 	void closeTimer(){
@@ -244,7 +243,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		
 		mCanSendCMD=false;
 		mReceiveDataLenth=0;
-		mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);
+		mMeasurementButton.setEnabled(true);
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -267,10 +266,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
         tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("频域")  
                 .setContent(  
                 R.id.view1));
-  
-        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
-                .setContent(R.id.view2));
-        
+        if(mPartItemData.Axle_Number>1){
+	        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
+	                .setContent(R.id.view2));
+        }
 		views.add(mInflater.inflate(R.layout.brivate2, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
 		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
@@ -316,7 +315,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(1);
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(2);
+                if(mPartItemData.Axle_Number>1){
                 if(tabId.equals("tab4")) viewPager.setCurrentItem(3);
+                }
             }  
         });
 		mImageView = (ImageView)views.get(0).findViewById(R.id.imageView1);
@@ -350,8 +351,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		InitChart();
 		mCountdownDialog = new FlippingLoadingDialog(getActivity(), "1");
 		mCountdownDialog.setCancelable(false);
-		mButton_Measurement = (Button)getActivity().findViewById(R.id.bottombutton3);
-		mButton_Measurement.setEnabled(false);
+		mMeasurementButton = (Button)getActivity().findViewById(R.id.bottombutton3);
 		return view;
 	}
 	
@@ -624,7 +624,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mTimeTV.setText("测量完毕");
 				bStartReceiveData = false;
-				
+				mMeasurementButton.setEnabled(true);
 				if(mAnalysis.getPackagesCounts() !=receiveCount){
 					mColorTextView.setText("数据包丢失"+" " +iFailedTimes);
 				}
@@ -651,7 +651,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 							closeTimer();
 							startTimer();
 							mColorTextView.setText("校验失败"+" " +iFailedTimes);
-						//	Toast.makeText(getActivity(), mColorTextView.getText().toString(), Toast.LENGTH_LONG).show();
 						}else{
 							iFailedTimes=0;
 						}
@@ -661,19 +660,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				if(bPressTest){
 					mColorTextView.setText("压力测试成功结果:"+" " +iTestSuccessTimes/iTestTimes);
 				}
-				break;
-			case BluetoothLeControl.Message_Connection_Status:
-				switch(msg.arg1){
-				case 1://BLE has connected
-					break;
-				case 0://BLE has disconnected
-					break;
-				}
-				break;
+				break;	
 			}
 			super.handleMessage(msg);
 		}
-		
 	};
 	
 	
@@ -757,3 +747,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	}
 	
 }
+
+
+	

@@ -27,8 +27,10 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.aic.aicdetactor.comm.Bluetooth;
 import com.aic.aicdetactor.util.SystemUtil;
 
 /**
@@ -111,11 +113,19 @@ public class BluetoothLeClass{
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" +
                         mBluetoothGatt.discoverServices());
+                Intent intent = new Intent();
+                intent.setAction(Bluetooth.BLEStatus);  
+                intent.putExtra(Bluetooth.IsConneted,true);
+                mContext.sendBroadcast(intent);//传递过去
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 if(mOnDisconnectListener!=null)
                 	mOnDisconnectListener.onDisconnect(gatt);
                 Log.i(TAG, "Disconnected from GATT server.");
+                Intent intent = new Intent();
+                intent.setAction(Bluetooth.BLEStatus);  
+                intent.putExtra(Bluetooth.IsConneted,false);
+                mContext.sendBroadcast(intent);//传递过去
             }
         }
 

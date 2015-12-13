@@ -46,6 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,11 +107,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	
 	//点击listItem后 ListView 视图消失，显示具体测试点界面
 	private LinearLayout mUnitcheck_Vibrate = null;
-	private Button mButton_Direction = null;
 	private Button mButton_Next = null;
 	private Button mButton_Pre = null;
 	private Button mButton_Measurement = null;
-	private Button mButtion_Position = null;
 	private LinearLayout LinearLayout_y = null;
 	private LinearLayout LinearLayout_z = null;
 	private TextView mTextViewX = null;
@@ -131,7 +130,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	private String mFirstStartTime="";
 	private String mLastEndTime="";
 	private LinearLayout mFirstLLayout=null;
-	private LinearLayout mSecendLLayout=null;
+	private RelativeLayout mSecendLLayout=null;
 	private MeasureBaseFragment fragment  =null;
 	private ArrayList<PartItemJsonUp> mPartItemList=null;
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
@@ -236,7 +235,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				.setText(deviceTextView.getText().toString()+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem
 						.get(mDeviceIndex).Name);
 		mFirstLLayout = (LinearLayout) findViewById(R.id.linefirst);
-		mSecendLLayout = (LinearLayout) findViewById(R.id.bottom_line);
+		mSecendLLayout = (RelativeLayout) findViewById(R.id.bottom_line);
 		mCheckbox = (CheckBox) findViewById(R.id.checkorder);
 		mCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
@@ -279,11 +278,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		mConfigButton = (Button) findViewById(R.id.config);
 		mConfigButton.setOnClickListener(this);
 		
-		mButtion_Position = (Button) findViewById(R.id.bottombutton1);
-		mButtion_Position.setOnClickListener(this);
-		
-		mButton_Direction = (Button) findViewById(R.id.bottombutton2);
-		mButton_Direction.setOnClickListener(this);
 
 		mButton_Next = (Button) findViewById(R.id.next);
 		mButton_Next.setOnClickListener(this);
@@ -342,8 +336,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		   case CommonDef.checkUnit_Type.DISPLACEMENT:
 			  // 需要方向
 			   mParamsLineLayout.setVisibility(View.VISIBLE);
-			   mButton_Direction.setEnabled(true);
-			   mButton_Direction.setText(getString(R.string.direction));
 			   {
 					fragment = new MeasureVibrateFragment(mAdapterList);
 					
@@ -356,17 +348,11 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					fragmentTransaction.commit();
 					}
 			   fragmentsList.add(fragment);
-//			   mButtion_Position.setText(getString(R.string.position));
-//				mButton_Measurement.setText(getString(R.string.measurement));
-//				mButton_Direction.setText(getString(R.string.direction));	
 			   break;
 		   case CommonDef.checkUnit_Type.TEMPERATURE:
 		   case CommonDef.checkUnit_Type.ROTATION_RATE:
 		   case CommonDef.checkUnit_Type.METER_READING:
 		   case CommonDef.checkUnit_Type.ENTERING:
-			  //方向按鈕隱藏
-			   mButton_Direction.setEnabled(false);
-			  
 			   {
 					fragment = new MeasureTemperatureFragment(mAdapterList);
 					fragment.setArguments(bundle);  
@@ -378,9 +364,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					fragmentTransaction.commit();
 					}
 			   fragmentsList.add(fragment);
-//			   mButtion_Position.setText(getString(R.string.position));
-//				mButton_Measurement.setText(getString(R.string.measurement));
-//				mButton_Direction.setText(getString(R.string.direction));	
 			   break;
 		   case CommonDef.checkUnit_Type.OBSERVATION:
 			   fragment = new MeasureObserverFragment(mAdapterList);
@@ -405,15 +388,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 //				}
 //				fragmentTransaction.commit();
 //				
-//				mButton_Direction.setEnabled(true);
-//				mButtion_Position.setText(getString(R.string.camera));
 //				mButton_Measurement.setText(getString(R.string.textrecord));
-//				mButton_Direction.setText(getString(R.string.soundrecord));				
 //				}
 //			   break;
 		   case CommonDef.checkUnit_Type.STATE_PRESUPPOSITOIN:
-		//	   break;
-		 //  case CommonDef.checkUnit_Type.METER_READING:
 		   {
 			   fragment = new MeasureDefaltStateFragment(mAdapterList);
 				fragment.setArguments(bundle);  
@@ -433,9 +411,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			break;
 			   default:
 				   bNoFragement=true;
-//				   mButtion_Position.setText(getString(R.string.position));
-//					mButton_Measurement.setText(getString(R.string.measurement));
-//					mButton_Direction.setText(getString(R.string.direction));	
 				   Toast.makeText(getApplicationContext(), "default Fragment type ="+type, Toast.LENGTH_LONG).show();
 				   
 				   break;
@@ -457,6 +432,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	   private final int MSG_CHANGE_LISTVIEWDATA =MSG_START+9;
 	   private final int MSG_CHANGE_LISTVIEWDATAEX =MSG_START+10;
 	   private final int MSG_CACHE_CURRENT_DEVICEITEM_DATA =MSG_START+11;
+	   private final int MSG_Goto_Selected_Status =MSG_START+12;
 
    Handler mHandler = new Handler(){
 	   @Override
@@ -514,6 +490,12 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		   case CommonDef.DISABLE_MEASUREMENT_BUTTON:
 			   controlButtonDisplayStatus(msg.what);				  
 			   break;
+		   case MSG_Goto_Selected_Status:
+			   mSecendLLayout.setVisibility(View.GONE);	
+				mFirstLLayout.setVisibility(View.VISIBLE);
+				mSpinner.setSelection(0);
+				mSpinner.setSelected(true);
+			   break;
 		   
 		   }
 	   }
@@ -542,14 +524,12 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		//显示数据
 		mPartItemIndex = mAdapterList.getPrevPartItemIndex();
 		switchFragment(mAdapterList.getCurrentPartItemType(), false);	
-//		if(mPartItemIndex<0){
-//			switchFragment(REMOVELASTFRAGMENT, false);
-//			mPartItemIndex = mAdapterList.setCurPartItemIndex(0);		
-//			mFirstLLayout.setVisibility(View.VISIBLE);
-//			mSecendLLayout.setVisibility(View.GONE);			
-//			mSpinner.setSelection(0);
-//			mSpinner.setSelected(true);
-//		}
+		if(mPartItemIndex==0){
+			switchFragment(REMOVELASTFRAGMENT, false);
+			Message msg = mHandler.obtainMessage(MSG_Goto_Selected_Status);
+			mHandler.sendMessageDelayed(msg, 100);
+			
+		}
 		
 	}
 	
@@ -648,27 +628,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
 		}
 			break;
-		case R.id.bottombutton1://位置信息
-		{
 
-			if (mButtion_Position.getText().equals(getString(R.string.camera))) {
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				ContentValues values = new ContentValues(3);
-				values.put(MediaStore.Images.Media.DISPLAY_NAME, "testing");
-				values.put(MediaStore.Images.Media.DESCRIPTION,
-						"this is description");
-				values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-				mediaFilePath = getContentResolver().insert(
-						MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-				MLog.Logd("test", "main_media imageFilePath is " + mediaFilePath);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaFilePath); // 这样就将文件的存储方式和uri指定到了Camera应用中
-
-				startActivityForResult(intent, PartItemContact.PARTITEM_CAMERA_RESULT);
-			} else {
-				initPopupWindowFliter(arg0);
-			}
-		}
-			break;
 		case R.id.next://下一测试点
 		{
 			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
@@ -687,29 +647,29 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			}else{
 				mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
 			}
-			//mButton_Measurement.setEnabled(false);
-			mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
+			mButton_Measurement.setEnabled(false);
+		//	mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
 			
 			break;
-		case R.id.bottombutton2://方向
-			if(mButton_Direction.getText().equals(getString(R.string.soundrecord))){
-				Intent intent = new Intent();
-				intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
-				startActivityForResult(intent,PartItemContact.PARTITEM_SOUNDRECORD_RESULT);
-			}else{
-			 new AlertDialog.Builder(PartItemActivity.this)
-	         .setTitle(getString(R.string.direction_select))
-	         .setItems(direction_item, new DialogInterface.OnClickListener() {
-	             public void onClick(DialogInterface dialog, int which) {
-	            	 mButton_Direction.setText(direction_item[which]);
-	            	 //获取选择的项,X-Y,X-Z,Y-Z
-	             Toast info =Toast.makeText(PartItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
-	                 info.setMargin(0.0f, 0.3f);
-	                 info.show();
-	             }
-	         }).create().show();
-			 }
-			break;	
+//		case R.id.bottombutton2://方向
+//			if(mButton_Direction.getText().equals(getString(R.string.soundrecord))){
+//				Intent intent = new Intent();
+//				intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
+//				startActivityForResult(intent,PartItemContact.PARTITEM_SOUNDRECORD_RESULT);
+//			}else{
+//			 new AlertDialog.Builder(PartItemActivity.this)
+//	         .setTitle(getString(R.string.direction_select))
+//	         .setItems(direction_item, new DialogInterface.OnClickListener() {
+//	             public void onClick(DialogInterface dialog, int which) {
+//	            	 mButton_Direction.setText(direction_item[which]);
+//	            	 //获取选择的项,X-Y,X-Z,Y-Z
+//	             Toast info =Toast.makeText(PartItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
+//	                 info.setMargin(0.0f, 0.3f);
+//	                 info.show();
+//	             }
+//	         }).create().show();
+//			 }
+//			break;	
 		}
 	}
 	
@@ -857,14 +817,14 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			break;
 		case CommonDef.ENABLE_MEASUREMENT_BUTTON:	
-			if(!mButton_Measurement.isEnabled()){
-				mButton_Measurement.setEnabled(true);
-			}
+//			if(!mButton_Measurement.isEnabled()){
+//				mButton_Measurement.setEnabled(true);
+//			}
 			break;
 		case CommonDef.DISABLE_MEASUREMENT_BUTTON:
-			if(mButton_Measurement.isEnabled()){
-				mButton_Measurement.setEnabled(false);
-			}
+//			if(mButton_Measurement.isEnabled()){
+//				mButton_Measurement.setEnabled(false);
+//			}
 			break;
 		}
 	}

@@ -59,17 +59,29 @@ public class PartItemJsonUp
     }
 
 
-    
+    public void setExtralInfor(String value){
+    	if(T_Measure_Type_Id==9
+    			||T_Measure_Type_Id==10){
+    		Extra_Information="";
+    		}else {
+    			Extra_Information=value;
+        	}
+    }
     
    /**
     * 当测量类型为加速度、速度、位移时，=0,=1,=2分别代表，X,Y,Z轴，其它类型为空。
     * @param XYZ,0:X,1:Y,2:Z
     */
-    public void setVMSDir(int XYZ){
-    	if(Is3TypeData()>0){
-    		VMSDir=XYZ;
-    	}else{
-    		VMSDir=0;
+    public void setVMSDir(){
+    	
+		if(T_Measure_Type_Id==4){
+		VMSDir=0;
+		}else if(T_Measure_Type_Id==5){
+		VMSDir=1;
+		}else if(T_Measure_Type_Id==6){
+    		VMSDir=2;
+		}else{
+		VMSDir=-1;
     	}
     		
     }
@@ -78,20 +90,16 @@ public class PartItemJsonUp
      * 当测量类型为加速度、速度、位移时，对应值分别为0、1、2，其它数据类型为空
      */
     public void setSignalType(){
-    	int type = Is3TypeData();
-    	if(type>0){
-    	if(type==3)	{
-    		SignalType=0;
-    	}else if(type==4)	{
-    		SignalType=1;
-    	}else if(type==5)	{
-    		SignalType=2;
-    	}
-    	}else{
-    		SignalType=-1;
+	if(T_Measure_Type_Id==4){
+		SignalType=0;
+		}else if(T_Measure_Type_Id==5){
+			SignalType=1;
+		}else if(T_Measure_Type_Id==6){
+			SignalType=2;
+		}else{
+			SignalType=-1;
     	}
     }
-    
     
     
     /**
