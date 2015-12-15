@@ -130,7 +130,8 @@ public class RouteDao {
 			List<TurnInfoJson>TurnList,
 			PeriodInfoJson peroid,			
 			OrganizationInfoJson OrganizationInfo,
-			boolean hasSpecialLine
+			boolean hasSpecialLine,
+			String lineContentGuid
 			){
 		Cursor cursor = null;		
 		//T_Route info = (T_Route) infos;
@@ -146,13 +147,14 @@ public class RouteDao {
 				 + DBHelper.SourceTable.Path+","
 				+ DBHelper.SourceTable.PLANNAME+","
 				+ DBHelper.SourceTable.PLANGUID+","
+				+ DBHelper.SourceTable.Line_Content_Guid+","
 				+DBHelper.SourceTable.Checked_Count+","
 				+DBHelper.SourceTable.NormalItemCounts +","
 				+DBHelper.SourceTable.SPecialItemCounts +","
 				+DBHelper.SourceTable.HasSpecialLine +","
-				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?,?)";
+				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,checkedItemCounts,normalitemCounts,specialitemCounts,hasSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
+		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,lineContentGuid,checkedItemCounts,normalitemCounts,specialitemCounts,hasSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
 		
 		}
 		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入
@@ -301,10 +303,11 @@ public class RouteDao {
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_CorporationName
 			+"("
-			+ DBHelper.Organization_CorporationName_Table.Name 
-			+")values(?)";					
+			+ DBHelper.Organization_CorporationName_Table.Name +","	
+			+ DBHelper.Organization_CorporationName_Table.Guid 
+			+")values(?,?)";					
 			
-			mDB.execSQL(sql, new Object[] {	OrganizationInfo.CorporationName});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.CorporationName,lineGuid});
 			}
 			if(cursor != null){cursor.close();}
 			//-----------------------------Organization_CorporationName End-------------------------------------------
@@ -321,10 +324,11 @@ public class RouteDao {
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_GroupName
 			+"("
-			+ DBHelper.Organization_GroupName_Table.Name 
-			+")values(?)";					
+			+ DBHelper.Organization_GroupName_Table.Name +","
+			+ DBHelper.Organization_GroupName_Table.Guid
+			+")values(?,?)";					
 			
-			mDB.execSQL(sql, new Object[] {	OrganizationInfo.GroupName});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.GroupName,lineGuid});
 			}
 			if(cursor != null){cursor.close();}
 			//-----------------------------Organization_GroupName End-------------------------------------------
@@ -341,10 +345,11 @@ public class RouteDao {
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_WorkShopName
 			+"("
-			+ DBHelper.Organization_WorkShopName_Table.Name 
-			+")values(?)";					
+			+ DBHelper.Organization_WorkShopName_Table.Name +","
+			+ DBHelper.Organization_WorkShopName_Table.Guid
+			+")values(?,?)";					
 			
-			mDB.execSQL(sql, new Object[] {	OrganizationInfo.WorkShopName});
+			mDB.execSQL(sql, new Object[] {	OrganizationInfo.WorkShopName,lineGuid});
 			}
 			if(cursor != null){cursor.close();}
 		}
@@ -1263,15 +1268,40 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		return list;
 	}
 	
-	public boolean  isOriginalLineExit(String StrGuid,String path){
-		boolean isExit=false;
+	/**
+	 * 是否有完全相同的，返回0.
+	 * 只有T_Line_Guid 相同，返回1
+	 * 其他返回2
+	 * @param StrGuid
+	 * @param strContentGuid
+	 * @param path
+	 * @return
+	 */
+	public int  isOriginalLineExist(String StrGuid,String strContentGuid,String path){
+		int equ=-1;//T_line_guid 等于 T_Line_content_Guid 完全相等
+		
 		String sqlStr= "select * from " +DBHelper.TABLE_SOURCE_FILE + " where  "+DBHelper.SourceTable.PLANGUID +" is '"+StrGuid+"' and "
-				+DBHelper.SourceTable.Path +" is '" +path +"'";
+				+DBHelper.SourceTable.Path +" is '" +path +"' and "+DBHelper.SourceTable.Line_Content_Guid + " is '" +strContentGuid +"'";
 		Cursor cursor = mDB.rawQuery(sqlStr, null);
 		if(cursor!=null){
-			isExit=cursor.getCount()>0?true:false;
+			equ=cursor.getCount()>0?0:1;
+			cursor.close();
+			cursor=null;
 		}
 		
-		return isExit;
+		if(equ==0){
+			return equ;
+		}else{
+		sqlStr= "select * from " +DBHelper.TABLE_SOURCE_FILE + " where  "+DBHelper.SourceTable.PLANGUID +" is '"+StrGuid+"' and "
+				+DBHelper.SourceTable.Path +" is '" +path +"'";
+		cursor = mDB.rawQuery(sqlStr, null);
+		if(cursor!=null){
+			equ=cursor.getCount()>0?1:2;
+			cursor.close();
+			cursor=null;
+		}
+		}
+		
+		return equ;
 	}
 }

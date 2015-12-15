@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.fragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
 import com.aic.aicdetactor.database.TemporaryRouteDao;
@@ -22,6 +24,7 @@ import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
+import com.alibaba.fastjson.JSON;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -159,25 +162,89 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					mDLLineAdapter.setListData(getDownLoadRouteInfo());
 					mDLLineAdapter.notifyDataSetChanged();
 					break;
-				case  Event.UpdateRouteLine_Message:
+				case  Event.GetNewRouteLine_Message:
 					showOKCancel((String)msg.obj);
 					
 					break;
-				case Event.UpdateRouteLineData_Message:
+				case Event.ReplaceRouteLineData_Message:
 					String str = (String)msg.obj;
 					String []ParamsStr=str.split("\\*");
-					SystemUtil.renameFile(ParamsStr[0],ParamsStr[0].substring(0, ParamsStr[0].length()-4));
+					String pathName=ParamsStr[0].substring(0, ParamsStr[0].length()-4);
+					SystemUtil.renameFile(ParamsStr[0],pathName);
 					myApplication app = myApplication.getApplication();
 					RouteDao dao = RouteDao.getInstance(app.getApplicationContext());
-					 String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
-								+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
-								+" ,  "+DBHelper.SourceTable.Checked_Count+"='0'"
-								+",  "+DBHelper.SourceTable.NormalItemCounts+"='"+ParamsStr[1]
-								+"',  "+DBHelper.SourceTable.SPecialItemCounts+"='"+ParamsStr[2]									
-								+"' where "+DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"'";
+//					 String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
+//								+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
+//								+" ,  "+DBHelper.SourceTable.Checked_Count+"='0'"
+//								+",  "+DBHelper.SourceTable.NormalItemCounts+"='"+ParamsStr[1]
+//								+"',  "+DBHelper.SourceTable.SPecialItemCounts+"='"+ParamsStr[2]									
+//								+"' where "+DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"'";
+//						
+//						dao.execSQLUpdate(StrSql);
+					//删除现有的，再更新新的数据表	
+						/**
+						 * DELETE FROM table_name WHERE [condition];
+						 */
 						
-						dao.execSQLUpdate(StrSql);
-					break;
+					String detelStr= " delete from "	+DBHelper.TABLE_SOURCE_FILE + " where " + DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"' and " 
+							+ DBHelper.SourceTable.Line_Content_Guid +" is '"+ParamsStr[4]+"'";
+					dao.execSQLUpdate(detelStr);
+				
+					//worker
+					detelStr= " delete  from "	+DBHelper.TABLE_WORKERS + " where " + DBHelper.Plan_Worker_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					
+					//turn
+					detelStr= " delete  from "	+DBHelper.TABLE_TURN + " where " + DBHelper.Plan_Turn_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//Organization_Corporation
+					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_CorporationName + " where " + DBHelper.Organization_CorporationName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//Organization_Group
+					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_GroupName + " where " + DBHelper.Organization_GroupName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//Organization_WorkShop
+					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_WorkShopName + " where " + DBHelper.Organization_WorkShopName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//TABLE_Periods
+					detelStr= " delete  from "	+DBHelper.TABLE_Periods + " where " + DBHelper.Periods_Table.Line_Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//TABLE_Period
+					detelStr= " delete  from "	+DBHelper.TABLE_Period + " where " + DBHelper.Period_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
+					dao.execSQLUpdate(detelStr);
+					
+					//重新插入数据
+					String jsonDataStr="";
+					jsonDataStr = SystemUtil.openFile(pathName);
+					DownloadNormalRootData Normaldata=JSON.parseObject(jsonDataStr,DownloadNormalRootData.class);
+					boolean isSpecialLine = false;
+					for(int i=0;i< Normaldata.StationInfo.size();i++){
+						 if(isSpecialLine){break;}
+						 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
+							 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
+								 isSpecialLine=true;
+								 break;
+							 }
+						 }
+					 }
+					try {
+						SystemUtil.writeFileToSD(pathName, jsonDataStr);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					 dao.insertNormalLineInfo(Normaldata.T_Line.Name,pathName,Normaldata.T_Line.T_Line_Guid,
+							 Normaldata.getItemCounts(0,0,false,true),
+							 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+							 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
+
+						break;
 				default:
 					break;
 				}
@@ -197,7 +264,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				public void onClickBtn2Listener(CommonDialog dialog) {
 					// TODO Auto-generated method stub
 					
-					 Message msg = mHandler.obtainMessage(Event.UpdateRouteLineData_Message);
+					 Message msg = mHandler.obtainMessage(Event.ReplaceRouteLineData_Message);
 					 msg.obj=str;
 					 mHandler.sendMessage(msg);
 					 dialog.dismiss();

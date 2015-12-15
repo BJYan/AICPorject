@@ -18,6 +18,8 @@ import com.aic.aicdetactor.data.StationInfoJson;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.fragment.DownLoadFragment;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -25,6 +27,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -71,6 +74,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	private int mPartItemIndex = 0;
 	private String mStrItemDef;
 	private Handler mHandler=null;
+	boolean mStopSetDBStatus=false;
 	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex){
 		this.mDeviceIndex=mDeviceIndex;
 		this.mStationIndex=mStationIndex;
@@ -83,11 +87,22 @@ public class PartItemListAdapter extends BaseAdapter {
 			public void handleMessage(Message msg) {
 				// TODO Auto-generated method stub
 				switch (msg.what) {
-				case 0:
+				case Event.LocalData_Init_Success:
 					Log.d("luotestA", msg.obj.toString());
 					Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
 							Toast.LENGTH_SHORT).show();
 					break;
+				case Event.NetWork_Connecte_Timeout:
+				case Event.NetWork_MSG_Tips:
+				case Event.Server_No_Data:
+					{
+						Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
+								Toast.LENGTH_SHORT).show();
+						
+//						CommonAlterDialog dialog = new CommonAlterDialog(mActivity,"提示",(String)msg.obj,null,null);
+//						dialog.show();
+					}
+					mStopSetDBStatus=true;
 				default:
 					break;
 				}
@@ -400,6 +415,13 @@ public class PartItemListAdapter extends BaseAdapter {
 		app.mLineJsonData.GlobalInfo.Check_Date=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD);		
 		app.mLineJsonData.GlobalInfo.Guid=SystemUtil.createGUID();		
 		app.mLineJsonData.GlobalInfo.Task_Mode=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Task_Mode;		
+		//app.mLineJsonData.GlobalInfo.T_Turn_Guid = app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Turn_Guid;
+		app.mLineJsonData.GlobalInfo.T_Turn_Guid = SystemUtil.createGUID();
+		
+		app.mLineJsonData.GlobalInfo.T_Worker_Guid = app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
+		app.mLineJsonData.GlobalInfo.Check_Datetime = SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
+		app.mLineJsonData.GlobalInfo.Turn_Finish_Mode = app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Finish_Mode;
+		
 		
 		if(app.mLineJsonData.GlobalInfo.Task_Mode==0){
 			app.mLineJsonData.GlobalInfo.Start_Time=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Start_Time;
@@ -456,7 +478,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		String sonStr=JSON.toJSONString(app.mLineJsonData);
 		Event ex = new Event();
 		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
-		
+		UploadAllExtralData();
 		
 		try {
 			String fileGuid="";
@@ -489,6 +511,59 @@ public class PartItemListAdapter extends BaseAdapter {
 				String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Number),
 				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Line_Guid);
 	}
+	
+	/**
+	 * 上传所有的未上传的额外信息
+	 */
+	void UploadAllExtralData(){
+		String SqlStr = "select * from " +DBHelper.TABLE_Media + " where " +DBHelper.Media_Table.Is_Uploaded +" is " +" '0'";
+		RouteDao dao = RouteDao.getInstance(mActivity);
+		Cursor curso = dao.execSQL(SqlStr);
+		String path="";
+		String recordLab="";
+		String mimeType="";
+		List<HashMap<String, String>> upList= new ArrayList<HashMap<String,String>>();
+		if(curso!=null && curso.getCount()>0){
+			curso.moveToFirst();
+			for(int i=0;i<curso.getCount();i++){
+				path=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Path));
+				recordLab=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Name));
+				mimeType=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Mime_Type));
+				byte[]bytedata=null;
+				String data=SystemUtil.openFile(path);
+				if(data!=null){
+					bytedata = data.getBytes();
+				Event.UploadWaveDataRequestInfo_Event(null,mHandler,bytedata,recordLab);
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("name", recordLab);
+				map.put("datetime", SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
+				upList.add(map);
+				}
+				curso.moveToNext();
+			}
+		}
+		
+		if(curso!=null){
+			curso.close();
+			curso=null;
+		}
+		
+		//改变数据表中的上传状态及时间
+		/**
+		 * UPDATE table_name
+SET column1 = value1, column2 = value2...., columnN = valueN
+WHERE [condition];
+		 */
+		for(int k=0;k<upList.size();k++){
+			String setSqlStr= " update "+DBHelper.TABLE_Media + " set " +DBHelper.Media_Table.Is_Uploaded +"=" +"'1',"
+			+DBHelper.Media_Table.UploadedDate +"='" +upList.get(k).get("datetime")+"'"
+			+ " where "+ DBHelper.Media_Table.Name  +" is '" +upList.get(k).get("name")+"'";
+			
+			dao.execSQLUpdate(setSqlStr);
+		}
+		
+	}
+	
 	void setOtherDataIfNeeded(){
 		if(!app.gIsDataChecked){
 			//create device exit_data_guid and t_worker informations
@@ -541,26 +616,26 @@ public class PartItemListAdapter extends BaseAdapter {
 			if(mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.PictureDataId
 					||mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.AudioDataId
 					||mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.WaveDataId){
-			
+				String SqlStr = "insert into " +DBHelper.TABLE_Media +"( "
+						+DBHelper.Media_Table.Line_Guid +","
+						+DBHelper.Media_Table.Name + ","
+						+DBHelper.Media_Table.Date + ","
+						+DBHelper.Media_Table.Mime_Type + ","
+						+DBHelper.Media_Table.Is_Uploaded + ","
+						+DBHelper.Media_Table.Path
+					+") values ('"
+					+app.mLineJsonData.T_Line.T_Line_Guid+"','"
+					+mPartItemList.get(k).RecordLab +"','"
+					+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD)+"','"
+					+mPartItemList.get(k).T_Measure_Type_Id +"',"
+					+"'0'" +",'"
+					+Setting.getExtralDataPath()+mPartItemList.get(k).RecordLab
+					+"')";
+				dao.execSQLUpdate(SqlStr);
 				
 			}
 		
-			String SqlStr = "insert into " +DBHelper.TABLE_Media +"( "
-					+DBHelper.Media_Table.Line_Guid +","
-					+DBHelper.Media_Table.Name + ","
-					+DBHelper.Media_Table.Date + ","
-					+DBHelper.Media_Table.Mime_Type + ","
-					+DBHelper.Media_Table.Is_Updated + ","
-					+DBHelper.Media_Table.Path
-				+") values ('"
-				+app.mLineJsonData.T_Line.T_Line_Guid+"','"
-				+mPartItemList.get(k).RecordLab +"','"
-				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD)+"','"
-				+mPartItemList.get(k).T_Measure_Type_Id +"',"
-				+"'0'" +",'"
-				+Setting.getExtralDataPath()+mPartItemList.get(k).RecordLab
-				+"')";
-			dao.execSQLUpdate(SqlStr);
+			
 		} 
 	}
 	

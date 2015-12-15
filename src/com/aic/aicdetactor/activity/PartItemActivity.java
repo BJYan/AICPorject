@@ -53,6 +53,7 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.Interface.OnButtonListener;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
@@ -63,6 +64,7 @@ import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.PartItemJsonUp;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.MeasureBaseFragment;
 import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment;
@@ -420,7 +422,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	}
 	
 	
-	
 	 private final int MSG_START =0;
 	   private final int MSG_NEXT =MSG_START+1;
 	   private final int MSG_MEASUERMENT =MSG_START+2;
@@ -433,6 +434,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	   private final int MSG_CHANGE_LISTVIEWDATAEX =MSG_START+10;
 	   private final int MSG_CACHE_CURRENT_DEVICEITEM_DATA =MSG_START+11;
 	   private final int MSG_Goto_Selected_Status =MSG_START+12;
+	   private final int MSG_Dalay_Finish =MSG_START+13;
 
    Handler mHandler = new Handler(){
 	   @Override
@@ -445,7 +447,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				   mSpinner.setSelection(0);
 				   initSpinnerAdapterData();
 				  if( !mAdapterList.gotoNextDeviceItem()){
-					  finish();
+					  mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_Dalay_Finish), 3000);
 					  return;
 				  }else{
 					  switchFragment(REMOVELASTFRAGMENT,false);  
@@ -456,6 +458,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				   switchFragment(mAdapterList.getCurrentPartItemType(),true);
 			   }
 			  
+			   break;
+		   case MSG_Dalay_Finish:
+			   finish();
 			   break;
 		   case MSG_NEXT:
 			  // if(!mIsChecking)
@@ -638,16 +643,21 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		}
 			break;		
 		case R.id.bottombutton3://测量
-			if(!app.isTest){
-				if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
-				 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
-				}else {
-					Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
+			if(app.mBLEIsConnected){
+				if(!app.isTest){
+					if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
+					 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+					}else {
+						Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
+					}
+				}else{
+					mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
 				}
+				
+				mButton_Measurement.setEnabled(false);
 			}else{
-				mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+				Toast.makeText(this, "蓝牙未连接，请连接", Toast.LENGTH_LONG).show();
 			}
-			mButton_Measurement.setEnabled(false);
 		//	mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
 			
 			break;
@@ -866,7 +876,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
         	Intent intent_down = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);  
         	Setting setting = new Setting();
         	String path = setting.getData_Media_Director(CommonDef.FILE_TYPE_PICTRUE);
-        	File outputImage = new File(path,SystemUtil.createGUID()+".jpg");
+        	File outputImage = new File(path,SystemUtil.createGUID());
             try {
                 if(outputImage.exists()) {
                     outputImage.delete();

@@ -391,6 +391,7 @@ public class ReceivedDataAnalysis {
 				switch(mDLCmd)
 				{
 				case (byte)0xd2:
+				case (byte)0xd3:
 				{
 					CRC32 crc = new CRC32();
 					crc.update(strbyte, 0, 16);

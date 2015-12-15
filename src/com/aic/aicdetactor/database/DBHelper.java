@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 14;//版本号
+	 private final static int VERSION = 15;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -18,6 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String PLANNAME="T_Line_Name";
 	 //巡检GUID,同时是JSON的文件名称
 	 public static final String PLANGUID="T_Line_Guid";
+	 public static final String Line_Content_Guid="T_Line_Content_Guid";
 	//文件的存储路径
 	 public static final String Path ="Path";
 	 public static final String Checked_Count = "Checked_Count";
@@ -136,18 +137,21 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static String TABLE_T_Organization_CorporationName = "T_Organization_CorporationName";  
 	 public class Organization_CorporationName_Table{ 
 		 public static final String Name = "Name";
+		 public static final String Guid = "Guid";	
 	 } 
 	 
 	 //GroupName
 	 public static String TABLE_T_Organization_GroupName = "T_Organization_GroupName";  
 	 public class Organization_GroupName_Table{ 
 		 public static final String Name = "Name";
+		 public static final String Guid = "Guid";	
 	 } 
 	 
 	 //WorkShopName
 	 public static String TABLE_T_Organization_WorkShopName = "T_Organization_WorkShopName";  
 	 public class Organization_WorkShopName_Table{ 
 		 public static final String Name = "Name";
+		 public static final String Guid = "Guid";	
 	 } 
 	 
 	//Periods
@@ -183,8 +187,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			 public static final String Name = "Name";
 			 public static final String Date = "Date";
 			 public static final String Mime_Type = "Mime_Type";
-			 public static final String	 Is_Updated = "Is_Updated";
-			 public static final String	 UpdatedDate = "UpdatedDate";
+			 public static final String	 Is_Uploaded = "Is_Uploaded";
+			 public static final String	 UploadedDate = "UploadedDate";
 			 public static final String Path = "Path";
 		 } 
 		 
@@ -210,12 +214,13 @@ public class DBHelper extends SQLiteOpenHelper {
 	 //当数据库创建的时候调用
 	public void onCreate(SQLiteDatabase db) {
 		
-		//save file that from server
+		//save file that from server 
 		String jxchecksql = "create table IF NOT EXISTS "+TABLE_SOURCE_FILE
 				+"("
 				+ SourceTable.Path +" varchar(256),"
 				+ SourceTable.PLANNAME +" varchar(256),"
 				+  SourceTable.PLANGUID + " varchar(256) PRIMARY KEY,"	
+				+  SourceTable.Line_Content_Guid + " varchar(256)  ,"	
 				+ SourceTable.Checked_Count +" INTEGER,"
 				+ SourceTable.NormalItemCounts +" INTEGER,"
 				+ SourceTable.SPecialItemCounts +" INTEGER,"
@@ -354,7 +359,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Oragniation_corpSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_CorporationName 
 				+ "(" 
-				+ Organization_CorporationName_Table.Name+" varchar(256) PRIMARY KEY"				
+				+ Organization_CorporationName_Table.Name+" varchar(256) PRIMARY KEY ,"
+				+ Organization_CorporationName_Table.Guid+" varchar(256)"
 				+")";
 		db.execSQL(Oragniation_corpSql);
 		
@@ -362,7 +368,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Organization_GrouSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_GroupName 
 				+ "(" 
-				+ Organization_GroupName_Table.Name+" varchar(256) PRIMARY KEY"				
+				+ Organization_GroupName_Table.Name+" varchar(256) PRIMARY KEY,"	
+				+ Organization_GroupName_Table.Guid+" varchar(256)"		
 				+")";
 		db.execSQL(Organization_GrouSql);
 		
@@ -370,7 +377,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		String Organization_WorkShopNameSql = "create table IF NOT EXISTS "
 				+ TABLE_T_Organization_WorkShopName 
 				+ "(" 
-				+ Organization_WorkShopName_Table.Name+" varchar(256) PRIMARY KEY"				
+				+ Organization_WorkShopName_Table.Name+" varchar(256) PRIMARY KEY,"		
+				+ Organization_WorkShopName_Table.Guid+" varchar(256)"		
 				+")";
 		db.execSQL(Organization_WorkShopNameSql);
 
@@ -415,8 +423,8 @@ public class DBHelper extends SQLiteOpenHelper {
 					+ Media_Table.Name+" varchar(256) ,"	
 					+ Media_Table.Date+" varchar(256) ,"	
 					+ Media_Table.Mime_Type+" varchar(64) ,"	
-					+ Media_Table.Is_Updated+" INT, "	
-					+ Media_Table.UpdatedDate+" varchar(256), "
+					+ Media_Table.Is_Uploaded+" INT, "	
+					+ Media_Table.UploadedDate+" varchar(256), "
 					+ Media_Table.Path+" varchar(256) "
 					+")";
 			db.execSQL(mSql); 

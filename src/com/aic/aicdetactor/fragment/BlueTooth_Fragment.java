@@ -60,6 +60,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	ExpandableListView DevBindedlist;
 	final String TAG= "Bluetooth_Fragment";
 	myApplication app;
+	Button mSendButton;
 	
 //	BroadcastReceiver mReceiver = new BroadcastReceiver() {
 //
@@ -98,24 +99,27 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	        public void onReceive(Context context, Intent intent) {  
 	            Log.e("MainActivity", "接收自定义动态注册广播消息");  
 	            if(intent.getAction().equals(Bluetooth.BLEStatus)){  
-	                boolean BTIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
+	            	app.mBLEIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
+	            	mSendButton.setText(""+app.mBLEIsConnected);
 	                Notification  baseNF = new Notification();   
 	                NotificationManager nm = (NotificationManager) BlueTooth_Fragment.this.getActivity().getSystemService(BlueTooth_Fragment.this.getActivity().NOTIFICATION_SERVICE);   
 	            	
-	               if(BTIsConnected) {
-	                    
+	               if(app.mBLEIsConnected) {
+	            	  
 	                baseNF.icon =R.drawable.connection;  
-	                baseNF.tickerText = "BLE蓝牙已连接";  
+	                baseNF.tickerText = "BLE蓝牙已连接"; 
+	                Log.e("MainActivity", baseNF.tickerText.toString());  
 	                
 	               }else{
 	            	   baseNF.icon =R.drawable.disconnection;  
-		               baseNF.tickerText = "BLE蓝牙未连接，请连接";  
+		               baseNF.tickerText = "BLE蓝牙已断开";  
+		               Log.e("MainActivity", baseNF.tickerText.toString());
 	               }
 	               
 	               baseNF.defaults = Notification.DEFAULT_ALL;  
 	               baseNF.setLatestEventInfo(BlueTooth_Fragment.this.getActivity(),"AIC", baseNF.tickerText, null);  
 	               nm.notify(MeasureBaseFragment.Notification_ID_BASE, baseNF); 
-	               Toast.makeText(context, "蓝牙连接状态"+BTIsConnected, Toast.LENGTH_SHORT).show();  
+	               Toast.makeText(context, baseNF.tickerText.toString(), Toast.LENGTH_SHORT).show();  
 	            }  
 	        }  
 	    };  
@@ -137,7 +141,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		pbar = (ProgressBar) BlueToothView.findViewById(R.id.bluetooth_pbar);
 		pbar_text = (TextView) BlueToothView.findViewById(R.id.bluetooth_pbar_text);
 		
-		Button mSendButton = (Button)BlueToothView.findViewById(R.id.send);
+		mSendButton = (Button)BlueToothView.findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
 		
 		mAllBTDevices.clear();
@@ -174,6 +178,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		DevBindedlist.setAdapter(btBindDevListAdapter);
 		
 		showProgressBar();
+		mSendButton.setText(""+app.mBLEIsConnected);
 	}
 	
 	@Override

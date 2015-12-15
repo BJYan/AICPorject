@@ -25,6 +25,10 @@ public class RoutePeroid {
 	public int Is_Omission_Check;
 	public int Is_Permission_Timeout;// 是否允许超时。
 	public int Is_Special_Inspection;
+	
+    public String T_Worker_Guid;  //人员Guid ,2015-12-06添加, 第一次谁检的填谁的GUID。
+   // public String Check_Datetime;  //2015-12-06添加, 第一次检的日期 时间
+	
 
 
 }

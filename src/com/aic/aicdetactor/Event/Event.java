@@ -2,6 +2,7 @@ package com.aic.aicdetactor.Event;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.UUID;
@@ -71,8 +72,8 @@ public class Event {
 	public static final int Envent_Init= 300;
 	public static final int LocalData_Init_Failed= Envent_Init+0;
 	public static final int LocalData_Init_Success= Envent_Init+1;
-	public final static int UpdateRouteLine_Message=Envent_Init+2;
-	public final static int UpdateRouteLineData_Message=Envent_Init+3;
+	public final static int GetNewRouteLine_Message=Envent_Init+2;
+	public final static int ReplaceRouteLineData_Message=Envent_Init+3;
 	public final static int NetWork_Connecte_Timeout=Envent_Init+4;
 	public final static int NetWork_MSG_Tips=Envent_Init+5;
 	public final static int TEMP_ROUTELINE_DOWNLOAD_MSG=Envent_Init+6;
@@ -125,6 +126,7 @@ public class Event {
 			@Override
 			public void run() {
 				Setting setting = new Setting();
+				String StrMessage="";
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
 				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
@@ -181,25 +183,28 @@ public class Event {
 								 }
 								 Log.d(TAG,"name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
 								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
-								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid+".txt";
+								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid;
 								 boolean isFileExist= SystemUtil.isFileExist(filePath);
-							     boolean isExit =dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
-							     if(!isFileExist){
+							     int isExit =dao.isOriginalLineExist(Normaldata.T_Line.T_Line_Guid,Normaldata.T_Line.T_Line_Content_Guid,filePath);
+							     if(isExit==0){
+							    	 StrMessage="完全相同，不需要更新";
+							     }else if(isExit==2){
 									 SystemUtil.writeFileToSD(filePath, planjson);
 									 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 											 Normaldata.getItemCounts(0,0,false,true),
 											 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
-											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine);
-									 response.Info.Code="日常巡检下载更新成功!";
-								 }else{
-									 response.Info.Code="已有相同的日常巡检路线，是否要更新?";
+											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
+									 StrMessage="日常巡检下载更新成功!";
+								 }else if(isExit==1){
+									 StrMessage="已有相同的日常巡检路线，是否要更新?";
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
 									 filePath=filePath+"temp";
 									 SystemUtil.writeFileToSD(filePath, planjson);
-									 //绝对路径+*+日常巡检总数+*+特殊巡检总数+巡检路线guid
+									 
+									 //绝对路径+*+日常巡检总数+*+特殊巡检总数+巡检路线guid+线路contentguid
 									 final String StrObj=filePath+"*"+Normaldata.getItemCounts(0, 0, false, true) +"*"+Normaldata.getItemCounts(0, 0, true, true)
-											 +"*"+Normaldata.T_Line.T_Line_Guid;
-									 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
+											 +"*"+Normaldata.T_Line.T_Line_Guid+"*"+Normaldata.T_Line.T_Line_Content_Guid;
+									 Message msg = handler.obtainMessage(GetNewRouteLine_Message);
 									 msg.obj=StrObj;
 									 handler.sendMessage(msg);
 									 return;
@@ -211,7 +216,7 @@ public class Event {
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
 								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
-								 response.Info.Code="临时路线更新成功!";								 
+								 StrMessage="临时路线更新成功!";								 
 								 Message msg = handler.obtainMessage(TEMP_ROUTELINE_DOWNLOAD_MSG);
 								 msg.obj=response.Info.Code;
 								 handler.sendMessage(msg);
@@ -220,31 +225,36 @@ public class Event {
 							}else{
 								//其他消息：ClearAllPlan、ClearNormalPlan、ClearTempPlan。。。	
 								Log.i(TAG,"command Name :"+ci.Name);
-								response.Info.Code="其他信息!";
+								StrMessage="其他信息!";
 							}
 							Log.d(TAG,"parseAic:"+planjson);
 						}
 					} else {
 						Log.e(TAG,"ParseAic fail:"+response.Info.Code);
-						response.Info.Code="服务器上无数据可下载!";
+						StrMessage="服务器上无数据可下载!";
 					}
 					Message msg = handler.obtainMessage(NetWork_MSG_Tips);
-					msg.obj = response.Info.Code!=null?response.Info.Code:"服务器下发的状态为空";
+					msg.obj = StrMessage +","+response.Info.Code;
 					handler.sendMessage(msg);
 				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
 					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
-					msg.obj = "连接超时";
+					msg.obj = "Socket连接超时";
 					handler.sendMessage(msg);
 					e.printStackTrace();
 				}catch(ConnectTimeoutException  e){
 					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
-					msg.obj = "连接超时2";
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
 					handler.sendMessage(msg);
 					e.printStackTrace();
 				}catch(Exception e){
 					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
-					msg.obj = "其他异常";
+					msg.obj = "其他异常"+e.toString();
 					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
@@ -275,8 +285,15 @@ public class Event {
 					final RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
 					String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) + Normaldata.T_Line.T_Line_Guid + ".txt";
 					boolean isFileExist= SystemUtil.isFileExist(filePath);
-					boolean isExit = dao.isOriginalLineExit(Normaldata.T_Line.T_Line_Guid,filePath);
-					if(!isFileExist){
+					int isExit = dao.isOriginalLineExist(Normaldata.T_Line.T_Line_Guid,Normaldata.T_Line.T_Line_Content_Guid,filePath);
+					if(isExit==0){
+						if (handler != null) {
+							Message msg = handler.obtainMessage(LocalData_Init_Success);
+							msg.obj="完全相同，不需要更新";
+							handler.sendMessage(msg);
+						}
+					}else if(isExit==2){
+					
 						try {
 							SystemUtil.writeFileToSD(filePath, planjson);
 						} catch (IOException e) {
@@ -291,18 +308,18 @@ public class Event {
 								Normaldata.getItemCounts(0, 0, true, true),
 								Normaldata.T_Worker, Normaldata.T_Turn,
 								Normaldata.T_Period, Normaldata.T_Organization,
-								isSpecialLine);
+								isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
 
 						if (handler != null) {
 							Message msg = handler.obtainMessage(LocalData_Init_Success);
 							msg.obj="本地数据更新成功!";
 							handler.sendMessage(msg);
 						}
-					}else {
+					}else if(isExit==1){
 						 filePath=filePath+"temp";
 						 //绝对路径+*+日常巡检总数+*+特殊巡检总数+*+巡检路线guid
 						 final String StrObj=filePath+"*"+Normaldata.getItemCounts(0, 0, false, true) +"*"+Normaldata.getItemCounts(0, 0, true, true)
-								 +"*"+Normaldata.T_Line.T_Line_Guid;
+								 +"*"+Normaldata.T_Line.T_Line_Guid+"*"+Normaldata.T_Line.T_Line_Content_Guid;
 
 						 try {
 							SystemUtil.writeFileToSD(filePath, planjson);
@@ -310,7 +327,7 @@ public class Event {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						 Message msg = handler.obtainMessage(UpdateRouteLine_Message);
+						 Message msg = handler.obtainMessage(GetNewRouteLine_Message);
 						 msg.obj=StrObj;
 						 handler.sendMessage(msg);
 					}
@@ -602,13 +619,31 @@ public class Event {
 					UploadNormalPlanResultResponse response = sp.Execute(
 							request, timeout);
 					Message msg = new Message();
-					msg.what = 0;
+					msg.what = LocalData_Init_Success;
 					msg.obj = response.Info.Code;
 					if(handler!=null){
 					handler.sendMessage(msg);
 					}
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "Socket连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常"+e.toString();
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 			}
@@ -617,7 +652,7 @@ public class Event {
 	
 	
 	//UploadWaveDataRequest
-		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData) {
+		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData,final String RecordLab) {
 
 			new Thread(new Runnable() {
 
@@ -643,7 +678,7 @@ public class Event {
 					}
 
 					HashMap<String,String> wavedatas = new HashMap<String,String>();
-					wavedatas.put(UUID.randomUUID().toString(), planjson);
+					wavedatas.put(RecordLab, planjson);
 					request.Args.WaveDatas = wavedatas;
 
 					SocketCallTimeout timeout = new SocketCallTimeout();
@@ -655,13 +690,31 @@ public class Event {
 						UploadWaveDataResponse response = sp.Execute(
 								request, timeout);
 						Message msg = new Message();
-						msg.what = 0;
+						msg.what = LocalData_Init_Success;
 						msg.obj = response.Info.Code;
 						if(handler!=null){
 						handler.sendMessage(msg);
 						}
-					} catch (Exception e) {
+					} catch (SocketTimeoutException  e) {
 						// TODO Auto-generated catch block
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "Socket连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectTimeoutException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接异常，不能连接到服务器";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(Exception e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "其他异常"+e.toString();
+						handler.sendMessage(msg);
 						e.printStackTrace();
 					}
 				}

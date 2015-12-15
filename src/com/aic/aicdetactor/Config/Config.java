@@ -21,7 +21,7 @@ public  int server_port=10000;
 public static String  getServiceIP(){	
 	Context context=myApplication.getApplication().getApplicationContext();
 	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-	return settings.getString(CommonDef.APP_Settings.ServiceIP,"222.128.3.208");
+	return settings.getString(CommonDef.APP_Settings.ServiceIP,"192.168.1.130");
 }
 
 /**
@@ -40,7 +40,7 @@ public static String getMACAddress(){
 	WifiManager wifi = (WifiManager) myApplication.getApplication().getSystemService(Context.WIFI_SERVICE);
 	WifiInfo info = wifi.getConnectionInfo();
 	//return info.getMacAddress();
-	return "00:08:22:d2:c0:35";
+	return "0C:D6:BD:2B:7C:68";
 }
 
 /**

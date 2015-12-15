@@ -216,8 +216,8 @@ boolean isTest=true;
     	   m_RoutePeroid.File_Guid=(String)nInfo.get("FileName");
     	   m_RoutePeroid.Is_Omission_Check=m_CurPeriodJson.Is_Omission_Check;
     	   m_RoutePeroid.Is_Permission_Timeout=m_CurPeriodJson.Is_Permission_Timeout;
-    	   m_RoutePeroid.T_Period_Name=m_PeriodInfo.Name;  	   
-
+    	   m_RoutePeroid.T_Period_Name=m_PeriodInfo.Name; 
+    	   m_RoutePeroid.T_Worker_Guid=m_WorkerInfoJson.Guid; 
        }
        else
        {

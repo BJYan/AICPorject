@@ -10,6 +10,7 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -623,6 +624,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mTimeTV.setText("测量完毕");
+				if(!bStartReceiveData){
+					return;
+				}
 				bStartReceiveData = false;
 				mMeasurementButton.setEnabled(true);
 				if(mAnalysis.getPackagesCounts() !=receiveCount){
@@ -641,7 +645,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 					String Wavedata=mAnalysis.getWaveByteData().toString();
 					InsertMediaData(Wavedata,true);
 					InitChart();
-					UpLoadWaveData();							
+					//UpLoadWaveData(AdapterList.getCurrentPartItem().RecordLab);	
+					
 					closeTimer();
 						
 				}else{
@@ -682,12 +687,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		String StrSql="insert into "+DBHelper.TABLE_Media +" ( "
 				+DBHelper.Media_Table.Data_Exist_Guid +","
 				+DBHelper.Media_Table.Date +","
-				+DBHelper.Media_Table.Is_Updated +","
+				+DBHelper.Media_Table.Is_Uploaded +","
 				+DBHelper.Media_Table.Line_Guid +","
 				+DBHelper.Media_Table.Mime_Type +","
 				+DBHelper.Media_Table.Name +","
 				+DBHelper.Media_Table.Path +","
-				+DBHelper.Media_Table.UpdatedDate +") values ('"
+				+DBHelper.Media_Table.UploadedDate +") values ('"
 				+AdapterList.getCurDeviceExitDataGuid()+"','"
 				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
 				+"0"+"','"
@@ -700,7 +705,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		dao.execSQL(StrSql);
 	}
 	
-	void UpLoadWaveData(){
+	void UpLoadWaveData(String RecordLab){
 	float[]waveData=	mAnalysis.getWaveFloatData();
 	if(waveData==null){
 		return;
@@ -714,8 +719,10 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		 }
 		 
 		 
-		Event.UploadWaveDataRequestInfo_Event(null,null,bytedata);
+		Event.UploadWaveDataRequestInfo_Event(null,null,bytedata,RecordLab);
 	}
+	
+	
 	
 	class MyOnPageChangeListener implements OnPageChangeListener{
 

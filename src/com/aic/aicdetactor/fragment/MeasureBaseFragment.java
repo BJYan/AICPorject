@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
@@ -87,10 +88,10 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	        public void onReceive(Context context, Intent intent) {  
 	            Log.e("MainActivity", "接收自定义动态注册广播消息");  
 	            if(intent.getAction().equals(Bluetooth.BLEStatus)){  
-	                boolean BTIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
+	            	app.mBLEIsConnected = intent.getBooleanExtra(Bluetooth.IsConneted, false);
 	                Notification  baseNF = new Notification();   
 	                NotificationManager nm = (NotificationManager) MeasureBaseFragment.this.getActivity().getSystemService(MeasureBaseFragment.this.getActivity().NOTIFICATION_SERVICE);   
-	               if(BTIsConnected) {
+	               if(app.mBLEIsConnected) {
 	                baseNF.icon =R.drawable.connection;  
 	                baseNF.tickerText = "BLE蓝牙已连接";  
 	               }else{
@@ -100,7 +101,7 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	               baseNF.defaults = Notification.DEFAULT_ALL;  
 	               baseNF.setLatestEventInfo(MeasureBaseFragment.this.getActivity(),"AIC", baseNF.tickerText, null);  
 	               nm.notify(MeasureBaseFragment.Notification_ID_BASE, baseNF); 
-	                Toast.makeText(context, "蓝牙连接状态"+BTIsConnected, Toast.LENGTH_SHORT).show();  
+	                Toast.makeText(context, "蓝牙连接状态"+app.mBLEIsConnected, Toast.LENGTH_SHORT).show();  
 	            }  
 	        }  
 	    };  

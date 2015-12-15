@@ -67,8 +67,14 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 	//DATA
 	private ArrayAdapter<String> mSpinnerAdapter;
 	private ArrayAdapter<String> mStatusSpinnerAdapter;
-	private List<String> mSpinnerData = new ArrayList<String>();
-	private List<String> mStatusSpinnerData = new ArrayList<String>();
+	/**
+	 * 显示的状态，不包括后面的异常数字状态
+	 */
+	private List<String> mSpinnerDisplayDataList = new ArrayList<String>();
+	/**
+	 * 保存的状态的异常数字
+	 */
+	private List<String> mSpinnerAbornalCodeList = new ArrayList<String>();
 	private String mSelectValue="";
 	private String mStatusSelectValue="";
 	private PartItemListAdapter AdapterList;
@@ -101,7 +107,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		mStatusSpinner = (Spinner)view.findViewById(R.id.observerspinner);
 		
 		getPartItemStatusArray(mPartItemData.Extra_Information);
-		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerData);
+		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerDisplayDataList);
 		
 		mSpinner.setAdapter(mSpinnerAdapter);
 		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -149,19 +155,21 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
 	}
-	/**
-	 * 从Extra_Information 获取数据，包括里面的数字代码,例如 正常01
-	 */
-	private String[]StatusNameArray = null;
+	
 	public List<String>getPartItemStatusArray(String str){
-		mSpinnerData.clear();		
-		mSpinnerData.add("请选择状态");
+		/**
+		 * 从Extra_Information 获取数据，包括里面的数字代码,例如 正常01
+		 */
+		String[]StatusNameArray = null;
+		mSpinnerDisplayDataList.clear();		
+		mSpinnerDisplayDataList.add("请选择状态");
 		StatusNameArray = str.split(mSplitFlag);
 		for(int k=0;k<StatusNameArray.length;k++){
 			int lenth=StatusNameArray[k].length()>2?StatusNameArray[k].length()-2:StatusNameArray[k].length();
-			mSpinnerData.add(StatusNameArray[k].substring(0, lenth));
+			mSpinnerDisplayDataList.add(StatusNameArray[k].substring(0, lenth));
+			mSpinnerAbornalCodeList.add(StatusNameArray[k].substring(StatusNameArray[k].length()-2,StatusNameArray[k].length()));
 		}
-		return mSpinnerData;
+		return mSpinnerDisplayDataList;
 		
 	}
 	
@@ -211,20 +219,18 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
 		case PartItemContact.SAVE_DATA:
- {
-		//	Value = "";
-
-			String[] oriArrary = AdapterList.getCurOriPartItem().Extra_Information.split("\\/");
-			for (String str : oriArrary) {
-				if (str.contains(mSelectValue)) {
-					Value = str;
-					break;
-				}
+ {		
+			int id = 0;
+			try{
+			id=Integer.valueOf(mSpinnerAbornalCodeList.get(mSpinner.getSelectedItemPosition()-1));
+			Value = "0"+(id+1);
+			}catch(Exception e){
+				e.printStackTrace();
+				id=0;
+				Value="01";
+				
 			}
-Value=mSpinnerData.get(0);;
-			String code = Value.substring(mSelectValue.length());
-			int id = AbnormalInfo.getIdByCode(app.mLineJsonData.T_Item_Abnormal_Grade, code);
-			adapter.saveData(mSelectValue, code, id,0,0);
+			adapter.saveData(mSelectValue, Value, id,0,0);
 		}
 			break;
 		case PartItemContact.MEASURE_DATA:
@@ -314,12 +320,4 @@ Value=mSpinnerData.get(0);;
 		// TODO Auto-generated method stub
 		object.addNewMediaPartItem(params);
 	}
-
-//	@Override
-//	public void saveCheckValue() {
-//		// TODO Auto-generated method stub
-//		Log.d("atest", "Observert   saveCheckValue()");
-//		super.setPartItemData("Observert");
-//	}
-	
 }

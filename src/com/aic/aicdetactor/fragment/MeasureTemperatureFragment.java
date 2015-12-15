@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -70,7 +71,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 	private Spinner mSpinner;
 	private Timer mTimer=null;
 	private TimerTask mTimerTask=null;
-	
+	Button mMeasurementButton;
 	//DATA
 	//之间的通信接口
 	private OnTemperatureMeasureListener mCallback = null;
@@ -100,7 +101,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
-		View view = inflater.inflate(R.layout.temperature, container, false);
+		int layoutId=R.layout.temperature;
+		if(mType==2){
+			layoutId=R.layout.meterreading;
+		}
+		View view = inflater.inflate(layoutId, container, false);
 		mImageView = (ImageView)view.findViewById(R.id.imageView1);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mRadioButton = (RadioButton)view.findViewById(R.id.radioButton2);
@@ -136,6 +141,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 		MLog.Logd(TAG," Temperature_fragment:onCreateView() ");
 		Log.d(TAG, "getName is "+mTextViewName.getText());
 		AdapterList.getCurrentPartItem().setSartDate();
+		mMeasurementButton = (Button)getActivity().findViewById(R.id.bottombutton3);
 		return view;
 	}
 	@Override
@@ -146,39 +152,39 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 	}
 	
 	void startCountdownTimer(){	
-		if(mType==0 || mType==6){
-		if(mCountdownTimerTask==null){
-			mCountdownTimerTask = new TimerTask(){
-				
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				msg.obj=1;
-				msg.what = TEMP_COUNTDOWN;
-				handler.sendMessage(msg);
-			}
-			};
-		}
-		if(mCountdownTimer==null){
-			mCountdownTimer = new Timer();
-			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
-			}
-		}
+//		if(mType==0 || mType==6){
+//		if(mCountdownTimerTask==null){
+//			mCountdownTimerTask = new TimerTask(){
+//				
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				Message msg = Message.obtain();
+//				msg.obj=1;
+//				msg.what = TEMP_COUNTDOWN;
+//				handler.sendMessage(msg);
+//			}
+//			};
+//		}
+//		if(mCountdownTimer==null){
+//			mCountdownTimer = new Timer();
+//			mCountdownTimer.schedule(mCountdownTimerTask, 0,1000);
+//			}
+//		}
 	}
 	
 	void closeCountdownTimer(){
-		if(mType==0 || mType==6){
-		if(mCountdownTimer!=null){
-			mCountdownTimer.cancel();
-			mCountdownTimer=null;
-		}
-		
-		if(mCountdownTimerTask!=null){
-			mCountdownTimerTask.cancel();
-			mCountdownTimerTask=null;
-		}
-		}
+//		if(mType==0 || mType==6){
+//		if(mCountdownTimer!=null){
+//			mCountdownTimer.cancel();
+//			mCountdownTimer=null;
+//		}
+//		
+//		if(mCountdownTimerTask!=null){
+//			mCountdownTimerTask.cancel();
+//			mCountdownTimerTask=null;
+//		}
+//		}
 	}
     
 	 @Override
@@ -229,9 +235,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
     	double MAX = super.mPartItemData.Up_Limit;;
     	double MID = super.mPartItemData.Middle_Limit;
     	double LOW = super.mPartItemData.Down_Limit;
-		
-    //	mCheckedValue = (float)(Math.random()*max_mTemperatureeration);
-    	
+    	try{
     	if((mCheckedValue < MAX) && (mCheckedValue>=MID) ){
     		mRadioButton.setBackgroundColor(Color.YELLOW);
     		mColorTextView.setText(getString(R.string.warning));
@@ -249,6 +253,9 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
     		mEditTextValue.setTextColor(Color.RED);
     	}
     	mEditTextValue.setText(String.valueOf(mCheckedValue));
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
     }
 
     
@@ -267,6 +274,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			if(!bStartReceiveData){
 				mAnalysis.reset();					
 			}
+			
 			mAnalysis.getDataFromBLE(strbyte,bStartReceiveData);
 			if(!bStartReceiveData){
 				bStartReceiveData=!bStartReceiveData;
@@ -298,7 +306,11 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			break;
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mTimeTV.setText("测量完毕");
+			if(!bStartReceiveData){
+				return;
+			}
 			bStartReceiveData = false;
+			mMeasurementButton.setEnabled(true);
 			if(mAnalysis.isReceivedAllData()){
 				if(mAnalysis.isValidate()){
 					 mCheckedValue=mAnalysis.getValidValue();
@@ -454,7 +466,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			break;
 		case PartItemContact.MEASURE_DATA:
 				getDataFromBLE();
-				mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
+				//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
 			
 			break;
 		}
