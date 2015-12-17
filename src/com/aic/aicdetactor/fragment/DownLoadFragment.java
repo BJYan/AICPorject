@@ -1,10 +1,40 @@
 package com.aic.aicdetactor.fragment;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import network.com.citizensoft.networkdemo.MainActivity;
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.Config.Config;
@@ -12,67 +42,15 @@ import com.aic.aicdetactor.Event.Event;
 import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
-import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.data.DownloadNormalRootData;
-import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.database.TemporaryRouteDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
-import com.aic.aicdetactor.media.NotepadActivity;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
-import com.alibaba.fastjson.JSON;
-
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Fragment;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentTabHost;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-import android.widget.ExpandableListView.OnGroupExpandListener;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.RadioGroup.OnCheckedChangeListener;
-import android.widget.Switch;
-import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
-import android.widget.TextView;
 
 public class DownLoadFragment extends Fragment implements OnClickListener {
-	private LinearLayout mSetting_linearLayout = null; 
-	private LinearLayout mUp_linearLayout = null;
-	private LinearLayout mDown_linearLayout = null;
-	private RadioGroup mRadioGroup = null;
   
 	private SharedPreferences mSharedPreferences = null;
     
@@ -86,28 +64,19 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	private CheckBox mUp_CheckBox_autoUp = null;
 	private CheckBox mUp_CheckBox_Up_Delete = null;
 	private RadioGroup mUp_RadioGroup = null;
-	private String mStr_Up_IP="";
-	private String mStr_Up_Pda_code="";
 	//本机在WIFI状态下路由分配给的IP地址  
 	private String mStr_Up_Pda_ip="";
 	private String mPda_mac="";
 	private int mUp_RadioGroup_Index =-1;
-	private Button mUp_Button = null;
 	private boolean mbUp_auto_up = false;
 	private boolean mbUp_up_delete = false;
 	//下载配置
 	private CheckBox mDown_CheckBox_autoDown = null;
 	
 	private RadioGroup mDown_RadioGroup = null;
-	private String mStr_Down_IP="";
-	private String mStr_Down_Pda_code="";
-	private String mStr_Down_Pda_ip="";
-	private String mStr_Down_Pda_mac="";
 	private int mDown_RadioGroup_Index =-1;
 	private boolean mbDown_auto_down = false;
 	//设置配置
-	private String mStr_Setting_IP="";
-	private String mStr_Setting_Pda_code="";
 	private CheckBox mSetting_CheckBox_OnlyWifi = null;
 	private boolean mbSetting_Only_Wifi = false;
 	private TextView mUpMacTextView = null;
@@ -126,6 +95,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	LayoutInflater mInflater;
 	TextView devName;
 	SpinnerAdapter mDLLineAdapter=null;
+	RouteDao mDao;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -155,95 +125,14 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					
 					Toast.makeText(getActivity().getApplicationContext(),(String)(msg.obj),
 							Toast.LENGTH_SHORT).show();
-					mDLLineAdapter = new SpinnerAdapter(DownLoadFragment.this.getActivity().getApplicationContext(),getDownLoadRouteInfo());
-					mDownLoadListView.setAdapter(mDLLineAdapter);
-					mDownLoadListView.setClickable(false);
-					
-					mDLLineAdapter.setListData(getDownLoadRouteInfo());
-					mDLLineAdapter.notifyDataSetChanged();
+					initAllDownLoadRoutList();
 					break;
 				case  Event.GetNewRouteLine_Message:
 					showOKCancel((String)msg.obj);
 					
 					break;
 				case Event.ReplaceRouteLineData_Message:
-					String str = (String)msg.obj;
-					String []ParamsStr=str.split("\\*");
-					String pathName=ParamsStr[0].substring(0, ParamsStr[0].length()-4);
-					SystemUtil.renameFile(ParamsStr[0],pathName);
-					myApplication app = myApplication.getApplication();
-					RouteDao dao = RouteDao.getInstance(app.getApplicationContext());
-//					 String StrSql = "update "+DBHelper.TABLE_SOURCE_FILE
-//								+" set "+DBHelper.SourceTable.DownLoadDate+"="+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2) 
-//								+" ,  "+DBHelper.SourceTable.Checked_Count+"='0'"
-//								+",  "+DBHelper.SourceTable.NormalItemCounts+"='"+ParamsStr[1]
-//								+"',  "+DBHelper.SourceTable.SPecialItemCounts+"='"+ParamsStr[2]									
-//								+"' where "+DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"'";
-//						
-//						dao.execSQLUpdate(StrSql);
-					//删除现有的，再更新新的数据表	
-						/**
-						 * DELETE FROM table_name WHERE [condition];
-						 */
-						
-					String detelStr= " delete from "	+DBHelper.TABLE_SOURCE_FILE + " where " + DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"' and " 
-							+ DBHelper.SourceTable.Line_Content_Guid +" is '"+ParamsStr[4]+"'";
-					dao.execSQLUpdate(detelStr);
-				
-					//worker
-					detelStr= " delete  from "	+DBHelper.TABLE_WORKERS + " where " + DBHelper.Plan_Worker_Table.Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					
-					//turn
-					detelStr= " delete  from "	+DBHelper.TABLE_TURN + " where " + DBHelper.Plan_Turn_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//Organization_Corporation
-					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_CorporationName + " where " + DBHelper.Organization_CorporationName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//Organization_Group
-					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_GroupName + " where " + DBHelper.Organization_GroupName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//Organization_WorkShop
-					detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_WorkShopName + " where " + DBHelper.Organization_WorkShopName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//TABLE_Periods
-					detelStr= " delete  from "	+DBHelper.TABLE_Periods + " where " + DBHelper.Periods_Table.Line_Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//TABLE_Period
-					detelStr= " delete  from "	+DBHelper.TABLE_Period + " where " + DBHelper.Period_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
-					dao.execSQLUpdate(detelStr);
-					
-					//重新插入数据
-					String jsonDataStr="";
-					jsonDataStr = SystemUtil.openFile(pathName);
-					DownloadNormalRootData Normaldata=JSON.parseObject(jsonDataStr,DownloadNormalRootData.class);
-					boolean isSpecialLine = false;
-					for(int i=0;i< Normaldata.StationInfo.size();i++){
-						 if(isSpecialLine){break;}
-						 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
-							 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
-								 isSpecialLine=true;
-								 break;
-							 }
-						 }
-					 }
-					try {
-						SystemUtil.writeFileToSD(pathName, jsonDataStr);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					 dao.insertNormalLineInfo(Normaldata.T_Line.Name,pathName,Normaldata.T_Line.T_Line_Guid,
-							 Normaldata.getItemCounts(0,0,false,true),
-							 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
-							 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
-
+					mDao.ReplaceOriginalFileAndUpdateDB((String)msg.obj);
 						break;
 				default:
 					break;
@@ -253,6 +142,14 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	}
 	 
 
+	void initAllDownLoadRoutList(){
+		mDLLineAdapter = new SpinnerAdapter(DownLoadFragment.this.getActivity().getApplicationContext(),mDao.getAllDownLoadRouteInfo());
+		mDownLoadListView.setAdapter(mDLLineAdapter);
+		mDownLoadListView.setClickable(false);
+		
+		mDLLineAdapter.setListData(mDao.getAllDownLoadRouteInfo());
+		mDLLineAdapter.notifyDataSetChanged();
+	}
 	void showOKCancel(final String str){
 		 CommonDialog acceleChart = new CommonDialog(this.getActivity());
 			acceleChart.setTitle("警告");
@@ -273,6 +170,12 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				@Override
 				public void onClickBtn1Listener(CommonDialog dialog) {
 					// TODO Auto-generated method stub
+					//delete temp file
+					String []list = str.split("\\*");
+					if(list!=null && list.length>0){
+					 SystemUtil.deleteFile(list[0]);
+					}
+					
 					dialog.dismiss();
 				}
 			}, "确认覆盖", "取消");
@@ -283,145 +186,14 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		mInflater = getActivity().getLayoutInflater();
-		//View view = inflater.inflate(R.layout.downup_fragment, container, false);
 		networkView = inflater.inflate(R.layout.network_fragment, container, false);
         networkTabviewInit(inflater);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-		
+        mDao = RouteDao.getInstance(getActivity());
 		uploadInit();
 		downloadInit();   
 		settingViewinit();
-		/*
-		mSetting_linearLayout = (LinearLayout)listViews.get(1).findViewById(R.id.setting_linear);
-		mUp_linearLayout = (LinearLayout)listViews.get(0).findViewById(R.id.up_linear);
-		mDown_linearLayout = (LinearLayout)view.findViewById(R.id.down_linear);
-		mUpMacTextView = (TextView)view.findViewById(R.id.textView_up_pda_mac);
-		mDownMacTextView = (TextView)view.findViewById(R.id.textView_down_pda_mac);
-		mUpIPTextView= (TextView)view.findViewById(R.id.textView_up_pda_ip);
-		mDownIPTextView= (TextView)view.findViewById(R.id.textView_down_pda_ip);
-		displayMacAndIPAddress();
-		//选项 上传  下载 设置
-		mRadioGroup = (RadioGroup)view.findViewById(R.id.downup_group);
-		mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(RadioGroup arg0, int arg1) {
-				// TODO Auto-generated method stub
-				switch(arg0.getCheckedRadioButtonId()){
-				case R.id.downup_radioButton1:
-					
-					mUp_linearLayout.setVisibility(View.VISIBLE);
-					mSetting_linearLayout.setVisibility(View.GONE);
-					mDown_linearLayout.setVisibility(View.GONE);
-					break;
-				case R.id.downup_radioButton2:
-					mUp_linearLayout.setVisibility(View.GONE);
-					mSetting_linearLayout.setVisibility(View.GONE);
-					mDown_linearLayout.setVisibility(View.VISIBLE);
-					
-					break;
-				case R.id.downup_radioButton3:
-					
-					mSetting_linearLayout.setVisibility(View.VISIBLE);
-					mUp_linearLayout.setVisibility(View.GONE);
-					mDown_linearLayout.setVisibility(View.GONE);
-					break;
-				}
-			}
-			
-		});	
-				
-			//上传设置	
-		mUp_CheckBox_autoUp =(CheckBox)view.findViewById(R.id.checkbox_up_auto_up);
-		mUp_CheckBox_autoUp.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
-				mbUp_auto_up = arg1;
-			}
-			
-		});
-		mUp_CheckBox_Up_Delete =(CheckBox)view.findViewById(R.id.uped_delete_checkbox1);
-		mUp_CheckBox_Up_Delete.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
-				mbUp_up_delete = arg1;
-			}
-			
-		});
-		mUp_RadioGroup =(RadioGroup)view.findViewById(R.id.up_group);
-		mUp_RadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(RadioGroup arg0, int arg1) {
-				// TODO Auto-generated method stub
-				switch(arg0.getCheckedRadioButtonId()){
-				case R.id.up_radioButton1:					
-					mUp_RadioGroup_Index =0;
-					break;
-				case R.id.up_radioButton2:
-					mUp_RadioGroup_Index =1;					
-					break;
-				case R.id.up_radioButton3:					
-					mUp_RadioGroup_Index =2;
-					break;
-				case R.id.up_radioButton4:					
-					mUp_RadioGroup_Index =3;
-					break;
-				}
-			}
-			
-		});	
-		
-		mUp_Button = (Button)view.findViewById(R.id.up_up);
-		mUp_Button.setOnClickListener(this);
-		
-	  //下载设置
-		mDown_CheckBox_autoDown =(CheckBox)view.findViewById(R.id.down_checkbox1);
-		mDown_CheckBox_autoDown.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
-				mbDown_auto_down = arg1;
-			}
-			
-		});
-		mDown_RadioGroup =(RadioGroup)view.findViewById(R.id.down_group);
-		mDown_RadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(RadioGroup arg0, int arg1) {
-				// TODO Auto-generated method stub
-				switch(arg0.getCheckedRadioButtonId()){
-				case R.id.down_radioButton1:					
-					mDown_RadioGroup_Index =0;
-					break;
-				case R.id.down_radioButton2:
-					mDown_RadioGroup_Index =1;					
-					break;
-				}
-			}
-			
-		});	
-		
-		mDown_Button = (Button)view.findViewById(R.id.down_down);
-		mDown_Button.setOnClickListener(this);
-		
-		//设置
-		mSetting_CheckBox_OnlyWifi =  (CheckBox)view.findViewById(R.id.setting_checkbox1);
-		mSetting_CheckBox_OnlyWifi.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
-				mbSetting_Only_Wifi = arg1;
-			}
-			
-		});
-		
-		//初始化信息
-		getData();
-		initViewValue();*/
+	
 	    return networkView;
 	}
 
@@ -620,9 +392,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			}
 		});
 		mDownLoadListView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
-		mDLLineAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(),getDownLoadRouteInfo());
-		mDownLoadListView.setAdapter(mDLLineAdapter);
-		mDownLoadListView.setClickable(false);
+		initAllDownLoadRoutList();
 	}
 	
 	
@@ -804,40 +574,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		//window.setContentView(R.layout.dialog_rename_layout);
 	}
 	
-	List<String> getDownLoadRouteInfo(){
-		RouteDao dao = RouteDao.getInstance(getActivity());
-		String SqlStr="select * from "+DBHelper.TABLE_SOURCE_FILE;
-		Cursor cursor = dao.execSQL(SqlStr);
-		List<String> list= new ArrayList<String>();
-		try{
-			while(cursor!=null &&cursor.moveToNext()){
-				String str =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME))+"  "+cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.DownLoadDate));
-				list.add(str);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			if(cursor!=null){
-				cursor.close();
-			}
-		}
-		SqlStr = "select * from "+DBHelper.TABLE_TEMPORARY;
-		
-		try{
-			cursor = dao.execSQL(SqlStr);
-			while(cursor!=null &&cursor.moveToNext()){
-				String str =cursor.getString(cursor.getColumnIndex(DBHelper.Temporary_Table.Title));
-				list.add(str);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			if(cursor!=null){
-				cursor.close();
-			}
-		}
-		return list;
-	}
+	
 	
 	boolean IpIsValide(String str){
 		if(str.length()==0)return false;

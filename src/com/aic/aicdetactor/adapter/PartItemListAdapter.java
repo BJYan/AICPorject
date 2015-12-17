@@ -66,20 +66,22 @@ public class PartItemListAdapter extends BaseAdapter {
 	/**
 	 * 额外的partItem,即 新增的 图片 、音频 、波形数据的list
 	 */
-	//private ArrayList<PartItemJsonUp> mExtralPartItemList=null;
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
 	private int mPartItemIndex = 0;
-	private String mStrItemDef;
 	private Handler mHandler=null;
 	boolean mStopSetDBStatus=false;
+	RouteDao mDao=null;
+	boolean bUploadStatus=false;
 	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex){
 		this.mDeviceIndex=mDeviceIndex;
 		this.mStationIndex=mStationIndex;
 		this.mActivity = av;
 		app = ((myApplication)av. getApplication());
+		mDao= RouteDao.getInstance(app.getApplicationContext());
+		
 		mExtralList = new ArrayList<HashMap<String,Object>>();
 		mHandler =new Handler(){
 
@@ -91,6 +93,12 @@ public class PartItemListAdapter extends BaseAdapter {
 					Log.d("luotestA", msg.obj.toString());
 					Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
 							Toast.LENGTH_SHORT).show();
+					if(msg.arg1==1){
+						//上传成功，需要更新数据表状态
+						bUploadStatus=true;
+					}else{
+						bUploadStatus=false;
+					}
 					break;
 				case Event.NetWork_Connecte_Timeout:
 				case Event.NetWork_MSG_Tips:
@@ -348,6 +356,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		mPartItemList.get(mPartItemIndex).SamplePoint =CaiYangShu;
 		mPartItemList.get(mPartItemIndex).setVMSDir();
 		mPartItemList.get(mPartItemIndex).setSignalType();	
+		mPartItemList.get(mPartItemIndex).Item_Define=mDeviceItemCahce.Item_Define;
 		
 		}
 		setPartItemEndTimeAndTotalTime();
@@ -457,7 +466,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		mPartItemAfterItemDef.Extra_Information="设备级";
 		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Id=2;
 		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Code="01";
-		mPartItemAfterItemDef.Item_Define=mStrItemDef;		
+		mPartItemAfterItemDef.Item_Define=mDeviceItemCahce.Item_Define;
 	}
 	
 	private void saveDeviceItemData(){
@@ -466,7 +475,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		setLineGlobalInfo();
 		mDeviceItemCahce.PartItem.clear();
 		for(PartItemJsonUp part:mPartItemList){
-			part.Item_Define=mStrItemDef;
+			part.Item_Define=mDeviceItemCahce.Item_Define;
 			mDeviceItemCahce.PartItem.add(part);
 		}
 		mDeviceItemCahce.PartItem.add(mPartItemAfterItemDef);
@@ -475,11 +484,9 @@ public class PartItemListAdapter extends BaseAdapter {
 		
 		
 		setOtherDataIfNeeded();
-		String sonStr=JSON.toJSONString(app.mLineJsonData);
-		Event ex = new Event();
-		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
-		UploadAllExtralData();
 		
+		//序列化并本地保存
+		String sonStr=JSON.toJSONString(app.mLineJsonData);		
 		try {
 			String fileGuid="";
 			//文件要保存到数据库中的
@@ -499,12 +506,16 @@ public class PartItemListAdapter extends BaseAdapter {
 		}
 		app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Special_Inspection=0;
 		saveDataToDB();
+		
+		//准备上传数据,应该从数据表中读取未上传的数据
+		Event ex = new Event();
+		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
+		UploadAllExtralData();
 	}
 	
 	String getSaveDataFileName(){
-		RouteDao dao = RouteDao.getInstance(app.getApplicationContext());
-		
-		return dao.getDataSaveFileName(app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name,
+				
+		return mDao.getDataSaveFileName(app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name,
 				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number,
 				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group,
 				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Name,
@@ -513,12 +524,38 @@ public class PartItemListAdapter extends BaseAdapter {
 	}
 	
 	/**
+	 * 上传所有已经巡检过的未上传的日常巡检数据
+	 */
+	void UploadAllUploadJsonFile(){
+		//查表 
+		String sqlStr= "select * from " +DBHelper.TABLE_CHECKING +" where " +DBHelper.Checking_Table.Is_Uploaded +" is 0";
+		Cursor cursor =mDao.execSQL(sqlStr);
+		Event ex = new Event();
+		if(cursor!=null && cursor.getCount()>0){
+			cursor.moveToFirst();
+			for(int i=0;i<cursor.getCount();i++){
+				String path = cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.File_Guid));
+				String JsonData=SystemUtil.openFile(path);
+				
+				ex.UploadNormalPlanResultInfo_Event(null,mHandler,JsonData);
+				
+			}
+			
+		}
+		
+		if(cursor!=null){
+			cursor.close();
+			cursor=null;
+		}
+	}
+	
+	/**
 	 * 上传所有的未上传的额外信息
 	 */
 	void UploadAllExtralData(){
 		String SqlStr = "select * from " +DBHelper.TABLE_Media + " where " +DBHelper.Media_Table.Is_Uploaded +" is " +" '0'";
-		RouteDao dao = RouteDao.getInstance(mActivity);
-		Cursor curso = dao.execSQL(SqlStr);
+		
+		Cursor curso = mDao.execSQL(SqlStr);
 		String path="";
 		String recordLab="";
 		String mimeType="";
@@ -559,7 +596,7 @@ WHERE [condition];
 			+DBHelper.Media_Table.UploadedDate +"='" +upList.get(k).get("datetime")+"'"
 			+ " where "+ DBHelper.Media_Table.Name  +" is '" +upList.get(k).get("name")+"'";
 			
-			dao.execSQLUpdate(setSqlStr);
+			mDao.execSQLUpdate(setSqlStr);
 		}
 		
 	}
@@ -585,16 +622,16 @@ WHERE [condition];
 	 * 并插入额外数据到数据表中  
 	 */
 	private void saveDataToDB(){
-		RouteDao dao = RouteDao.getInstance(mActivity.getApplicationContext());
+		
 		if(app.isTest){
 			RoutePeroid RoutePeroid = new RoutePeroid();
 			RoutePeroid.Base_Point="1";
 			RoutePeroid.Class_Group="T01";
 			RoutePeroid.End_Time=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 			
-			dao.insertUploadFile(RoutePeroid,app.gIsDataChecked,true,true);	
+			mDao.insertUploadFile(RoutePeroid,app.gIsDataChecked,true,true);	
 		}else{
-		dao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid,app.gIsDataChecked,true,true);
+			mDao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid,app.gIsDataChecked,true,true);
 		}
 		app.gIsDataChecked=true;
 		
@@ -631,15 +668,11 @@ WHERE [condition];
 					+"'0'" +",'"
 					+Setting.getExtralDataPath()+mPartItemList.get(k).RecordLab
 					+"')";
-				dao.execSQLUpdate(SqlStr);
+				mDao.execSQLUpdate(SqlStr);
 				
 			}
 		
 			
 		} 
-	}
-	
-	public void setPartItemItemDef(String str){
-		mStrItemDef=str;
 	}	
 }

@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.database;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +12,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
+import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
@@ -29,6 +32,7 @@ import com.aic.aicdetactor.data.upLoadInfo;
 import com.aic.aicdetactor.database.DBHelper.SourceTable;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
+import com.alibaba.fastjson.JSON;
 
 
 public class RouteDao {
@@ -583,10 +587,21 @@ public class RouteDao {
 	 * 把巡检结果插入数据表中
 	 * @param info
 	 */
-	public  void insertUploadFile(RoutePeroid info,boolean bIsUpdate,boolean bUpdated,boolean bUpLoaded){
+	
+	/**
+	 * 
+	 * @param info
+	 * @param bInsert 是否更新，true 已更新
+	 * @param bUpdated
+	 * @param bUpLoaded 是否长传 ，true 已上传
+	 * 如用户上传过生成的JSON文件，Is_Uploaded=TRUE，Is_Updateed=FALSE；否则Is_Uploaded=FALSE。
+如用户生成的JSON文件上传过后，并再次巡检，Is_Updateed=TRUE，否则Is_Updateed=FALSE；
+
+	 */
+	public  void insertUploadFile(RoutePeroid info,boolean bInsert,boolean bUpdated,boolean bUpLoaded){
 		MLog.Logd(TAG, "insertUploadFile() start");
 		String sql ="";
-		if(!bIsUpdate){
+		if(!bInsert){
 		sql = "insert into "
 					+DBHelper.TABLE_CHECKING
 					+"("
@@ -1303,5 +1318,113 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		}
 		
 		return equ;
+	}
+	
+	
+	public void  ReplaceOriginalFileAndUpdateDB(String str){
+		String []ParamsStr=str.split("\\*");
+		String pathName=ParamsStr[0].substring(0, ParamsStr[0].length()-4);
+		SystemUtil.renameFile(ParamsStr[0],pathName);
+		//删除现有的，再更新新的数据表	
+			/**
+			 * DELETE FROM table_name WHERE [condition];
+			 */
+			
+		String detelStr= " delete from "	+DBHelper.TABLE_SOURCE_FILE + " where " + DBHelper.SourceTable.PLANGUID +" is '"+ParamsStr[3]+"' and " 
+				+ DBHelper.SourceTable.Line_Content_Guid +" is '"+ParamsStr[4]+"'";
+		execSQLUpdate(detelStr);
+	
+		//worker
+		detelStr= " delete  from "	+DBHelper.TABLE_WORKERS + " where " + DBHelper.Plan_Worker_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		
+		//turn
+		detelStr= " delete  from "	+DBHelper.TABLE_TURN + " where " + DBHelper.Plan_Turn_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//Organization_Corporation
+		detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_CorporationName + " where " + DBHelper.Organization_CorporationName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//Organization_Group
+		detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_GroupName + " where " + DBHelper.Organization_GroupName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//Organization_WorkShop
+		detelStr= " delete  from "	+DBHelper.TABLE_T_Organization_WorkShopName + " where " + DBHelper.Organization_WorkShopName_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//TABLE_Periods
+		detelStr= " delete  from "	+DBHelper.TABLE_Periods + " where " + DBHelper.Periods_Table.Line_Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//TABLE_Period
+		detelStr= " delete  from "	+DBHelper.TABLE_Period + " where " + DBHelper.Period_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
+		execSQLUpdate(detelStr);
+		
+		//重新插入数据
+		String jsonDataStr="";
+		jsonDataStr = SystemUtil.openFile(pathName);
+		DownloadNormalRootData Normaldata=JSON.parseObject(jsonDataStr,DownloadNormalRootData.class);
+		boolean isSpecialLine = false;
+		for(int i=0;i< Normaldata.StationInfo.size();i++){
+			 if(isSpecialLine){break;}
+			 for(int j=0;j<Normaldata.StationInfo.get(i).DeviceItem.size();j++){
+				 if(Normaldata.StationInfo.get(i).DeviceItem.get(j).Is_Special_Inspection>0){
+					 isSpecialLine=true;
+					 break;
+				 }
+			 }
+		 }
+		try {
+			SystemUtil.writeFileToSD(pathName, jsonDataStr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 insertNormalLineInfo(Normaldata.T_Line.Name,pathName,Normaldata.T_Line.T_Line_Guid,
+				 Normaldata.getItemCounts(0,0,false,true),
+				 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+				 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
+
+	}
+	
+	/**
+	 * 获取所有下载的路线，包括日常巡检、临时巡检
+	 * @return
+	 */
+	public List<String> getAllDownLoadRouteInfo(){
+		String SqlStr="select * from "+DBHelper.TABLE_SOURCE_FILE;
+		Cursor cursor = execSQL(SqlStr);
+		List<String> list= new ArrayList<String>();
+		try{
+			while(cursor!=null &&cursor.moveToNext()){
+				String str =cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.PLANNAME))+"  "+cursor.getString(cursor.getColumnIndex(DBHelper.SourceTable.DownLoadDate));
+				list.add(str);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cursor!=null){
+				cursor.close();
+			}
+		}
+		SqlStr = "select * from "+DBHelper.TABLE_TEMPORARY;
+		
+		try{
+			cursor = execSQL(SqlStr);
+			while(cursor!=null &&cursor.moveToNext()){
+				String str =cursor.getString(cursor.getColumnIndex(DBHelper.Temporary_Table.Title));
+				list.add(str);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cursor!=null){
+				cursor.close();
+			}
+		}
+		return list;
 	}
 }

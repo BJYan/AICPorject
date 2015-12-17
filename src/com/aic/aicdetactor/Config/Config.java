@@ -21,7 +21,7 @@ public  int server_port=10000;
 public static String  getServiceIP(){	
 	Context context=myApplication.getApplication().getApplicationContext();
 	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-	return settings.getString(CommonDef.APP_Settings.ServiceIP,"192.168.1.130");
+	return settings.getString(CommonDef.APP_Settings.ServiceIP,"222.128.3.208");
 }
 
 /**

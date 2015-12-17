@@ -15,26 +15,33 @@ import network.aic.xj.common.context.request.AckServerCommandRequestArgs;
 import network.aic.xj.common.context.request.DeliverNormalPlanRequestArgs;
 import network.aic.xj.common.context.request.DeliverTempPlanRequestArgs;
 import network.aic.xj.common.context.request.QueryServerCommandRequestArgs;
+import network.aic.xj.common.context.request.UploadFirstOpenTempPlanRequestArgs;
 import network.aic.xj.common.context.request.UploadMobilePhoneInfoRequestArgs;
 import network.aic.xj.common.context.request.UploadNormalPlanResultRequestArgs;
 import network.aic.xj.common.context.request.UploadRFIDRequestArgs;
+import network.aic.xj.common.context.request.UploadTempPlanResultRequestArgs;
 import network.aic.xj.common.context.request.UploadWaveDataRequestArgs;
 import network.aic.xj.common.context.response.CommandInfo;
+import network.aic.xj.common.json.temp.result.TempPlanUploadResult;
 import network.aic.xj.common.request.AckServerCommandRequest;
 import network.aic.xj.common.request.QueryOrganizationRequest;
 import network.aic.xj.common.request.QueryServerCommandRequest;
 import network.aic.xj.common.request.QueryServerInfoRequest;
+import network.aic.xj.common.request.UploadFirstOpenTempPlanRequest;
 import network.aic.xj.common.request.UploadMobilePhoneInfoRequest;
 import network.aic.xj.common.request.UploadNormalPlanResultRequest;
 import network.aic.xj.common.request.UploadRFIDRequest;
+import network.aic.xj.common.request.UploadTempPlanResultRequest;
 import network.aic.xj.common.request.UploadWaveDataRequest;
 import network.aic.xj.common.response.AckServerCommandResponse;
 import network.aic.xj.common.response.QueryOrganizationResponse;
 import network.aic.xj.common.response.QueryServerCommandResponse;
 import network.aic.xj.common.response.QueryServerInfoResponse;
+import network.aic.xj.common.response.UploadFirstOpenTempPlanResponse;
 import network.aic.xj.common.response.UploadMobilePhoneInfoResponse;
 import network.aic.xj.common.response.UploadNormalPlanResultResponse;
 import network.aic.xj.common.response.UploadRFIDResponse;
+import network.aic.xj.common.response.UploadTempPlanResultResponse;
 import network.aic.xj.common.response.UploadWaveDataResponse;
 import network.com.citizensoft.common.util.DateUtil;
 import network.com.citizensoft.network.SocketCallTimeout;
@@ -88,8 +95,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				UploadRFIDRequest request = new UploadRFIDRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -119,6 +126,12 @@ public class Event {
 		}).start();
 	}
 
+	/**
+	 * 更新服务器巡检路线信息
+	 * @param view
+	 * @param activity
+	 * @param handler
+	 */
 	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
 		final boolean isLocalDebug =false;
 		new Thread(new Runnable() {
@@ -129,8 +142,8 @@ public class Event {
 				String StrMessage="";
       if(!isLocalDebug){
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 				String planjson="";
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -195,6 +208,10 @@ public class Event {
 											 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
 											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
 									 StrMessage="日常巡检下载更新成功!";
+									 Message msg = handler.obtainMessage(LocalData_Init_Success);
+									 msg.obj=StrMessage;
+									 handler.sendMessage(msg);
+									// return;
 								 }else if(isExit==1){
 									 StrMessage="已有相同的日常巡检路线，是否要更新?";
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
@@ -259,6 +276,7 @@ public class Event {
 					e.printStackTrace();
 				}
 				} else {
+					///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					String planjson = SystemUtil.openFile(Environment.getExternalStorageDirectory() + "/AICLine.txt");
 					boolean isSpecialLine = false;
 					if (planjson == null) {
@@ -346,8 +364,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				QueryServerCommandRequest request = new QueryServerCommandRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -391,8 +409,26 @@ public class Event {
 					msg.what = 0;
 					msg.obj = response.Info.Code;
 					handler.sendMessage(msg);
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "Socket连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常"+e.toString();
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 
@@ -410,8 +446,8 @@ public class Event {
 				synchronized (this) {
 					if (_lockCommandIds != null && _lockCommandIds.length != 0) {
 						ServiceProvider sp = new ServiceProvider();
-						sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-						sp.Port = Config.getServicePort();//10000;
+						sp.ServerIP = Config.getServiceIP();//;
+						sp.Port = Config.getServicePort();//;
 
 						AckServerCommandRequest request = new AckServerCommandRequest();
 						request.CreateTime = DateUtil.getCurrentDate();
@@ -432,8 +468,26 @@ public class Event {
 							msg.what = 0;
 							msg.obj = response.Info.Code;
 							handler.sendMessage(msg);
-						} catch (Exception e) {
+						 } catch (SocketTimeoutException  e) {
 							// TODO Auto-generated catch block
+							Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+							msg.obj = "Socket连接超时";
+							handler.sendMessage(msg);
+							e.printStackTrace();
+						}catch(ConnectTimeoutException  e){
+							Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+							msg.obj = "连接超时";
+							handler.sendMessage(msg);
+							e.printStackTrace();
+						}catch(ConnectException  e){
+							Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+							msg.obj = "连接异常，不能连接到服务器";
+							handler.sendMessage(msg);
+							e.printStackTrace();
+						}catch(Exception e){
+							Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+							msg.obj = "其他异常"+e.toString();
+							handler.sendMessage(msg);
 							e.printStackTrace();
 						}
 					}
@@ -443,7 +497,7 @@ public class Event {
 	}
 
 	/**
-	 * APP查询服务器信息
+	 * APP查询服务器信息的时间信息
 	 * @param view
 	 * @param handler
 	 */
@@ -455,8 +509,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				QueryServerInfoRequest request = new QueryServerInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -474,8 +528,26 @@ public class Event {
 					msg.what = 0;
 					msg.obj = response.Info.Code;
 					handler.sendMessage(msg);
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "Socket连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常"+e.toString();
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 			}
@@ -496,8 +568,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				QueryOrganizationRequest request = new QueryOrganizationRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -535,8 +607,26 @@ public class Event {
 					msg.what = 0;
 					msg.obj = response.Info.Code;
 					handler.sendMessage(msg);
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "Socket连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常"+e.toString();
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 			}
@@ -551,8 +641,8 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				UploadMobilePhoneInfoRequest request = new UploadMobilePhoneInfoRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -573,8 +663,26 @@ public class Event {
 					msg.what = 0;
 					msg.obj = response.Info.Code;
 					handler.sendMessage(msg);
-				} catch (Exception e) {
+				} catch (SocketTimeoutException  e) {
 					// TODO Auto-generated catch block
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "Socket连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectTimeoutException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接超时";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(ConnectException  e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "连接异常，不能连接到服务器";
+					handler.sendMessage(msg);
+					e.printStackTrace();
+				}catch(Exception e){
+					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+					msg.obj = "其他异常"+e.toString();
+					handler.sendMessage(msg);
 					e.printStackTrace();
 				}
 			}
@@ -589,10 +697,10 @@ public class Event {
 			public void run() {
 
 				ServiceProvider sp = new ServiceProvider();
-				//sp.ServerIP = "222.128.3.208";//公网
+				//sp.ServerIP = ;//公网
 				
-				sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-				sp.Port = Config.getServicePort();//10000;
+				sp.ServerIP = Config.getServiceIP();//;
+				sp.Port = Config.getServicePort();//;
 
 				UploadNormalPlanResultRequest request = new UploadNormalPlanResultRequest();
 				request.CreateTime = DateUtil.getCurrentDate();
@@ -619,6 +727,11 @@ public class Event {
 					UploadNormalPlanResultResponse response = sp.Execute(
 							request, timeout);
 					Message msg = new Message();
+					if(response.Info.Code.equals(ResponseCode.OK)){
+						msg.arg1=1;	
+					}else{
+						msg.arg1=0;
+					}
 					msg.what = LocalData_Init_Success;
 					msg.obj = response.Info.Code;
 					if(handler!=null){
@@ -652,6 +765,13 @@ public class Event {
 	
 	
 	//UploadWaveDataRequest
+	/**
+	 * 上传波形、音频、图片等2进制数据
+	 * @param view
+	 * @param handler
+	 * @param UploadData
+	 * @param RecordLab
+	 */
 		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData,final String RecordLab) {
 
 			new Thread(new Runnable() {
@@ -660,8 +780,8 @@ public class Event {
 				public void run() {
 
 					ServiceProvider sp = new ServiceProvider();
-					sp.ServerIP = Config.getServiceIP();//"222.128.3.208";
-					sp.Port = Config.getServicePort();//10000;
+					sp.ServerIP = Config.getServiceIP();//;
+					sp.Port = Config.getServicePort();//;
 
 					UploadWaveDataRequest request = new UploadWaveDataRequest();
 					request.CreateTime = DateUtil.getCurrentDate();
@@ -720,4 +840,165 @@ public class Event {
 				}
 			}).start();
 		}	
+		
+		
+		/**
+		 * 上传读取到的RFID（扣）
+		 * @param view
+		 * @param handler
+		 * @param RFIDStr
+		 * @param ReadTimeStr,可为空，表示服务器端的时间
+		 */
+		public static void  UploadFirstOpenTempPlanRequest_Event(View view,final Handler handler,final String RFIDStr,final String ReadTimeStr) {
+
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+
+					ServiceProvider sp = new ServiceProvider();
+					sp.ServerIP = Config.getServiceIP();//;
+					sp.Port = Config.getServicePort();//;
+
+					UploadFirstOpenTempPlanRequest request = new UploadFirstOpenTempPlanRequest();
+					request.CreateTime = DateUtil.getCurrentDate();
+					request.Source_MAC = Config.getMACAddress();// 本机MAC
+					request.Source_IP = Config.getLocalIPAddress();
+					request.Args = new UploadFirstOpenTempPlanRequestArgs();
+					
+					String rfid=null;
+					try {
+						rfid = new String(Base64.encode(RFIDStr.getBytes(), Base64.DEFAULT),"utf-8");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					String RTimeStr=null;
+					try {
+						RTimeStr = new String(Base64.encode(ReadTimeStr.getBytes(), Base64.DEFAULT),"utf-8");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					request.Args.Feedback_Time = RTimeStr;
+					request.Args.Guid=rfid;
+					SocketCallTimeout timeout = new SocketCallTimeout();
+					timeout.ConnectTimeoutSeconds = 30;
+					timeout.ReceiveTimeoutSeconds = 60;
+					timeout.SendTimeoutSeconds = 60;
+
+					try {
+						UploadFirstOpenTempPlanResponse response = sp.Execute(
+								request, timeout);
+						Message msg = new Message();
+						msg.what = LocalData_Init_Success;
+						msg.obj = response.Info.Code;
+						if(handler!=null){
+						handler.sendMessage(msg);
+						}
+					} catch (SocketTimeoutException  e) {
+						// TODO Auto-generated catch block
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "Socket连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectTimeoutException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接异常，不能连接到服务器";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(Exception e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "其他异常"+e.toString();
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}	
+		
+		/**
+		 * 上传临时巡检结果
+		 * @param view
+		 * @param handler
+		 * @param UploadData
+		 */
+		public void UploadTempPlanResultRequest_Event(View view,final Handler handler,final TempPlanUploadResult UploadData) {
+
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+
+					ServiceProvider sp = new ServiceProvider();
+					
+					sp.ServerIP = Config.getServiceIP();
+					sp.Port = Config.getServicePort();
+
+					UploadTempPlanResultRequest request = new UploadTempPlanResultRequest();
+					request.CreateTime = DateUtil.getCurrentDate();
+					request.Source_MAC = Config.getMACAddress();// 本机MAC
+					request.Source_IP = Config.getLocalIPAddress();
+					request.Args = new UploadTempPlanResultRequestArgs();
+					
+//					String planjson=null;
+//					try {
+//						planjson = new String(Base64.encode(UploadData, Base64.DEFAULT),"utf-8");
+//					} catch (UnsupportedEncodingException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+
+					request.Args.UploadData = UploadData;;
+
+					SocketCallTimeout timeout = new SocketCallTimeout();
+					timeout.ConnectTimeoutSeconds = 30;
+					timeout.ReceiveTimeoutSeconds = 60;
+					timeout.SendTimeoutSeconds = 60;
+
+					try {
+						UploadTempPlanResultResponse response = sp.Execute(
+								request, timeout);
+						Message msg = new Message();
+						if(response.Info.Code.equals(ResponseCode.OK)){
+							msg.arg1=1;	
+						}else{
+							msg.arg1=0;
+						}
+						msg.what = LocalData_Init_Success;
+						msg.obj = response.Info.Code;
+						if(handler!=null){
+						handler.sendMessage(msg);
+						}
+					} catch (SocketTimeoutException  e) {
+						// TODO Auto-generated catch block
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "Socket连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectTimeoutException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接超时";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(ConnectException  e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "连接异常，不能连接到服务器";
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}catch(Exception e){
+						Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
+						msg.obj = "其他异常"+e.toString();
+						handler.sendMessage(msg);
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
 }

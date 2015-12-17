@@ -306,10 +306,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			
 			
 				if(mSpinner.getSelectedItemPosition()>0){
-//					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
-//					msg.arg1=mSpinner.getSelectedItemPosition();
-//					msg.obj=mSpinner.getSelectedItem().toString();
-					mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATAEX);
+					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
+					msg.arg1=mSpinner.getSelectedItemPosition();
+					msg.obj=mSpinner.getSelectedItem().toString();
+					mHandler.sendMessage(msg);
 				}else{
 					mAdapterList.initListViewAndData(true);
 				}
@@ -643,7 +643,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		}
 			break;		
 		case R.id.bottombutton3://测量
-			if(app.mBLEIsConnected){
+			//if(app.mBLEIsConnected){
 				if(!app.isTest){
 					if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
 					 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
@@ -655,9 +655,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				}
 				
 				mButton_Measurement.setEnabled(false);
-			}else{
-				Toast.makeText(this, "蓝牙未连接，请连接", Toast.LENGTH_LONG).show();
-			}
+//			}else{
+//				Toast.makeText(this, "蓝牙未连接，请连接", Toast.LENGTH_LONG).show();
+//			}
 		//	mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
 			
 			break;

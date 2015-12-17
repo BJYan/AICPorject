@@ -92,8 +92,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		 public static final String Turn_Name = "Turn_Name";		 
 		 public static final String Turn_Number = "Turn_Number";
 		 public static final String Date = "Date";	
-		 public static final String File_Guid = "File_Guid";		 
+		 public static final String File_Guid = "File_Guid";	
+		 //文件是否被上传过，默认=FALSE。
 		 public static final String Is_Uploaded = "Is_Uploaded";
+		 //文件内容是否更新过，默认=FALSE。
 		 public static final String Is_Updateed = "Is_Updateed";
 		 
 		 public static final String Checked_Count = "Checked_Count";
