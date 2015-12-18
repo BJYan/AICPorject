@@ -90,9 +90,12 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 				@Override
 				public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 					// TODO Auto-generated method stub
+					int k = arg0.getId() % 100;
 					if (arg1 == true) {
-						int k = arg0.getId() % 100;
+						
 						mCheckedIndex[k] = 1;
+					}else{
+						mCheckedIndex[k] = 0;
 					}
 				}
 
@@ -100,12 +103,12 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 			checkbox.setTextColor(Color.BLACK);
 			checkbox.setText(mOrigObseverList[i].toString());
 			ll.addView(checkbox);
-			// 寻找已经选择的项，并设置为选中
-			for (String SelectStr : CurObseverList) {
-				if (SelectStr.equals(mOrigObseverList[i])) {
-					checkbox.setChecked(true);
-				}
-			}
+//			// 寻找已经选择的项，并设置为选中
+//			for (String SelectStr : CurObseverList) {
+//				if (SelectStr.equals(mOrigObseverList[i])) {
+//					checkbox.setChecked(true);
+//				}
+//			}
 
 		}
 		AdapterList.getCurrentPartItem().setSartDate();
@@ -146,17 +149,14 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 				int AbnormalId=-1;
 				String AbnormalCode="";
 				Value="";
-				int i=0;
-				for(int m:mCheckedIndex){
-					if(m==1){
-						if(Value.length()!=0){
-							Value = Value+"/"+mOrigObseverList[i].toString();
-						}else{
-							Value = mOrigObseverList[i].toString();
+				for(int m=0;m<mCheckedIndex.length;m++){
+					if(mCheckedIndex[m]==1){						
+						Value = Value+"/"+mOrigObseverList[m].toString();
 						}
-						
 					}
-					
+				
+				if(Value.startsWith("/")){
+					Value=Value.substring(1);
 				}
 				//没选任何选项时,设置信息为normal
 				if(Value==""){
