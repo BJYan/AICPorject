@@ -130,6 +130,9 @@
             android:screenOrientation="portrait">
         </activity>
         
+        <activity android:name="com.aic.aicdetactor.activity.PartItemListSelectActivity" 
+            android:screenOrientation="portrait" 
+            android:windowSoftInputMode="adjustPan|stateHidden"/>   
         <activity android:name="com.aic.aicdetactor.activity.PartItemActivity" 
             android:screenOrientation="portrait" 
             android:windowSoftInputMode="adjustPan|stateHidden"/>        
