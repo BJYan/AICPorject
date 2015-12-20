@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -69,13 +70,12 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 		View view = inflater.inflate(R.layout.measurement, container, false);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
-		TextView ValueTextView = (TextView)view.findViewById(R.id.check_name);
-		ValueTextView.setText(getPartItemData());
+		EditText ValueEditText = (EditText)view.findViewById(R.id.editcontent);
+		ValueEditText.setText(getPartItemData());
 		
 		
 		LinearLayout ll = (LinearLayout)view.findViewById(R.id.lined);
 		mOrigObseverList=AdapterList.getCurOriPartItem().Extra_Information.split("\\/");		
-		String[] CurObseverList=AdapterList.getCurrentPartItem().Extra_Information.split("\\/"); 
 		
 		mCheckedIndex = new int[mOrigObseverList.length];
 		for (int i = 0; i < mOrigObseverList.length; i++) {

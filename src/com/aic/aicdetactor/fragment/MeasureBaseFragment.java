@@ -162,12 +162,12 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	
 	
 
-	@Override
-	public void addNewMediaPartItem(ParamsPartItemFragment params,
-			PartItemListAdapter object) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void addNewMediaPartItem(ParamsPartItemFragment params,
+//			PartItemListAdapter object) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public void onDestroy() {

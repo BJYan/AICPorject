@@ -12,12 +12,13 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.DeviceItemJson;
+import com.aic.aicdetactor.data.ExtranalBinaryInfo;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.data.RoutePeroid;
 import com.aic.aicdetactor.data.StationInfoJson;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.database.DBHelper;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
 import com.aic.aicdetactor.setting.Setting;
@@ -72,16 +73,17 @@ public class PartItemListAdapter extends BaseAdapter {
 	private int mDeviceIndex=0;
 	private int mPartItemIndex = 0;
 	private Handler mHandler=null;
+	private Handler mActivityHandler=null;
 	boolean mStopSetDBStatus=false;
-	RouteDao mDao=null;
+	LineDao mDao=null;
 	boolean bUploadStatus=false;
-	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex){
+	public PartItemListAdapter(Activity av,int mStationIndex,int mDeviceIndex,Handler ActivityHandler){
 		this.mDeviceIndex=mDeviceIndex;
 		this.mStationIndex=mStationIndex;
 		this.mActivity = av;
 		app = ((myApplication)av. getApplication());
-		mDao= RouteDao.getInstance(app.getApplicationContext());
-		
+		mDao= LineDao.getInstance(app.getApplicationContext());
+		mActivityHandler = ActivityHandler;
 		mExtralList = new ArrayList<HashMap<String,Object>>();
 		mHandler =new Handler(){
 
@@ -91,14 +93,17 @@ public class PartItemListAdapter extends BaseAdapter {
 				switch (msg.what) {
 				case Event.LocalData_Init_Success:
 					Log.d("luotestA", msg.obj.toString());
-					Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
-							Toast.LENGTH_SHORT).show();
+					Message msg2= mActivityHandler.obtainMessage(Event.LocalData_Init_Success);
+					msg2.arg1=msg.arg1;
+					mActivityHandler.sendMessage(msg2);
 					if(msg.arg1==1){
 						//上传成功，需要更新数据表状态
 						bUploadStatus=true;
 					}else{
 						bUploadStatus=false;
 					}
+//					Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
+//							Toast.LENGTH_SHORT).show();
 					break;
 				case Event.NetWork_Connecte_Timeout:
 				case Event.NetWork_MSG_Tips:
@@ -172,8 +177,9 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * 判断当前的deviceItem是否已经巡检完成了，true 表示已巡检完毕，否则没巡检完。
 	 * @return
 	 */
-	public boolean isCurrentDeviceItemFinish(){
-		if(mPartItemIndex>(mPartItemAfterSelectedList.size()-1)){
+	public boolean isLastPartItemInCurrentDeviceItem(){
+		Log.d(TAG, "isLastPartItemInCurrentDeviceItem()mPartItemIndex="+mPartItemIndex +",and mPartItemAfterSelectedList.size()="+mPartItemAfterSelectedList.size());
+		if(mPartItemIndex>=mPartItemAfterSelectedList.size()){
 			mPartItemIndex=mPartItemAfterSelectedList.size()-1;
 			return true;
 		}		
@@ -190,14 +196,23 @@ public class PartItemListAdapter extends BaseAdapter {
 			//mease is this is last deviceItem and all deviceItems that under current station have checked.
 			return false;
 			}else{
-				mDeviceIndex++;
-				resetInitListData();
+				//app.mDeviceIndex=++mDeviceIndex;
+			//	resetInitListData();
 				return true;
 			}
 		}
 		
 		return false;
 }
+	public boolean isLastDevice(int deviceIndex){
+		boolean value=false;
+		
+		if(deviceIndex==app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.size()-1){
+			value=true;
+		}
+		return value;
+		
+	}
 	/**
 	 * 获取原始数据，用于显示已测量的数据测试情况
 	 * 
@@ -207,9 +222,9 @@ public class PartItemListAdapter extends BaseAdapter {
 		return mOriPartItemList.get(mPartItemIndex);
 	}
 	public void initListViewAndData(boolean bRefreshListView){
-		
-	//	mDeviceItemCahce = DeviceItemJson.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
-		mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
+		mDeviceItemCahce = new DeviceItemJson();
+		mDeviceItemCahce.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
+	//	mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
 		//班组
 //		mDeviceItemCahce.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
 //		//班次
@@ -278,7 +293,6 @@ public class PartItemListAdapter extends BaseAdapter {
 		this.notifyDataSetChanged();
 		
 	}
-	
 	public void getNewPartItemListDataByStatusArray(int index,String DeviceItemDef){
 		mPartItemList.clear();
 		mPartItemAfterSelectedList.clear();
@@ -293,7 +307,6 @@ public class PartItemListAdapter extends BaseAdapter {
 			}
 		mDeviceItemCahce.Item_Define=DeviceItemDef;
 		mDeviceItemCahce.setStartDate();
-		
 		genPartItemDataAfterItemDef();
 		mExtralList.clear();
 		this.notifyDataSetChanged();
@@ -307,16 +320,16 @@ public class PartItemListAdapter extends BaseAdapter {
 		mDeviceItemCahce.setDeviceChecked();
 		mDeviceItemCahce.setEndDate();
 		if(app.isTest){
-			if(app.isSpecialLine){
+			if(app.isSpecialLine()){
 				mDeviceItemCahce.setIsOmissionCheck(0);
 			}else{
 				mDeviceItemCahce.setIsOmissionCheck(1887);
 			}
 		}else{
-			if(app.isSpecialLine){
+			if(app.isSpecialLine()){
 				mDeviceItemCahce.setIsOmissionCheck(0);
 			}else{			
-			mDeviceItemCahce.setIsOmissionCheck(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Omission_Check);
+			mDeviceItemCahce.setIsOmissionCheck(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check);
 			}
 		}
 		mPartItemIndex=0;
@@ -330,11 +343,12 @@ public class PartItemListAdapter extends BaseAdapter {
 	}
 	
 	public int getCurrentPartItemType(){
-		long type =Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
-		return (int)type;
+		long type=0;
+		if(mPartItemIndex<mPartItemList.size()){
+		type =Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
 		}
-		
-	
+		return (int)type;
+	}
 	public PartItemJsonUp getCurrentPartItem(){
 		return mPartItemList.get(mPartItemIndex);
 	}
@@ -357,6 +371,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		mPartItemList.get(mPartItemIndex).setVMSDir();
 		mPartItemList.get(mPartItemIndex).setSignalType();	
 		mPartItemList.get(mPartItemIndex).Item_Define=mDeviceItemCahce.Item_Define;
+		mPartItemList.get(mPartItemIndex).Check_Mode="";
 		
 		}
 		setPartItemEndTimeAndTotalTime();
@@ -377,6 +392,11 @@ public class PartItemListAdapter extends BaseAdapter {
 		PartItemItem.Clone(mPartItemList.get(mPartItemIndex)); 
 		PartItemItem.SaveLab= params.SaveLab;
 		PartItemItem.RecordLab=params.RecordLab;
+		
+		//set current recordLab and SaveLab
+		mPartItemList.get(mPartItemIndex).RecordLab=params.RecordLab;
+		mPartItemList.get(mPartItemIndex).SaveLab=params.SaveLab;
+		
 		if(params.TypeCode==OnButtonListener.AudioDataType||params.TypeCode==OnButtonListener.PictureDataType){
 			PartItemItem.T_Measure_Type_Code=""+params.TypeCode;
 			PartItemItem.T_Measure_Type_Id=params.TypeCode+1;
@@ -423,24 +443,24 @@ public class PartItemListAdapter extends BaseAdapter {
 		}
 		app.mLineJsonData.GlobalInfo.Check_Date=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD);		
 		app.mLineJsonData.GlobalInfo.Guid=SystemUtil.createGUID();		
-		app.mLineJsonData.GlobalInfo.Task_Mode=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Task_Mode;		
+		app.mLineJsonData.GlobalInfo.Task_Mode=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Task_Mode;		
 		//app.mLineJsonData.GlobalInfo.T_Turn_Guid = app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Turn_Guid;
 		app.mLineJsonData.GlobalInfo.T_Turn_Guid = SystemUtil.createGUID();
 		
-		app.mLineJsonData.GlobalInfo.T_Worker_Guid = app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
+		app.mLineJsonData.GlobalInfo.T_Worker_Guid = app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Guid;
 		app.mLineJsonData.GlobalInfo.Check_Datetime = SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
-		app.mLineJsonData.GlobalInfo.Turn_Finish_Mode = app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Finish_Mode;
+		app.mLineJsonData.GlobalInfo.Turn_Finish_Mode = app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Turn_Finish_Mode;
 		
 		
 		if(app.mLineJsonData.GlobalInfo.Task_Mode==0){
-			app.mLineJsonData.GlobalInfo.Start_Time=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Start_Time;
-			app.mLineJsonData.GlobalInfo.End_Time=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.End_Time;
+			app.mLineJsonData.GlobalInfo.Start_Time=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Start_Time;
+			app.mLineJsonData.GlobalInfo.End_Time=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.End_Time;
 			if(app.isTest){
 				app.mLineJsonData.GlobalInfo.T_Period_Name="PeriodName_Test";
 				app.mLineJsonData.GlobalInfo.Turn_Number=1002;
 			}else{
-			app.mLineJsonData.GlobalInfo.T_Period_Name=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Period_Name;
-			app.mLineJsonData.GlobalInfo.Turn_Number=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Number;
+			app.mLineJsonData.GlobalInfo.T_Period_Name=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.T_Period_Name;
+			app.mLineJsonData.GlobalInfo.Turn_Number=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Turn_Number;
 			}
 			
 		}else if(app.mLineJsonData.GlobalInfo.Task_Mode==1){
@@ -498,108 +518,61 @@ public class PartItemListAdapter extends BaseAdapter {
 			}else{
 				fileGuid=SystemUtil.createGUID();
 			}
-			app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.File_Guid=fileGuid;
+			app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.File_Guid=fileGuid;
 			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+fileGuid, sonStr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Special_Inspection=0;
+		app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Special_Inspection=0;
 		saveDataToDB();
 		
 		//准备上传数据,应该从数据表中读取未上传的数据
 		Event ex = new Event();
+		if(sonStr!=null){
 		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
-		UploadAllExtralData();
+		}
+		UploadAllUploadJsonFile();
 	}
 	
 	String getSaveDataFileName(){
 				
-		return mDao.getDataSaveFileName(app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name,
-				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number,
-				app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group,
-				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Name,
-				String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Turn_Number),
-				app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.T_Line_Guid);
+		return mDao.getDataSaveFileName(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Name,
+				app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Number,
+				app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Class_Group,
+				app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Turn_Name,
+				String.valueOf(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Turn_Number),
+				app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.T_Line_Guid);
 	}
 	
 	/**
 	 * 上传所有已经巡检过的未上传的日常巡检数据
 	 */
 	void UploadAllUploadJsonFile(){
-		//查表 
-		String sqlStr= "select * from " +DBHelper.TABLE_CHECKING +" where " +DBHelper.Checking_Table.Is_Uploaded +" is 0";
-		Cursor cursor =mDao.execSQL(sqlStr);
 		Event ex = new Event();
-		if(cursor!=null && cursor.getCount()>0){
-			cursor.moveToFirst();
-			for(int i=0;i<cursor.getCount();i++){
-				String path = cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.File_Guid));
-				String JsonData=SystemUtil.openFile(path);
-				
-				ex.UploadNormalPlanResultInfo_Event(null,mHandler,JsonData);
-				
+		List<String> fileList =mDao.getUnUploadAllUploadJsonFile();
+		for(int k=0;k<fileList.size();k++){
+			String JsonData=SystemUtil.openFile(fileList.get(k));
+			if(JsonData!=null){
+			ex.UploadNormalPlanResultInfo_Event(null,mHandler,JsonData);
 			}
-			
 		}
 		
-		if(cursor!=null){
-			cursor.close();
-			cursor=null;
+		List<ExtranalBinaryInfo> list = mDao.getAllUnUploadExtralData();
+		for(int m=0;m<list.size();m++){			
+			String data=SystemUtil.openFile(list.get(m).filePath);
+			byte []bytedata=null;
+			if(data!=null){
+				bytedata = data.getBytes();
+			Event.UploadWaveDataRequestInfo_Event(null,mHandler,bytedata,list.get(m).RecordLab);
+			}
 		}
+		
+		
+		
 	}
 	
-	/**
-	 * 上传所有的未上传的额外信息
-	 */
-	void UploadAllExtralData(){
-		String SqlStr = "select * from " +DBHelper.TABLE_Media + " where " +DBHelper.Media_Table.Is_Uploaded +" is " +" '0'";
-		
-		Cursor curso = mDao.execSQL(SqlStr);
-		String path="";
-		String recordLab="";
-		String mimeType="";
-		List<HashMap<String, String>> upList= new ArrayList<HashMap<String,String>>();
-		if(curso!=null && curso.getCount()>0){
-			curso.moveToFirst();
-			for(int i=0;i<curso.getCount();i++){
-				path=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Path));
-				recordLab=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Name));
-				mimeType=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Mime_Type));
-				byte[]bytedata=null;
-				String data=SystemUtil.openFile(path);
-				if(data!=null){
-					bytedata = data.getBytes();
-				Event.UploadWaveDataRequestInfo_Event(null,mHandler,bytedata,recordLab);
-				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("name", recordLab);
-				map.put("datetime", SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-				upList.add(map);
-				}
-				curso.moveToNext();
-			}
-		}
-		
-		if(curso!=null){
-			curso.close();
-			curso=null;
-		}
-		
-		//改变数据表中的上传状态及时间
-		/**
-		 * UPDATE table_name
-SET column1 = value1, column2 = value2...., columnN = valueN
-WHERE [condition];
-		 */
-		for(int k=0;k<upList.size();k++){
-			String setSqlStr= " update "+DBHelper.TABLE_Media + " set " +DBHelper.Media_Table.Is_Uploaded +"=" +"'1',"
-			+DBHelper.Media_Table.UploadedDate +"='" +upList.get(k).get("datetime")+"'"
-			+ " where "+ DBHelper.Media_Table.Name  +" is '" +upList.get(k).get("name")+"'";
-			
-			mDao.execSQLUpdate(setSqlStr);
-		}
-		
-	}
+	
 	
 	void setOtherDataIfNeeded(){
 		if(!app.gIsDataChecked){
@@ -607,11 +580,11 @@ WHERE [condition];
 			for(StationInfoJson station:app.mLineJsonData.StationInfo){
 				for(DeviceItemJson device:station.DeviceItem){
 					device.Data_Exist_Guid = SystemUtil.createGUID();
-					device.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
-					device.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
-					device.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
-					device.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
-					device.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
+					device.T_Worker_Class_Group=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Class_Group;
+					device.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Span);
+					device.T_Worker_Guid=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Guid;
+					device.T_Worker_Name=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Name;
+					device.T_Worker_Number=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_WorkerInfoJson.Number;
 				}
 			}
 			
@@ -631,7 +604,7 @@ WHERE [condition];
 			
 			mDao.insertUploadFile(RoutePeroid,app.gIsDataChecked,true,true);	
 		}else{
-			mDao.insertUploadFile(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid,app.gIsDataChecked,true,true);
+			mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,app.gIsDataChecked,true,true);
 		}
 		app.gIsDataChecked=true;
 		

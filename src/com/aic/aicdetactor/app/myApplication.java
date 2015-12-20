@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 
 import com.aic.aicdetactor.bluetooth.BluetoothConstast;
 import com.aic.aicdetactor.bluetooth.BluetoothLeControl;
+import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.PartItemJsonUp;
@@ -20,7 +21,7 @@ public class myApplication extends Application
     private static final String TAG = "aicdetector";
     
     //当前巡检路线的序号
-    public int mRouteIndex = -1;
+    private int mRouteIndex = -1;
     //当前巡检路线下站点序号，序号指的是JSON站点数组的序号
     public int mStationIndex =-1;
     //当前巡检路线下 巡检的设备数组的序号
@@ -29,13 +30,14 @@ public class myApplication extends Application
     public int mPartItemIndex = -1;
     
     public boolean isTest=false;
-    public boolean isSpecialLine=false;
+    private boolean isSpecialLine=false;
+    private LineType mRouteType;
     //如果为false，数据从原始数据表中获取，否则，从GetUploadJsonFile中获取
     public boolean gIsDataChecked=false;
     //顶层常规巡检还是特定巡检。
-    public String gRouteClassName = "";
+    private String gRouteClassName = "";
     //当前路线名称
-    public String gRouteName = "";
+    private String gRouteName = "";
     //登录的工人用户名
     private String mWorkerName = null;
     //登录用户名对应的密码
@@ -92,6 +94,33 @@ public class myApplication extends Application
 		return mIScreenHeight;
 	}
 	
+	public void setCategoryTitle(String str){
+		gRouteClassName = str;
+	}
+	
+	public String getCategoryTitle(){
+		return gRouteClassName;
+	}
+	
+	public boolean isSpecialLine(){
+		if(mRouteType ==LineType.SpecialRoute ){
+			isSpecialLine=true;
+		}else{
+			isSpecialLine=false;
+		}	
+		return isSpecialLine;
+	}
+	
+	public void setLineType(LineType type){
+			mRouteType =type;
+	}
+	public void setgRouteName(String RouteName){
+		this.gRouteName=RouteName;
+	}
+	
+	public String getgRouteName(){
+		return this.gRouteName;
+	}
 	/**
 	 * 生成需要保存的JSON文件名字
 	 * @return
@@ -114,7 +143,7 @@ public class myApplication extends Application
     public void setCurrentRouteIndex(int routeIndex){
     	this.mRouteIndex = routeIndex;
     }
-    
+        
     /**
      * 获取当前的巡检路线序号 到全局变量
      * @return
@@ -135,6 +164,13 @@ public class myApplication extends Application
        BluetoothLeControl.genDownLoadCommand((byte)0x7f, (byte)0x14,(byte) 0xd2, (byte)0, (byte)0,0,0);   
        SharedPreferences sharedPreferences = getSharedPreferences(BluetoothConstast.BLEXML, this.getApplicationContext().MODE_PRIVATE);
        mCurLinkedBLEAddress = sharedPreferences.getString(BluetoothConstast.BLEAddress, "B0:B4:48:CC:2D:84");
+       byte[]bytes={0,0,0x0f,(byte) 0xa1,};
+       
+       int i = ((((bytes[0] & 0xff) << 24 | (bytes[1] & 0xff)) << 16) | (bytes[2] & 0xff)) << 8 | (bytes[3] & 0xff);
+       
+       int k =0;
+       k++;
+       
     }
     
     
@@ -173,15 +209,17 @@ public class myApplication extends Application
     public String getLoginWorkerPwd(){
     	return mWorkerPwd;
     }
-  //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离
-    public DownloadNormalRootData getLineDataClassifyFromOneFile(boolean IsSpecial){
+  //把同一个JSON文件数据里的 日常巡检及特殊巡检数据分离,在stationAdapter里把文件中的日常或特殊巡检数据分离出来
+    public DownloadNormalRootData getLineDataClassifyFromOneFile(LineType type){
   		 String planjson = SystemUtil.openFile(getCurGsonPath());
   		 if(planjson==null){
   			
   			 return null;
   		 }
   		 if(mLineJsonData!=null){mLineJsonData=null;}
-  		if(!IsSpecial){ 
+  		//mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);  
+  		
+  		if(type==LineType.NormalRoute){ 
   			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);  		
 	  		//剔除特殊巡检数据
 	  		for (int i = 0; i < mLineJsonData.StationInfo.size(); i++) {
@@ -200,7 +238,7 @@ public class myApplication extends Application
 	  			}	
 	  		}
 	  	  		
-  		}else{
+  		}else if(type==LineType.SpecialRoute){
   			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);
 	  		//剔除日常巡检数据
 	  		for (int i = 0; i < mLineJsonData.StationInfo.size(); i++) {

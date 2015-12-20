@@ -169,6 +169,16 @@ public class BlueToothBindDevListAdapter extends BaseExpandableListAdapter {
 		super.notifyDataSetChanged();
 	}
 
+	public void disConnectionBLE(){
+		if(mBTControl!=null){
+			Message msg = mHandler.obtainMessage(BluetoothLeControl.Message_Connection_Status);
+		mBTControl.disconnection();
+		msg.arg1=BluetoothLeControl.Message_Connect_Status_DisConnected;
+		msg.arg2=0;
+		msg.obj="";
+		mHandler.sendMessage(msg);
+		}
+	}
 	public void  sendCommmand2BLE(byte[]cmdByte){
 		if(cmdByte==null){return ;}
 		mBTControl.Communication2Bluetooth(mBTControl.getSupportedGattServices(),cmdByte);

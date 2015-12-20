@@ -24,7 +24,7 @@ import com.aic.aicdetactor.data.PeriodInfoJson;
 import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.database.DBHelper;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 
 class T_Period_Code {
 	
@@ -251,7 +251,7 @@ private boolean GetCurCheckedFileName(String T_Line_Guid,TurnInfoJson m_TurnInfo
 	}
 	else if(m_PeriodJson.Turn_Finish_Mode==1)//班组成员完成一个轮次
 	{
-		ExSql+=" and Class_Group'"+m_WorkerInfoJson.Class_Group+"'";
+		ExSql+=" and Class_Group='"+m_WorkerInfoJson.Class_Group+"'";
 		
 	}
 	else if(m_PeriodJson.Turn_Finish_Mode==0)//全体成员完成一个轮次
@@ -445,7 +445,7 @@ private int GetCurBaseDateofMonthRoute()
 private String  GetUploadJsonFile(String Sql,Context context){
 	  String FileName="";
 	  //调用sqlite,表中Guid赋给FileName
-	  RouteDao dao = RouteDao.getInstance(context);
+	  LineDao dao = LineDao.getInstance(context);
 			 Cursor cur = dao.execSQL(Sql);
 			
 		//	 try{

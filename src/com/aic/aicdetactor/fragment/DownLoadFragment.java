@@ -43,7 +43,7 @@ import com.aic.aicdetactor.adapter.NetWorkSettingAdapter;
 import com.aic.aicdetactor.adapter.NetworkViewPagerAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
@@ -95,7 +95,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	LayoutInflater mInflater;
 	TextView devName;
 	SpinnerAdapter mDLLineAdapter=null;
-	RouteDao mDao;
+	LineDao mDao;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -163,7 +163,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 					
 					 Message msg = mHandler.obtainMessage(Event.ReplaceRouteLineData_Message);
 					 msg.obj=str;
-					 mHandler.sendMessage(msg);
+					 mHandler.sendMessage(msg);					
 					 dialog.dismiss();
 				}
 
@@ -189,7 +189,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		networkView = inflater.inflate(R.layout.network_fragment, container, false);
         networkTabviewInit(inflater);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
-        mDao = RouteDao.getInstance(getActivity());
+        mDao = LineDao.getInstance(getActivity());
 		uploadInit();
 		downloadInit();   
 		settingViewinit();

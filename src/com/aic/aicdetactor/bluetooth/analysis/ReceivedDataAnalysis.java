@@ -122,12 +122,26 @@ public class ReceivedDataAnalysis {
 			 case BluetoothConstast.CMD_Type_GetTemper:
 				 dValue=getTemperature();
 				 break;
+			 case BluetoothConstast.CMD_Type_CaiJiZhuanSu:
+				 dValue=getZhuanSu();
+				 break;
 			 }
 			 
 			
 			 
 			if(true)Log.d(TAG, "getValidValue()dValue = "+dValue);
 			return (float) dValue;
+		}
+		
+		
+		float getZhuanSu(){
+			float zhuansu=0;
+			if(mReceiveByteDataCRC[2]==(byte)0xd3){
+				byte[]tempByte=new byte[4];
+				System.arraycopy(mReceiveByteDataCRC, 3, tempByte, 0, tempByte.length);
+				zhuansu=SystemUtil.ByteArrayToFloat(tempByte);
+			}
+			return zhuansu;
 		}
 		/**
 		 * 峰值
@@ -493,7 +507,7 @@ public class ReceivedDataAnalysis {
     float getTemperature(){
 		float tem=0;
 		if(mReceiveByteDataCRC[2]==(byte)0xd6){
-			byte[]tempByte=new byte[4];
+			byte[]tempByte=new byte[8];
 			System.arraycopy(mReceiveByteDataCRC, 3, tempByte, 0, tempByte.length);
 			tem=SystemUtil.ByteArrayToFloat(tempByte);
 		}

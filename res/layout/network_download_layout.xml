@@ -110,7 +110,7 @@
 	        android:visibility="gone"/>
 	    <ListView 
 	        android:id="@+id/hasdllistview"
-	        android:layout_height="wrap_content"
+	        android:layout_height="200dp"
 	        android:layout_width="wrap_content"
 	        android:layout_gravity="center"/>
 	        

@@ -5,23 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.activity.StationActivity;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.RouteDaoStationParams;
-import com.aic.aicdetactor.condition.ConditionalJudgement;
-import com.aic.aicdetactor.data.LineInfoJson;
-import com.aic.aicdetactor.data.PeriodInfoJson;
-import com.aic.aicdetactor.data.RoutePeroid;
-import com.aic.aicdetactor.data.TurnInfoJson;
-import com.aic.aicdetactor.data.WorkerInfoJson;
-import com.aic.aicdetactor.fragment.RouteFragment;
-import com.aic.aicdetactor.setting.Setting;
-import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.util.SystemUtil;
-import com.aic.aicdetactor.view.GroupViewHolder;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,6 +18,18 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.StationActivity;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.LineType;
+import com.aic.aicdetactor.condition.ConditionalJudgement;
+import com.aic.aicdetactor.database.LineDao;
+import com.aic.aicdetactor.setting.Setting;
+import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.view.GroupViewHolder;
 
 public class RouteNormalListAdapter extends BaseAdapter{
 	private Context context;
@@ -122,13 +117,10 @@ public class RouteNormalListAdapter extends BaseAdapter{
 						return;
 					}
 				}
-				app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
-				app.mRouteIndex = position;
+				app.setgRouteName(mapItem.get(CommonDef.route_info.NAME));
 				Intent intent = new Intent();
-				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,position);
 				app.setCurrentRouteIndex(position);
 				intent.putExtra(CommonDef.route_info.NAME,(String) mapItem.get(CommonDef.route_info.NAME));
-				intent.putExtra(CommonDef.route_info.INDEX,(String) mapItem.get(CommonDef.route_info.INDEX));
 				intent.setClass(context,StationActivity.class);
 				mActivity.startActivity(intent);
 			}});
@@ -154,7 +146,11 @@ public class RouteNormalListAdapter extends BaseAdapter{
 							"in init() 1 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-
+					if(app.isLogin()){
+						LineDao dao = LineDao.getInstance(mActivity);
+					ContentValues cv = new ContentValues();
+					app.mJugmentListParms=dao.queryLineInfoByWorkerEx(app.getLoginWorkerName(), app.getLoginWorkerPwd(), cv,LineType.NormalRoute);
+					}
 					int iRouteCount = app.mJugmentListParms !=null?app.mJugmentListParms.size():0;
 					MLog.Logd(TAG,
 							"in init() 2 start "

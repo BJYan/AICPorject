@@ -67,7 +67,7 @@ import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.T_Temporary_Line;
 import com.aic.aicdetactor.database.DBHelper;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
@@ -171,6 +171,7 @@ public class Event {
 						}
 						for (CommandInfo ci : response.Args.Commands) {
 							int icon = android.R.drawable.sym_action_email;
+							Log.d(TAG, "ci="+ci +",ci.Data is "+ci.Data +"ci.Data.Lenth = "+ci.Data.length());
 							Notification notification = new Notification.Builder(
 									activity.getApplicationContext()).setSmallIcon(icon)
 									.setAutoCancel(true)
@@ -195,25 +196,25 @@ public class Event {
 									 }
 								 }
 								 Log.d(TAG,"name:"+ Normaldata.T_Line.Name+",guid:"+Normaldata.T_Line.T_Line_Guid+",T_Line_Content_Guid:"+Normaldata.T_Line.T_Line_Content_Guid);
-								 RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
+								 LineDao dao = LineDao.getInstance(activity.getApplicationContext());
 								 String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) +Normaldata.T_Line.T_Line_Guid;
 								 boolean isFileExist= SystemUtil.isFileExist(filePath);
 							     int isExit =dao.isOriginalLineExist(Normaldata.T_Line.T_Line_Guid,Normaldata.T_Line.T_Line_Content_Guid,filePath);
 							     if(isExit==0){
-							    	 StrMessage="完全相同，不需要更新";
+							    	 StrMessage="完全相同的 "+Normaldata.T_Line.Name+"，不需要更新";
 							     }else if(isExit==2){
 									 SystemUtil.writeFileToSD(filePath, planjson);
 									 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 											 Normaldata.getItemCounts(0,0,false,true),
-											 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+											 Normaldata.getItemCounts(0,0,false,true),Normaldata.getItemCounts(0,0,true,true),
 											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
-									 StrMessage="日常巡检下载更新成功!";
+									 StrMessage="日常巡检 "+Normaldata.T_Line.Name+" 下载更新成功!";
 									 Message msg = handler.obtainMessage(LocalData_Init_Success);
 									 msg.obj=StrMessage;
 									 handler.sendMessage(msg);
 									// return;
 								 }else if(isExit==1){
-									 StrMessage="已有相同的日常巡检路线，是否要更新?";
+									 StrMessage="已有相同的日常巡检名 "+Normaldata.T_Line.Name +",是否要更新?";
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
 									 filePath=filePath+"temp";
 									 SystemUtil.writeFileToSD(filePath, planjson);
@@ -233,7 +234,7 @@ public class Event {
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
 								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
-								 StrMessage="临时路线更新成功!";								 
+								 StrMessage="临时路线 "+tempdata.Content+"更新成功!";								 
 								 Message msg = handler.obtainMessage(TEMP_ROUTELINE_DOWNLOAD_MSG);
 								 msg.obj=response.Info.Code;
 								 handler.sendMessage(msg);
@@ -300,7 +301,7 @@ public class Event {
 					}
 					Log.d(TAG, "name:" + Normaldata.T_Line.Name+ ",guid:" + Normaldata.T_Line.T_Line_Guid	+ ",T_Line_Content_Guid:"
 							+ Normaldata.T_Line.T_Line_Content_Guid);
-					final RouteDao dao = RouteDao.getInstance(activity.getApplicationContext());
+					final LineDao dao = LineDao.getInstance(activity.getApplicationContext());
 					String filePath =setting.getData_Media_Director(CommonDef.FILE_TYPE_OriginaJson) + Normaldata.T_Line.T_Line_Guid + ".txt";
 					boolean isFileExist= SystemUtil.isFileExist(filePath);
 					int isExit = dao.isOriginalLineExist(Normaldata.T_Line.T_Line_Guid,Normaldata.T_Line.T_Line_Content_Guid,filePath);
@@ -689,7 +690,7 @@ public class Event {
 		}).start();
 	}
 	//UploadNormalPlanResultRequest
-	public void UploadNormalPlanResultInfo_Event(View view,final Handler handler,final String UploadData) {
+	public synchronized void  UploadNormalPlanResultInfo_Event(View view,final Handler handler,final String UploadData) {
 
 		new Thread(new Runnable() {
 

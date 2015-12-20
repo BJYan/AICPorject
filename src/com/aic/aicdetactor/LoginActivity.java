@@ -1,17 +1,5 @@
 package com.aic.aicdetactor;
 
-import java.util.List;
-import java.util.Map;
-
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.dialog.CommonAlterDialog;
-import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
-import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
-import com.aic.aicdetactor.util.SystemUtil;
-
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -31,6 +20,13 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.LineType;
+import com.aic.aicdetactor.database.LineDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogCancelListener;
+import com.aic.aicdetactor.dialog.CommonAlterDialog.AltDialogOKListener;
 
 public class LoginActivity extends CommonActivity implements OnClickListener,
 		AltDialogOKListener,AltDialogCancelListener {
@@ -120,10 +116,10 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 		mLogName = mEditTextUserName.getText().toString();
 		mLogPwd = mEditTextUserPwd.getText().toString();
 
-		RouteDao dao = RouteDao.getInstance(this.getApplicationContext());
+		LineDao dao = LineDao.getInstance(this.getApplicationContext());
 		ContentValues cv = new ContentValues();
 	
-		app.mJugmentListParms=dao.queryLineInfoByWorkerEx(mLogName, mLogPwd, cv);
+		app.mJugmentListParms=dao.queryLineInfoByWorkerEx(mLogName, mLogPwd, cv,LineType.AllRoute);
 		error = cv.getAsString("error");
 		Log.i(TAG, " Login() error = " + error);
 
@@ -219,5 +215,20 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		dialog.dismiss();
 	}
-	
+	 private long mExitTime;
+	 @Override  
+	 public boolean onKeyDown(int keyCode, KeyEvent event) {
+         if (keyCode == KeyEvent.KEYCODE_BACK) {
+                 if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                         Object mHelperUtils;
+                         Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                         mExitTime = System.currentTimeMillis();
+
+                 } else {
+                         finish();
+                 }
+                 return true;
+         }
+         return super.onKeyDown(keyCode, event);
+	 }
 }

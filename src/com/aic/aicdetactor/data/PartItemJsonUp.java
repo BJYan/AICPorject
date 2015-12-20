@@ -12,30 +12,24 @@ public class PartItemJsonUp
     public double Up_Limit ;
     public double Middle_Limit ;
     public double Down_Limit ;    
-    public double Emissivity ;
-   
+    public double Emissivity ;   
     public double Default_RPM ;    //  
     public int Hint_Status ;   
     public int Axle_Number ;
     public String Check_Mode ;    
     public String Extra_Information ;
     public int T_Maintenance_Status_Id ;
-    public String Fault_Diagnosis ;
-   
+    public String Fault_Diagnosis ;   
     public String Item_Define;
-    
-    //上传数据时候 需要的项
-    public String  Start_Check_Datetime;
+    public String  Start_Check_Datetime; //上传数据时候 需要的项
     public String End_Check_Datetime;
     public int Total_Check_Time;//单位S
     public String SaveLab;
     public String RecordLab;
     public int SensorType=0;//始终为0
     public int VMSDir;
-    public int SignalType=-1;
-   
-    public int SamplePoint;
-    
+    public int SignalType=-1;   
+    public int SamplePoint;    
     public String Diagnose_Conclusion;
     public String Remarks;
     public int Is_Timeout;
@@ -173,89 +167,77 @@ public class PartItemJsonUp
     	return Hint_Status==1?true:false;
     }
    public  PartItemJsonUp(){
-	     Check_Content="" ;
-	      T_Measure_Type_Id=-1 ;
-	      T_Measure_Type_Code="-1";
-	      Unit ="";
-	      Start_Stop_Flag=0 ;
-	      Up_Limit=0 ;
-	      Middle_Limit=0 ;
-	      Down_Limit=0 ;
-	      Emissivity=0 ;
-	      Hint_Status=0 ;
-	      Axle_Number=0 ;
-	      Check_Mode="" ;
-	      Extra_Information ="";
-	      T_Maintenance_Status_Id=0 ;
-	      Fault_Diagnosis="" ;
-	      Default_RPM=0 ;	
-	      Is_Normal=0;
-	      
-	       Item_Define="";
-	      
-	      //上传数据时候 需要的项
-	       Start_Check_Datetime="";
-	       End_Check_Datetime="";
-	       Total_Check_Time=0;//单位S
-	       SaveLab="";
-	       RecordLab="";
-	       SensorType=0;//始终为0
-	       VMSDir=0;
-	      SignalType=-1;
-	      SampleFre=-1;
-	       SamplePoint=-1;
-	       RPM=0;
-	       Diagnose_Conclusion="";
-	       Remarks="";
-	       Is_Timeout=0;
-	       T_Item_Abnormal_Grade_Id=-1;
-	       T_Item_Abnormal_Grade_Code="";
+	  Check_Content="" ;
+	  T_Measure_Type_Id=-1 ;
+	  T_Measure_Type_Code="-1";
+	  Unit ="";
+	  Start_Stop_Flag=0 ;
+	  Up_Limit=0 ;
+	  Middle_Limit=0 ;
+	  Down_Limit=0 ;
+	  Emissivity=0 ;
+	  Hint_Status=0 ;
+	  Axle_Number=0 ;
+	  Check_Mode="" ;
+	  Extra_Information ="";
+	  T_Maintenance_Status_Id=0 ;
+	  Fault_Diagnosis="" ;
+	  Default_RPM=0 ;	
+	  Is_Normal=0;	      
+	   Item_Define="";  
+	   Start_Check_Datetime=""; //上传数据时候 需要的项
+	   End_Check_Datetime="";
+	   Total_Check_Time=0;//单位S
+	   SaveLab="";
+	   RecordLab="";
+	   SensorType=0;//始终为0
+	   VMSDir=0;
+	   SignalType=-1;
+	   SampleFre=-1;
+	   SamplePoint=-1;
+	   RPM=0;
+	   Diagnose_Conclusion="";
+	   Remarks="";
+	   Is_Timeout=0;
+	   T_Item_Abnormal_Grade_Id=-1;
+	   T_Item_Abnormal_Grade_Code="";
     }
    
    
    public void Clone(PartItemJsonUp up){
-	   Check_Content=up.Check_Content;
-	      T_Measure_Type_Id=up.T_Measure_Type_Id;
-	      T_Measure_Type_Code=up.T_Measure_Type_Code;
-	      Unit =up.Unit;
-	      Start_Stop_Flag=up.Start_Stop_Flag;
-	      Up_Limit=up.Up_Limit;
-	      Middle_Limit=up.Middle_Limit;
-	      Down_Limit=up.Down_Limit;
-	      Emissivity=up.Emissivity;
-	      Hint_Status=up.Hint_Status;
-	      Axle_Number=up.Axle_Number;
-	      Check_Mode=up.Check_Mode;
-	      Extra_Information =up.Extra_Information;
-	      T_Maintenance_Status_Id=up.T_Maintenance_Status_Id;
-	      Fault_Diagnosis=up.Fault_Diagnosis;
-	      Default_RPM=up.Default_RPM;
-	      Is_Normal=up.Is_Normal;
-	      
-	       Item_Define=up.Item_Define;
-	      
-	       Start_Check_Datetime=up.Start_Check_Datetime;
-	       End_Check_Datetime=up.End_Check_Datetime;
-	       Total_Check_Time=up.Total_Check_Time;
-	       SaveLab=up.SaveLab;
-	       RecordLab=up.RecordLab;
-	       SensorType=up.SensorType;
-	       VMSDir=up.VMSDir;
-	      SignalType=up.SignalType;
-	      SampleFre=up.SampleFre;
-	       SamplePoint=up.SamplePoint;
-	       RPM=up.RPM;
-	       Diagnose_Conclusion=up.Diagnose_Conclusion;
-	       Remarks=up.Remarks;
-	       Is_Timeout=up.Is_Timeout;
-	       T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
-	       T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
-	       RPM=up.RPM;
-	       Diagnose_Conclusion=up.Diagnose_Conclusion;
-	       Remarks=up.Remarks;
-	       Is_Timeout=up.Is_Timeout;
-	       T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
-	       T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
-
+		  Check_Content=up.Check_Content;
+		  T_Measure_Type_Id=up.T_Measure_Type_Id;
+		  T_Measure_Type_Code=up.T_Measure_Type_Code;
+		  Unit =up.Unit;
+		  Start_Stop_Flag=up.Start_Stop_Flag;
+		  Up_Limit=up.Up_Limit;
+		  Middle_Limit=up.Middle_Limit;
+		  Down_Limit=up.Down_Limit;
+		  Emissivity=up.Emissivity;
+		  Hint_Status=up.Hint_Status;
+		  Axle_Number=up.Axle_Number;
+		  Check_Mode=up.Check_Mode;
+		  Extra_Information =up.Extra_Information;
+		  T_Maintenance_Status_Id=up.T_Maintenance_Status_Id;
+		  Fault_Diagnosis=up.Fault_Diagnosis;
+		  Default_RPM=up.Default_RPM;
+		  Is_Normal=up.Is_Normal;
+		   Item_Define=up.Item_Define;
+		   Start_Check_Datetime=up.Start_Check_Datetime;
+		   End_Check_Datetime=up.End_Check_Datetime;
+		   Total_Check_Time=up.Total_Check_Time;
+		   SaveLab=up.SaveLab;
+		   RecordLab=up.RecordLab;
+		   SensorType=up.SensorType;
+		   VMSDir=up.VMSDir;
+		   SignalType=up.SignalType;
+		   SampleFre=up.SampleFre;
+		   SamplePoint=up.SamplePoint;
+		   RPM=up.RPM;
+		   Diagnose_Conclusion=up.Diagnose_Conclusion;
+		   Remarks=up.Remarks;
+		   Is_Timeout=up.Is_Timeout;
+		   T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
+		   T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
    }
 }

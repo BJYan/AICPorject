@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 15;//版本号
+	 private final static int VERSION = 17;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -25,6 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 public static final String NormalItemCounts = "NormalItemCounts";
 	 public static final String SPecialItemCounts = "SPecialItemCounts";
 	 public static final String HasSpecialLine = "hasSpecialLine";
+	 public static final String hasNormalLine = "hasNormalLine";
 	 public static final String DownLoadDate = "DownLoadDate";
 	 
 	 }
@@ -59,10 +60,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final   String Name  ="Name";
 		public static final   String Guid ="Guid";
 		public static final   String T_Line_Guid ="T_Line_Guid";
+		public static final  String T_Line_Content_Guid="T_Line_Content_Guid";
 		public static final   String T_Organization_Guid  ="T_Organization_Guid";
 		public static final  String Pwd ="pwd";
 		public static final  String IsModifyPwd = "IsModifyPwd";
 		public static final  String ModifyDate = "ModifyDate";
+		
 	 }
 	 public static String TABLE_TURN = "TurnInfo";
 	 public class Plan_Turn_Table{
@@ -72,6 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String Start_Time ="Start_Time";
 		public static final String T_Line_Guid ="T_Line_Guid";
 		public static final String T_Line_Content_Guid ="T_Line_Content_Guid";
+		public static final String Guid="Guid";
 		
 	 }
 	 
@@ -227,6 +231,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ SourceTable.NormalItemCounts +" INTEGER,"
 				+ SourceTable.SPecialItemCounts +" INTEGER,"
 				+ SourceTable.HasSpecialLine +" BOOLEAN ,"
+				+ SourceTable.hasNormalLine +" BOOLEAN ,"				
 				+ SourceTable.DownLoadDate +" varchar(24) "
 				+")";
 
@@ -265,6 +270,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Plan_Worker_Table.Guid + " varchar(256),"
 				+ Plan_Worker_Table.T_Line_Guid + " varchar(128),"
 				+ Plan_Worker_Table.T_Organization_Guid + " varchar(256),"
+				+ Plan_Worker_Table.T_Line_Content_Guid+ " varchar(128),"
 				+ Plan_Worker_Table.Pwd +" varchar(256),"
 				+ Plan_Worker_Table.IsModifyPwd +" BOOLEAN ,"
 				+ Plan_Worker_Table.ModifyDate +" varchar(32)"
@@ -311,7 +317,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Plan_Turn_Table.Name +" varchar(16),"
 				+ Plan_Turn_Table.Start_Time +" varchar(8),"
 				+ Plan_Turn_Table.T_Line_Content_Guid + " varchar(256),"
-				+ Plan_Turn_Table.T_Line_Guid +" varchar(16)"
+				+ Plan_Turn_Table.Guid + " varchar(256),"
+				+ Plan_Turn_Table.T_Line_Guid +" varchar(256)"
 				
 				+")";
 

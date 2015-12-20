@@ -5,23 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.activity.StationActivity;
-import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
-import com.aic.aicdetactor.comm.RouteDaoStationParams;
-import com.aic.aicdetactor.condition.ConditionalJudgement;
-import com.aic.aicdetactor.data.LineInfoJson;
-import com.aic.aicdetactor.data.PeriodInfoJson;
-import com.aic.aicdetactor.data.RoutePeroid;
-import com.aic.aicdetactor.data.TurnInfoJson;
-import com.aic.aicdetactor.data.WorkerInfoJson;
-import com.aic.aicdetactor.fragment.RouteFragment;
-import com.aic.aicdetactor.setting.Setting;
-import com.aic.aicdetactor.util.MLog;
-import com.aic.aicdetactor.util.SystemUtil;
-import com.aic.aicdetactor.view.GroupViewHolder;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,7 +17,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.activity.StationActivity;
+import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.LineType;
+import com.aic.aicdetactor.database.LineDao;
+import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SystemUtil;
+import com.aic.aicdetactor.view.GroupViewHolder;
 
 public class RouteSpecListAdapter extends BaseAdapter{
 	private Context context;
@@ -97,38 +89,35 @@ public class RouteSpecListAdapter extends BaseAdapter{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				if(!app.isTest){
-					ConditionalJudgement jugment = new ConditionalJudgement();
-					ContentValues nInfo=new ContentValues();
-					if(jugment.GetUploadJsonFile(app.mJugmentListParms.get(position).T_Line,
-							app.mJugmentListParms.get(position).m_PeriodInfo, 
-							app.mJugmentListParms.get(position).T_Turn, 
-							app.mJugmentListParms.get(position).m_WorkerInfoJson, 
-							app.mJugmentListParms.get(position).m_RoutePeroid, nInfo,mActivity.getApplicationContext())){
-						
-						
-						String filePath = nInfo.getAsString("FileName");
-						if("".endsWith(filePath)){
-							app.gIsDataChecked=false;
-							String p=app.mJugmentListParms.get(position).T_Line.LinePath;
-							app.setCurGsonPath(p);
-						}else{
-							app.gIsDataChecked=true;
-							app.setCurGsonPath(Setting.getUpLoadJsonPath()+filePath);
-						}
-						
-					}else{
-						Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
-						return;
-					}
-				}
-				app.gRouteName = mapItem.get(CommonDef.route_info.NAME);
-				app.mRouteIndex = position;
+			
+//				ConditionalJudgement jugment = new ConditionalJudgement();
+//				ContentValues nInfo=new ContentValues();
+//				if(jugment.GetUploadJsonFile(app.mJugmentListParms.get(position).T_Line,
+//						app.mJugmentListParms.get(position).m_PeriodInfo, 
+//						app.mJugmentListParms.get(position).T_Turn, 
+//						app.mJugmentListParms.get(position).m_WorkerInfoJson, 
+//						app.mJugmentListParms.get(position).m_RoutePeroid, nInfo,mActivity.getApplicationContext())){
+//					
+//					
+//					String filePath = nInfo.getAsString("FileName");
+//					if("".endsWith(filePath)){
+//						app.gIsDataChecked=false;
+//						String p=app.mJugmentListParms.get(position).T_Line.LinePath;
+//						app.setCurGsonPath(p);
+//					}else{
+//						app.gIsDataChecked=true;
+//						app.setCurGsonPath(Setting.getUpLoadJsonPath()+filePath);
+//					}
+//					
+//				}else{
+//					Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
+//					return;
+//				}
+				app.setCurGsonPath(mapItem.get(CommonDef.route_info.Path));
+				app.setgRouteName(mapItem.get(CommonDef.route_info.NAME));
 				Intent intent = new Intent();
-				intent.putExtra(CommonDef.route_info.LISTVIEW_ITEM_INDEX,position);
 				app.setCurrentRouteIndex(position);
 				intent.putExtra(CommonDef.route_info.NAME,(String) mapItem.get(CommonDef.route_info.NAME));
-				intent.putExtra(CommonDef.route_info.INDEX,(String) mapItem.get(CommonDef.route_info.INDEX));
 				intent.setClass(context,StationActivity.class);
 				mActivity.startActivity(intent);
 			}});
@@ -154,7 +143,12 @@ public class RouteSpecListAdapter extends BaseAdapter{
 							"in init() 1 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-
+					if(app.isLogin()){
+					LineDao dao = LineDao.getInstance(mActivity);
+						ContentValues cv = new ContentValues();
+						app.mJugmentListParms=dao.queryLineInfoByWorkerEx(app.getLoginWorkerName(), app.getLoginWorkerPwd(), cv,LineType.SpecialRoute);
+						}
+					
 					int iRouteCount = app.mJugmentListParms !=null?app.mJugmentListParms.size():0;
 					MLog.Logd(TAG,
 							"in init() 2 start "
@@ -179,7 +173,7 @@ public class RouteSpecListAdapter extends BaseAdapter{
 						
 							String index = "" + (routeIndex + 1);
 							map.put(CommonDef.route_info.INDEX, index);
-
+							map.put(CommonDef.route_info.Path, app.mJugmentListParms.get(routeIndex).T_Line.LinePath);
 							mItemDatas.add(map);
 							MLog.Logd(TAG,
 									"in init() for end i="

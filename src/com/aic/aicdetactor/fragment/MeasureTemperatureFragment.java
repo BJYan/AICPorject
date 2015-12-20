@@ -47,7 +47,7 @@ import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
 /**
- * 温度00、录入01、抄表02 、转速06 用的UI 
+ * 温度00、转速06 用的UI 
  * @author AIC
  *
  */
@@ -66,7 +66,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 	private TextView mDeviceNameTextView = null;
 	private TextView mTextViewUnit;
 	private TextView mTextViewName;
-	private EditText mEditTextValue;
+	private TextView mTextViewValue;
 	private TextView mTimeTV;
 	private Spinner mSpinner;
 	private Timer mTimer=null;
@@ -102,9 +102,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
 		int layoutId=R.layout.temperature;
-		if(mType==2){
-			layoutId=R.layout.meterreading;
-		}
+		
 		View view = inflater.inflate(layoutId, container, false);
 		mImageView = (ImageView)view.findViewById(R.id.imageView1);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
@@ -134,7 +132,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 		mTextViewName = (TextView)view.findViewById(R.id.textViewtmp);
 		mTimeTV = (TextView)view.findViewById(R.id.hint);
 		
-		mEditTextValue = (EditText)view.findViewById(R.id.check_temp);
+		mTextViewValue = (TextView)view.findViewById(R.id.check_temp);
 		mTextViewUnit = (TextView)view.findViewById(R.id.unit);
 		mTextViewUnit.setText(getPartItemUnit());
 		initDisplayData();
@@ -190,22 +188,12 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 	 @Override
 	protected void initDisplayData(){
 		mDeviceNameTextView.setText(getPartItemName());		
-		mEditTextValue.setText(getPartItemData());
+		mTextViewValue.setText(getPartItemData());
 		switch(mType){
 		case 0://温度
 			mTextViewName.setText("温度:");
 			mDLCMD=(byte) 0XD6;
-			break;
-		case 1://录入
-			mTextViewName.setText("录入:");
-			mTextViewUnit.setVisibility(View.INVISIBLE);
-			mSpinner.setVisibility(View.VISIBLE);
-			break;
-		case 2://抄表
-			mTextViewName.setText("抄表:");
-			mTextViewUnit.setVisibility(View.INVISIBLE);
-			mSpinner.setVisibility(View.VISIBLE);
-			break;
+			break;	
 		case 6://转速
 			mTextViewName.setText("转速:");
 			mDLCMD=(byte) 0XD3;
@@ -242,17 +230,17 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
     	}else if((mCheckedValue >= LOW) && (mCheckedValue<MID)){
     		mRadioButton.setBackgroundColor(Color.BLACK);
     		mColorTextView.setText(getString(R.string.normal));
-    		mEditTextValue.setTextColor(Color.BLACK);
+    		mTextViewValue.setTextColor(Color.BLACK);
     	}else if(mCheckedValue <LOW){
     		mRadioButton.setBackgroundColor(Color.GRAY);
     		mColorTextView.setText(getString(R.string.invalid));
-    		mEditTextValue.setTextColor(Color.GRAY);
+    		mTextViewValue.setTextColor(Color.GRAY);
     	}else if(mCheckedValue>=MAX){
     		mRadioButton.setBackgroundColor(Color.RED);
     		mColorTextView.setText(getString(R.string.dangerous));
-    		mEditTextValue.setTextColor(Color.RED);
+    		mTextViewValue.setTextColor(Color.RED);
     	}
-    	mEditTextValue.setText(String.valueOf(mCheckedValue));
+    	mTextViewValue.setText(String.valueOf(mCheckedValue));
     	}catch(Exception e){
     		e.printStackTrace();
     	}
@@ -306,11 +294,12 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			break;
 		case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 			mTimeTV.setText("测量完毕");
+			mMeasurementButton.setEnabled(true);
 			if(!bStartReceiveData){
 				return;
 			}
 			bStartReceiveData = false;
-			mMeasurementButton.setEnabled(true);
+			
 			if(mAnalysis.isReceivedAllData()){
 				if(mAnalysis.isValidate()){
 					 mCheckedValue=mAnalysis.getValidValue();
@@ -425,7 +414,7 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
     		String[]code =this.getResources().getStringArray(R.array.enter_abnormal_code);
     		abnormalCode= code[SpinnerSelectedIndex];
     		abnormalId= Integer.valueOf(abnormalCode)+1;
-    		adapter.saveData(mEditTextValue.getText().toString(),abnormalCode,abnormalId,0,0);
+    		adapter.saveData(mTextViewValue.getText().toString(),abnormalCode,abnormalId,0,0);
     	}else if(adapter.getCurrentPartItemType()==checkUnit_Type.TEMPERATURE
     			|| adapter.getCurrentPartItemType()==checkUnit_Type.ROTATION_RATE){
     	final double  MAX = super.mPartItemData.Up_Limit;;

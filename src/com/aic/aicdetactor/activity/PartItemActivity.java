@@ -65,10 +65,14 @@ import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.condition.ConditionalJudgement;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
+import com.aic.aicdetactor.dialog.CommonDialog;
+import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.MeasureBaseFragment;
 import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment;
 import com.aic.aicdetactor.fragment.MeasureDefaltStateFragment.OnMeasureMeasureListener;
+import com.aic.aicdetactor.fragment.MeasureEnterReadFragment;
+import com.aic.aicdetactor.fragment.MeasureEnterReadFragment.OnEnterReadListener;
 import com.aic.aicdetactor.fragment.MeasureObserverFragment;
 import com.aic.aicdetactor.fragment.MeasureObserverFragment.OnMediakListener;
 import com.aic.aicdetactor.fragment.MeasureTemperatureFragment;
@@ -90,18 +94,13 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
     OnVibateListener,
 	OnMediakListener,
 	OnTemperatureMeasureListener,
-	OnMeasureMeasureListener{
+	OnMeasureMeasureListener,
+	OnEnterReadListener{
 
-	private ListView mListView = null;
 	String TAG = "luotest.PartItemActivity";
-	private Spinner mSpinner = null;
 	private TextView mItemDefTextView = null;//当只有一项时才显示
-	private String mCheckItemNameStr = null;//检查项名
-	private String mCheckUnitNameStr = null;//检查部件名称
 	
-	private ArrayAdapter<String> spinnerAdapter;
 	private boolean mIsChecking = false;
-	private CheckBox mCheckbox = null;
 	private int mStationIndex =0;
 	private int mDeviceIndex = 0;
 	private int mCheckIndex =0;
@@ -131,13 +130,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	private OnButtonListener mFragmentCallBack = null;
 	private String mFirstStartTime="";
 	private String mLastEndTime="";
-	private LinearLayout mFirstLLayout=null;
-	private RelativeLayout mSecendLLayout=null;
 	private MeasureBaseFragment fragment  =null;
 	private ArrayList<PartItemJsonUp> mPartItemList=null;
 	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	private ArrayList<String> mPartItemNameList=null;
-	private Button mConfigButton;
 	private PartItemListAdapter mAdapterList =null;
 	private List<String> mStatusList = new ArrayList<String>();
 	
@@ -152,6 +148,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	int CaiYangPinLvIndex=0;
 	String[] mCaiyangPinLvDataList=null;
 	String[] mCaiyangDianshuDataList=null;
+	String StrSelectedItemDefine="";
+	boolean isLastDevice=false;
+	boolean isRevertCheck=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -159,11 +158,21 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 //		requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title  
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,  
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
-		setContentView(R.layout.unitcheck);
+		setContentView(R.layout.partitemactivity);
+		StrSelectedItemDefine=this.getIntent().getStringExtra("ItemDefine");
+		isLastDevice=this.getIntent().getBooleanExtra("lastDevice",false);
+		isRevertCheck = this.getIntent().getBooleanExtra("IsRevertCheck",false); 
 		mPartItemIndex =0;
 		fragmentsList = new ArrayList<Fragment>();
 		fragmentManager = getFragmentManager();
 		initViewAndData();
+		mAdapterList.getNewPartItemListDataByStatusArray(app.mDeviceIndex,StrSelectedItemDefine); 
+		
+		if(isRevertCheck){
+			mAdapterList.revertListViewData();
+		}
+		
+		switchFragment(mAdapterList.getCurrentPartItemType(),true);
 	}
 
 	void initViewAndData() {
@@ -174,7 +183,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 				+ ",mDeviceIndex=" + mDeviceIndex);
 		// 计划巡检还是特别巡检
 		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
-		planNameTextView.setText(app.gRouteClassName);
+		planNameTextView.setText(app.getCategoryTitle());
 		mParamsLineLayout = (LinearLayout)findViewById(R.id.paramsL);
 		mCaiYangDianSpinner =(Spinner)findViewById(R.id.dianshu);
 		mCaiYangPinLvSpinner =(Spinner)findViewById(R.id.pinlv);
@@ -225,8 +234,8 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		        mCaiYangPinLvSpinner.setSelection(3);
 		// 路线名称
 		TextView RouteNameTextView = (TextView) findViewById(R.id.routeName);
-		RouteNameTextView.setText(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name);
-		setActionBar(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.mRouteIndex).T_Line.Name, true);
+		RouteNameTextView.setText(RouteNameTextView.getText().toString()+app.mJugmentListParms.get(app.getCurrentRouteIndex()).T_Line.Name);
+		setActionBar(app.getCategoryTitle()+" "+app.mJugmentListParms.get(app.getCurrentRouteIndex()).T_Line.Name, true);
 		// 站点名称
 		TextView stationTextView = (TextView) findViewById(R.id.stationName);
 		stationTextView.setText(stationTextView.getText().toString()+app.mLineJsonData.StationInfo
@@ -236,33 +245,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		deviceTextView
 				.setText(deviceTextView.getText().toString()+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem
 						.get(mDeviceIndex).Name);
-		mFirstLLayout = (LinearLayout) findViewById(R.id.linefirst);
-		mSecendLLayout = (RelativeLayout) findViewById(R.id.bottom_line);
-		mCheckbox = (CheckBox) findViewById(R.id.checkorder);
-		mCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				// TODO Auto-generated method stub
-				 boolean isReverseDetection = false;
-				if(arg1){
-					isReverseDetection = true;
-				}else{
-					isReverseDetection = false;
-				}
-//				Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATA);
-//				msg.arg1=isReverseDetection==true?1:0;
-				mHandler.sendEmptyMessage(MSG_CHANGE_LISTVIEWDATA);
-				
-			}
-			
-		});
-		mSpinner = (Spinner) findViewById(R.id.checkspinner);
-		mListView = (ListView) findViewById(R.id.partitemlist);
-		mAdapterList = new PartItemListAdapter(PartItemActivity.this,mStationIndex,mDeviceIndex);
-		mListView.setAdapter(mAdapterList);
 		
-		initSpinnerAdapterData();
+		mAdapterList = new PartItemListAdapter(PartItemActivity.this,mStationIndex,mDeviceIndex,mHandler);
+		
 
 		// 返回图标
 		ImageView imageView = (ImageView) findViewById(R.id.backImage);
@@ -276,11 +261,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			}
 
 		});
-
-		mConfigButton = (Button) findViewById(R.id.config);
-		mConfigButton.setOnClickListener(this);
-		
-
 		mButton_Next = (Button) findViewById(R.id.next);
 		mButton_Next.setOnClickListener(this);
 
@@ -291,43 +271,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		mButton_Measurement.setOnClickListener(this);
 	}
 	
-	void initSpinnerAdapterData(){
-		getDeviceStatusArray(mStationIndex, mDeviceIndex);
-		spinnerAdapter = new SpinnerAdapter(this, mStatusList);
-		mSpinner.setAdapter(spinnerAdapter);
-		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				// TODO Auto-generated method stub
-			
-				String str=mSpinner.getSelectedItem().toString();
-			
-			
-				if(mSpinner.getSelectedItemPosition()>0){
-					Message msg =mHandler.obtainMessage(MSG_CHANGE_LISTVIEWDATAEX);
-					msg.arg1=mSpinner.getSelectedItemPosition();
-					msg.obj=mSpinner.getSelectedItem().toString();
-					mHandler.sendMessage(msg);
-				}else{
-					mAdapterList.initListViewAndData(true);
-				}
-			}
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
-	}
-	boolean bNoFragement = false;
 	//根据不同的测量类型，显示不同的UI界面。
 	void switchFragment(int type,boolean bFirstInit){
 		
 		fragmentTransaction = fragmentManager.beginTransaction();
-		bNoFragement=false;
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
 		bundle.putInt("type", type);
@@ -353,8 +300,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   break;
 		   case CommonDef.checkUnit_Type.TEMPERATURE:
 		   case CommonDef.checkUnit_Type.ROTATION_RATE:
-		   case CommonDef.checkUnit_Type.METER_READING:
-		   case CommonDef.checkUnit_Type.ENTERING:
+		  
 			   {
 					fragment = new MeasureTemperatureFragment(mAdapterList);
 					fragment.setArguments(bundle);  
@@ -366,6 +312,20 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 					fragmentTransaction.commit();
 					}
 			   fragmentsList.add(fragment);
+			   break;
+		   case CommonDef.checkUnit_Type.METER_READING:
+		   case CommonDef.checkUnit_Type.ENTERING:
+		   {
+				fragment = new MeasureEnterReadFragment(mAdapterList);
+				fragment.setArguments(bundle);  
+				if(bFirstInit){
+				fragmentTransaction.add(R.id.fragment_content,fragment);
+				}else{
+					fragmentTransaction.replace(R.id.fragment_content,fragment);
+				}					
+				fragmentTransaction.commit();
+				}
+		   fragmentsList.add(fragment);
 			   break;
 		   case CommonDef.checkUnit_Type.OBSERVATION:
 			   fragment = new MeasureObserverFragment(mAdapterList);
@@ -412,7 +372,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   fragmentTransaction.commit();
 			break;
 			   default:
-				   bNoFragement=true;
 				   Toast.makeText(getApplicationContext(), "default Fragment type ="+type, Toast.LENGTH_LONG).show();
 				   
 				   break;
@@ -421,7 +380,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		  controlButtonDisplayStatus(type);
 	}
 	
-	
+	enum Status{
+		
+	}
 	 private final int MSG_START =0;
 	   private final int MSG_NEXT =MSG_START+1;
 	   private final int MSG_MEASUERMENT =MSG_START+2;
@@ -431,30 +392,30 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	   private final int MSG_ADD_NEW_PARTITEMDATA =MSG_START+7;
 	   private final int MSG_INIT_FRAGMENT =MSG_START+8;
 	   private final int MSG_CHANGE_LISTVIEWDATA =MSG_START+9;
-	   private final int MSG_CHANGE_LISTVIEWDATAEX =MSG_START+10;
-	   private final int MSG_CACHE_CURRENT_DEVICEITEM_DATA =MSG_START+11;
-	   private final int MSG_Goto_Selected_Status =MSG_START+12;
 	   private final int MSG_Dalay_Finish =MSG_START+13;
-
+	   
+	   private final int Status_Start=100;
+	   private final int  Save_Current_Device_Data=Status_Start;
+	   private final int goto_next_Device=Status_Start+1;
+	   private final int Stay_Current_Device=Status_Start+2;
+	  
    Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
 		   switch(msg.what){
 		   case MSG_INIT_FRAGMENT:
-			   if(msg.arg1==1){
-				   mFirstLLayout.setVisibility(View.VISIBLE);
-				   mSecendLLayout.setVisibility(View.GONE);
-				   mSpinner.setSelection(0);
-				   initSpinnerAdapterData();
+			   if(msg.arg1==Save_Current_Device_Data){
 				  if( !mAdapterList.gotoNextDeviceItem()){
 					  mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_Dalay_Finish), 3000);
-					  return;
 				  }else{
-					  switchFragment(REMOVELASTFRAGMENT,false);  
+					 // "gotoNextDevice"
+					  Intent intent = new Intent();
+					  intent.putExtra(CommonDef.GotoNextDevice, true);
+					  PartItemActivity.this.setResult(PartItemContact.PARTITEM_ISNOT_LASTDEVICE_RESULT,intent);
+					  finish();
 				  }
+					 
 			   }else{
-				   mFirstLLayout.setVisibility(View.GONE);
-				   mSecendLLayout.setVisibility(View.VISIBLE);
 				   switchFragment(mAdapterList.getCurrentPartItemType(),true);
 			   }
 			  
@@ -486,35 +447,39 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		   case MSG_CHANGE_LISTVIEWDATA:
 			   revertPartItemDataList();
 			   break;
-		   case MSG_CHANGE_LISTVIEWDATAEX:
-			   regetDataByStatusArrayIndex(mSpinner.getSelectedItemPosition()-1,msg.obj);
-			   break;
-		   case MSG_CACHE_CURRENT_DEVICEITEM_DATA:
-			   break;
-		   case CommonDef.ENABLE_MEASUREMENT_BUTTON:			  
-		   case CommonDef.DISABLE_MEASUREMENT_BUTTON:
-			   controlButtonDisplayStatus(msg.what);				  
-			   break;
-		   case MSG_Goto_Selected_Status:
-			   mSecendLLayout.setVisibility(View.GONE);	
-				mFirstLLayout.setVisibility(View.VISIBLE);
-				mSpinner.setSelection(0);
-				mSpinner.setSelected(true);
-			   break;
-		   
+		   case Event.LocalData_Init_Success:
+				String strContentTips="";
+				if(msg.arg1==1){
+					//上传成功，需要更新数据表状态
+					strContentTips="数据上传成功!";
+				}else{
+					strContentTips="数据上传异常,"+(String)msg.obj;
+				}
+				if(dialog!=null){
+					dialog.dismiss();
+				}
+				dialog = new CommonAlterDialog(PartItemActivity.this,"提示",strContentTips,null,null);
+				dialog.show();
+				break;
+				
 		   }
 	   }
    };
-   
+   CommonAlterDialog  dialog=null;
    void revertPartItemDataList(){
 	   mAdapterList.revertListViewData(); 
    }
    
-   void regetDataByStatusArrayIndex(int index,Object itemdef){
-	   mAdapterList.getNewPartItemListDataByStatusArray(index,(String)itemdef); 
-	 
-   }
-   final int CAMERA_TYPE =1;
+   @Override
+protected void onDestroy() {
+	// TODO Auto-generated method stub
+	   if(dialog!=null){
+			dialog.dismiss();
+		}
+	super.onDestroy();
+}
+
+final int CAMERA_TYPE =1;
    final int RF_TYPE =0;
    final int AUDIO_TYPE =2;
    final int TEXT_RECORD_TYPE =3;
@@ -527,15 +492,12 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	 */
 	void preCheckItem(){	
 		//显示数据
+		if(mPartItemIndex==0){
+			//Toast.makeText(this, "退出", Toast.LENGTH_LONG).show();
+			finish();
+		}
 		mPartItemIndex = mAdapterList.getPrevPartItemIndex();
 		switchFragment(mAdapterList.getCurrentPartItemType(), false);	
-		if(mPartItemIndex==0){
-			switchFragment(REMOVELASTFRAGMENT, false);
-			Message msg = mHandler.obtainMessage(MSG_Goto_Selected_Status);
-			mHandler.sendMessageDelayed(msg, 100);
-			
-		}
-		
 	}
 	
 	
@@ -543,22 +505,22 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		return false;
 	}
 	
-   /**
+
+/**
     * 点击下一项时触发的VIEW变化，显示当前测试项的下一项，
     * 如果是设备最后一个测试项，保存，并切换到下一设备的第一个测试项。
     */
 	private void nextCheckItem() {
 		if (!isTimeOut()) {
 			//判断是否是已经巡检完毕
-			mPartItemIndex = mAdapterList.getNextPartItemIndex();
-			if (!mAdapterList.isCurrentDeviceItemFinish()) {
+			mPartItemIndex = mAdapterList.getNextPartItemIndex();			
+			if (!mAdapterList.isLastPartItemInCurrentDeviceItem()) {
 				//获取下一点的 数据类型并进行fragment 切换显示数据							
 					switchFragment(mAdapterList.getCurrentPartItemType(), false);	
 				if (mCheckIndex != 0 && !mButton_Pre.isEnabled()) {
 					mButton_Pre.setEnabled(true);
 				}
-			}else {
-			
+			}else {			
 				ShowDialog();
 			}
 		} else {
@@ -575,16 +537,18 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		       .setPositiveButton("确认", new DialogInterface.OnClickListener() { 
 		           public void onClick(DialogInterface dialog, int id) { 
 		        	   
-		        		mPartItemIndex=0;
-						mDeviceIndex++;
-		        	   mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
+		        		mPartItemIndex=0;						
+		        	    mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
+		        	   // mDeviceIndex++;
 		        	   //fragment.saveDataToFile();
 						Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
-						dialog.dismiss();
+						
 						Message msg=new Message();
 						msg.what = MSG_INIT_FRAGMENT;
-						msg.arg1=1;//next Device
+						msg.arg1=Save_Current_Device_Data;//next Device
 						mHandler.sendMessage(msg);
+						
+						dialog.dismiss();
 		           } 
 		       }) 
 		       .setNegativeButton("取消", new DialogInterface.OnClickListener() { 
@@ -604,33 +568,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		switch(arg0.getId()){
-		case R.id.config:
-			 if( mAdapterList.getCount()>0){
-				 if(mSpinner.getSelectedItemPosition()>0){
-					 BLEControl = BluetoothLeControl.getInstance(this);
-					 boolean bleConnected=false;
-					 if(app.mCurLinkedBLEAddress!=null &&app.mCurLinkedBLEAddress.length()<2 &&!app.mBLEIsConnected ){
-						 Toast.makeText(this, "请在应用蓝牙界面手动连接", Toast.LENGTH_LONG).show();
-						 }else{
-							 bleConnected=BLEControl.Connection(app.mCurLinkedBLEAddress);
-							 }
-					 if(bleConnected){
-						 mHandler.sendEmptyMessageDelayed(MSG_INIT_FRAGMENT,1000);
-						 }else{
-							 Toast.makeText(this, "连接失败，请在应用蓝牙界面手动连接", Toast.LENGTH_LONG).show();
-						 }
-				 }else{
-					Toast.makeText(getApplicationContext(), "请选择状态", Toast.LENGTH_LONG).show();
-				}
-			  }else {
-					  Toast.makeText(getApplicationContext(), "设备下没有巡检项", Toast.LENGTH_LONG).show();
-			   }
-			break;
 		case R.id.bottombutton_pre://上一测试点
 		{
 			//首先是显示上一测试点的数据。
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_PRE));
-			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
 		}
 			break;
 
@@ -638,18 +579,22 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		{
 			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
-			mHandler.sendEmptyMessage(CommonDef.ENABLE_MEASUREMENT_BUTTON);
 			
 		}
 			break;		
 		case R.id.bottombutton3://测量
 			//if(app.mBLEIsConnected){
 				if(!app.isTest){
-					if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid)){
-					 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
-					}else {
-						Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
+					if(app.isSpecialLine()){
+						 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+					}else{
+						if(ConditionalJudgement.Is_NoTimeout(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid)){
+							 mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
+							}else {
+								Toast.makeText(getApplicationContext(), "巡检已超时", Toast.LENGTH_LONG).show();
+							}
 					}
+					
 				}else{
 					mHandler.sendMessage(mHandler.obtainMessage(MSG_MEASUERMENT));
 				}
@@ -661,25 +606,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		//	mHandler.sendEmptyMessage(CommonDef.DISABLE_MEASUREMENT_BUTTON);	
 			
 			break;
-//		case R.id.bottombutton2://方向
-//			if(mButton_Direction.getText().equals(getString(R.string.soundrecord))){
-//				Intent intent = new Intent();
-//				intent.setClass(PartItemActivity.this, SoundRecordActivity.class);
-//				startActivityForResult(intent,PartItemContact.PARTITEM_SOUNDRECORD_RESULT);
-//			}else{
-//			 new AlertDialog.Builder(PartItemActivity.this)
-//	         .setTitle(getString(R.string.direction_select))
-//	         .setItems(direction_item, new DialogInterface.OnClickListener() {
-//	             public void onClick(DialogInterface dialog, int which) {
-//	            	 mButton_Direction.setText(direction_item[which]);
-//	            	 //获取选择的项,X-Y,X-Z,Y-Z
-//	             Toast info =Toast.makeText(PartItemActivity.this, direction_item[which],Toast.LENGTH_LONG);
-//	                 info.setMargin(0.0f, 0.3f);
-//	                 info.show();
-//	             }
-//	         }).create().show();
-//			 }
-//			break;	
 		}
 	}
 	
@@ -706,24 +632,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			params.TypeCode=OnButtonListener.PictureDataType;
 			mFragmentCallBack.addNewMediaPartItem(params, mAdapterList);
 		}
-
-//		if (PartItemContact.PARTITEM_NOTEPAD_RESULT == requestCode) {
-//
-//			SharedPreferences mSharedPreferences = PreferenceManager
-//					.getDefaultSharedPreferences(getApplicationContext());
-//			// 实例化SharedPreferences.Editor对象（第二步）
-//			String timeStr = mSharedPreferences.getString(
-//					CommonDef.PartItemData_Shered_info.Time,
-//					SystemUtil.getSystemTime(0));
-//
-//			mCheckValue = mSharedPreferences.getString(
-//					CommonDef.PartItemData_Shered_info.Content, "");
-//
-////			// 重新生成一个parItemData数据项目
-////			Message msg = mHandler.obtainMessage(MSG_ADD_NEW_PARTITEMDATA);
-////			msg.arg1 = TEXT_RECORD_TYPE;
-////			mHandler.sendMessage(msg);
-//		}
 
 		if (PartItemContact.PARTITEM_SOUNDRECORD_RESULT == requestCode) {
 			params.TypeCode=OnButtonListener.AudioDataType;
@@ -826,16 +734,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		case CommonDef.checkUnit_Type.DISPLACEMENT:
 			mButton_Measurement.setVisibility(View.VISIBLE);
 			break;
-		case CommonDef.ENABLE_MEASUREMENT_BUTTON:	
-//			if(!mButton_Measurement.isEnabled()){
-//				mButton_Measurement.setEnabled(true);
-//			}
-			break;
-		case CommonDef.DISABLE_MEASUREMENT_BUTTON:
-//			if(mButton_Measurement.isEnabled()){
-//				mButton_Measurement.setEnabled(false);
-//			}
-			break;
 		}
 	}
 	
@@ -919,21 +817,36 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
    
             return true;  
         case KeyEvent.KEYCODE_BACK:
-        	if(fragmentsList.size()==0) finish();
-        	else {
-        		fragmentTransaction = fragmentManager.beginTransaction();
-        		if(fragmentsList.size()>0) {
-        			fragmentTransaction.remove(fragmentsList.get(fragmentsList.size()-1));
-        			fragmentTransaction.commit();
-        		}
-        		mFirstLLayout.setVisibility(View.VISIBLE);
-        		mSecendLLayout.setVisibility(View.GONE);
-        		mParamsLineLayout.setVisibility(View.GONE);
-        		fragmentsList.clear();
-        	}
+        	Message msg = mHandler.obtainMessage(MSG_PRE);
+        	mHandler.sendMessage(msg);
+        	//Toast.makeText(this, "Back 退出", Toast.LENGTH_LONG).show();
         	return true;
         }  
         return super.onKeyDown(keyCode, event);  
     }  
+    
+    void ShueDialog(){
+		 CommonDialog acceleChart = new CommonDialog(this);
+			acceleChart.setTitle("警告");
+			acceleChart.setContent("确认要退出当前设备巡检吗？如退出，当前设备下的已巡检项结果丢弃。");
+			acceleChart.setCloseBtnVisibility(View.VISIBLE);
+			acceleChart.setButtomBtn(new CommonDialogBtnListener() {
+
+				@Override
+				public void onClickBtn2Listener(CommonDialog dialog) {
+					// TODO Auto-generated method stub
+					mAdapterList=null;
+					 dialog.dismiss();
+				}
+
+				@Override
+				public void onClickBtn1Listener(CommonDialog dialog) {
+					// TODO Auto-generated method stub
+					//delete temp file
+					dialog.dismiss();
+				}
+			}, "退出", "取消");
+			acceleChart.show();
+	}
    
 }

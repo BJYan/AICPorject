@@ -1,7 +1,7 @@
 package com.aic.aicdetactor;
 
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -101,7 +101,7 @@ public class CustomDialog extends Dialog {
 			mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_NOT_EQUAL));
 			return;
 		}
-		RouteDao dao = RouteDao.getInstance(context);
+		LineDao dao = LineDao.getInstance(context);
 		ContentValues va = new ContentValues();
 		if(!dao.ModifyWorkerPwd( workerName, oldPwdStr, newPwdStr, va)){
 			Message msg =mHandler.obtainMessage(MESSAGE_LOGIN_ERROR);

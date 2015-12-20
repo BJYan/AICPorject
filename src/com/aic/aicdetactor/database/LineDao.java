@@ -12,10 +12,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.Event.Event;
+import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
+import com.aic.aicdetactor.data.ExtranalBinaryInfo;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
@@ -28,14 +30,14 @@ import com.aic.aicdetactor.data.TurnInfo;
 import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfo;
 import com.aic.aicdetactor.data.WorkerInfoJson;
-import com.aic.aicdetactor.data.upLoadInfo;
 import com.aic.aicdetactor.database.DBHelper.SourceTable;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
 
 
-public class RouteDao {
+public class LineDao {
 	private final String TAG ="luotest";
 	private DBHelper helper = null;
 	private String RouteTableName = DBHelper.TABLE_SOURCE_FILE;
@@ -45,15 +47,15 @@ public class RouteDao {
 	private String TempRouteTableName = DBHelper.TABLE_TEMPORARY;
 	private SQLiteDatabase mDB = null;
 
-	private RouteDao(Context cxt) {
+	private LineDao(Context cxt) {
 		helper = new DBHelper(cxt);
 		mDB = helper.getWritableDatabase();
 	}
-	private static RouteDao singleton = null;
-	public static RouteDao getInstance(Context cxt) {
+	private static LineDao singleton = null;
+	public static LineDao getInstance(Context cxt) {
 		
 			if (singleton == null) {
-				singleton = new RouteDao(cxt);
+				singleton = new LineDao(cxt);
 			}
 			return singleton;
 	}
@@ -63,7 +65,7 @@ public class RouteDao {
 	 * @param cxt
 	 * @param version
 	 */
-	private RouteDao(Context cxt, int version) {
+	private LineDao(Context cxt, int version) {
 		helper = new DBHelper(cxt, version);
 		mDB = helper.getWritableDatabase();
 	}
@@ -156,9 +158,19 @@ public class RouteDao {
 				+DBHelper.SourceTable.NormalItemCounts +","
 				+DBHelper.SourceTable.SPecialItemCounts +","
 				+DBHelper.SourceTable.HasSpecialLine +","
-				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?,?,?)";
+				+DBHelper.SourceTable.hasNormalLine +","
+				+DBHelper.SourceTable.DownLoadDate +")values(?,?,?,?,?,?,?,?,?,?)";
 		
-		mDB.execSQL(sql, new Object[] { Path, lineName,lineGuid,lineContentGuid,checkedItemCounts,normalitemCounts,specialitemCounts,hasSpecialLine,SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
+		mDB.execSQL(sql, new Object[] { Path, 
+				lineName,
+				lineGuid,
+				lineContentGuid,
+				checkedItemCounts,
+				normalitemCounts,
+				specialitemCounts,
+				hasSpecialLine,
+				normalitemCounts>0?1:0,
+				SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD2)});
 		
 		}
 		//如果数据表中存在已有的GUID ，如何处理呢？  目前是不做插入
@@ -174,11 +186,43 @@ public class RouteDao {
 		
 		for(int i = 0;i<WorkerList.size();i++){
 			workerinfo = (WorkerInfoJson) WorkerList.get(i);
-			cursor = mDB.query(WorkerTableName,
-					null,
-					DBHelper.Plan_Worker_Table.Number + "=?", new String[] { workerinfo.Number }, null, null,
-					null);
-			if(cursor== null || cursor.getCount()<1){ 
+			
+			String sqlStr= " select * from " +WorkerTableName + " where " +DBHelper.Plan_Worker_Table.Alias_Name+"='"+workerinfo.Alias_Name+"' and " 
+					
+					+DBHelper.Plan_Worker_Table.Class_Group+"='"+workerinfo.Class_Group+"' and "
+					+DBHelper.Plan_Worker_Table.Guid+"='"+workerinfo.Guid+"' and "
+					+DBHelper.Plan_Worker_Table.Name+"='"+workerinfo.Name+"' and "
+					+DBHelper.Plan_Worker_Table.Number+"='"+workerinfo.Number+"' and "
+					+DBHelper.Plan_Worker_Table.Pwd+"='"+workerinfo.Password+"' and "
+					+DBHelper.Plan_Worker_Table.T_Line_Guid+"='"+workerinfo.T_Line_Guid+"' and "
+					+DBHelper.Plan_Worker_Table.T_Organization_Guid+"='"+workerinfo.T_Organization_Guid+"' and "
+					+DBHelper.Plan_Worker_Table.T_Line_Content_Guid+"='"+workerinfo.T_Line_Content_Guid+"'"; 
+					
+			cursor = mDB.rawQuery(sqlStr, null)	;
+					
+//			cursor = mDB.query(WorkerTableName,
+//					null,
+//					DBHelper.Plan_Worker_Table.Alias_Name+"=? and " 
+//					+DBHelper.Plan_Worker_Table.Class_Group+"=? and "
+//					+DBHelper.Plan_Worker_Table.Guid+"=? and "
+//					+DBHelper.Plan_Worker_Table.Name+"=? and "
+//					+DBHelper.Plan_Worker_Table.Number+"=? and "
+//					+DBHelper.Plan_Worker_Table.Pwd+"=? and "
+//					+DBHelper.Plan_Worker_Table.T_Line_Guid+"=? and " 
+//					+DBHelper.Plan_Worker_Table.T_Organization_Guid+"=? and "
+//					+DBHelper.Plan_Worker_Table.T_Line_Content_Guid, 
+//					new String[] { 
+//					workerinfo.Alias_Name,
+//					workerinfo.Class_Group,
+//					workerinfo.Guid,
+//					workerinfo.Name,
+//					workerinfo.Number,
+//					workerinfo.Password,					
+//					workerinfo.T_Line_Guid,
+//					workerinfo.T_Organization_Guid,
+//					workerinfo.T_Line_Content_Guid}, null, null,
+//					null);
+			if(cursor!= null && cursor.getCount()<1){ 
 				 sql = "insert into "+WorkerTableName
 						 +"(" 
 						 + DBHelper.Plan_Worker_Table.Name+","				 
@@ -188,8 +232,9 @@ public class RouteDao {
 						 + DBHelper.Plan_Worker_Table.Guid+ " ," 
 						 + DBHelper.Plan_Worker_Table.T_Line_Guid+ ","
 						 + DBHelper.Plan_Worker_Table.T_Organization_Guid +","
-						 + DBHelper.Plan_Worker_Table.Pwd
-						 +")values(?,?,?,?,?,?,?,?)";
+						 + DBHelper.Plan_Worker_Table.Pwd +","
+						 + DBHelper.Plan_Worker_Table.T_Line_Content_Guid
+						 +")values(?,?,?,?,?,?,?,?,?)";
 						
 			
 				mDB.execSQL(sql, new Object[] {
@@ -200,7 +245,8 @@ public class RouteDao {
 						workerinfo.Guid,		
 						workerinfo.T_Line_Guid,
 						workerinfo.T_Organization_Guid,
-						workerinfo.Password});
+						workerinfo.Password,
+						workerinfo.T_Line_Content_Guid});
 				}
 			if(cursor != null){cursor.close();}
 		}
@@ -213,20 +259,32 @@ public class RouteDao {
 		
 		for(int i = 0;i<TurnList.size();i++){
 			turninfo = (TurnInfoJson) TurnList.get(i);
-			cursor = mDB.query(TurnTableName,
-					null,
-					DBHelper.Plan_Turn_Table.Number + "=?" , 
-					new String[] { String.valueOf(turninfo.Number)}, null, null,
-					null);
-			if(cursor== null || cursor.getCount()<1){ 
+	String sqlStr= " select * from " +TurnTableName + " where " +DBHelper.Plan_Turn_Table.End_Time+"='"+turninfo.End_Time+"' and " 
+					
+					+DBHelper.Plan_Turn_Table.Guid+"='"+turninfo.Guid+"' and "
+					+DBHelper.Plan_Turn_Table.Name+"='"+turninfo.Name+"' and "
+					+DBHelper.Plan_Turn_Table.Number+"='"+turninfo.Number+"' and "
+					+DBHelper.Plan_Turn_Table.Start_Time+"='"+turninfo.Start_Time+"' and "
+					+DBHelper.Plan_Turn_Table.T_Line_Content_Guid+"='"+turninfo.T_Line_Content_Guid+"' and "
+					+DBHelper.Plan_Turn_Table.T_Line_Guid+"='"+turninfo.T_Line_Guid+"'";
+					
+			cursor = mDB.rawQuery(sqlStr, null)	;
+			
+//			cursor = mDB.query(TurnTableName,
+//					null,
+//					DBHelper.Plan_Turn_Table.Number + "=?" , 
+//					new String[] { String.valueOf(turninfo.Number)}, null, null,
+//					null);
+			if(cursor!= null && cursor.getCount()<1){ 
 				 sql = "insert into "+TurnTableName
 						 +"(" + DBHelper.Plan_Turn_Table.Number +","				 
 						 + DBHelper.Plan_Turn_Table.End_Time+","
 						 + DBHelper.Plan_Turn_Table.Name+","
 						 + DBHelper.Plan_Turn_Table.Start_Time+","
-						 + DBHelper.Plan_Turn_Table.T_Line_Guid+","						
+						 + DBHelper.Plan_Turn_Table.T_Line_Guid+","	
+						 + DBHelper.Plan_Turn_Table.Guid+","	
 						 + DBHelper.Plan_Turn_Table.T_Line_Content_Guid
-						 +")values(?,?,?,?,?,?)";
+						 +")values(?,?,?,?,?,?,?)";
 						
 				// SQLiteDatabase db = helper.getWritableDatabase();
 				mDB.execSQL(sql, new Object[] {
@@ -234,7 +292,8 @@ public class RouteDao {
 						turninfo.End_Time,
 						turninfo.Name,
 						turninfo.Start_Time,	
-						turninfo.T_Line_Guid,		
+						turninfo.T_Line_Guid,	
+						turninfo.Guid,		
 						turninfo.T_Line_Content_Guid
 						});
 				}
@@ -303,7 +362,7 @@ public class RouteDao {
 					DBHelper.Organization_CorporationName_Table.Name + "=?" , 
 					new String[] { OrganizationInfo.CorporationName}, null, null,
 					null);
-			if(cursor== null || cursor.getCount()<1){ 
+			if(cursor!= null && cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_CorporationName
 			+"("
@@ -345,7 +404,7 @@ public class RouteDao {
 					DBHelper.Organization_WorkShopName_Table.Name  + "=?" , 
 					new String[] {OrganizationInfo.WorkShopName}, null, null,
 					null);
-			if(cursor== null || cursor.getCount()<1){ 
+			if(cursor!= null && cursor.getCount()<1){ 
 			 sql = "insert into "
 			+DBHelper.TABLE_T_Organization_WorkShopName
 			+"("
@@ -1043,7 +1102,15 @@ public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,Co
 	return fileNameList;
 }
 
-public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,ContentValues cv){
+/**
+ * 
+ * @param name
+ * @param pwsd
+ * @param cv
+ * @param isNormalRouteLine
+ * @return
+ */
+public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,ContentValues cv,LineType routeType){
 	String error = "";
 	List<String> guidList = new ArrayList<String>();
 	List<JugmentParms> mJugmentListParms=new   ArrayList<JugmentParms>();
@@ -1055,7 +1122,6 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 	
 		if (cur != null && cur.getCount() > 0) {
 			MLog.Logd("luotest","queryLogIn()  cur != null cur.count ="	+ cur.getCount());
-			WorkerInfoJson WorkerInfoJson = new WorkerInfoJson();
 			cur.moveToFirst();
 			for (int n = 0; n < cur.getCount(); n++) {
 				String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
@@ -1087,23 +1153,62 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		if (cursor2 != null && cursor2.getCount() > 0) {
 			cursor2.moveToFirst();
 			for (int i = 0; i < cursor2.getCount(); i++) {
-				Map<String, String> map = new HashMap<String, String>();
-				JugmentParms mJugmentParms = new JugmentParms();
+				int normalCount=Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
+				int specialCount =Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
 				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
-				mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
-				mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANGUID));
-				mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
-				mJugmentParms.T_Line.LineNormalTotalCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
-				mJugmentParms.T_Line.LineSpecialTotalCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
-				mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
-				mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
-
 				
-				mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
-				mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
-				mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+				if(routeType==LineType.NormalRoute){
+					if(normalCount>0){
+						JugmentParms mJugmentParms = new JugmentParms();
+						mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+						mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+						mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
+						mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
+						mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+						mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
+						
+						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+						mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+						mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+						
+						mJugmentListParms.add(mJugmentParms);	
+					}
+				}else if(routeType==LineType.SpecialRoute){
+					
+					if(specialCount>0){
+						JugmentParms mJugmentParms = new JugmentParms();							
+						mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+						mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+						mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
+						mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
+						mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+						mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
+						
+						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+						mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+						mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+						
+						mJugmentListParms.add(mJugmentParms);	
+					}
+				}else if(routeType==LineType.AllRoute){
+					JugmentParms mJugmentParms = new JugmentParms();							
+					mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANNAME));
+					mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.PLANGUID));
+					mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
+					mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
+					mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
+					mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+					mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
+					
+					mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+					mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+					mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+					
+					mJugmentListParms.add(mJugmentParms);	
+				}
 				
-				mJugmentListParms.add(mJugmentParms);
 				cursor2.moveToNext();
 				MLog.Logd("luotest"," queryLogIn() search route table  result path is "	+ path);
 			}
@@ -1335,7 +1440,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		execSQLUpdate(detelStr);
 	
 		//worker
-		detelStr= " delete  from "	+DBHelper.TABLE_WORKERS + " where " + DBHelper.Plan_Worker_Table.Guid +" is '"+ParamsStr[3]+"'" ;
+		detelStr= " delete  from "	+DBHelper.TABLE_WORKERS + " where " + DBHelper.Plan_Worker_Table.T_Line_Guid +" is '"+ParamsStr[3]+"'" ;
 		execSQLUpdate(detelStr);
 		
 		
@@ -1384,8 +1489,8 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 			e.printStackTrace();
 		}
 		 insertNormalLineInfo(Normaldata.T_Line.Name,pathName,Normaldata.T_Line.T_Line_Guid,
-				 Normaldata.getItemCounts(0,0,false,true),
-				 Normaldata.getItemCounts(0,0,true,true),Normaldata.getItemCounts(0,0,true,true),
+				 Normaldata.getItemCounts(0,0,false,false),
+				 Normaldata.getItemCounts(0,0,false,true),Normaldata.getItemCounts(0,0,true,true),
 				 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
 
 	}
@@ -1425,6 +1530,98 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 				cursor.close();
 			}
 		}
+		return list;
+	}
+	
+
+	
+	public void InsertMediaData(String data,boolean test,String StrDeviceExitDataGuid,String StrLineGuid){
+		String guid = SystemUtil.createGUID();
+		if(test){
+			guid="2.txt";
+		}
+		try {
+			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+guid, data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String StrSql="insert into "+DBHelper.TABLE_Media +" ( "
+				+DBHelper.Media_Table.Data_Exist_Guid +","
+				+DBHelper.Media_Table.Date +","
+				+DBHelper.Media_Table.Is_Uploaded +","
+				+DBHelper.Media_Table.Line_Guid +","
+				+DBHelper.Media_Table.Mime_Type +","
+				+DBHelper.Media_Table.Name +","
+				+DBHelper.Media_Table.Path +","
+				+DBHelper.Media_Table.UploadedDate +") values ('"
+				+StrDeviceExitDataGuid+"','"
+				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
+				+"0"+"','"
+				+StrLineGuid+"','"
+				+"image"+"','"
+				+guid+"','"				
+				+Setting.getUpLoadJsonPath()+guid+"','"
+				+"0"+"');";
+				
+		execSQL(StrSql);
+	}
+	
+	/**
+	 * 获取所有的未上传的额外信息
+	 */
+	public List<ExtranalBinaryInfo> getAllUnUploadExtralData(){
+		String SqlStr = "select * from " +DBHelper.TABLE_Media + " where " +DBHelper.Media_Table.Is_Uploaded +" is " +" '0'";
+		List<ExtranalBinaryInfo> list = new ArrayList<ExtranalBinaryInfo>();
+		Cursor curso = execSQL(SqlStr);
+		Setting setting = new Setting();
+		if(curso!=null && curso.getCount()>0){
+			curso.moveToFirst();
+			
+			for(int i=0;i<curso.getCount();i++){
+				ExtranalBinaryInfo info = new ExtranalBinaryInfo();
+				info.filePath=setting.getExtralDataPath()+curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Path));
+				info.RecordLab=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Name));
+				info.MimeType=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Mime_Type));
+				list.add(info);
+				curso.moveToNext();
+			}
+		}
+		
+		if(curso!=null){
+			curso.close();
+			curso=null;
+		}	
+		
+		return list;
+		
+	}
+	
+	/**
+	 * 获取所有已经巡检过的未上传的日常巡检数据
+	 */
+	public List<String> getUnUploadAllUploadJsonFile(){
+		//查表 
+		String sqlStr= "select * from " +DBHelper.TABLE_CHECKING +" where " +DBHelper.Checking_Table.Is_Uploaded +" is 0";
+		Cursor cursor =execSQL(sqlStr);
+		 List<String> list = new ArrayList<String>();
+		Setting setting = new Setting();
+		if(cursor!=null && cursor.getCount()>0){
+			cursor.moveToFirst();
+			for(int i=0;i<cursor.getCount();i++){
+				String path = cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.File_Guid));
+				
+				list.add(setting.getUpLoadJsonPath()+path);
+				cursor.moveToNext();
+			}
+			
+		}
+		
+		if(cursor!=null){
+			cursor.close();
+			cursor=null;
+		}
+		
 		return list;
 	}
 }

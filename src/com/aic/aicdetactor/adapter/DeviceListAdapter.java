@@ -24,7 +24,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.acharEngine.AverageTemperatureChart;
 import com.aic.aicdetactor.acharEngine.ChartBuilder;
 import com.aic.aicdetactor.acharEngine.IDemoChart;
-import com.aic.aicdetactor.activity.PartItemActivity;
+import com.aic.aicdetactor.activity.PartItemListSelectActivity;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.comm.CommonDef;
@@ -135,15 +135,23 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_In_Place!=1){
-						
+					//	if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_Device_Checked!=1){
 						Intent intent = new Intent();
 						app.mDeviceIndex=deviceindex;
 						app.mPartItemIndex = partindex;
-						intent.setClass(mActivity, PartItemActivity.class);
+						if(mIsSpecial){
+							app.setCategoryTitle(mActivity.getString(R.string.line_special_name));							
+						}else{
+							app.setCategoryTitle(mActivity.getString(R.string.line_normal_name));
+						}
+						intent.setClass(mActivity, PartItemListSelectActivity.class);
 						mActivity.startActivity(intent); 
+//						}else{
+//							Toast.makeText(context, app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Name + " 已经巡检过了，不能重复巡检", Toast.LENGTH_LONG).show();
+//						}
 						}else{
 							addIs_InPlacePartItem(deviceindex);
-							Toast.makeText(context, "到位管理完成", Toast.LENGTH_LONG).show();
+							Toast.makeText(context, mActivity.getString(R.string.inpalce_manager), Toast.LENGTH_LONG).show();
 						}
 					}
 					
@@ -247,7 +255,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 			}
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				if(mIsSpecial){
-						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection>0){
+						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection==1){
 					Map<String, String> map = new HashMap<String, String>();
 					map.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
 					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
@@ -326,7 +334,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		if(app.isTest){
 			app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Omission_Check=89;
 		}else{
-		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Omission_Check=app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Is_Omission_Check;
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).Is_Omission_Check=app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check;
 		
 		}
 		if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceIndex).PartItem !=null

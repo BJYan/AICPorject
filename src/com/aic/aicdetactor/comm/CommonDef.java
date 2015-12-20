@@ -78,8 +78,6 @@ public class CommonDef {
     
 	}
     
-	 public  final static int ENABLE_MEASUREMENT_BUTTON =50; 
-    public  final static int DISABLE_MEASUREMENT_BUTTON =51; 
 	    
 	// 以下是巡检项的数据种类
 	public class checkUnit_Type{
@@ -190,6 +188,7 @@ public class CommonDef {
 		public static final String PROGRESS = "Route_Progress";
 		public static final String JSON_INDEX = "7";
 		public static final String IsSpecilaLine = "Is_SpecilaLine";
+		public static final String Path = "Path";
 
 	}
 
@@ -272,5 +271,5 @@ public class CommonDef {
 		public static final String ServiceIP="ServiceIp";
 	}
 	
-    
+	public static final String GotoNextDevice= "gotoNextDevice";
 }

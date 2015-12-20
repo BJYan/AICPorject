@@ -23,9 +23,10 @@ public  class DownloadNormalRootData
 
     /**
      * 
-     * @param type; line 0;station 1; device 2
-     * @param index
-     * @param isChecked
+     * @param type line 0;station 1; device 2
+     * @param index 指定的索引
+     * @param isChecked 
+     * @param bIncludeSpecial  true 特巡，否则为日常巡检
      * @return
      */
 	public int getItemCounts(int type, int index, boolean isChecked,boolean bIncludeSpecial) {
@@ -40,12 +41,28 @@ public  class DownloadNormalRootData
 					DeviceItemJson deviceItem = deviceList.get(m);
 					if (isChecked) {
 						if (deviceItem.Is_RFID_Checked > 0) {
-							count += deviceItem.PartItem.size();
+							if(bIncludeSpecial){
+								if(deviceItem.Is_Special_Inspection==1){
+									count += deviceItem.PartItem.size();
+								}
+							}else{
+								if(deviceItem.Is_Special_Inspection!=1){
+									count += deviceItem.PartItem.size();
+								}
+							}
 						} else {
 							continue;
 						}
 					} else {
-						count += deviceItem.PartItem.size();
+						if(bIncludeSpecial){
+							if(deviceItem.Is_Special_Inspection==1){
+								count += deviceItem.PartItem.size();
+							}
+						}else{
+							if(deviceItem.Is_Special_Inspection!=1){
+								count += deviceItem.PartItem.size();
+							}
+						}
 					}
 
 					// List<PartItemJson> partItemList = deviceItem.PartItem;

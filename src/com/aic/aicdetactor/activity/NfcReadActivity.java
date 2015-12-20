@@ -8,14 +8,18 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class NfcReadActivity extends CommonActivity{
 	NfcAdapter nfcAdapter;
 	TextView nfcContent;
+	Button mCancleButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,14 @@ public class NfcReadActivity extends CommonActivity{
 		setContentView(R.layout.dialog_nfc_layout);
 		
 		nfcContent = (TextView) findViewById(R.id.nfc_content);
+		mCancleButton = (Button) findViewById(R.id.dialog_nfc_cancel_btn);
+		mCancleButton.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				finish();
+			}});
 	}
 	
 	@Override

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.SearchResultActivity;
 import com.aic.aicdetactor.database.DBHelper;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
@@ -92,7 +92,7 @@ public class SearchLocalListAdapter extends BaseAdapter{
 	}
 	 
 	void initData(){
-		RouteDao dao = RouteDao.getInstance(context);
+		LineDao dao = LineDao.getInstance(context);
 		String StrSql = "select * from "+DBHelper.TABLE_CHECKING;
 		Cursor cur= null;
 		try{
@@ -114,4 +114,6 @@ public class SearchLocalListAdapter extends BaseAdapter{
 		}
 		
 	}
+	
+	
 }

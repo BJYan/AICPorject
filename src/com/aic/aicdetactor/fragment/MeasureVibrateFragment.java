@@ -60,7 +60,7 @@ import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.database.DBHelper;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
 import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
 import com.aic.aicdetactor.setting.Setting;
@@ -246,6 +246,8 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		mReceiveDataLenth=0;
 		mMeasurementButton.setEnabled(true);
 	}
+	View view;
+	CommonViewPagerAdapter DialogPagerAdapter;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -253,7 +255,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		
 		// TODO Auto-generated method stub
 		//return super.onCreateView(inflater, container, savedInstanceState);
-		View view = (View) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
+		view = (View) inflater.inflate(R.layout.brivate_fragment_layout, container, false);
 		final ViewPager viewPager = (ViewPager)view.findViewById(R.id.vibrate_vPager);
 		tabHost = (TabHost)view.findViewById(R.id.vibrate_tabhost);  
         // 如果没有继承TabActivity时，通过该种方法加载启动tabHost  
@@ -262,20 +264,22 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
                 .setContent(  
                 R.id.view1));
   
-        tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("时域")  
-                .setContent(R.id.view2));
-        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("频域")  
-                .setContent(  
-                R.id.view1));
-        if(mPartItemData.Axle_Number>1){
-	        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
-	                .setContent(R.id.view2));
-        }
+//        tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("时域")  
+//                .setContent(R.id.view2));
+//        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("频域")  
+//                .setContent(  
+//                R.id.view1));
+//        if(mPartItemData.Axle_Number>1){
+//	        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
+//	                .setContent(R.id.view2));
+//        }
 		views.add(mInflater.inflate(R.layout.brivate2, null));
-		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
-		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
-		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
-		CommonViewPagerAdapter DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
+//		views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
+//		views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
+//		if(mPartItemData.Axle_Number>1){
+//		views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
+//		}
+		DialogPagerAdapter = new CommonViewPagerAdapter(getActivity(),views);
 		viewPager.setAdapter(DialogPagerAdapter);
 		 viewPager.setCurrentItem(0);
 	        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
@@ -349,7 +353,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		mColorTextView = (TextView)views.get(0).findViewById(R.id.colordiscrip);
 		initDisplayData();
 		AdapterList.getCurrentPartItem().setSartDate();
-		InitChart();
 		mCountdownDialog = new FlippingLoadingDialog(getActivity(), "1");
 		mCountdownDialog.setCancelable(false);
 		mMeasurementButton = (Button)getActivity().findViewById(R.id.bottombutton3);
@@ -361,7 +364,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		// TODO Auto-generated method stub
 		super.onStart();
 		if(bPressTest){
-			mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);		
+		//	mCallback.OnClick(CommonDef.ENABLE_MEASUREMENT_BUTTON,0,0,0);		
 		}else{
 			startCountdownTimer();
 			
@@ -369,9 +372,28 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	}
 	
 	
-	
+	boolean isFirstEnterChart=true;
 	private void InitChart() {
 		// TODO Auto-generated method stub
+		
+		if(isFirstEnterChart){
+		 tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("时域")  
+	                .setContent(R.id.view2));
+	        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("频域")  
+	                .setContent(  
+	                R.id.view1));
+	        if(mPartItemData.Axle_Number>1){
+		        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("轴心")  
+		                .setContent(R.id.view2));
+	        }
+	        views.add(mInflater.inflate(R.layout.chart_thr_charts1_layout, null));
+			views.add(mInflater.inflate(R.layout.chart_thr_charts2_layout, null));
+			if(mPartItemData.Axle_Number>1){
+			views.add(mInflater.inflate(R.layout.chart_one_charts_layout, null));
+			}
+			DialogPagerAdapter.notifyDataSetChanged();
+			isFirstEnterChart = false;
+		}
 		ChartBuilder chartBuilder = new ChartBuilder(getActivity());
 		LinearLayout timeChartViewY = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_first_chart);
 		LinearLayout timeChartViewX = (LinearLayout) views.get(1).findViewById(R.id.dialog_thr_chart_sec_chart);
@@ -400,9 +422,11 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		LinearLayout axesYLL = (LinearLayout) views.get(2).findViewById(R.id.yLL);
 		LinearLayout axesZLL = (LinearLayout) views.get(2).findViewById(R.id.zLL);
 		
+		LinearLayout frequencyChartView =null;
+		if(mPartItemData.Axle_Number>1){
+		frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
+		}
 		
-		LinearLayout frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
-		FengValue=200;
 		if(mAnalysis.isValidate()){
 			
 			y_FengValue.setText("峰值:"+FengValue);
@@ -421,7 +445,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData,FengValue,FengFengValue));
 				axesXLL.setVisibility(View.GONE);
 				axesZLL.setVisibility(View.GONE);
-				frequencyChartView.setVisibility(View.GONE);		
 			}else if(mAnalysis.getAxCount()==3){			
 			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));
 			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));		
@@ -430,13 +453,17 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData,FengValue,FengFengValue));
 			}
 		}else{
-			float[] data = new float[1024];
-			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
-			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
-			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
-			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));		
-			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
-			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, 5,10));
+			float[] data ={-1,12,3,-4,10,4,-9,6};
+			float a =20;
+			float fa =40;
+			double c= 4.67;
+			
+			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
+			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
 		}
 		
 	}
@@ -624,11 +651,12 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				break;
 			case BluetoothLeControl.Message_End_Upload_Data_From_BLE:
 				mTimeTV.setText("测量完毕");
+				mMeasurementButton.setEnabled(true);
 				if(!bStartReceiveData){
 					return;
 				}
 				bStartReceiveData = false;
-				mMeasurementButton.setEnabled(true);
+				
 				if(mAnalysis.getPackagesCounts() !=receiveCount){
 					mColorTextView.setText("数据包丢失"+" " +iFailedTimes);
 				}
@@ -643,9 +671,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 					
 					measureAndDisplayData();
 					String Wavedata=mAnalysis.getWaveByteData().toString();
-					InsertMediaData(Wavedata,true);
+					LineDao dao = LineDao.getInstance(getActivity());
+					dao.InsertMediaData(Wavedata,true,AdapterList.getCurDeviceExitDataGuid(),app.mLineJsonData.T_Line.T_Line_Guid);
 					InitChart();
-					//UpLoadWaveData(AdapterList.getCurrentPartItem().RecordLab);	
 					
 					closeTimer();
 						
@@ -671,39 +699,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		}
 	};
 	
-	
-	void InsertMediaData(String data,boolean test){
-		String guid = SystemUtil.createGUID();
-		if(test){
-			guid="2.txt";
-		}
-		try {
-			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+guid, data);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		RouteDao dao = RouteDao.getInstance(getActivity());
-		String StrSql="insert into "+DBHelper.TABLE_Media +" ( "
-				+DBHelper.Media_Table.Data_Exist_Guid +","
-				+DBHelper.Media_Table.Date +","
-				+DBHelper.Media_Table.Is_Uploaded +","
-				+DBHelper.Media_Table.Line_Guid +","
-				+DBHelper.Media_Table.Mime_Type +","
-				+DBHelper.Media_Table.Name +","
-				+DBHelper.Media_Table.Path +","
-				+DBHelper.Media_Table.UploadedDate +") values ('"
-				+AdapterList.getCurDeviceExitDataGuid()+"','"
-				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
-				+"0"+"','"
-				+super.app.mLineJsonData.T_Line.T_Line_Guid+"','"
-				+"image"+"','"
-				+guid+"','"				
-				+Setting.getUpLoadJsonPath()+guid+"','"
-				+"0"+"');";
-				
-		dao.execSQL(StrSql);
-	}
 	
 	void UpLoadWaveData(String RecordLab){
 	float[]waveData=	mAnalysis.getWaveFloatData();

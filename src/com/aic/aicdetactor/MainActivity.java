@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +22,6 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.CustomDialog.ClickListenerInterface;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.fragment.BlueToothFragment.BlueToothListener;
 import com.aic.aicdetactor.fragment.BlueTooth_Fragment;
 import com.aic.aicdetactor.fragment.DownLoadFragment;
 import com.aic.aicdetactor.fragment.Message_Fragment;
@@ -28,7 +29,7 @@ import com.aic.aicdetactor.fragment.RouteFragment;
 import com.aic.aicdetactor.fragment.SearchFragment;
 
 
-public class MainActivity extends CommonActivity implements BlueToothListener,ClickListenerInterface,
+public class MainActivity extends CommonActivity implements ClickListenerInterface,
 	OnClickListener{
 	String TAG = "MainActivity";
 	private RadioGroup mGroup = null; 
@@ -71,8 +72,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 					fragmentTransaction.commit(); 
 					setActionBar("AIC巡检操作",false);
 					}else{
-						//Toast.makeText(getApplicationContext(), "巡检：您还没登录", Toast.LENGTH_LONG).show();
-						//initFragment();
+						Toast.makeText(getApplicationContext(), "您还没登录,请登录", Toast.LENGTH_LONG).show();
+						mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_ReLogin), 1000);
 					}
 				}
 					break;
@@ -95,8 +96,8 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 						fragmentTransaction.commit(); 
 						setActionBar("AIC任务消息",false);
 					}else{
-						Toast.makeText(getApplicationContext(), "通知：您还没登录", Toast.LENGTH_LONG).show();
-						//initFragment();
+						Toast.makeText(getApplicationContext(), "您还没登录,请登录", Toast.LENGTH_LONG).show();						
+						mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_ReLogin), 1000);
 					}
 					}
 					break;
@@ -126,11 +127,26 @@ public class MainActivity extends CommonActivity implements BlueToothListener,Cl
 		fragmentTransaction.commit();
 	}
 	
-	@Override
-	public void Click(boolean logIn) {
-		// TODO Auto-generated method stub
+	
+	public static final int MSG_ReLogin =0;
+	Handler mHandler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			switch(msg.what){
+			case MSG_ReLogin:
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, LoginActivity.class);
+				startActivity(intent);
+				finish();
+				break;
+				
+			}
+			super.handleMessage(msg);
+		}
 		
-	}
+	};
 	 private long mExitTime;
 	 @Override  
 	 public boolean onKeyDown(int keyCode, KeyEvent event) {

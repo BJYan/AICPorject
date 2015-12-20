@@ -7,7 +7,7 @@ public class PartItemContact {
 	public final static int PARTITEM_NOTEPAD_RESULT =START+1;
 	public final static int PARTITEM_SOUNDRECORD_RESULT =START+2;
 	
-	
+	public final static int PARTITEM_ISNOT_LASTDEVICE_RESULT =START+20;
 	/**
 	 * activity 与fragment 之间的数据协议，OnButtonDown中的第四个参数
 	 */

@@ -88,9 +88,8 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		mBondedDevices = new ArrayList<BluetoothDevice>();
 		mAllBTDevices = new ArrayList<BluetoothDevice>();
 		
-		IntentFilter filter_dynamic = new IntentFilter();  
-        filter_dynamic.addAction(Bluetooth.BLEStatus);  
-        this.getActivity().registerReceiver(dynamicReceiver, filter_dynamic);  
+		
+       
         // 注册系统动态广播消息  
 	}
 	 private BroadcastReceiver dynamicReceiver = new BroadcastReceiver() {  
@@ -153,12 +152,6 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		return BlueToothView;
 	}
 	
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		this.getActivity().unregisterReceiver(dynamicReceiver);
-		super.onDestroy();
-	}
 
 	@Override
 	public void onResume() {
@@ -170,8 +163,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		//scanLeDevice(true);
 		
 		// Register the BroadcastReceiver
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		getActivity().registerReceiver(mReceiver, filter);
+		
 		mBluetoothAdapter.startDiscovery();
 		mBondedDevices = getBondedDevices();
 		btBindDevListAdapter = new BlueToothBindDevListAdapter(getActivity(), mBondedDevices,mHandle);
@@ -179,6 +171,7 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		
 		showProgressBar();
 		mSendButton.setText(""+app.mBLEIsConnected);
+		registerBoradcastReceiver();
 	}
 	
 	@Override
@@ -186,11 +179,12 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onPause();
 		//scanLeDevice(false);
-		getActivity().unregisterReceiver(mReceiver);
+		
+		unregisterBroadcastReceiver();
 		
 	}
 	private boolean mScanning=false;
-	private static final long SCAN_PERIOD = 10000;
+	private static final long SCAN_PERIOD = 100;
 	private void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
@@ -221,8 +215,15 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 	        String action = intent.getAction();
 	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	            if(device.getBondState()==BluetoothDevice.BOND_NONE) mAllBTDevices.add(device);
+	            if(device.getBondState()==BluetoothDevice.BOND_NONE){
+	            	 if (!mAllBTDevices.contains(device)) {
+	                    	mAllBTDevices.add(device);
+	            		}
+	            }
 	            blueToothDevListAdapter.notifyDataSetChanged();
+	        }
+	        if(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED.equals(action)){
+	        	
 	        }
 	        if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
 	        	dismissProgressBar();
@@ -239,10 +240,12 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 				 startActivity(intent);
 			 }
 			 devicesSet = mBluetoothAdapter.getBondedDevices();
-			 
+			
 			 if(devicesSet.size()>0) {
 				 	for(Iterator<BluetoothDevice> iterator = devicesSet.iterator();iterator.hasNext();) {
 				 		BluetoothDevice device = (BluetoothDevice)iterator.next(); 
+				 		boolean bExist = mAllBTDevices.contains(device);
+				 		Log.i(TAG, "BLE Address is "+device.getAddress() + " "+bExist);
 				 		if(!bondedDevs.contains(device)){
 				 		bondedDevs.add(device);
 				 		}
@@ -271,6 +274,15 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
 		}
 	}
 	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		btBindDevListAdapter.disConnectionBLE();
+		super.onDestroy();
+		
+	}
+
+
 	private void showProgressBar(){
 		pbar_text.setVisibility(View.VISIBLE);
 		pbar.setVisibility(View.VISIBLE);
@@ -353,4 +365,51 @@ public class BlueTooth_Fragment  extends Fragment implements OnClickListener{
             });
         }
     };
+    
+    
+    
+    private void registerBoradcastReceiver() {
+//        IntentFilter stateChangeFilter = new IntentFilter(
+//                BluetoothAdapter.ACTION_STATE_CHANGED);
+//        IntentFilter connectedFilter = new IntentFilter(
+//                BluetoothDevice.ACTION_ACL_CONNECTED);
+//        IntentFilter disConnectedFilter = new IntentFilter(
+//                BluetoothDevice.ACTION_ACL_DISCONNECTED);
+//        this.getActivity().registerReceiver(stateChangeReceiver, stateChangeFilter);
+//        this.getActivity().registerReceiver(stateChangeReceiver, connectedFilter);
+//        this.getActivity().registerReceiver(stateChangeReceiver, disConnectedFilter);
+        
+        
+        IntentFilter filter_dynamic = new IntentFilter();  
+        filter_dynamic.addAction(Bluetooth.BLEStatus);  
+        this.getActivity().registerReceiver(dynamicReceiver, filter_dynamic);  
+        
+        
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		getActivity().registerReceiver(mReceiver, filter);
+		
+    }
+
+    void unregisterBroadcastReceiver(){
+    	// this.getActivity().unregisterReceiver(stateChangeReceiver);
+    	 getActivity().unregisterReceiver(mReceiver);
+    	 
+    	 this.getActivity().unregisterReceiver(dynamicReceiver);  
+    }
+    private BroadcastReceiver stateChangeReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
+        	mSendButton.setText(action);
+        }
+        if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
+        	mSendButton.setText(action);
+        }
+        if (BluetoothAdapter.ACTION_STATE_CHANGED == action) {
+        	mSendButton.setText(action);
+        }
+    }
+};
+
 }

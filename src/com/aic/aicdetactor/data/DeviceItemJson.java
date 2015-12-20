@@ -1,5 +1,6 @@
 package com.aic.aicdetactor.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.aic.aicdetactor.util.SystemUtil;
@@ -16,17 +17,14 @@ public class DeviceItemJson//:ICloneable
     public String Code ;
     public String Data_Exist_Guid ;
     public String Date_Of_Entering ;
-
     public String Date_Of_Production ;
     public String Date_Of_Start ;
     public String End_Check_Datetime ;
     public String Energy_Consumption ;
-
     public String English_Name ;
     public String First_Maintenance ;
     public String Grade ;
     public String Installation_Site ;
-
     public int Is_Device_Checked ;
     public int Is_In_Place ;
     public int Is_Omission_Check ;
@@ -38,10 +36,8 @@ public class DeviceItemJson//:ICloneable
     public String Guid ;
     public String Manufacturer ;
     public String Material ;
-
     public String Model ;
     public String Name ;
-
     public String Person_In_Charge ;
     public String Precision ;
     public String Price ;
@@ -55,13 +51,10 @@ public class DeviceItemJson//:ICloneable
     public String Second_Maintenance ;
     public String Serial_Number ;
     public String Start_Check_Datetime ;
-
     public String Status ;
     public String Third_Maintenance ;
-
     public int Total_Check_Time ;
     public String Vendor ;
-
     public String T_Worker_Class_Group ;
     public String T_Worker_Class_Shift ;
     public String T_Worker_Number ;
@@ -109,4 +102,68 @@ public class DeviceItemJson//:ICloneable
     	    T_Worker_Name =WorkerName;
     	    T_Worker_Guid =WorkerGuid;
     }
+    
+    public  void clone(DeviceItemJson device){
+    	this.	Asset_Number	=	device.	Asset_Number;
+    	this.Asset_Type = device.Asset_Type;
+    	this.Capacity=device.Asset_Type;
+    	this.Chart_Number=device.Chart_Number;
+    	this.Class=device.Class;
+    	this.Classification_Number=device.Classification_Number;
+    	this.Code=device.Code;
+    	this.Data_Exist_Guid= device.Data_Exist_Guid;
+    	this.Date_Of_Entering= device.Date_Of_Entering;
+    	this.Date_Of_Production= device.Date_Of_Production;
+    	this.Date_Of_Start= device.Date_Of_Start;    	
+    	this.End_Check_Datetime= device.End_Check_Datetime;  
+    	this.Energy_Consumption=device.Energy_Consumption;
+    	this.English_Name	=	device.	English_Name;
+    	this.First_Maintenance	=	device.	First_Maintenance;
+    	this.Grade=device.Grade;
+    	this.Guid	=	device.	Guid	;
+    	this.	Installation_Site	=	device.	Installation_Site	;
+    	this.	Is_Device_Checked	=	device.	Is_Device_Checked	;
+    	this.	Is_In_Place	=	device.	Is_In_Place	;
+    	this.	Is_Omission_Check	=	device.	Is_Omission_Check	;
+    	this.	Is_RFID_Checked	=	device.	Is_RFID_Checked	;
+    	this.	Is_Special_Inspection	=	device.	Is_Special_Inspection	;
+    	this.	Item_Define	=	device.	Item_Define	;
+    	this.	Inspection_Type	=	device.	Inspection_Type	;    	  	
+    	this.	Manufacturer	=	device.	Manufacturer	;
+    	this.	Material	=	device.	Material	;
+    	this.	Model	=	device.	Model	;
+    	this.	Name	=	device.	Name	;
+    	this.	Person_In_Charge	=	device.	Person_In_Charge	;
+    	this.	Precision	=	device.	Precision	;
+    	this.	Price	=	device.	Price	;
+    	this.	Processing_Size	=	device.	Processing_Size	;
+    	this.	Rated_Power	=	device.	Rated_Power	;
+    	this.	Rated_RPM	=	device.	Rated_RPM	;
+    	this.	Rated_Voltage	=	device.	Rated_Voltage	;
+    	this.	Rated_Current	=	device.	Rated_Current	;
+    	this.	Remarks	=	device.	Remarks	;
+    	this.	Safety_Coefficient	=	device.	Safety_Coefficient	;
+    	this.	Second_Maintenance	=	device.	Second_Maintenance	;
+    	this.	Serial_Number	=	device.	Serial_Number	;
+    	this.	Start_Check_Datetime	=	device.	Start_Check_Datetime	;
+    	this.	Status	=	device.	Status	;
+    	this.	Status_Array	=	device.	Status_Array	;  
+    	this.	Third_Maintenance	=	device.	Third_Maintenance	;
+    	this.	Total_Check_Time	=	device.	Total_Check_Time	;    	
+    	this.	T_Worker_Class_Group	=	device.	T_Worker_Class_Group	;
+    	this.	T_Worker_Class_Shift	=	device.	T_Worker_Class_Shift	;
+    	this.	T_Worker_Number	=	device.	T_Worker_Number	;
+    	this.	T_Worker_Name	=	device.	T_Worker_Name	;
+    	this.	T_Worker_Guid	=	device.	T_Worker_Guid	;
+    	this.	Vendor	=	device.	Vendor	;
+    	this.	PartItem	=	new ArrayList<PartItemJsonUp>();
+    	for(int k=0;k<device.PartItem.size();k++){
+    		PartItemJsonUp up= new PartItemJsonUp();
+    		up.Clone(device.PartItem.get(k));
+    		this.	PartItem.add(up);
+    	}
+    		;
+
+    }
+    
 }

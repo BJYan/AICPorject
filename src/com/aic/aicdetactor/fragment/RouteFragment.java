@@ -2,7 +2,6 @@ package com.aic.aicdetactor.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -12,10 +11,7 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,16 +21,14 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TabHost;
-import android.widget.Toast;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.TempRouteActivity;
@@ -43,17 +37,18 @@ import com.aic.aicdetactor.adapter.RoutePageAdapter;
 import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.comm.OrganizationType;
-import com.aic.aicdetactor.database.RouteDao;
+import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.util.MLog;
 
 
 public class RouteFragment extends Fragment implements OnClickListener,OnItemSelectedListener,OnTouchListener{
 	//
 	private final String TAG = "luotest";
-	private RadioGroup mRadioGroup = null; 
+	//private RadioGroup mRadioGroup = null; 
 	private myApplication app = null;
-	private List<Map<String, String>> mItemDatas = null;
+	//private List<Map<String, String>> mItemDatas = null;
 	private SimpleAdapter mListViewAdapter = null;
 	private Spinner mFactorySpinner;
 	private Spinner mSSpinner;
@@ -67,7 +62,8 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	private ArrayAdapter<String> mRAdapter=null;
 	private TabHost tabHost;
 	private ViewPager viewPager;
-	
+	ListView mNormalList ;
+	ListView mSpecList;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -116,11 +112,12 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
         
         initSpinnerViewAndData();
         
-        ListView mNormalList = (ListView) listViews.get(0).findViewById(R.id.route_normal_list);
+        mNormalList = (ListView) listViews.get(0).findViewById(R.id.route_normal_list);
         this.registerForContextMenu(mNormalList);
         
         RouteNormalListAdapter mNormalListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mNormalList.setAdapter(mNormalListAdapter);
+        mNormalListAdapter.notifyDataSetChanged();
 //        mNormalList.setOnItemClickListener(new OnItemClickListener(){
 //
 //			@Override
@@ -131,7 +128,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 //			}
 //        	
 //        });
-        ListView mSpecList = (ListView) listViews.get(1).findViewById(R.id.route_spec_list);
+        mSpecList = (ListView) listViews.get(1).findViewById(R.id.route_spec_list);
         RouteSpecListAdapter mSpectListAdapter = new RouteSpecListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mSpecList.setAdapter(mSpectListAdapter);
         
@@ -144,9 +141,15 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
             @Override  
             public void onTabChanged(String tabId){  
                 Log.i("DownLoadFragment--tabId--=", tabId);  
-                if(tabId.equals("tab1")){ viewPager.setCurrentItem(0);app.isSpecialLine=false;}
-                if(tabId.equals("tab2")) {viewPager.setCurrentItem(1);app.isSpecialLine=true;}
-                if(tabId.equals("tab3")) viewPager.setCurrentItem(2);
+                if(tabId.equals("tab1")){ 
+                	viewPager.setCurrentItem(0);app.setLineType(LineType.NormalRoute);
+                	}
+                if(tabId.equals("tab2")) {
+                	viewPager.setCurrentItem(1);app.setLineType(LineType.SpecialRoute);                	
+                	}
+                if(tabId.equals("tab3")) {
+                	viewPager.setCurrentItem(2);app.setLineType(LineType.TemporaryRoute);
+                	}
             }  
         });
 		return searchView;
@@ -154,7 +157,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	
 
 	void initSpinnerViewAndData() {
-		RouteDao dao = RouteDao.getInstance(this.getActivity().getApplicationContext());
+		LineDao dao = LineDao.getInstance(this.getActivity().getApplicationContext());
 		mFactoryList = dao.getOrganizationList(OrganizationType.OrganizationCorporation);
 		mFactorySpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner1);
 		mFAdapter = new SpinnerAdapter(this.getActivity(), mFactoryList);
@@ -199,7 +202,6 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		
 	};
 	
-
 	class MyOnPageChangeListener implements OnPageChangeListener{
 
 		@Override

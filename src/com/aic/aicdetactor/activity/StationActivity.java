@@ -53,7 +53,6 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private boolean isStationClicked = false;
 	private boolean isTestInterface = false;
 	//
-	private int mRouteIndex =0;
 	private ExpandableListView mListView;
 	private boolean isUseWivewPager =false;
 	String TAG = "luotest";
@@ -73,7 +72,6 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 //		              WindowManager.LayoutParams.FLAG_FULLSCREEN);  
 			setContentView(R.layout.station_activity);
 			
-			setActionBar("日常巡检",true);
 			
 			handler = new Handler(){
 				public void handleMessage(android.os.Message msg) {
@@ -93,9 +91,13 @@ public class StationActivity extends CommonActivity implements OnClickListener{
            showLoadingDialog("正在初始化数据…");
 			
 			app = (myApplication) getApplication();
+			
+			if(app.isSpecialLine()){
+				setActionBar("特殊巡检",true);
+				}else{
+				setActionBar("日常巡检",true);
+				}
 			Intent intent =getIntent();
-			mRouteIndex = intent.getExtras().getInt(CommonDef.route_info.LISTVIEW_ITEM_INDEX);
-			String  oneCatalog = intent.getExtras().getString(CommonDef.ROUTE_CLASS_NAME);		
 			routeName = intent.getExtras().getString(CommonDef.route_info.NAME);
 			
 			TextView planNameTextView  =(TextView)findViewById(R.id.route_type_name);
@@ -147,7 +149,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),mRouteIndex,handler);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),handler);
 			mListView.setAdapter(mListViewAdapter);
 			
 

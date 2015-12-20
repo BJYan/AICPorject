@@ -2,17 +2,12 @@ package com.aic.aicdetactor.data;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.aic.aicdetactor.database.RouteDao;
-import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
-
-import android.util.Log;
 public class T_Route extends Route {
 	//巡检名称，在ListView 中显示的巡检路径名称
 	 public  String Name="";

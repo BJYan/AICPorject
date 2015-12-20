@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+     >
+       
+    <include layout="@layout/top_navitation"/>
+	<FrameLayout 
+	    android:id="@+id/fragment_content"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"/>
+	
+	<LinearLayout
+	    android:id="@+id/linefirst"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"	    
+	   >
+	
+	    <LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    >
+	
+	
+	<Spinner 
+	    android:id="@+id/checkspinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:minWidth="120dp"
+	    android:layout_marginLeft="20dp"
+	    />
+	<CheckBox 
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/checkorder"
+	    android:text="@string/check_order"
+	    android:minWidth="120dp"
+	    android:layout_marginRight="20dp"/>
+	</LinearLayout>
+	<ListView 
+	    android:id="@+id/partitemlist"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:cacheColorHint="@color/black"/>
+	<Button 
+	    android:id="@+id/config"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/config"
+	    />
+	</LinearLayout>
+	
+	
+</LinearLayout>

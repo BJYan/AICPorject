@@ -3,36 +3,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
-import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
-import com.aic.aicdetactor.data.KEY;
-import com.aic.aicdetactor.util.MLog;
 
 /**
  * 观察项 10 对应的UI
@@ -230,7 +219,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 				Value="01";
 				
 			}
-			adapter.saveData(mSelectValue, Value, id,0,0);
+			adapter.saveData(mSelectValue+Value, Value, id,0,0);
 		}
 			break;
 		case PartItemContact.MEASURE_DATA:

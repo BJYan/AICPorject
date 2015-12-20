@@ -252,4 +252,9 @@
         <item>audio/3gpp</item>
     </string-array>
     <!-- add for libra end -->
+    
+     <string name="line_normal_name">日常巡检</string>
+    <string name="line_special_name">特殊巡检</string>
+    <string name="line_temp_name">临时巡检</string>
+    <string name="inpalce_manager">到位管理完成</string>
 </resources>

@@ -38,10 +38,16 @@
             android:src="@drawable/catalog_arrow"
             android:visibility="gone" />
         <TextView
-        android:id="@+id/stationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="站点:"
+        android:textSize="@dimen/normal_big_text_size" />   
+        
+        <TextView
+        android:id="@+id/stationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
         android:textSize="@dimen/normal_big_text_size" />      
     </LinearLayout>
     
@@ -58,10 +64,15 @@
             android:src="@drawable/catalog_arrow"
             android:visibility="gone" />
         <TextView
-        android:id="@+id/deviceName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="设备:"
+        android:textSize="@dimen/normal_big_text_size" />   
+        <TextView
+        android:id="@+id/deviceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
         android:textSize="@dimen/normal_big_text_size" />      
     </LinearLayout>
 
