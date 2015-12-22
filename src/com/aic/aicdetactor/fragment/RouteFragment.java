@@ -45,7 +45,7 @@ import com.aic.aicdetactor.util.MLog;
 
 public class RouteFragment extends Fragment implements OnClickListener,OnItemSelectedListener,OnTouchListener{
 	//
-	private final String TAG = "luotest";
+	private final String TAG = "RouteFragment";
 	//private RadioGroup mRadioGroup = null; 
 	private myApplication app = null;
 	//private List<Map<String, String>> mItemDatas = null;
@@ -64,6 +64,9 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	private ViewPager viewPager;
 	ListView mNormalList ;
 	ListView mSpecList;
+	final int  mNormalListIndex =0;
+	final int  mSpecialListIndex =1;
+	final int  mTempListIndex =2;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -107,48 +110,43 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
         listViews.add(inflater.inflate(R.layout.route_spec_layout, null));
         listViews.add(inflater.inflate(R.layout.route_temp_fragment_layout, null));
         
-        Button routeTempMeasure = (Button) listViews.get(2).findViewById(R.id.route_temp_measure);
+        Button routeTempMeasure = (Button) listViews.get(mTempListIndex).findViewById(R.id.route_temp_measure);
         routeTempMeasure.setOnClickListener(this);
         
         initSpinnerViewAndData();
         
-        mNormalList = (ListView) listViews.get(0).findViewById(R.id.route_normal_list);
-        this.registerForContextMenu(mNormalList);
-        
+        mNormalList = (ListView) listViews.get(mNormalListIndex).findViewById(R.id.route_normal_list);
+       // this.registerForContextMenu(mNormalList);
         RouteNormalListAdapter mNormalListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mNormalList.setAdapter(mNormalListAdapter);
         mNormalListAdapter.notifyDataSetChanged();
-//        mNormalList.setOnItemClickListener(new OnItemClickListener(){
-//
-//			@Override
-//			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-//					long arg3) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//        	
-//        });
-        mSpecList = (ListView) listViews.get(1).findViewById(R.id.route_spec_list);
+       
+
+        mSpecList = (ListView) listViews.get(mSpecialListIndex).findViewById(R.id.route_spec_list);
         RouteSpecListAdapter mSpectListAdapter = new RouteSpecListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
+      //  RouteNormalListAdapter mSpectListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
         mSpecList.setAdapter(mSpectListAdapter);
+        mSpectListAdapter.notifyDataSetChanged();
+        
+      
         
         RoutePageAdapter mPageAdapter = new RoutePageAdapter(listViews);
         viewPager.setAdapter(mPageAdapter);
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(mNormalListIndex);
         viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
         
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
+                Log.i(TAG+"--tabId--=", tabId);  
                 if(tabId.equals("tab1")){ 
-                	viewPager.setCurrentItem(0);app.setLineType(LineType.NormalRoute);
+                	viewPager.setCurrentItem(mNormalListIndex);app.setLineType(LineType.NormalRoute);
                 	}
                 if(tabId.equals("tab2")) {
-                	viewPager.setCurrentItem(1);app.setLineType(LineType.SpecialRoute);                	
+                	viewPager.setCurrentItem(mSpecialListIndex);app.setLineType(LineType.SpecialRoute);                	
                 	}
                 if(tabId.equals("tab3")) {
-                	viewPager.setCurrentItem(2);app.setLineType(LineType.TemporaryRoute);
+                	viewPager.setCurrentItem(mTempListIndex);app.setLineType(LineType.TemporaryRoute);
                 	}
             }  
         });
@@ -159,7 +157,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	void initSpinnerViewAndData() {
 		LineDao dao = LineDao.getInstance(this.getActivity().getApplicationContext());
 		mFactoryList = dao.getOrganizationList(OrganizationType.OrganizationCorporation);
-		mFactorySpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner1);
+		mFactorySpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner1);
 		mFAdapter = new SpinnerAdapter(this.getActivity(), mFactoryList);
 		mFAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mFactorySpinner.setAdapter(mFAdapter);
@@ -167,7 +165,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		mFactorySpinner.setOnTouchListener(this);
 		
 		mSList = dao.getOrganizationList(OrganizationType.OrganizationGroup);
-		mSSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner2);
+		mSSpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner2);
 		mSAdapter = new SpinnerAdapter(this.getActivity(), mSList);
 		mSAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSSpinner.setAdapter(mSAdapter);
@@ -175,7 +173,7 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		mSSpinner.setOnTouchListener(this);
 		
 		mRoomList = dao.getOrganizationList(OrganizationType.OrganizationWorkShop);
-		mRoomSpinner = (Spinner) listViews.get(2).findViewById(R.id.spinner3);
+		mRoomSpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner3);
 		mRAdapter = new SpinnerAdapter(this.getActivity(), mRoomList);
 		mRAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mRoomSpinner.setAdapter(mRAdapter);
@@ -281,4 +279,5 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		}
 		return false;
 	}
+	
 }

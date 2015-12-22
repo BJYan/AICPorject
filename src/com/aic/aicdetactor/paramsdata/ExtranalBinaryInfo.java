@@ -1,4 +1,4 @@
-package com.aic.aicdetactor.data;
+package com.aic.aicdetactor.paramsdata;
 /**
  * 图片、音频、振动数据
  * @author AIC

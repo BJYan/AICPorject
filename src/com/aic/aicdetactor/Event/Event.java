@@ -133,7 +133,7 @@ public class Event {
 	 * @param handler
 	 */
 	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
-		final boolean isLocalDebug =false;
+		final boolean isLocalDebug =true;
 		new Thread(new Runnable() {
 
 			@Override
@@ -205,7 +205,7 @@ public class Event {
 							     }else if(isExit==2){
 									 SystemUtil.writeFileToSD(filePath, planjson);
 									 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
-											 Normaldata.getItemCounts(0,0,false,true),
+											 Normaldata.getItemCounts(0,0,false,false),
 											 Normaldata.getItemCounts(0,0,false,true),Normaldata.getItemCounts(0,0,true,true),
 											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
 									 StrMessage="日常巡检 "+Normaldata.T_Line.Name+" 下载更新成功!";
@@ -322,8 +322,8 @@ public class Event {
 						// insert line information to correspondence databases
 						dao.insertNormalLineInfo(Normaldata.T_Line.Name,
 								filePath, Normaldata.T_Line.T_Line_Guid,
+								Normaldata.getItemCounts(0, 0, false, false),
 								Normaldata.getItemCounts(0, 0, false, true),
-								Normaldata.getItemCounts(0, 0, true, true),
 								Normaldata.getItemCounts(0, 0, true, true),
 								Normaldata.T_Worker, Normaldata.T_Turn,
 								Normaldata.T_Period, Normaldata.T_Organization,

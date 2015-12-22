@@ -87,7 +87,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	private TextView mTimeTextView  = null;
 	private TextView mColorTextView  = null;
 	private TextView mDeviceNameTextView = null;
-	private String TAG = "luotest";
+	private String TAG = "MeasureVibrateFragment";
 	private ImageView mHistoryImageView = null;
 	private RelativeLayout MXLinear = null;
 	private RelativeLayout MZLinear = null;
@@ -95,7 +95,6 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	TextView mTimeTV=null;
 	TabHost tabHost;
 	private float mCheckValue =0.0f;
-	
 	List<View> views;
 	LayoutInflater mInflater;
 	long mReceiveDataLenth=0;
@@ -316,7 +315,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
+                Log.i(TAG+"--tabId--=", tabId);  
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(1);
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(2);

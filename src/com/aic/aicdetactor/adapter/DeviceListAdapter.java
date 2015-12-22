@@ -32,6 +32,9 @@ import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
+import com.aic.aicdetactor.paramsdata.DeviceListInfoParams;
+import com.aic.aicdetactor.paramsdata.LineListInfoParams;
+import com.aic.aicdetactor.paramsdata.StationListInfoParams;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
@@ -40,13 +43,13 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	private Context context;
 	private LayoutInflater mInflater;
 	ArrayList<ArrayList<PartItemJsonUp>> mChildrenList;
-	private List<Map<String, String>> mDataList = null;
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
 	private myApplication app = null;
 	private CommonActivity mActivity = null;
 	private final String TAG="luotest.DeviceListAdapter";
 	private boolean mIsSpecial= false;
+	private List<DeviceListInfoParams> mDeviceList=null;
 	public DeviceListAdapter(Context context, CommonActivity av,
 			int stationIndex,int deviceIndex,boolean mIsSpecial){
 			//ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
@@ -58,7 +61,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		app.mStationIndex=mStationIndex = stationIndex;
 		mDeviceIndex = deviceIndex;
 		mActivity = av;
-		mDataList = new ArrayList<Map<String, String>>();
+		mDeviceList = new ArrayList<DeviceListInfoParams>();
 		app = ((myApplication) av.getApplication());
 		this.mIsSpecial = mIsSpecial;
 		InitData();
@@ -170,14 +173,14 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	@Override
 	public Object getGroup(int arg0) {
 		// TODO Auto-generated method stub
-		return mDataList.get(arg0);
+		return mDeviceList.get(arg0);
 	}
 
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		//return mDataList.size();
-		return 1;
+		return mDeviceList.size();
+		//return 1;
 	}
 
 	@Override
@@ -187,13 +190,12 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	}
 
 	@Override
-	public View getGroupView(final int arg0, boolean arg1, View arg2, ViewGroup arg3) {
+	public View getGroupView( int arg0, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		
 		
 		GroupViewHolder holder =null;
-		HashMap<String, String> map = (HashMap<String, String>) mDataList.get(mDeviceIndex);
-		MLog.Logi(TAG, "getGroupView groupPosition = "+arg0);
+		MLog.Logi(TAG, "getGroupView groupPosition = "+arg0+",name is "+mDeviceList.get(arg0).getName());
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.device_list_item, null);
 			holder = new GroupViewHolder();
@@ -210,7 +212,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		}else{
 			holder.image.setBackgroundResource(R.drawable.arrow);
 		}
-		holder.NameText.setText(map.get(CommonDef.device_info.NAME).toString());
+		holder.NameText.setText(mDeviceList.get(arg0).getName());
 //		arg2.setOnClickListener(new OnClickListener(){
 //			int deviceIndex = arg0;
 //			@Override
@@ -247,7 +249,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		long g=System.currentTimeMillis();
 		MLog.Logd(TAG, "InitData>> ");
 		try {
-			mDataList.clear();
+			mDeviceList.clear();
 			if(mChildrenList==null){
 			mChildrenList = new ArrayList<ArrayList<PartItemJsonUp>>();
 			}else{
@@ -255,26 +257,26 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 			}
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
 				if(mIsSpecial){
-						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection==1){
-					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					map.put(CommonDef.device_info.DEADLINE, "2016");
-				
-					map.put(CommonDef.device_info.PROGRESS, app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
-					mDataList.add(map);
-					InitChidrenData(mStationIndex, i);
+					if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection==1){
+						DeviceListInfoParams deviceInfo = new DeviceListInfoParams();							
+						deviceInfo.setName(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+						MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+						deviceInfo.setDeadLine( "2016");
+					
+						deviceInfo.setProcess(app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
+						mDeviceList.add(deviceInfo);
+						InitChidrenData(mStationIndex, i);
 						}
 					}else{
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection<=0){
-					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
-					map.put(CommonDef.device_info.DEADLINE, "2016");
-				
-					map.put(CommonDef.device_info.PROGRESS, app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
-					mDataList.add(map);
-					InitChidrenData(mStationIndex, i);
+							DeviceListInfoParams deviceInfo = new DeviceListInfoParams();							
+							deviceInfo.setName(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+							MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+							deviceInfo.setDeadLine( "2017");
+						
+							deviceInfo.setProcess(app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
+							mDeviceList.add(deviceInfo);
+							InitChidrenData(mStationIndex, i);
 						}
 				}
 			}

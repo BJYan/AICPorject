@@ -186,17 +186,17 @@ public class MainActivity extends CommonActivity implements ClickListenerInterfa
 		public boolean onMenuItemClick(MenuItem arg0) {
 			// TODO Auto-generated method stub
 			switch (arg0.getItemId()) {  
-    	    case R.id.action_modify_pwd: {
-    	    	CustomDialog dialog=new CustomDialog(MainActivity.this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
-    	        dialog.show();
-    	        }
-    	      break;  
-    	    case R.id.action_changeWorker:
-    	    //	initFragment();
-    	    	break;
-    	    case R.id.action_more:{
-    			}
-    	    	break;
+//    	    case R.id.action_modify_pwd: {
+//    	    	CustomDialog dialog=new CustomDialog(MainActivity.this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
+//    	        dialog.show();
+//    	        }
+//    	      break;  
+//    	    case R.id.action_changeWorker:
+//    	    //	initFragment();
+//    	    	break;
+//    	    case R.id.action_more:{
+//    			}
+//    	    	break;
     	    case R.id.action_about:{
     	    	final Dialog dialog = new AboutDialog(MainActivity.this);
     			dialog.show();

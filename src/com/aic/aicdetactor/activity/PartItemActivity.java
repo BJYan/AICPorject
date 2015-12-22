@@ -278,6 +278,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		Bundle bundle = new Bundle(); 
 		bundle.putInt("partItemIndex", mPartItemIndex);
 		bundle.putInt("type", type);
+		mButton_Measurement.setEnabled(true);
 		mParamsLineLayout.setVisibility(View.GONE);
 		  switch(type){
 		   case CommonDef.checkUnit_Type.ACCELERATION:

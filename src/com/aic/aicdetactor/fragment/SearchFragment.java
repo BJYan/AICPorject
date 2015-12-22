@@ -43,7 +43,7 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
 	LayoutInflater inflater;
 	ArrayList<View> pagerViewlist;
 	View searchView;
-
+    String TAG="SearchFragment";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -89,7 +89,7 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                Log.i("DownLoadFragment--tabId--=", tabId);  
+                Log.i(TAG+"--tabId--=", tabId);  
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
             }  

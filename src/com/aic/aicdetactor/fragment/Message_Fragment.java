@@ -67,7 +67,6 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
 	ArrayList<View> listViews;
 	TextView MsgTaskStartTime,MsgTaskEndTime;
 	TextView MsgStartTime,MsgEndTime;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -123,7 +122,7 @@ public class Message_Fragment extends CommonFragment implements OnClickListener{
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){  
             @Override  
             public void onTabChanged(String tabId){  
-                MLog.Logi("DownLoadFragment--tabId--=", tabId);  
+                MLog.Logi(TAG+"--tabId--=", tabId);  
                 if(tabId.equals("tab1")) viewPager.setCurrentItem(0);
                 if(tabId.equals("tab2")) viewPager.setCurrentItem(2);
                 if(tabId.equals("tab3")) viewPager.setCurrentItem(1);

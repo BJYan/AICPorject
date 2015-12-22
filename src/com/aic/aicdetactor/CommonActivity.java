@@ -127,17 +127,17 @@ public class CommonActivity extends FragmentActivity{
 	    case android.R.id.home:
 	    	finish();
 	    	break;
-	    case R.id.action_modify_pwd: {
-	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
-	        dialog.show();
-	        }
-	      break;  
-	    case R.id.action_changeWorker:
-	    //	initFragment();
-	    	break;
-	    case R.id.action_more:{
-			}
-	    	break;
+//	    case R.id.action_modify_pwd: {
+//	    	CustomDialog dialog=new CustomDialog(this, R.style.customDialog, R.layout.modify_password,app.getLoginWorkerName());
+//	        dialog.show();
+//	        }
+//	      break;  
+//	    case R.id.action_changeWorker:
+//	    //	initFragment();
+//	    	break;
+//	    case R.id.action_more:{
+//			}
+//	    	break;
 	    case R.id.action_about:{
 	    	final Dialog dialog = new AboutDialog(this);
 			dialog.show();

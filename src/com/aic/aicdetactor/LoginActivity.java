@@ -121,7 +121,7 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 	
 		app.mJugmentListParms=dao.queryLineInfoByWorkerEx(mLogName, mLogPwd, cv,LineType.AllRoute);
 		error = cv.getAsString("error");
-		Log.i(TAG, " Login() error = " + error);
+		Log.i(TAG, " Login() error = " + error+",app.mJugmentListParms.size()="+app.mJugmentListParms.size());
 
 		if (app.mJugmentListParms.size() > 0) {
 			app.setLoginWorkerName(mLogName);

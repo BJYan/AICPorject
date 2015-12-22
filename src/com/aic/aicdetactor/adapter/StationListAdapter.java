@@ -26,6 +26,8 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.LineType;
+import com.aic.aicdetactor.paramsdata.DeviceListInfoParams;
+import com.aic.aicdetactor.paramsdata.StationListInfoParams;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
@@ -39,7 +41,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	private boolean mIsSpecial =false;
 	public final static int INIT_JSON_DATA_FINISHED =10;
 	// groupView data
-	private List<Map<String, String>> mStationDisplayDataList = null;
+	private List<StationListInfoParams> mStationList=null;
 	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int secExlistItemHigh,thrExlistItemHigh;
     Handler mHandler;
@@ -48,14 +50,13 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		mHandler= handler;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
-		mStationDisplayDataList = new ArrayList<Map<String, String>>();
+		mStationList = new ArrayList<StationListInfoParams>();
 		app = ((myApplication) mActivity.getApplication());
 		this.mIsSpecial =app.isSpecialLine();
 		thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
 		secExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level2); 
 		InitJsonDataThread InitThread = new InitJsonDataThread();
 		InitThread.start();
-		//InitStationData();
 	}
 
 	@Override
@@ -135,13 +136,13 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public Object getGroup(int arg0) {
 		// TODO Auto-generated method stub
 		MLog.Logd(TAG,"getGroup " + arg0 );
-		return mStationDisplayDataList.get(arg0);
+		return mStationList.get(arg0);
 	}
 
 	@Override
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		return mStationDisplayDataList.size();
+		return mStationList.size();
 	}
 
 	@Override
@@ -151,13 +152,11 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int arg0, boolean arg1, View arg2, ViewGroup arg3) {
+	public View getGroupView(int arg01, boolean arg1, View arg2, ViewGroup arg3) {
 		// TODO Auto-generated method stub
 		
-		MLog.Logd(TAG,"getGroupView " + arg0 );
+		MLog.Logd(TAG,"getGroupView " + arg01 );
 		GroupViewHolder holder =null;
-		HashMap<String, String> map = (HashMap<String, String>) mStationDisplayDataList
-				.get(arg0);
 		if (arg2 == null) {			
 			arg2 = mInflater.inflate(R.layout.station_list_item, null);
 			holder = new GroupViewHolder();
@@ -170,9 +169,12 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 			holder=(GroupViewHolder) arg2.getTag();
 			
 		}
-		holder.NameText.setText(map.get(CommonDef.station_info.NAME).toString());
-		holder.DeadLineText.setText(map.get(CommonDef.station_info.DEADLINE));
-		holder.ProcessText.setText(map.get(CommonDef.station_info.PROGRESS));
+		if(mStationList!=null && mStationList.size()>0){
+			holder.NameText.setText(mStationList.get(arg01).getName());
+			holder.DeadLineText.setText(mStationList.get(arg01).getDeadLine());
+			holder.ProcessText.setText(mStationList.get(arg01).getProcess());
+			}
+		
 		if(arg1){
 			holder.image.setBackgroundResource(R.drawable.arrow_ex);
 		}else{
@@ -212,17 +214,17 @@ class InitJsonDataThread extends Thread{
 					mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
 					return;
 				};
-				mStationDisplayDataList.clear();
+				mStationList.clear();
 				mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
 				for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
 					
-					Map<String, String> map = new HashMap<String, String>();
-					map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
+					StationListInfoParams  stationInfo = new StationListInfoParams();
+					stationInfo.setName(app.mLineJsonData.StationInfo.get(i).Name);
 					if(!app.gIsDataChecked){
-					map.put(CommonDef.station_info.DEADLINE, "2015");
+						stationInfo.setDeadLine("2015");
 					}
-					map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-					mStationDisplayDataList.add(map);
+					stationInfo.setProcess(app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
+					mStationList.add(stationInfo);
 					try {
 						ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
 						for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
@@ -245,46 +247,6 @@ class InitJsonDataThread extends Thread{
 			mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
 		}
 	}
-
-
-//	void InitStationData() {
-//
-//		long g=System.currentTimeMillis();
-//		MLog.Logd(TAG, " InitData()>> "+g);
-//		try {
-//			app.getLineDataClassifyFromOneFile(mIsSpecial);
-//			mStationDisplayDataList.clear();
-//			mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
-//			for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
-//				
-//				Map<String, String> map = new HashMap<String, String>();
-//				map.put(CommonDef.station_info.NAME,app.mLineJsonData.StationInfo.get(i).Name);
-//				if(!app.gIsDataChecked){
-//				map.put(CommonDef.station_info.DEADLINE, "2015");
-//				}
-//				map.put(CommonDef.station_info.PROGRESS, app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
-//				mStationDisplayDataList.add(map);
-//				try {
-//					ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
-//					for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
-//								Map<String, String> mapDevice = new HashMap<String, String>();
-//								mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
-//								deviceDisplayDataList.add(mapDevice);	
-//					}
-//					mDeviceArrayDisplayDataList.add(deviceDisplayDataList);					
-//					
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}	
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
-//
-//	}
-
 	
 
 	@Override

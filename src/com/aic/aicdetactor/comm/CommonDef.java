@@ -1,4 +1,8 @@
 package com.aic.aicdetactor.comm;
+
+import com.aic.aicdetactor.database.DBHelper;
+import com.aic.aicdetactor.setting.Setting;
+
 /**
  * 定义activity 间传递的参数变量信息
  * @author Administrator
@@ -272,4 +276,11 @@ public class CommonDef {
 	}
 	
 	public static final String GotoNextDevice= "gotoNextDevice";
+	
+	public class LocalSearch{
+		public static final String Name ="Name";
+		public static final String Path ="Path";
+		public static final String Process ="Process";
+		public static final String Date ="Date";
+	}
 }

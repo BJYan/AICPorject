@@ -3,7 +3,7 @@ package com.aic.aicdetactor.util;
 import android.util.Log;
 
 public class MLog {
-	final static boolean bOpenLog=false;
+	final static boolean bOpenLog=true;
 public static void Logd(String tag,String msg){
 	if(bOpenLog){
 	Log.d(tag,msg);

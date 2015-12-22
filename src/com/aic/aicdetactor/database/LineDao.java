@@ -17,7 +17,6 @@ import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.comm.RouteDaoStationParams;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
-import com.aic.aicdetactor.data.ExtranalBinaryInfo;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.OrganizationInfoJson;
 import com.aic.aicdetactor.data.PeriodInfoJson;
@@ -31,6 +30,8 @@ import com.aic.aicdetactor.data.TurnInfoJson;
 import com.aic.aicdetactor.data.WorkerInfo;
 import com.aic.aicdetactor.data.WorkerInfoJson;
 import com.aic.aicdetactor.database.DBHelper.SourceTable;
+import com.aic.aicdetactor.paramsdata.ExtranalBinaryInfo;
+import com.aic.aicdetactor.paramsdata.LocalSeachInfoParams;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
@@ -1624,4 +1625,36 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		
 		return list;
 	}
+	
+	
+	/**
+	 * 获取本地已巡检过的所有巡检线路
+	 * @return
+	 */
+	public List<LocalSeachInfoParams> getLocalAllNormalAndSpecialLineInfo(){
+		String StrSql = "select * from "+DBHelper.TABLE_CHECKING;
+		Cursor cur= null;
+		List<LocalSeachInfoParams>  listItem = new ArrayList<LocalSeachInfoParams> (); 
+		try{
+		cur = execSQL(StrSql);
+		
+		while(cur!=null && cur.moveToNext()){
+			
+			LocalSeachInfoParams info = new LocalSeachInfoParams();
+			info.setName(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.T_Line_Name)));
+			info.setPath(Setting.getUpLoadJsonPath()+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.File_Guid)));
+			info.setProcess(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Checked_Count))+"/"+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.ItemCounts)));
+			info.setDate(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Date)));
+            listItem.add(info);  
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(cur!=null){
+			cur.close();
+			}
+		}
+		return listItem;
+	}
+	
 }
