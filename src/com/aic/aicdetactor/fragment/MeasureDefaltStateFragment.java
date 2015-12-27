@@ -19,6 +19,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.abnormal.AbnormalConst;
 import com.aic.aicdetactor.abnormal.AbnormalInfo;
 import com.aic.aicdetactor.adapter.PartItemListAdapter;
+import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
@@ -36,7 +37,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 	//private myApplication app ;
 	//之间的通信接口
 	private OnMeasureMeasureListener mCallback = null;
-	final String TAG = "luotest";
+	final String TAG = "MeasureDefaltStateFragment";
 	private PartItemListAdapter AdapterList;
 	private int [] mCheckedIndex=null;
 	private String[] mOrigObseverList=null;
@@ -62,7 +63,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 		super.onResume();
 	}
 
-
+	LinearLayout ll;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -70,11 +71,11 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 		View view = inflater.inflate(R.layout.measurement, container, false);
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
-		EditText ValueEditText = (EditText)view.findViewById(R.id.editcontent);
-		ValueEditText.setText(getPartItemData());
+	//	EditText ValueEditText = (EditText)view.findViewById(R.id.editcontent);
+	//	ValueEditText.setText(getPartItemData());
 		
 		
-		LinearLayout ll = (LinearLayout)view.findViewById(R.id.lined);
+		 ll = (LinearLayout)view.findViewById(R.id.lined);
 		mOrigObseverList=AdapterList.getCurOriPartItem().Extra_Information.split("\\/");		
 		
 		mCheckedIndex = new int[mOrigObseverList.length];
@@ -103,17 +104,52 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 			checkbox.setTextColor(Color.BLACK);
 			checkbox.setText(mOrigObseverList[i].toString());
 			ll.addView(checkbox);
-//			// 寻找已经选择的项，并设置为选中
-//			for (String SelectStr : CurObseverList) {
-//				if (SelectStr.equals(mOrigObseverList[i])) {
-//					checkbox.setChecked(true);
-//				}
-//			}
-
 		}
 		AdapterList.getCurrentPartItem().setSartDate();
 		return view;
 	}
+	
+//	/**
+//	 * 当上一点时 ，需要显示上次选中的数据
+//	 */
+//	protected void displaySelectedData(){
+//mOrigObseverList=AdapterList.getCurOriPartItem().Extra_Information.split("\\/");		
+//		
+//		mCheckedIndex = new int[mOrigObseverList.length];
+//		for (int i = 0; i < mOrigObseverList.length; i++) {
+//
+//			mCheckedIndex[i] = 0;
+//			Log.d("luotest", mOrigObseverList[i].toLowerCase());
+//			CheckBox checkbox = new CheckBox(this.getActivity()
+//					.getApplicationContext());
+//			checkbox.setId(i + 100);
+//			checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//
+//				@Override
+//				public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+//					// TODO Auto-generated method stub
+//					int k = arg0.getId() % 100;
+//					if (arg1 == true) {
+//						mCheckedIndex[k] = 1;
+//					}else{
+//						mCheckedIndex[k] = 0;
+//					}
+//				}
+//
+//			});
+//			checkbox.setBackgroundColor(Color.BLUE);
+//			checkbox.setTextColor(Color.BLACK);
+//			checkbox.setText(mOrigObseverList[i].toString());
+//			ll.addView(checkbox);
+//		}
+//	}
+//	
+//	 @Override
+//		protected void initDisplayData() {
+//			// TODO Auto-generated method stub
+//			super.initDisplayData();
+//			displaySelectedData();
+//		}
 
     
     public interface OnMeasureMeasureListener{
@@ -142,8 +178,6 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 				Value="Measurement";
 			}
 			switch(measureOrSave){
-			case PartItemContact.MEASURE_DATA:
-				break;
 			case PartItemContact.SAVE_DATA:
 			{
 				int AbnormalId=-1;

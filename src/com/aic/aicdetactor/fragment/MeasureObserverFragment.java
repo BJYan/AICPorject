@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		app=myApplication.getApplication() ;
+		TAG = "MeasureObserverFragment";
 	}
 	public  MeasureObserverFragment(PartItemListAdapter AdapterList){
 		this.AdapterList = AdapterList;
@@ -91,11 +93,11 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		mDeviceNameTextView = (TextView)view.findViewById(R.id.check_name);
 		mDeviceNameTextView.setText(getPartItemName());
 		mExternalInfoEditText = (EditText)view.findViewById(R.id.editText1);
-		mExternalInfoEditText.setText(getPartItemName());
+		mExternalInfoEditText.setText(getPartItemData());
 		mSpinner= (Spinner)view.findViewById(R.id.spinner);
 		mStatusSpinner = (Spinner)view.findViewById(R.id.observerspinner);
 		
-		getPartItemStatusArray(mPartItemData.Extra_Information);
+		getPartItemStatusArray(AdapterList.getCurOriPartItem().Extra_Information);
 		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerDisplayDataList);
 		
 		mSpinner.setAdapter(mSpinnerAdapter);
@@ -118,11 +120,6 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 			}
 
 		});
-//		mStatusSpinnerAdapter = new ArrayAdapter<String>(this.getActivity().getApplicationContext(), android.R.layout.simple_spinner_item,
-//				this.getResources().getStringArray(R.array.obersver_status));
-//		mStatusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//	
-//		mStatusSpinner.setAdapter(mStatusSpinnerAdapter);
 		mStatusSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -163,26 +160,37 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 	}
 	
 	
-	/**
-	 * 当上一点时 ，需要显示上次选中的数据
-	 */
-	protected void displaySelectedData(){
+//	/**
+//	 * 当上一点时 ，需要显示上次选中的数据
+//	 */
+//	protected void displaySelectedData(){
+//		Log.d(TAG," AdapterList.getCurOriPartItem().Extra_Information = "+AdapterList.getCurOriPartItem().Extra_Information);
 //		String[] strArray=AdapterList.getCurOriPartItem().Extra_Information.split(mSplitFlag);
 //		int i=0;
+//		boolean isfind=false;
 //		for(String oriStr:strArray){
 //			i++;
 //			if(oriStr.substring(0, oriStr.length()-2).equals(AdapterList.getCurrentPartItem().Extra_Information)){
+//				isfind=true;
 //				break;
 //			}			
 //		}
-//		mSpinner.setSelection(i);
-	}
-    @Override
-	protected void initDisplayData() {
-		// TODO Auto-generated method stub
-		super.initDisplayData();
-		displaySelectedData();
-	}
+//		getPartItemStatusArray(AdapterList.getCurOriPartItem().Extra_Information);
+//		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerDisplayDataList);
+//		
+//		mSpinner.setAdapter(mSpinnerAdapter);
+//		if(isfind){
+//			mSpinner.setSelection(i);
+//		}else{
+//			mSpinner.setSelection(0);
+//		}
+//	}
+//    @Override
+//	protected void initDisplayData() {
+//		// TODO Auto-generated method stub
+//		super.initDisplayData();
+//		displaySelectedData();
+//	}
 
 	public interface OnMediakListener{
     	

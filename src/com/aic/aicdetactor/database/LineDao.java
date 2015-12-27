@@ -661,6 +661,8 @@ public class LineDao {
 	public  void insertUploadFile(RoutePeroid info,boolean bInsert,boolean bUpdated,boolean bUpLoaded){
 		MLog.Logd(TAG, "insertUploadFile() start");
 		String sql ="";
+		Setting setting = new Setting();
+		
 		if(!bInsert){
 		sql = "insert into "
 					+DBHelper.TABLE_CHECKING
@@ -682,8 +684,9 @@ public class LineDao {
 					+ DBHelper.Checking_Table.Turn_Number +"," 
 					+ DBHelper.Checking_Table.Worker_Name +"," 					
 					+ DBHelper.Checking_Table.Worker_Number +","
-					+ DBHelper.Checking_Table.Is_Special_Inspection 
-					+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";					
+					+ DBHelper.Checking_Table.Is_Special_Inspection +","
+					+ DBHelper.Checking_Table.FilePath
+					+")values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";					
 					
 					mDB.execSQL(sql, new Object[] {
 							info.Base_Point,
@@ -703,7 +706,8 @@ public class LineDao {
 							info.Turn_Number,
 							info.Worker_Name,
 							info.Worker_Number,
-							info.Is_Special_Inspection
+							info.Is_Special_Inspection,
+							setting.getUpLoadJsonPath()+info.File_Guid
 							});
 		}else{
 			//update table_name set field1=val1, field2=val2 where expression;
@@ -1113,36 +1117,9 @@ public List<Map<String,String>> queryLineInfoByWorker(String name,String pwsd,Co
  */
 public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,ContentValues cv,LineType routeType){
 	String error = "";
-	List<String> guidList = new ArrayList<String>();
+	
 	List<JugmentParms> mJugmentListParms=new   ArrayList<JugmentParms>();
-	
-	//查询工人信息
-	Cursor cur =  mDB.query(WorkerTableName, null,
-				DBHelper.Plan_Worker_Table.Name + "=?" + " and "+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
-				new String[] { name, pwsd}, null, null, null);
-	
-		if (cur != null && cur.getCount() > 0) {
-			MLog.Logd("luotest","queryLogIn()  cur != null cur.count ="	+ cur.getCount());
-			cur.moveToFirst();
-			for (int n = 0; n < cur.getCount(); n++) {
-				String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
-				guidList.add(GUID);
-				cur.moveToNext();
-				MLog.Logd("luotest","queryLogIn()  searvher worker table GUID is"+ GUID);
-			}
-			cur.close();
-			cur = null;
-		} else {
-			
-			MLog.Logd("luotest","queryLogIn() searvher worker table cur is null");
-			error = "没有您的信息，请核实再登录";
-		}
-
-	if (cur != null) {
-		cur.close();
-	}
-
-	
+	List<String> guidList =getLineGuidByWorkerInfo(name,pwsd,cv);	
 
 	for (int k = 0; k < guidList.size(); k++) {
 		MLog.Logd("luotest", " queryLogIn() search worker table " + k);
@@ -1154,8 +1131,8 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		if (cursor2 != null && cursor2.getCount() > 0) {
 			cursor2.moveToFirst();
 			for (int i = 0; i < cursor2.getCount(); i++) {
-				int normalCount=Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts)));
-				int specialCount =Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts)));
+				int normalCount=cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.NormalItemCounts));
+				int specialCount =cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.SPecialItemCounts));
 				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
 				
 				if(routeType==LineType.NormalRoute){
@@ -1166,7 +1143,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
 						mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
 						mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
-						mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+						mJugmentParms.T_Line.LineCheckedCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
 						mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
 						
 						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
@@ -1184,7 +1161,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
 						mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
 						mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
-						mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+						mJugmentParms.T_Line.LineCheckedCount=cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
 						mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
 						
 						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
@@ -1200,7 +1177,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 					mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Path));
 					mJugmentParms.T_Line.LineNormalTotalCount= normalCount;
 					mJugmentParms.T_Line.LineSpecialTotalCount= specialCount;
-					mJugmentParms.T_Line.LineCheckedCount= Integer.valueOf(cursor2.getString(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count)));
+					mJugmentParms.T_Line.LineCheckedCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.Checked_Count));
 					mJugmentParms.T_Line.HasSpecialLine= Integer.valueOf(cursor2.getInt(cursor2.getColumnIndex(DBHelper.SourceTable.HasSpecialLine)))>0?true:false;
 					
 					mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
@@ -1226,6 +1203,135 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		}
 	}
 	MLog.Logd("luotest", "queryLogIn() end  error=" + error);
+	cv.put("error", error);
+	return mJugmentListParms;
+}
+
+private List<String>getLineGuidByWorkerInfo(String name,String pwsd,ContentValues cv){
+	List<String> guidList = new ArrayList<String>();
+	String error = "";
+	Cursor cur =  mDB.query(WorkerTableName, null,
+			DBHelper.Plan_Worker_Table.Name + "=?" + " and "+ DBHelper.Plan_Worker_Table.Pwd + "=? ",
+			new String[] { name, pwsd}, null, null, null);
+
+	if (cur != null && cur.getCount() > 0) {
+		MLog.Logd("luotest","queryLogIn()  cur != null cur.count ="	+ cur.getCount());
+		cur.moveToFirst();
+		for (int n = 0; n < cur.getCount(); n++) {
+			String GUID = cur.getString(cur.getColumnIndex(DBHelper.Plan_Worker_Table.T_Line_Guid));
+			guidList.add(GUID);
+			cur.moveToNext();
+			MLog.Logd("luotest","queryLogIn()  searvher worker table GUID is"+ GUID);
+		}
+		cur.close();
+		cur = null;
+	} else {		
+		MLog.Logd("luotest","queryLogIn() searvher worker table cur is null");
+		error = "没有您的信息，请核实再登录";
+		cv.put("error", error);
+	}
+
+if (cur != null) {
+	cur.close();
+}
+return guidList;
+}
+/**
+ * 本地查询未上传的JSON文件
+ * @param name
+ * @param pwsd
+ * @param cv
+ * @param routeType
+ * @param bUploaded
+ * @return
+ */
+public List<JugmentParms> searchUnUploadLineInfoByWorker(String name,String pwsd,ContentValues cv,LineType routeType,boolean bUploaded){
+	String error = "";
+	List<JugmentParms> mJugmentListParms=new   ArrayList<JugmentParms>();
+	
+	List<String> guidList =getLineGuidByWorkerInfo(name,pwsd,cv);
+
+	for (int k = 0; k < guidList.size(); k++) {
+		MLog.Logd("luotest", " searchUnUploadLineInfoByWorker() search worker table " + k);
+		Cursor cursor2 = mDB.query(DBHelper.TABLE_CHECKING,
+				null,
+				DBHelper.Checking_Table.T_Line_Guid + "=? and "+DBHelper.Checking_Table.Is_Uploaded+"=?",
+				new String[] { guidList.get(k),bUploaded==true?"1":"0" }, null, null, null);
+		
+		if (cursor2 != null && cursor2.getCount() > 0) {
+			cursor2.moveToFirst();
+			for (int i = 0; i < cursor2.getCount(); i++) {
+				String path = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.FilePath));
+				boolean isSpecialLine = cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.Is_Special_Inspection))>0?true:false;
+				
+				if(routeType==LineType.NormalRoute){
+					if(!isSpecialLine){
+						JugmentParms mJugmentParms = new JugmentParms();
+						mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Name));
+						mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Guid));
+						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.FilePath));
+						mJugmentParms.T_Line.LineNormalTotalCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.ItemCounts));
+						mJugmentParms.T_Line.LineSpecialTotalCount= 0;
+						mJugmentParms.T_Line.LineCheckedCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.Checked_Count));
+						mJugmentParms.T_Line.HasSpecialLine= false;	
+						
+						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+						mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+						mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+						
+						mJugmentListParms.add(mJugmentParms);	
+					}
+				}else if(routeType==LineType.SpecialRoute){
+					
+					if(isSpecialLine){
+						JugmentParms mJugmentParms = new JugmentParms();							
+						mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Name));
+						mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Guid));
+						mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.FilePath));
+						mJugmentParms.T_Line.LineNormalTotalCount= 0;
+						mJugmentParms.T_Line.LineSpecialTotalCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.ItemCounts));
+						mJugmentParms.T_Line.LineCheckedCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.Checked_Count));
+						mJugmentParms.T_Line.HasSpecialLine= true;
+						
+						mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+						mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+						mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+						
+						mJugmentListParms.add(mJugmentParms);	
+					}
+				}else if(routeType==LineType.AllRoute){
+					JugmentParms mJugmentParms = new JugmentParms();							
+					mJugmentParms.T_Line.Name = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Name));
+					mJugmentParms.T_Line.T_Line_Guid = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.T_Line_Guid));
+					mJugmentParms.T_Line.LinePath = cursor2.getString(cursor2.getColumnIndex(DBHelper.Checking_Table.FilePath));
+					mJugmentParms.T_Line.LineNormalTotalCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.ItemCounts));
+					mJugmentParms.T_Line.LineSpecialTotalCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.ItemCounts));
+					mJugmentParms.T_Line.LineCheckedCount= cursor2.getInt(cursor2.getColumnIndex(DBHelper.Checking_Table.Checked_Count));
+					mJugmentParms.T_Line.HasSpecialLine=true;
+					
+					mJugmentParms.m_WorkerInfoJson=getWorkerInfoByLineGuid(mJugmentParms.T_Line.T_Line_Guid,name,pwsd);
+					mJugmentParms.m_PeriodInfo =getPeriodJsonListByGuidEx(mJugmentParms.T_Line.T_Line_Guid);
+					mJugmentParms.T_Turn=getTurnInfoListByGuid(mJugmentParms.T_Line.T_Line_Guid);
+					
+					mJugmentListParms.add(mJugmentParms);	
+				}
+				
+				cursor2.moveToNext();
+				MLog.Logd("luotest"," searchUnUploadLineInfoByWorker() search route table  result path is "	+ path);
+			}
+			cursor2.close();
+			cursor2 = null;
+		} else {
+			MLog.Logd("luotest",
+					" searchUnUploadLineInfoByWorker() search route table cursor2 is null");
+			error = "没有您对应的巡检任务";
+		}
+
+		if (cursor2 != null) {
+			cursor2.close();
+		}
+	}
+	MLog.Logd("luotest", "searchUnUploadLineInfoByWorker() end  error=" + error);
 	cv.put("error", error);
 	return mJugmentListParms;
 }
@@ -1547,6 +1653,8 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Setting setting = new Setting();
+		
 		String StrSql="insert into "+DBHelper.TABLE_Media +" ( "
 				+DBHelper.Media_Table.Data_Exist_Guid +","
 				+DBHelper.Media_Table.Date +","
@@ -1554,7 +1662,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 				+DBHelper.Media_Table.Line_Guid +","
 				+DBHelper.Media_Table.Mime_Type +","
 				+DBHelper.Media_Table.Name +","
-				+DBHelper.Media_Table.Path +","
+				+DBHelper.Media_Table.FilePath +","
 				+DBHelper.Media_Table.UploadedDate +") values ('"
 				+StrDeviceExitDataGuid+"','"
 				+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM)+"','"
@@ -1563,7 +1671,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 				+"image"+"','"
 				+guid+"','"				
 				+Setting.getUpLoadJsonPath()+guid+"','"
-				+"0"+"');";
+				+"0"+"'"+ ");";
 				
 		execSQL(StrSql);
 	}
@@ -1575,13 +1683,12 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		String SqlStr = "select * from " +DBHelper.TABLE_Media + " where " +DBHelper.Media_Table.Is_Uploaded +" is " +" '0'";
 		List<ExtranalBinaryInfo> list = new ArrayList<ExtranalBinaryInfo>();
 		Cursor curso = execSQL(SqlStr);
-		Setting setting = new Setting();
 		if(curso!=null && curso.getCount()>0){
 			curso.moveToFirst();
 			
 			for(int i=0;i<curso.getCount();i++){
 				ExtranalBinaryInfo info = new ExtranalBinaryInfo();
-				info.filePath=setting.getExtralDataPath()+curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Path));
+				info.filePath=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.FilePath));
 				info.RecordLab=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Name));
 				info.MimeType=curso.getString(curso.getColumnIndex(DBHelper.Media_Table.Mime_Type));
 				list.add(info);
@@ -1606,13 +1713,11 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		String sqlStr= "select * from " +DBHelper.TABLE_CHECKING +" where " +DBHelper.Checking_Table.Is_Uploaded +" is 0";
 		Cursor cursor =execSQL(sqlStr);
 		 List<String> list = new ArrayList<String>();
-		Setting setting = new Setting();
 		if(cursor!=null && cursor.getCount()>0){
 			cursor.moveToFirst();
 			for(int i=0;i<cursor.getCount();i++){
-				String path = cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.File_Guid));
-				
-				list.add(setting.getUpLoadJsonPath()+path);
+				String path = cursor.getString(cursor.getColumnIndex(DBHelper.Checking_Table.FilePath));
+				list.add(path);
 				cursor.moveToNext();
 			}
 			
@@ -1642,7 +1747,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 			
 			LocalSeachInfoParams info = new LocalSeachInfoParams();
 			info.setName(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.T_Line_Name)));
-			info.setPath(Setting.getUpLoadJsonPath()+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.File_Guid)));
+			info.setPath(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.FilePath)));
 			info.setProcess(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Checked_Count))+"/"+cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.ItemCounts)));
 			info.setDate(cur.getString(cur.getColumnIndex(DBHelper.Checking_Table.Date)));
             listItem.add(info);  
@@ -1657,4 +1762,106 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		return listItem;
 	}
 	
+	/**
+	 * 
+	 * @param filePath
+	 */
+	public void setUpdateFlagUploadDB(String filePath){
+		if(filePath!=null){
+		String strSql= "update "+ DBHelper.TABLE_CHECKING +" set " + DBHelper.Checking_Table.Is_Uploaded + "= 1  "
+				+ " where " +DBHelper.Checking_Table.FilePath+"='"+ filePath+"'";
+		execSQLUpdate(strSql);
+		}
+	}
+	
+	public void setUpdateFlagMediaDB(String filePath,String updateDate){
+		if(filePath!=null){
+			String strSql= "update "+ DBHelper.TABLE_Media +" set " + DBHelper.Media_Table.Is_Uploaded + "= 1  and "+DBHelper.Media_Table.UploadedDate +"='"+updateDate+"'"
+					+ " where " +DBHelper.Media_Table.FilePath+"='"+ filePath+"'";
+			execSQLUpdate(strSql);
+			}
+	}
+	
+	/**
+	 * 插入到临时测量数据表中
+	 * @param tLine
+	 */
+	public void insertTemporaryMeasureDB(T_Temporary_Line TLine) {
+		/**
+		 * INSERT INTO TABLE_NAME (column1, column2, column3,...columnN)]  
+VALUES (value1, value2, value3,...valueN);
+		 */
+		String Sql =" insert into " + DBHelper.TABLE_TEMPORARY + "( " 
+		 +DBHelper.Temporary_Table.Content +","
+		 +DBHelper.Temporary_Table.CorporationName +","
+		 +DBHelper.Temporary_Table.Create_Time +","
+		 +DBHelper.Temporary_Table.DevName +","
+		 +DBHelper.Temporary_Table.DevSN +","
+		 +DBHelper.Temporary_Table.DownLimit +","
+		 +DBHelper.Temporary_Table.Execution_Time +","
+		 +DBHelper.Temporary_Table.Feedback_Time +","
+		 +DBHelper.Temporary_Table.Finish_Time +","
+		 +DBHelper.Temporary_Table.GroupName +","
+		 +DBHelper.Temporary_Table.Guid +","
+		 +DBHelper.Temporary_Table.Is_Original_Line +","
+		 +DBHelper.Temporary_Table.Is_Readed +","
+		 +DBHelper.Temporary_Table.Middle_Limit +","
+		 +DBHelper.Temporary_Table.Receive_Time +","
+		 +DBHelper.Temporary_Table.Remarks +","
+		 +DBHelper.Temporary_Table.Result +","
+		 +DBHelper.Temporary_Table.T_Item_Abnormal_Grade_Code +","
+		 +DBHelper.Temporary_Table.T_Item_Abnormal_Grade_Id +","
+		 +DBHelper.Temporary_Table.T_Measure_Type_Code +","
+		 +DBHelper.Temporary_Table.T_Temporary_Line_Guid +","
+		 +DBHelper.Temporary_Table.T_Worker_R_Mumber +","
+		 +DBHelper.Temporary_Table.T_Worker_R_Name +","
+		 +DBHelper.Temporary_Table.Task_Mode +","
+		 +DBHelper.Temporary_Table.Title +","
+		 +DBHelper.Temporary_Table.Unit +","
+		 +DBHelper.Temporary_Table.UpLimit +","
+		 +DBHelper.Temporary_Table.WorkShopName +") values ("
+		    
+		               
+		 
+		+TLine.Content +","
+		+TLine.CorporationName  +","
+		+TLine.Create_Time  +","
+		+TLine.Data_Exist_Guid  +","
+		+TLine.DevName  +","
+		+TLine.DevSN  +","
+		+TLine.Diagnose_Conclusion  +","
+		+TLine.DownLimit  +","
+		+TLine.Execution_Time  +","
+		+TLine.Feedback_Time  +","
+		+TLine.Finish_Time  +","
+		+TLine.GroupName  +","
+		+TLine.Is_Original_Line  +","
+		+TLine.Is_Readed  +","
+		+TLine.Middle_Limit  +","
+		+TLine.Receive_Time  +","
+		+TLine.RecordLab  +","
+		+TLine.Remarks  +","
+		+TLine.Result  +","
+		+TLine.RPM  +","
+		+TLine.SampleFre  +","
+		+TLine.SamplePoint  +","
+		+TLine.SaveLab  +","
+		+TLine.SensorType  +","
+		+TLine.SignalType  +","
+		+TLine.T_Item_Abnormal_Grade_Code  +","
+		+TLine.T_Item_Abnormal_Grade_Id  +","
+		+TLine.T_Measure_Type_Code  +","
+		+TLine.T_Measure_Type_Id  +","
+		+TLine.T_Temporary_Line_Guid  +","
+		+TLine.T_Worker_R_Mumber  +","
+		+TLine.T_Worker_R_Name  +","
+		+TLine.Task_Mode  +","
+		+TLine.Title  +","
+		+TLine.Unit  +","
+		+TLine.UpLimit  +","
+		+TLine.VMSDir  +","
+		+TLine.WorkShopName +")";
+		this.execSQL(Sql);
+
+	}
 }

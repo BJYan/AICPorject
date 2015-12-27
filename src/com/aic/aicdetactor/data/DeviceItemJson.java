@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aic.aicdetactor.util.SystemUtil;
+import com.alibaba.fastjson.JSON;
 
 
-public class DeviceItemJson//:ICloneable 
+public class DeviceItemJson implements Cloneable//:ICloneable 
 {
     public String Asset_Number ;
     public String Asset_Type ;
@@ -158,12 +159,33 @@ public class DeviceItemJson//:ICloneable
     	this.	Vendor	=	device.	Vendor	;
     	this.	PartItem	=	new ArrayList<PartItemJsonUp>();
     	for(int k=0;k<device.PartItem.size();k++){
-    		PartItemJsonUp up= new PartItemJsonUp();
-    		up.Clone(device.PartItem.get(k));
+    		//PartItemJsonUp up= new PartItemJsonUp();
+    		//up.Clone(device.PartItem.get(k));
+    		PartItemJsonUp	up=(PartItemJsonUp) device.PartItem.get(k).clone();
     		this.	PartItem.add(up);
     	}
     		;
 
     }
+  
     
+//    public Object clone() { 
+//    	DeviceItemJson o = null; 
+//        try { 
+//          o = (DeviceItemJson) super.clone(); 
+//        } catch (CloneNotSupportedException e) { 
+//          System.out.println(e.toString()); 
+//        } 
+//        for(int i =0;i<PartItem.size();i++)
+//        {
+//        o.PartItem.add((PartItemJsonUp) PartItem.get(i).clone());
+//        	}
+//        return o; 
+//    	//String jsonData=JSON.toJSONString(this);
+//    	
+//    	//o = JSON.parseObject(jsonData,DeviceItemJson.class); 
+//    	
+//    	//序列化 后 再反序列化
+//    //	 return o; 
+//      } 
 }

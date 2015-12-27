@@ -1,7 +1,10 @@
 package com.aic.aicdetactor.fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -47,6 +50,8 @@ import com.aic.aicdetactor.database.LineDao;
 import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.CommonDialog;
 import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
+import com.aic.aicdetactor.paramsdata.ExtranalBinaryInfo;
+import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 
@@ -96,6 +101,9 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	TextView devName;
 	SpinnerAdapter mDLLineAdapter=null;
 	LineDao mDao;
+	Switch uploadTypeSwitch;
+	 Button uploadBtn ;
+	// CommonAlterDialog mdialog=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -108,23 +116,23 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				switch (msg.what) {
 				case Event.LocalData_Init_Failed:
 					{
-						CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没本地巡检数据，请确认有/sdcard/AICLine.txt文件",null,null);
-					
-					dialog.show();
+						CommonAlterDialog	mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没本地巡检数据，请确认有/sdcard/AICLine.txt文件",null,null);
+						mdialog.show();
 					}
 					break;
 				case Event.NetWork_Connecte_Timeout:
 				case Event.NetWork_MSG_Tips:
 				case Event.Server_No_Data:
 					{
-						CommonAlterDialog dialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
-						dialog.show();
+						CommonAlterDialog			mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
+							mdialog.show();
 					}
 					break;
 				case  Event.LocalData_Init_Success:
-					
-					Toast.makeText(getActivity().getApplicationContext(),(String)(msg.obj),
-							Toast.LENGTH_SHORT).show();
+				{
+					CommonAlterDialog			mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
+						mdialog.show();
+				}	
 					initAllDownLoadRoutList();
 					break;
 				case  Event.GetNewRouteLine_Message:
@@ -134,6 +142,23 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				case Event.ReplaceRouteLineData_Message:
 					mDao.ReplaceOriginalFileAndUpdateDB((String)msg.obj);
 						break;
+				case Event.Upload_Data_Success:
+				{
+					//标记数据表中的状态项,并继续上传下一项
+					//List<Map<String, String>> mUploadlist;
+					mUploadSuccesslist.add((String)msg.obj);
+					setUploadAndExtranalDBFlag();
+					CommonAlterDialog		mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","上传成功",null,null);
+					mdialog.show();
+				}
+					break;
+				case Event.Upload_Data_Failed:
+				{
+					CommonAlterDialog		mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","上传失败"+(String)msg.obj,null,null);
+				mdialog.show();
+				}
+					
+					break;
 				default:
 					break;
 				}
@@ -352,11 +377,12 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		CheckBox taskData = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb4);
 		CheckBox deviceInfo = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb5);
 		
-		Switch uploadTypeSwitch = (Switch) listViews.get(0).findViewById(R.id.network_upload_type_switch);
+		uploadTypeSwitch = (Switch) listViews.get(0).findViewById(R.id.network_upload_type_switch);
 		final RadioButton uploadType_wifi = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb1);
 		final RadioButton uploadType_usb = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb2);
 		final RadioButton uploadType_both = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb3);
-		final Button uploadBtn = (Button) listViews.get(0).findViewById(R.id.network_upload_button);
+		 uploadBtn = (Button) listViews.get(0).findViewById(R.id.network_upload_button);
+		uploadBtn.setOnClickListener(this);
 		uploadTypeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			
 			@Override
@@ -468,7 +494,8 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
 		switch(arg0.getId()){
-		case R.id.up_up:
+		case R.id.network_upload_button:			
+			UploadAllUploadJsonFile();
 			break;
 		case R.id.network_download_button:
 			Event.QueryCommand_Event(arg0,getActivity(),mHandler);
@@ -485,7 +512,60 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	enum WifiMacType{
 		MAcAddr,WifiAddr
 	}
-
+	
+	List<String> mUploadSuccesslist = new ArrayList<String>();
+	/**
+	 * 上传所有已经巡检过的未上传的日常巡检数据
+	 */
+	void UploadAllUploadJsonFile(){
+		Event ex = new Event();
+		List<String> mLineFileList =mDao.getUnUploadAllUploadJsonFile();
+	
+		mUploadSuccesslist.clear();
+       
+        
+        
+		List<ExtranalBinaryInfo> mExtranalDataFileList = mDao.getAllUnUploadExtralData();
+		if(mLineFileList.size()==0 &&mExtranalDataFileList.size()==0 ){
+			CommonAlterDialog	mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示","没有可上传数据",null,null);
+			mdialog.show();
+			return;
+		}
+		uploadTypeSwitch.setEnabled(false);
+		uploadBtn.setEnabled(false); 
+		for(int k=0;k<mLineFileList.size();k++){
+			String JsonData=SystemUtil.openFile(mLineFileList.get(k));
+			if(JsonData!=null){
+			ex.UploadNormalPlanResultInfo_Event(null,mHandler,JsonData,mLineFileList.get(k));
+			}
+		}
+		for(int m=0;m<mExtranalDataFileList.size();m++){			
+			String data=SystemUtil.openFile(mExtranalDataFileList.get(m).filePath);
+			byte []bytedata=null;
+			if(data!=null){
+				bytedata = data.getBytes();
+			Event.UploadWaveDataRequestInfo_Event(null,mHandler,bytedata,mExtranalDataFileList.get(m).RecordLab,mExtranalDataFileList.get(m).filePath);
+			}
+		}
+		
+		uploadTypeSwitch.setEnabled(true);
+		uploadBtn.setEnabled(true); 
+	}
+	
+	void setUploadAndExtranalDBFlag(){
+	//设置upload_json数据表中的flag and media 数据表中的flag
+		Setting setting = new Setting();
+		for(int i =0;i<mUploadSuccesslist.size();i++){
+			if(mUploadSuccesslist.get(i).contains(setting.getExtralDataPath())){
+				mDao.setUpdateFlagMediaDB(mUploadSuccesslist.get(i),SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
+			}else if(mUploadSuccesslist.get(i).contains(setting.getUpLoadJsonPath())){
+				mDao.setUpdateFlagUploadDB(mUploadSuccesslist.get(i));
+			}
+		}
+		
+		
+		
+	}
 	private String getAddress(WifiMacType type){
 		WifiManager wifiMan = (WifiManager) this.getActivity().getSystemService(Context.WIFI_SERVICE);  
 		WifiInfo info = wifiMan.getConnectionInfo(); 

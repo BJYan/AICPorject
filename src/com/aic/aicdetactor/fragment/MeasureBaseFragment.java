@@ -31,14 +31,14 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 
 	protected PartItemJsonUp mPartItemData=null;
 	protected myApplication app = null;
-	private String TAG="AIC.MeasureBaseFragment";
+	protected String TAG="AIC.MeasureBaseFragment";
 	public static final int Notification_ID_BASE=10101034;
 	public static final int NotificationTIPS=10101035;
 	/**
 	 * 仅为显示只用
 	 */
 	protected int PartItemIndex=0;
-	BluetoothLeControl BLEControl = null;
+	protected BluetoothLeControl BLEControl = null;
 	final int MAX_FAILED_TIMES=3;
    boolean mCanSendCMD=false;
    boolean isRecultNormal=false;

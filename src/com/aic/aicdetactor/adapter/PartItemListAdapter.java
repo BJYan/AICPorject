@@ -46,28 +46,30 @@ import android.widget.Toast;
  *
  */
 public class PartItemListAdapter extends BaseAdapter {
-	private List<String> statusList = new ArrayList<String>();
 	
 	private String TAG="PartItemListAdapter";
 	private myApplication app ;
 	private Activity mActivity;
+	
+	/**
+	 * 拍照、录音、振动数据的List,包括设备级测点，设备级测点数据放到第一个里
+	 */
+	private List<PartItemJsonUp>mAddNewExtranalPartItemList=null;
+	/**
+	 * 用户保存额外信息文件与json关联的信息列表,包括saveLab及对应的二进制的图片、音频、振动数据
+	 */
 	private List<HashMap<String,Object>> mExtralList;
 	
-	//选择运行/停机/备用等后需生成的一个PartItem数据结构
-	private PartItemJsonUp mPartItemAfterItemDef =null;
-	private DeviceItemJson mDeviceItemCahce=null;
 	/**
-	 * 选择运行、停机、备用筛选后的partItem数据
+	 * 巡检过后 ，新生成的deviceItem结果，包括选择停机、备用筛选的数据，设备级测点，额外的音频、拍照、振动测点数据
 	 */
-	private ArrayList<PartItemJsonUp> mPartItemList=null;
+	private DeviceItemJson mNewDeviceItem=null;
+	
+	private DeviceItemJson mOriginalDeviceItem=null;
 	/**
-	 * 保留最后一次选择 运行 、停机 、备用后的partItem数据 ,用于显示只用
+	 * 保留最后一次选择 运行 、停机 、备用后的partItem数据 ,
 	 */
 	private ArrayList<PartItemJsonUp> mPartItemAfterSelectedList=null;
-	/**
-	 * 额外的partItem,即 新增的 图片 、音频 、波形数据的list
-	 */
-	private ArrayList<PartItemJsonUp> mOriPartItemList=null;//原始的数据
 	
 	private int mStationIndex=0;
 	private int mDeviceIndex=0;
@@ -121,6 +123,8 @@ public class PartItemListAdapter extends BaseAdapter {
 				}
 				super.handleMessage(msg);
 			}};
+			
+			
 		initListViewAndData(false);
 	}
 	@Override
@@ -168,7 +172,6 @@ public class PartItemListAdapter extends BaseAdapter {
 	public int  getPrevPartItemIndex(){
 		if(mPartItemIndex>0){
 		mPartItemIndex--;
-		mPartItemList.remove(mPartItemList.size()-1);
 		}
 		return mPartItemIndex;
 	}
@@ -193,13 +196,9 @@ public class PartItemListAdapter extends BaseAdapter {
 	public boolean gotoNextDeviceItem(){
 		if(mDeviceIndex<=app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.size()){
 			if(mDeviceIndex==app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.size()-1){
-			//mease is this is last deviceItem and all deviceItems that under current station have checked.
 			return false;
-			}else{
-				//app.mDeviceIndex=++mDeviceIndex;
-			//	resetInitListData();
-				return true;
 			}
+			return true;			
 		}
 		
 		return false;
@@ -219,37 +218,29 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * @return
 	 */
 	public PartItemJsonUp getCurOriPartItem(){
-		return mOriPartItemList.get(mPartItemIndex);
+		mOriginalDeviceItem.PartItem.get(mPartItemIndex).printdata();
+		return mOriginalDeviceItem.PartItem.get(mPartItemIndex);
 	}
 	public void initListViewAndData(boolean bRefreshListView){
-		mDeviceItemCahce = new DeviceItemJson();
-		mDeviceItemCahce.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
-	//	mDeviceItemCahce = app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
-		//班组
-//		mDeviceItemCahce.T_Worker_Class_Group=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Class_Group;
-//		//班次
-//		mDeviceItemCahce.T_Worker_Class_Shift=String.valueOf(app.mJugmentListParms.get(app.mRouteIndex).m_RoutePeroid.Span);
-//		mDeviceItemCahce.T_Worker_Guid=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Guid;
-//		mDeviceItemCahce.T_Worker_Name=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Name;
-//		mDeviceItemCahce.T_Worker_Number=app.mJugmentListParms.get(app.mRouteIndex).m_WorkerInfoJson.Number;
+		mOriginalDeviceItem = new DeviceItemJson();
+		mOriginalDeviceItem.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
+		//mOriginalDeviceItem=(DeviceItemJson) app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex).clone();
+		mAddNewExtranalPartItemList = new ArrayList<PartItemJsonUp>();
+		
+		mNewDeviceItem = new DeviceItemJson();
+		mNewDeviceItem.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
 		try {
-			if(mPartItemList == null ||mOriPartItemList==null || mPartItemAfterSelectedList==null ){
-			 mPartItemList = new ArrayList<PartItemJsonUp>();
-			 mOriPartItemList= new ArrayList<PartItemJsonUp>();
+			if( mPartItemAfterSelectedList==null ){
 			 mPartItemAfterSelectedList =new ArrayList<PartItemJsonUp>();
 			 }else{
-				 mOriPartItemList.clear();
-				 mPartItemList.clear();
 				 mPartItemAfterSelectedList.clear();
 			 }
 			
 
 			PartItemJsonUp item =null;
-			for (int i = 0; i < mDeviceItemCahce.PartItem.size(); i++) {
+			for (int i = 0; i < mNewDeviceItem.PartItem.size(); i++) {
 				
-				item =  mDeviceItemCahce.PartItem.get(i);
-				mPartItemList.add(item);
-				mOriPartItemList.add(item);
+				item =  mNewDeviceItem.PartItem.get(i);
 				mPartItemAfterSelectedList.add(item);
 			}
 			app.gCurPartItemList = mPartItemAfterSelectedList;
@@ -262,51 +253,43 @@ public class PartItemListAdapter extends BaseAdapter {
 	}
 	
 	public String getCurDeviceExitDataGuid(){
-		return mDeviceItemCahce.Data_Exist_Guid;
+		return mNewDeviceItem.Data_Exist_Guid;
 	}
 	public void setPartItemStartTime()
 	{
-		mPartItemList.get(mPartItemIndex).setSartDate();
+		mPartItemAfterSelectedList.get(mPartItemIndex).setSartDate();
 	}
 	
 	public void setPartItemEndTimeAndTotalTime(){
-		mPartItemList.get(mPartItemIndex).setEndDate();
-		mPartItemList.get(mPartItemIndex).calcCheckDuration();
+		mPartItemAfterSelectedList.get(mPartItemIndex).setEndDate();
+		mPartItemAfterSelectedList.get(mPartItemIndex).calcCheckDuration();
 	}
-	public void resetInitListData(){
-		initListViewAndData(true);
-	}
+	
+	//每调用一次，进行一次反向排序显示
 	public void revertListViewData(){
-		
 		ArrayList<PartItemJsonUp> ItemList = new ArrayList<PartItemJsonUp>();
 		for(int i= mPartItemAfterSelectedList.size()-1;i>=0;i--){
 			ItemList.add(mPartItemAfterSelectedList.get(i));
 		}
-		mPartItemList.clear();
 		mPartItemAfterSelectedList.clear();
-		mDeviceItemCahce.PartItem.clear();
 		for(int m= 0;m<ItemList.size();m++){
-			mPartItemList.add(ItemList.get(m));
 			mPartItemAfterSelectedList.add(ItemList.get(m));
-			mDeviceItemCahce.PartItem.add(ItemList.get(m));
 		}		
 		this.notifyDataSetChanged();
 		
 	}
 	public void getNewPartItemListDataByStatusArray(int index,String DeviceItemDef){
-		mPartItemList.clear();
 		mPartItemAfterSelectedList.clear();
-		for(int m= 0;m<mOriPartItemList.size();m++){
-			if(((mOriPartItemList.get(m).Start_Stop_Flag>>index)&0x01)==1)	{
-				if(mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.AudioDataId
-						&&mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.PictureDataId
-						&&mOriPartItemList.get(m).T_Measure_Type_Id!=OnButtonListener.WaveDataId){
-				mPartItemList.add(mOriPartItemList.get(m));
-				mPartItemAfterSelectedList.add(mOriPartItemList.get(m));}
+		for(int m= 0;m<mOriginalDeviceItem.PartItem.size();m++){
+			if(((mOriginalDeviceItem.PartItem.get(m).Start_Stop_Flag>>index)&0x01)==1)	{
+				if(mOriginalDeviceItem.PartItem.get(m).T_Measure_Type_Id!=OnButtonListener.AudioDataId
+						&&mOriginalDeviceItem.PartItem.get(m).T_Measure_Type_Id!=OnButtonListener.PictureDataId
+						&&mOriginalDeviceItem.PartItem.get(m).T_Measure_Type_Id!=OnButtonListener.WaveDataId){
+				mPartItemAfterSelectedList.add(mOriginalDeviceItem.PartItem.get(m));}
 				}
 			}
-		mDeviceItemCahce.Item_Define=DeviceItemDef;
-		mDeviceItemCahce.setStartDate();
+		mNewDeviceItem.Item_Define=DeviceItemDef;
+		mNewDeviceItem.setStartDate();
 		genPartItemDataAfterItemDef();
 		mExtralList.clear();
 		this.notifyDataSetChanged();
@@ -316,20 +299,20 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * 巡检完该deviceItem时 设置一些参数进来。
 	 */
 	public void setFinishDeviceCheckFlagAndSaveDataToSD(){
-		mDeviceItemCahce.setRFChecked();
-		mDeviceItemCahce.setDeviceChecked();
-		mDeviceItemCahce.setEndDate();
+		mNewDeviceItem.setRFChecked();
+		mNewDeviceItem.setDeviceChecked();
+		mNewDeviceItem.setEndDate();
 		if(app.isTest){
 			if(app.isSpecialLine()){
-				mDeviceItemCahce.setIsOmissionCheck(0);
+				mNewDeviceItem.setIsOmissionCheck(0);
 			}else{
-				mDeviceItemCahce.setIsOmissionCheck(1887);
+				mNewDeviceItem.setIsOmissionCheck(1887);
 			}
 		}else{
 			if(app.isSpecialLine()){
-				mDeviceItemCahce.setIsOmissionCheck(0);
+				mNewDeviceItem.setIsOmissionCheck(0);
 			}else{			
-			mDeviceItemCahce.setIsOmissionCheck(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check);
+			mNewDeviceItem.setIsOmissionCheck(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check);
 			}
 		}
 		mPartItemIndex=0;
@@ -344,13 +327,13 @@ public class PartItemListAdapter extends BaseAdapter {
 	
 	public int getCurrentPartItemType(){
 		long type=0;
-		if(mPartItemIndex<mPartItemList.size()){
-		type =Integer.valueOf(mPartItemList.get(mPartItemIndex).T_Measure_Type_Code);
+		if(mPartItemIndex<mPartItemAfterSelectedList.size()){
+		type =Integer.valueOf(mPartItemAfterSelectedList.get(mPartItemIndex).T_Measure_Type_Code);
 		}
 		return (int)type;
 	}
 	public PartItemJsonUp getCurrentPartItem(){
-		return mPartItemList.get(mPartItemIndex);
+		return mPartItemAfterSelectedList.get(mPartItemIndex);
 	}
 	
 	/**
@@ -361,24 +344,26 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * @param AbormalId  异常情况下对应的异常id
 	 */
 	public void saveData(String ExValue,String AbnormaCode,int AbormalId,int CaiYangShu,int CaiyangPinLv){
-		if(mPartItemIndex<mPartItemList.size()){
-		mPartItemList.get(mPartItemIndex).setExtralInfor(ExValue);
-		mPartItemList.get(mPartItemIndex).Is_Normal=ConditionalJudgement.GetRusultStatus(AbnormaCode);
-		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Code = AbnormaCode;
-		mPartItemList.get(mPartItemIndex).T_Item_Abnormal_Grade_Id=AbormalId;
-		mPartItemList.get(mPartItemIndex).SampleFre =CaiyangPinLv;
-		mPartItemList.get(mPartItemIndex).SamplePoint =CaiYangShu;
-		mPartItemList.get(mPartItemIndex).setVMSDir();
-		mPartItemList.get(mPartItemIndex).setSignalType();	
-		mPartItemList.get(mPartItemIndex).Item_Define=mDeviceItemCahce.Item_Define;
-		mPartItemList.get(mPartItemIndex).Check_Mode="";
+		if(mPartItemIndex<mPartItemAfterSelectedList.size()){
+			String str1=mOriginalDeviceItem.PartItem.get(mPartItemIndex).Extra_Information;
+			mPartItemAfterSelectedList.get(mPartItemIndex).setExtralInfor(ExValue);
+			String str2=mOriginalDeviceItem.PartItem.get(mPartItemIndex).Extra_Information;
+			mPartItemAfterSelectedList.get(mPartItemIndex).Is_Normal=ConditionalJudgement.GetRusultStatus(AbnormaCode);
+			mPartItemAfterSelectedList.get(mPartItemIndex).T_Item_Abnormal_Grade_Code = AbnormaCode;
+			mPartItemAfterSelectedList.get(mPartItemIndex).T_Item_Abnormal_Grade_Id=AbormalId;
+			mPartItemAfterSelectedList.get(mPartItemIndex).SampleFre =CaiyangPinLv;
+			mPartItemAfterSelectedList.get(mPartItemIndex).SamplePoint =CaiYangShu;
+			mPartItemAfterSelectedList.get(mPartItemIndex).setVMSDir();
+			mPartItemAfterSelectedList.get(mPartItemIndex).setSignalType();	
+			mPartItemAfterSelectedList.get(mPartItemIndex).Item_Define=mNewDeviceItem.Item_Define;
+			mPartItemAfterSelectedList.get(mPartItemIndex).Check_Mode="";
 		
 		}
 		setPartItemEndTimeAndTotalTime();
 	}
 	
 	/**
-	 * 新增加媒体数据 例如 图片，音频 数据partItemData
+	 * 基于当前的测点，增加媒体数据 例如 图片，音频 数据partItemData到 mExtralList中,如果params.object==null，不添加
 	 * @param typecode
 	 * @param SaveLab  uuid,如果是三轴的话，表示是同一组的数据，三轴振动还需要SaveLab找到其它两轴数据，
 	 * @param RecordLab uuid, 数据对应关系中UUID
@@ -387,15 +372,18 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * @param abNormalCode  如果 typecode ==11 即波形数据时采用，否则填写为null即可
 	 */
 	public void addNewMediaPartItem(ParamsPartItemFragment params){
+		if(params.object==null){
+			return;
+		}
 		//先clone一份当前partitem数据
 		PartItemJsonUp PartItemItem = new PartItemJsonUp();
-		PartItemItem.Clone(mPartItemList.get(mPartItemIndex)); 
+		PartItemItem.Clone(mPartItemAfterSelectedList.get(mPartItemIndex)); 
 		PartItemItem.SaveLab= params.SaveLab;
 		PartItemItem.RecordLab=params.RecordLab;
 		
 		//set current recordLab and SaveLab
-		mPartItemList.get(mPartItemIndex).RecordLab=params.RecordLab;
-		mPartItemList.get(mPartItemIndex).SaveLab=params.SaveLab;
+		mPartItemAfterSelectedList.get(mPartItemIndex).RecordLab=params.RecordLab;
+		mPartItemAfterSelectedList.get(mPartItemIndex).SaveLab=params.SaveLab;
 		
 		if(params.TypeCode==OnButtonListener.AudioDataType||params.TypeCode==OnButtonListener.PictureDataType){
 			PartItemItem.T_Measure_Type_Code=""+params.TypeCode;
@@ -422,14 +410,12 @@ public class PartItemListAdapter extends BaseAdapter {
 		PartItemItem.End_Check_Datetime =SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 		PartItemItem.Total_Check_Time= Integer.valueOf(SystemUtil.getDiffDate(PartItemItem.Start_Check_Datetime, PartItemItem.End_Check_Datetime));
 	
-		//不能显示在巡检UI上
-		mPartItemList.add(PartItemItem);
-		if(params.object!=null){
-			HashMap<String,Object> map = new HashMap<String,Object>();
-			map.put("RecordLab", params.RecordLab);
-			map.put("Object", params.object);
-			mExtralList.add(map);
-		}
+		mAddNewExtranalPartItemList.add(PartItemItem);
+		
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("RecordLab", params.RecordLab);
+		map.put("Object", params.object);
+		mExtralList.add(map);
 			
 	}
 	/**
@@ -478,29 +464,37 @@ public class PartItemListAdapter extends BaseAdapter {
 	 * 选择运行/停机/备用后生成的PartItem对象
 	 */
 	private void genPartItemDataAfterItemDef(){
-		if(mPartItemAfterItemDef!=null){
-			mPartItemAfterItemDef=null;
-		}
-		mPartItemAfterItemDef = new PartItemJsonUp();
-		mPartItemAfterItemDef.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;
-		mPartItemAfterItemDef.Extra_Information="设备级";
-		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Id=2;
-		mPartItemAfterItemDef.T_Item_Abnormal_Grade_Code="01";
-		mPartItemAfterItemDef.Item_Define=mDeviceItemCahce.Item_Define;
+		PartItemJsonUp mDevicePatItem = new PartItemJsonUp();
+		mDevicePatItem.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;
+		mDevicePatItem.Extra_Information="设备级";
+		mDevicePatItem.T_Item_Abnormal_Grade_Id=2;
+		mDevicePatItem.T_Item_Abnormal_Grade_Code="01";
+		mDevicePatItem.Item_Define=mNewDeviceItem.Item_Define;
+		mAddNewExtranalPartItemList.clear();
+		mAddNewExtranalPartItemList.add(mDevicePatItem);
 	}
 	
 	private void saveDeviceItemData(){
-		//先保存临时device数据，并把mPartItemAfterItemDef添加进去。
-		//再将临时device数据添加到即将保存的json数据中
 		setLineGlobalInfo();
-		mDeviceItemCahce.PartItem.clear();
-		for(PartItemJsonUp part:mPartItemList){
-			part.Item_Define=mDeviceItemCahce.Item_Define;
-			mDeviceItemCahce.PartItem.add(part);
+		
+		//剔除掉该设备下的所有partitem测点数据
+		mNewDeviceItem.PartItem.clear();
+		//设置每个测点的iitemdef
+		for(PartItemJsonUp part:mPartItemAfterSelectedList){
+			part.Item_Define=mNewDeviceItem.Item_Define;
+			mNewDeviceItem.PartItem.add(part);
 		}
-		mDeviceItemCahce.PartItem.add(mPartItemAfterItemDef);
+		
+		//添加所有的额外测点数据到 测点序列中
+		for(PartItemJsonUp part:mAddNewExtranalPartItemList){
+			part.Item_Define=mNewDeviceItem.Item_Define;
+			mNewDeviceItem.PartItem.add(part);
+		}
+		
+		//删掉cache文件中的原来的设备数据
 		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.remove(mDeviceIndex);
-		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.add(mDeviceIndex, mDeviceItemCahce);
+		//将原来设备位置上的数据进行替换更新
+		app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.add(mDeviceIndex, mNewDeviceItem);
 		
 		
 		setOtherDataIfNeeded();
@@ -524,15 +518,8 @@ public class PartItemListAdapter extends BaseAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Special_Inspection=0;
+		app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Special_Inspection=app.isSpecialLine()==true?1:0;
 		saveDataToDB();
-		
-		//准备上传数据,应该从数据表中读取未上传的数据
-		Event ex = new Event();
-		if(sonStr!=null){
-		ex.UploadNormalPlanResultInfo_Event(null,mHandler,sonStr);
-		}
-		UploadAllUploadJsonFile();
 	}
 	
 	String getSaveDataFileName(){
@@ -545,32 +532,6 @@ public class PartItemListAdapter extends BaseAdapter {
 				app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.T_Line_Guid);
 	}
 	
-	/**
-	 * 上传所有已经巡检过的未上传的日常巡检数据
-	 */
-	void UploadAllUploadJsonFile(){
-		Event ex = new Event();
-		List<String> fileList =mDao.getUnUploadAllUploadJsonFile();
-		for(int k=0;k<fileList.size();k++){
-			String JsonData=SystemUtil.openFile(fileList.get(k));
-			if(JsonData!=null){
-			ex.UploadNormalPlanResultInfo_Event(null,mHandler,JsonData);
-			}
-		}
-		
-		List<ExtranalBinaryInfo> list = mDao.getAllUnUploadExtralData();
-		for(int m=0;m<list.size();m++){			
-			String data=SystemUtil.openFile(list.get(m).filePath);
-			byte []bytedata=null;
-			if(data!=null){
-				bytedata = data.getBytes();
-			Event.UploadWaveDataRequestInfo_Event(null,mHandler,bytedata,list.get(m).RecordLab);
-			}
-		}
-		
-		
-		
-	}
 	
 	
 	
@@ -596,16 +557,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	 */
 	private void saveDataToDB(){
 		
-		if(app.isTest){
-			RoutePeroid RoutePeroid = new RoutePeroid();
-			RoutePeroid.Base_Point="1";
-			RoutePeroid.Class_Group="T01";
-			RoutePeroid.End_Time=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
-			
-			mDao.insertUploadFile(RoutePeroid,app.gIsDataChecked,true,true);	
-		}else{
-			mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,app.gIsDataChecked,true,true);
-		}
+		mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,app.gIsDataChecked,true,true);
 		app.gIsDataChecked=true;
 		
 		
@@ -613,7 +565,6 @@ public class PartItemListAdapter extends BaseAdapter {
 		 * 插入额外信息到数据表中 
 		 */
 		for(int m =0;m<mExtralList.size();m++){
-			//mExtralList.get(m)
 			try {
 				SystemUtil.writeFileToSD(Setting.getExtralDataPath()+mExtralList.get(m).get("RecordLab"), 
 						Setting.getExtralDataPath()+mExtralList.get(m).get("Object"));
@@ -622,24 +573,24 @@ public class PartItemListAdapter extends BaseAdapter {
 				e.printStackTrace();
 			}
 		}
-		for(int k=this.mPartItemAfterSelectedList.size();k<this.mPartItemList.size();k++){
-			if(mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.PictureDataId
-					||mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.AudioDataId
-					||mPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.WaveDataId){
+		for(int k=1;k<mAddNewExtranalPartItemList.size();k++){
+			if(mAddNewExtranalPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.PictureDataId
+					||mAddNewExtranalPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.AudioDataId
+					||mAddNewExtranalPartItemList.get(k).T_Measure_Type_Id==OnButtonListener.WaveDataId){
 				String SqlStr = "insert into " +DBHelper.TABLE_Media +"( "
 						+DBHelper.Media_Table.Line_Guid +","
 						+DBHelper.Media_Table.Name + ","
 						+DBHelper.Media_Table.Date + ","
 						+DBHelper.Media_Table.Mime_Type + ","
 						+DBHelper.Media_Table.Is_Uploaded + ","
-						+DBHelper.Media_Table.Path
+						+DBHelper.Media_Table.FilePath
 					+") values ('"
 					+app.mLineJsonData.T_Line.T_Line_Guid+"','"
-					+mPartItemList.get(k).RecordLab +"','"
+					+mAddNewExtranalPartItemList.get(k).RecordLab +"','"
 					+SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDD)+"','"
-					+mPartItemList.get(k).T_Measure_Type_Id +"',"
+					+mAddNewExtranalPartItemList.get(k).T_Measure_Type_Id +"',"
 					+"'0'" +",'"
-					+Setting.getExtralDataPath()+mPartItemList.get(k).RecordLab
+					+Setting.getExtralDataPath()+mAddNewExtranalPartItemList.get(k).RecordLab
 					+"')";
 				mDao.execSQLUpdate(SqlStr);
 				

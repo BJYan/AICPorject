@@ -28,6 +28,7 @@ import com.aic.aicdetactor.activity.PartItemListSelectActivity;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.bluetooth.analysis.DataAnalysis;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.data.PartItemJson;
 import com.aic.aicdetactor.data.PartItemJsonUp;
 import com.aic.aicdetactor.dialog.CommonDialog;
@@ -40,18 +41,18 @@ import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
 public class DeviceListAdapter  extends BaseExpandableListAdapter implements CommonDialogBtnListener{
-	private Context context;
-	private LayoutInflater mInflater;
-	ArrayList<ArrayList<PartItemJsonUp>> mChildrenList;
-	private int mStationIndex=0;
-	private int mDeviceIndex=0;
-	private myApplication app = null;
-	private CommonActivity mActivity = null;
-	private final String TAG="luotest.DeviceListAdapter";
-	private boolean mIsSpecial= false;
-	private List<DeviceListInfoParams> mDeviceList=null;
+	protected Context context;
+	protected LayoutInflater mInflater;
+	protected ArrayList<ArrayList<PartItemJsonUp>> mChildrenList;
+	protected int mStationIndex=0;
+	protected int mDeviceIndex=0;
+	protected myApplication app = null;
+	protected CommonActivity mActivity = null;
+	protected  String TAG="luotest.DeviceListAdapter";
+	private LineType mLineType;
+	protected List<DeviceListInfoParams> mDeviceList=null;
 	public DeviceListAdapter(Context context, CommonActivity av,
-			int stationIndex,int deviceIndex,boolean mIsSpecial){
+			int stationIndex,int deviceIndex,LineType lineType){
 			//ArrayList<ArrayList<Map<String, String>>> mChildrenList) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
@@ -63,7 +64,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 		mActivity = av;
 		mDeviceList = new ArrayList<DeviceListInfoParams>();
 		app = ((myApplication) av.getApplication());
-		this.mIsSpecial = mIsSpecial;
+		this.mLineType = lineType;
 		InitData();
 	}
 	
@@ -140,11 +141,11 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_In_Place!=1){
 					//	if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(deviceindex).Is_Device_Checked!=1){
 						Intent intent = new Intent();
-						app.mDeviceIndex=deviceindex;
+						app.setCurrentDeviceIndex(deviceindex);
 						app.mPartItemIndex = partindex;
-						if(mIsSpecial){
+						if(mLineType == LineType.SpecialRoute){
 							app.setCategoryTitle(mActivity.getString(R.string.line_special_name));							
-						}else{
+						}else if(mLineType == LineType.NormalRoute){
 							app.setCategoryTitle(mActivity.getString(R.string.line_normal_name));
 						}
 						intent.setClass(mActivity, PartItemListSelectActivity.class);
@@ -256,7 +257,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 				mChildrenList.clear();
 			}
 			for (int i = 0; i < app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.size(); i++) {
-				if(mIsSpecial){
+				if(mLineType == LineType.SpecialRoute){
 					if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection==1){
 						DeviceListInfoParams deviceInfo = new DeviceListInfoParams();							
 						deviceInfo.setName(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
@@ -267,7 +268,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 						mDeviceList.add(deviceInfo);
 						InitChidrenData(mStationIndex, i);
 						}
-					}else{
+					}else if(mLineType == LineType.NormalRoute){
 						if(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Is_Special_Inspection<=0){
 							DeviceListInfoParams deviceInfo = new DeviceListInfoParams();							
 							deviceInfo.setName(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
@@ -322,7 +323,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	}
 	
 	//如果是 在位管理的话 ，需要在partitem数组中新增添一项partitem
-	void addIs_InPlacePartItem(int deviceIndex){
+	private void addIs_InPlacePartItem(int deviceIndex){
 		PartItemJsonUp InPlacePartitem = new PartItemJsonUp();		
 		InPlacePartitem.Start_Check_Datetime=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);		
 		InPlacePartitem.Check_Content=app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(mDeviceIndex).Name;

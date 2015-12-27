@@ -138,16 +138,23 @@
         		android:hint="@string/route_temp_checkitem_name_hint"
         		android:layout_marginRight="5dip"
         		android:padding="5dip"/>
- 			<EditText
-        		android:id="@+id/editText4"
-        		android:layout_width="match_parent"
-        		android:layout_height="45dip"
-        		android:background="@drawable/blue_border_edittext_shape"
-        		android:ems="10"
-        		android:layout_weight="1"
-        		android:hint="@string/route_temp_checkitem_code_hint"
-        		android:layout_marginLeft="5dip" 
-        		android:padding="5dip"/>
+            
+             <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:background="@drawable/blue_border_edittext_shape"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_weight="1">
+    	<Spinner
+        	android:id="@+id/spinner4"
+        	android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	android:padding="5dip"
+        	android:entries="@array/TempMeasureType"
+        	android:gravity="center" />
+    </LinearLayout>
+    
         </LinearLayout>
     </LinearLayout>
  	<View
@@ -158,26 +165,13 @@
         android:layout_marginLeft="10dip"
 		android:layout_marginRight="10dip" />
     
-	<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="5dip"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip">
-		<Button
-    		android:id="@+id/route_temp_add"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-    		android:text="@string/route_temp_add"
-    		android:layout_weight="1" />
+	
 		<Button
     		android:id="@+id/route_temp_measure"
-    		android:layout_width="wrap_content"
+    		android:layout_width="fill_parent"
     		android:layout_height="wrap_content"
     		android:text="@string/route_temp_measure"
     		android:layout_weight="1" />
-	</LinearLayout>
+	
 </LinearLayout>
 </ScrollView>

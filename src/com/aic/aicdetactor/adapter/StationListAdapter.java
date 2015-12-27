@@ -33,16 +33,16 @@ import com.aic.aicdetactor.view.GroupViewHolder;
 
 public class StationListAdapter extends BaseExpandableListAdapter {
 
-	private myApplication app = null;
-	private Context mContext = null;
-	private CommonActivity mActivity = null;
+	protected myApplication app = null;
+	protected Context mContext = null;
+	protected CommonActivity mActivity = null;
 	private LayoutInflater mInflater;
-	private final String TAG = "luotest.StationListAdapter";
-	private boolean mIsSpecial =false;
+	protected  String TAG = "luotest.StationListAdapter";
+	private LineType mlineType;
 	public final static int INIT_JSON_DATA_FINISHED =10;
 	// groupView data
-	private List<StationListInfoParams> mStationList=null;
-	private ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
+	protected List<StationListInfoParams> mStationList=null;
+	protected ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int secExlistItemHigh,thrExlistItemHigh;
     Handler mHandler;
 	public StationListAdapter(CommonActivity av, Context context,Handler handler) {
@@ -52,7 +52,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		mActivity = av;
 		mStationList = new ArrayList<StationListInfoParams>();
 		app = ((myApplication) mActivity.getApplication());
-		this.mIsSpecial =app.isSpecialLine();
+		this.mlineType =app.isSpecialLine()==true?LineType.SpecialRoute:LineType.NormalRoute;
 		thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
 		secExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level2); 
 		InitJsonDataThread InitThread = new InitJsonDataThread();
@@ -86,7 +86,7 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 		MLog.Logd(TAG,"getChildView " + arg0 +" ,"+arg1);
 
 		final ExpandableListView secGroupView = getExpandableListView();
-		final DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1,mIsSpecial);
+		DeviceListAdapter secExListAdapter = new DeviceListAdapter(mContext, mActivity,arg0,arg1,mlineType);
 		secGroupView.setAdapter(secExListAdapter);
 		
 		secGroupView.setSelectedGroup(arg1);
@@ -210,7 +210,7 @@ class InitJsonDataThread extends Thread{
 			MLog.Logd(TAG, " InitData()>> "+g);
 			try {
 				
-				if(app.getLineDataClassifyFromOneFile(mIsSpecial==true?LineType.SpecialRoute:LineType.NormalRoute)==null){
+				if(app.getLineDataClassifyFromOneFile(mlineType)==null){
 					mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
 					return;
 				};
@@ -223,7 +223,7 @@ class InitJsonDataThread extends Thread{
 					if(!app.gIsDataChecked){
 						stationInfo.setDeadLine("2015");
 					}
-					stationInfo.setProcess(app.mLineJsonData.getItemCounts(1, i, true,mIsSpecial)+ "/" + app.mLineJsonData.getItemCounts(1, i, false,mIsSpecial));
+					stationInfo.setProcess(app.mLineJsonData.getItemCounts(1, i, true,app.isSpecialLine())+ "/" + app.mLineJsonData.getItemCounts(1, i, false,app.isSpecialLine()));
 					mStationList.add(stationInfo);
 					try {
 						ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();

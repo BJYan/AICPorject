@@ -1,8 +1,10 @@
 package com.aic.aicdetactor.data;
 
+import android.util.Log;
+
 import com.aic.aicdetactor.util.SystemUtil;
 
-public class PartItemJsonUp
+public class PartItemJsonUp implements Cloneable
 {
     public String Check_Content ;
     public long T_Measure_Type_Id ;
@@ -240,4 +242,52 @@ public class PartItemJsonUp
 		   T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
 		   T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
    }
+   
+  public void printdata(){
+	   Log.d("PartItemJsonUp","Check_Content="+ Check_Content+",T_Measure_Type_Id="+
+	  T_Measure_Type_Id+",T_Measure_Type_Code="+
+	  T_Measure_Type_Code+",Unit= "+
+	  Unit +",Start_Stop_Flag="+
+	  Start_Stop_Flag+",Up_Limit="+
+	  Up_Limit+",Middle_Limit="+
+	  Middle_Limit+",Down_Limit="+
+	  Down_Limit+",Emissivity="+
+	  Emissivity+",Hint_Status="+
+	  Hint_Status+",Axle_Number="+
+	  Axle_Number+",Check_Mode="+
+	  Check_Mode+",Extra_Information="+
+	  Extra_Information +",T_Maintenance_Status_Id="+
+	  T_Maintenance_Status_Id+",Fault_Diagnosis="+
+	  Fault_Diagnosis+",Default_RPM="+
+	  Default_RPM+",Is_Normal="+	
+	  Is_Normal+",Item_Define="+     
+	   Item_Define+",Start_Check_Datetime="+
+	   Start_Check_Datetime+",End_Check_Datetime="+
+	   End_Check_Datetime+",Total_Check_Time="+
+	   Total_Check_Time+",SaveLab="+
+	   SaveLab+",RecordLab="+
+	   RecordLab+",SensorType="+
+	   SensorType+",VMSDir="+
+	   VMSDir+",SignalType="+
+	   SignalType+",SampleFre="+
+	   SampleFre+",SamplePoin="+
+	   SamplePoint+",RPM="+
+	   RPM+",Diagnose_Conclusion="+
+	   Diagnose_Conclusion+",Remarks="+
+	   Remarks+",Is_Timeout="+
+	   Is_Timeout+",T_Item_Abnormal_Grade_Id="+
+	   T_Item_Abnormal_Grade_Id+",T_Item_Abnormal_Grade_Code="+
+	   T_Item_Abnormal_Grade_Code);
+   }
+  
+  public Object clone() { 
+	  PartItemJsonUp o = null; 
+	    try { 
+	      o = (PartItemJsonUp) super.clone(); 
+	    } catch (CloneNotSupportedException e) { 
+	      System.out.println(e.toString()); 
+	    } 
+	 
+	    return o; 
+	  } 
 }

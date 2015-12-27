@@ -85,6 +85,12 @@ public class Event {
 	public final static int NetWork_MSG_Tips=Envent_Init+5;
 	public final static int TEMP_ROUTELINE_DOWNLOAD_MSG=Envent_Init+6;
 	public final static int Server_No_Data=Envent_Init+7;
+	
+	
+	public final static int Upload_Data_Success=Envent_Init+8;
+	public final static int Upload_Data_Failed=Envent_Init+9;
+	
+	
 	private int[] _lockCommandIds = null;
 	private static String TAG = "AICEvent";
 	public static void UploadRFID_Event(View view,final Handler handler) {
@@ -133,7 +139,7 @@ public class Event {
 	 * @param handler
 	 */
 	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
-		final boolean isLocalDebug =true;
+		final boolean isLocalDebug =false;
 		new Thread(new Runnable() {
 
 			@Override
@@ -212,7 +218,7 @@ public class Event {
 									 Message msg = handler.obtainMessage(LocalData_Init_Success);
 									 msg.obj=StrMessage;
 									 handler.sendMessage(msg);
-									// return;
+									 return;
 								 }else if(isExit==1){
 									 StrMessage="已有相同的日常巡检名 "+Normaldata.T_Line.Name +",是否要更新?";
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
@@ -690,7 +696,7 @@ public class Event {
 		}).start();
 	}
 	//UploadNormalPlanResultRequest
-	public synchronized void  UploadNormalPlanResultInfo_Event(View view,final Handler handler,final String UploadData) {
+	public synchronized void  UploadNormalPlanResultInfo_Event(View view,final Handler handler,final String UploadData,final String filepath) {
 
 		new Thread(new Runnable() {
 
@@ -729,12 +735,11 @@ public class Event {
 							request, timeout);
 					Message msg = new Message();
 					if(response.Info.Code.equals(ResponseCode.OK)){
-						msg.arg1=1;	
+						msg.what = Upload_Data_Success;
 					}else{
-						msg.arg1=0;
+						msg.what = Upload_Data_Failed;
 					}
-					msg.what = LocalData_Init_Success;
-					msg.obj = response.Info.Code;
+					msg.obj = filepath;
 					if(handler!=null){
 					handler.sendMessage(msg);
 					}
@@ -773,7 +778,7 @@ public class Event {
 	 * @param UploadData
 	 * @param RecordLab
 	 */
-		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData,final String RecordLab) {
+		public static void  UploadWaveDataRequestInfo_Event(View view,final Handler handler,final byte[] UploadData,final String RecordLab,final String filePath) {
 
 			new Thread(new Runnable() {
 
@@ -811,8 +816,12 @@ public class Event {
 						UploadWaveDataResponse response = sp.Execute(
 								request, timeout);
 						Message msg = new Message();
-						msg.what = LocalData_Init_Success;
-						msg.obj = response.Info.Code;
+						if(response.Info.Code.equals(ResponseCode.OK)){
+							msg.what = Upload_Data_Success;
+						}else{
+							msg.what = Upload_Data_Failed;
+						}
+						msg.obj = filePath;
 						if(handler!=null){
 						handler.sendMessage(msg);
 						}

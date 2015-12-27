@@ -57,6 +57,9 @@ public class CommonAlterDialog extends Dialog implements android.view.View.OnCli
 		CommonAlterDialogInit();
 	}
 	
+	public void setContent(String content){
+		this.content = content;
+	}
 	private void CommonAlterDialogInit(){
 		dialogTitle = (TextView) findViewById(R.id.common_dia_title);
 		dialogContent = (TextView) findViewById(R.id.common_dia_content);

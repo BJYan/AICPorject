@@ -53,11 +53,11 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 	private boolean isStationClicked = false;
 	private boolean isTestInterface = false;
 	//
-	private ExpandableListView mListView;
+	protected ExpandableListView mListView;
 	private boolean isUseWivewPager =false;
-	String TAG = "luotest";
+	protected String TAG = "StationActivity";
 	private String  routeName = null;
-	private StationListAdapter mListViewAdapter = null;
+	protected StationListAdapter mListViewAdapter = null;
 	private List<Map<String, String>> mListDatas = null;
 	private myApplication    app = null;
 	NFCDialog nfcdialog;

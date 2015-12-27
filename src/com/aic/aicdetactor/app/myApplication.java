@@ -25,7 +25,7 @@ public class myApplication extends Application
     //当前巡检路线下站点序号，序号指的是JSON站点数组的序号
     public int mStationIndex =-1;
     //当前巡检路线下 巡检的设备数组的序号
-    public int mDeviceIndex = -1;
+    private int mDeviceIndex = -1;
     //当前巡检的PartItemData
     public int mPartItemIndex = -1;
     
@@ -75,6 +75,14 @@ public class myApplication extends Application
 	public String getNFCId(){
 		return mNFCCard;
 	}
+	public void setCurrentDeviceIndex(int DeviceIndex){
+		mDeviceIndex=DeviceIndex;
+	}
+	
+	public int getCurrentDeviceIndex(){
+		return mDeviceIndex;
+	}
+	
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
 	}
@@ -258,6 +266,8 @@ public class myApplication extends Application
 	  			}	
 	  		}
 	  		
+  		}else if(type==LineType.AllRoute){
+  			mLineJsonData=JSON.parseObject(planjson,DownloadNormalRootData.class);
   		}
   		return mLineJsonData;
   	}

@@ -33,20 +33,24 @@ import com.aic.aicdetactor.util.MLog;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.aic.aicdetactor.view.GroupViewHolder;
 
-public class RouteNormalListAdapter extends BaseAdapter{
-	private Context context;
-	private LayoutInflater mInflater;
+public class LineListAdapter extends BaseAdapter{
+	protected Context context;
+	protected LayoutInflater mInflater;
 	private final  String TAG="luotest.RouteNormalListAdapter";
-	private myApplication app = null;
-	private Activity mActivity=null;
-	private List<LineListInfoParams> mLineList=null;
-	public RouteNormalListAdapter(Context context,Activity av) {
+	protected myApplication app = null;
+	protected Activity mActivity=null;
+	protected List<LineListInfoParams> mLineList=null;
+	protected LineType mLineType;
+	protected BaseAdapter adapter;
+	public LineListAdapter(Context context,Activity av,LineType lineType) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		mInflater = LayoutInflater.from(context);
 		this.mLineList = new ArrayList<LineListInfoParams>();
 		app =(myApplication) av.getApplication();
 		mActivity =av;
+		mLineType = lineType;
+		adapter = LineListAdapter.this;
 		initListData();
 	}
 	
@@ -96,7 +100,8 @@ public class RouteNormalListAdapter extends BaseAdapter{
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
-			if(!app.isTest){
+			Intent intent = new Intent();
+			if(mLineType==LineType.NormalRoute){
 				ConditionalJudgement jugment = new ConditionalJudgement();
 				ContentValues nInfo=new ContentValues();
 				Log.d(TAG," onClick() app.mJugmentListParms.size() = "+app.mJugmentListParms.size()+",position ="+position);
@@ -121,12 +126,13 @@ public class RouteNormalListAdapter extends BaseAdapter{
 					Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
 					return;
 				}
+			}else if(mLineType == LineType.SpecialRoute){
+				app.setCurGsonPath(mLineList.get(position).getPath());
 			}
-			app.setgRouteName(mLineList.get(position).getName());
-			Intent intent = new Intent();
-			app.setCurrentRouteIndex(position);
-			intent.putExtra(CommonDef.route_info.NAME,mLineList.get(position).getName());
 			intent.setClass(context,StationActivity.class);
+			intent.putExtra(CommonDef.route_info.NAME,mLineList.get(position).getName());
+			app.setCurrentRouteIndex(position);
+			app.setgRouteName(mLineList.get(position).getName());
 			mActivity.startActivity(intent);
 		}});
 				
@@ -151,10 +157,17 @@ public class RouteNormalListAdapter extends BaseAdapter{
 							"in init() 1 start "
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
+					LineType lineType=LineType.NormalRoute;
+					if(mLineType==LineType.NormalRoute){
+						lineType = LineType.NormalRoute;
+					}else if(mLineType==LineType.SpecialRoute){
+						lineType = LineType.SpecialRoute;
+					}
+					
 					if(app.isLogin()){
 						LineDao dao = LineDao.getInstance(mActivity);
 						ContentValues cv = new ContentValues();
-						app.mJugmentListParms=dao.queryLineInfoByWorkerEx(app.getLoginWorkerName(), app.getLoginWorkerPwd(), cv,LineType.NormalRoute);
+						app.mJugmentListParms=dao.queryLineInfoByWorkerEx(app.getLoginWorkerName(), app.getLoginWorkerPwd(), cv,lineType);
 					}
 					
 					int iRouteCount = app.mJugmentListParms !=null?app.mJugmentListParms.size():0;
@@ -163,19 +176,35 @@ public class RouteNormalListAdapter extends BaseAdapter{
 									+ SystemUtil
 											.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
 					for (int routeIndex = 0; routeIndex < iRouteCount; routeIndex++) {
-						try {
+						
 							MLog.Logd(TAG,
 									"in init() for start i="
 											+ routeIndex
 											+ ","
 											+ SystemUtil
 													.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM));
-							LineListInfoParams lineInfo = new LineListInfoParams();
+							try {
+								LineListInfoParams lineInfo = new LineListInfoParams();
+							if(mLineType==LineType.NormalRoute){	
+							
 							lineInfo.setName(app.mJugmentListParms.get(routeIndex).T_Line.Name);
 							lineInfo.setDeadLine("2010-8-8");
 							lineInfo.setIndex(routeIndex+1);
 							lineInfo.setProcess(
 										app.mJugmentListParms.get(routeIndex).T_Line.LineCheckedCount + "/" + app.mJugmentListParms.get(routeIndex).T_Line.LineNormalTotalCount);
+							
+							}else if(mLineType==LineType.SpecialRoute){
+								if(app.mJugmentListParms.get(routeIndex).T_Line.HasSpecialLine){
+									
+									lineInfo.setName(app.mJugmentListParms.get(routeIndex).T_Line.Name);
+									lineInfo.setDeadLine("2000-10-10");
+									lineInfo.setProcess(
+										app.mJugmentListParms.get(routeIndex).T_Line.LineCheckedCount + "/" + app.mJugmentListParms.get(routeIndex).T_Line.LineSpecialTotalCount);
+									lineInfo.setIndex( routeIndex+1);
+									lineInfo.setPath(app.mJugmentListParms.get(routeIndex).T_Line.LinePath);
+									
+							}
+								}
 							mLineList.add(lineInfo);
 							MLog.Logd(TAG,
 									"in init() for end i="
@@ -187,6 +216,7 @@ public class RouteNormalListAdapter extends BaseAdapter{
 							e.printStackTrace();
 						}
 					}
+				
 				mHander.sendMessage(mHander.obtainMessage(MSG_UPDATE_LISTVIEW));
 				MLog.Logd(TAG,"initListData()<<");
 			}
@@ -194,18 +224,15 @@ public class RouteNormalListAdapter extends BaseAdapter{
 
 	}
 	
-	private final int MSG_UPDATE_LISTVIEW =0;
-	Handler mHander= new Handler(){
+	protected final int MSG_UPDATE_LISTVIEW =0;
+	protected Handler mHander= new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case MSG_UPDATE_LISTVIEW:
-				RouteNormalListAdapter.this.notifyDataSetChanged();
-		//	if (mListViewAdapter != null) {
-		//		mListViewAdapter.notifyDataSetChanged();
-		//	}
+				adapter.notifyDataSetChanged();
 			break;
 			}
 			super.handleMessage(msg);

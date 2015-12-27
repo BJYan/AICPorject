@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	 private final static String DB_NAME ="aicdatabase.db";//数据库名
-	 private final static int VERSION = 17;//版本号
+	 private final static int VERSION = 18;//版本号
 	 
 	  
 	//保存从服务器接收到的原始巡检数据信息
@@ -105,6 +105,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 public static final String Checked_Count = "Checked_Count";
 		 public static final String ItemCounts = "ItemCounts";
 		 public static final String Is_Special_Inspection = "Is_Special_Inspection";
+		 public static final String FilePath="FilePath";
 	 } 
 	 
 	 public static String TABLE_TEMPORARY = "T_Temporary_Line_Json";  
@@ -195,7 +196,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			 public static final String Mime_Type = "Mime_Type";
 			 public static final String	 Is_Uploaded = "Is_Uploaded";
 			 public static final String	 UploadedDate = "UploadedDate";
-			 public static final String Path = "Path";
+			 public static final String FilePath = "FilePath";
 		 } 
 		 
 		 
@@ -302,7 +303,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Checking_Table.Is_Updateed +" BOOLEAN ,"	
 				+ Checking_Table.Checked_Count +" INTEGER,"
 				+ Checking_Table.ItemCounts +" INTEGER ,"	
-				+ Checking_Table.Is_Special_Inspection +" INTEGER "
+				+ Checking_Table.Is_Special_Inspection +" INTEGER, "
+				+ Checking_Table.FilePath + "  varchar(256)"
 				+")";
 
 		db.execSQL(checkingsql);
@@ -434,7 +436,7 @@ public class DBHelper extends SQLiteOpenHelper {
 					+ Media_Table.Mime_Type+" varchar(64) ,"	
 					+ Media_Table.Is_Uploaded+" INT, "	
 					+ Media_Table.UploadedDate+" varchar(256), "
-					+ Media_Table.Path+" varchar(256) "
+					+ Media_Table.FilePath+" varchar(256)"
 					+")";
 			db.execSQL(mSql); 
 

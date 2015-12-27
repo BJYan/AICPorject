@@ -343,4 +343,12 @@
     <item>4096</item> 
     <item>8192</item>      
 </string-array>
+
+      <string-array name="TempMeasureType">  
+    <item>温度</item> 
+    <item>转速</item> 
+    <item>振动</item> 
+</string-array>
+
+      
 </resources>

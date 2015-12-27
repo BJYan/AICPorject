@@ -374,7 +374,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	boolean isFirstEnterChart=true;
 	private void InitChart() {
 		// TODO Auto-generated method stub
-		
+		try{
 		if(isFirstEnterChart){
 		 tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("时域")  
 	                .setContent(R.id.view2));
@@ -425,7 +425,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		if(mPartItemData.Axle_Number>1){
 		frequencyChartView = (LinearLayout) views.get(3).findViewById(R.id.onechart);
 		}
-		
+		String TitileTipsStr="AIC 巡检仪";
 		if(mAnalysis.isValidate()){
 			
 			y_FengValue.setText("峰值:"+FengValue);
@@ -438,17 +438,17 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			
 		
 			if(mAnalysis.getAxCount()==1){
-				timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData,FengValue,FengFengValue));
+				timeChartViewY.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData,FengValue,FengFengValue));
 				char1XL.setVisibility(View.GONE);
 				char1ZL.setVisibility(View.GONE);
-				axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData,FengValue,FengFengValue));
+				axesChartViewY.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData,FengValue,FengFengValue));
 				axesXLL.setVisibility(View.GONE);
 				axesZLL.setVisibility(View.GONE);
 			}else if(mAnalysis.getAxCount()==3){			
-			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));
-			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));		
-			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));
-			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData, FengValue,FengFengValue));
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData, FengValue,FengFengValue));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData, FengValue,FengFengValue));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData, FengValue,FengFengValue));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, mWaveFloatData, FengValue,FengFengValue));
 			frequencyChartView.addView(chartBuilder.getBlackLineChartView("test", mWaveFloatData,FengValue,FengFengValue));
 			}
 		}else{
@@ -457,12 +457,15 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 			float fa =40;
 			double c= 4.67;
 			
-			axesChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
-			timeChartViewY.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
-			timeChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
-			timeChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));		
-			axesChartViewX.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
-			axesChartViewZ.addView(chartBuilder.getBlackLineChartView("test", data, a,fa));
+			axesChartViewY.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));
+			timeChartViewY.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));
+			timeChartViewX.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));
+			timeChartViewZ.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));		
+			axesChartViewX.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));
+			axesChartViewZ.addView(chartBuilder.getBlackLineChartView(TitileTipsStr, data, a,fa));
+		}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		
 	}
@@ -699,23 +702,23 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 	};
 	
 	
-	void UpLoadWaveData(String RecordLab){
-	float[]waveData=	mAnalysis.getWaveFloatData();
-	if(waveData==null){
-		return;
-	}
-		 byte[] bytedata=new byte[waveData.length*4];
-		 for(int i=0;i<waveData.length;i++){
-			 byte[] data=SystemUtil.float2byte(waveData[i]);
-			 for(int k=0;k<data.length;k++){
-				 bytedata[i*4+k]=data[k];
-			 }
-		 }
-		 
-		 
-		Event.UploadWaveDataRequestInfo_Event(null,null,bytedata,RecordLab);
-	}
-	
+//	void UpLoadWaveData(String RecordLab){
+//	float[]waveData=	mAnalysis.getWaveFloatData();
+//	if(waveData==null){
+//		return;
+//	}
+//		 byte[] bytedata=new byte[waveData.length*4];
+//		 for(int i=0;i<waveData.length;i++){
+//			 byte[] data=SystemUtil.float2byte(waveData[i]);
+//			 for(int k=0;k<data.length;k++){
+//				 bytedata[i*4+k]=data[k];
+//			 }
+//		 }
+//		 
+//		 
+//		Event.UploadWaveDataRequestInfo_Event(null,null,bytedata,RecordLab);
+//	}
+//	
 	
 	
 	class MyOnPageChangeListener implements OnPageChangeListener{

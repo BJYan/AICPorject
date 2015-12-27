@@ -10,6 +10,7 @@ import org.achartengine.chart.XYChart;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYMultipleSeriesRenderer.Orientation;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import com.aic.aicdetactor.dialog.BigChartDialog;
@@ -49,8 +50,8 @@ public class ChartBuilder {
 		 XYMultipleSeriesDataset dataset = buildDataset(titles, xValues, yValues);
 
 		 final XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		    renderer.setXLabels(12);
-		    renderer.setYLabels(10);
+		    renderer.setXLabels(20);
+		    renderer.setYLabels(20);
 		    renderer.setShowGrid(true);
 		    renderer.setXLabelsAlign(Align.RIGHT);
 		    renderer.setYLabelsAlign(Align.RIGHT);
@@ -60,7 +61,8 @@ public class ChartBuilder {
 		    renderer.setBackgroundColor(Color.DKGRAY);
 		    renderer.setMarginsColor(Color.DKGRAY);
 		    renderer.setApplyBackgroundColor(true);
-		    renderer.setYAxisMin(-(ffValue-Ymax));
+		   // renderer.setYAxisMin(-(ffValue-Ymax));
+		    renderer.setYAxisMin(-Ymax);
 		    renderer.setYAxisMax(Ymax);
 		    renderer.setXAxisMin(0);
 		    renderer.setXAxisMax(y.length);
@@ -137,8 +139,8 @@ public class ChartBuilder {
 		 XYMultipleSeriesDataset dataset = buildDataset(titles, xValues, yValues);
 
 		 final XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		    renderer.setXLabels(12);
-		    renderer.setYLabels(10);
+		    renderer.setXLabels(30);
+		    renderer.setYLabels(30);
 		    renderer.setShowGrid(true);
 		    renderer.setXLabelsAlign(Align.RIGHT);
 		    renderer.setYLabelsAlign(Align.RIGHT);
@@ -148,17 +150,17 @@ public class ChartBuilder {
 		    renderer.setBackgroundColor(Color.DKGRAY);
 		    renderer.setMarginsColor(Color.DKGRAY);
 		    renderer.setApplyBackgroundColor(true);
-		    renderer.setYAxisMin(-(ffValue-Ymax));
+		   // renderer.setYAxisMin(-(ffValue-Ymax));
+		    renderer.setYAxisMin(-Ymax);
 		    renderer.setYAxisMax(Ymax);
 		    renderer.setXAxisMin(0);
 		    renderer.setXAxisMax(y.length);
-		    renderer.setLegendHeight(130);
+		    renderer.setLegendHeight(150);
 		    //renderer.setXLabels(200);
 		    renderer.setPanEnabled(true, true);
 		    renderer.setPanLimits(new double[]{0, 4500, 0, 1700});
 		    renderer.setMargins(new int[] {0, 50, 10, 0});
-		    renderer.setPanEnabled(true,true);
-		    renderer.setAxisTitleTextSize(30);
+		    renderer.setAxisTitleTextSize(40);
 		    renderer.setYTitle("m/s*2");
 		    
 		 XYSeriesRenderer XYrenderer = new XYSeriesRenderer();

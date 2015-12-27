@@ -10,11 +10,17 @@ import com.aic.aicdetactor.CommonFragment;
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.SearchResultActivity;
 import com.aic.aicdetactor.activity.SearchResultConActivity;
+import com.aic.aicdetactor.adapter.LineListAdapter;
 import com.aic.aicdetactor.adapter.SearchAdapter;
 import com.aic.aicdetactor.adapter.SearchDatabaseExListAdapter;
+import com.aic.aicdetactor.adapter.SearchLineListAdapter;
 import com.aic.aicdetactor.adapter.SearchLocalListAdapter;
 
 
+
+
+
+import com.aic.aicdetactor.comm.LineType;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -75,6 +81,8 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
         
         pagerViewlist = new ArrayList<View>();
         pagerViewlist.add(inflater.inflate(R.layout.search_local_layout, null));
+       // pagerViewlist.add(inflater.inflate(R.layout.route_normal_layout, null));
+        
         pagerViewlist.add(inflater.inflate(R.layout.search_database_layout, null));
         //初始化本地搜索界面
         localSearchViewInit(); 
@@ -148,8 +156,13 @@ public class SearchFragment extends CommonFragment implements OnClickListener{
 
 	private void localSearchViewInit() {
 		ListView searchLocalList = (ListView) pagerViewlist.get(0).findViewById(R.id.search_local_list);
-        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext(),SearchFragment.this.getActivity());
-        searchLocalList.setAdapter(searchLocalListAdapter);
+//        SearchLocalListAdapter searchLocalListAdapter = new SearchLocalListAdapter(getActivity().getApplicationContext(),SearchFragment.this.getActivity());
+//        searchLocalList.setAdapter(searchLocalListAdapter);
+//        
+		SearchLineListAdapter ListAdapter = new SearchLineListAdapter(getActivity().getApplicationContext(),SearchFragment.this.getActivity(),LineType.AllRoute);
+        searchLocalList.setAdapter(ListAdapter);
+        ListAdapter.notifyDataSetChanged();
+        
 	}
 	
 	class MyOnPageChangeListener implements OnPageChangeListener{

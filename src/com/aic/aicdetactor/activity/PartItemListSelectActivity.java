@@ -96,7 +96,7 @@ public class PartItemListSelectActivity extends CommonActivity implements OnClic
 	void initViewAndData() {
 		app = ((myApplication) getApplication());
 		mStationIndex = app.mStationIndex;
-		mDeviceIndex = app.mDeviceIndex;
+		mDeviceIndex = app.getCurrentDeviceIndex();
 		Log.d("atest", " atest mStationIndex =  " + mStationIndex
 				+ ",mDeviceIndex=" + mDeviceIndex);
 		// 计划巡检还是特别巡检
@@ -241,40 +241,6 @@ public class PartItemListSelectActivity extends CommonActivity implements OnClic
 	
 	
 	
-	boolean isTimeOut(){
-		return false;
-	}
-	
-   
-	void ShowDialog(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(this); 
-		builder.setMessage("数据已巡检完毕，是否要存盘吗？") 
-		       .setCancelable(true) 
-		       .setTitle("提示")
-		       .setPositiveButton("确认", new DialogInterface.OnClickListener() { 
-		           public void onClick(DialogInterface dialog, int id) { 
-		        	   
-						mDeviceIndex++;
-		        	   mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
-		        	   //fragment.saveDataToFile();
-						Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
-						dialog.dismiss();
-						Message msg=new Message();
-						msg.what = MSG_INIT_FRAGMENT;
-						msg.arg1=1;//next Device
-						mHandler.sendMessage(msg);
-		           } 
-		       }) 
-		       .setNegativeButton("取消", new DialogInterface.OnClickListener() { 
-		           public void onClick(DialogInterface dialog, int id) { 
-		                dialog.cancel(); 
-		           } 
-		       }); 
-		builder.show();
-	}
-	
-	
-	private Uri mediaFilePath = null;
 	BluetoothLeControl BLEControl = null;
 boolean isREvertCheck=false;
     @Override
@@ -367,7 +333,7 @@ boolean isREvertCheck=false;
 		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 			if (requestCode == PartItemContact.PARTITEM_ISNOT_LASTDEVICE_RESULT) {
 				if(data!=null &&data.getBooleanExtra(CommonDef.GotoNextDevice, false)){
-				app.mDeviceIndex=++mDeviceIndex;
+				app.setCurrentDeviceIndex(++mDeviceIndex);
 				initSpinnerAdapterData();  
 				}
 			}

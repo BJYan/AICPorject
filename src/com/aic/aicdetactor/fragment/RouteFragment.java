@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -32,18 +33,19 @@ import android.widget.Toast;
 
 import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.activity.TempRouteActivity;
-import com.aic.aicdetactor.adapter.RouteNormalListAdapter;
+import com.aic.aicdetactor.adapter.LineListAdapter;
 import com.aic.aicdetactor.adapter.RoutePageAdapter;
-import com.aic.aicdetactor.adapter.RouteSpecListAdapter;
 import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
+import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.comm.OrganizationType;
 import com.aic.aicdetactor.database.LineDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.util.MLog;
 
 
-public class RouteFragment extends Fragment implements OnClickListener,OnItemSelectedListener,OnTouchListener{
+public class RouteFragment extends Fragment implements OnClickListener,OnItemSelectedListener{
 	//
 	private final String TAG = "RouteFragment";
 	//private RadioGroup mRadioGroup = null; 
@@ -53,20 +55,30 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 	private Spinner mFactorySpinner;
 	private Spinner mSSpinner;
 	private Spinner mRoomSpinner;
+	private Spinner mTypeSpinner;
+	
 	private List<String>mFactoryList=null;
 	private List<String>mSList=null;
 	private List<String>mRoomList=null;
+	private List<String>mMeasureTypeList=null;
 	private ArrayList<View> listViews=null;
 	private ArrayAdapter<String> mFAdapter=null;
 	private ArrayAdapter<String> mSAdapter=null;
 	private ArrayAdapter<String> mRAdapter=null;
 	private TabHost tabHost;
 	private ViewPager viewPager;
-	ListView mNormalList ;
-	ListView mSpecList;
+	private ListView mNormalList ;
+	private ListView mSpecList;
 	final int  mNormalListIndex =0;
 	final int  mSpecialListIndex =1;
 	final int  mTempListIndex =2;
+	private EditText mDeviceNameEditText;
+	private EditText mDeviceSNEditText;
+	private EditText mMeasureNameEditText;
+	private String StrFactory="";
+	private String StrDepartment="";
+	private String StrWorkshop="";
+	private String StrDataType="";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -117,18 +129,19 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
         
         mNormalList = (ListView) listViews.get(mNormalListIndex).findViewById(R.id.route_normal_list);
        // this.registerForContextMenu(mNormalList);
-        RouteNormalListAdapter mNormalListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
+        LineListAdapter mNormalListAdapter = new LineListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity(),LineType.NormalRoute);
         mNormalList.setAdapter(mNormalListAdapter);
         mNormalListAdapter.notifyDataSetChanged();
        
 
         mSpecList = (ListView) listViews.get(mSpecialListIndex).findViewById(R.id.route_spec_list);
-        RouteSpecListAdapter mSpectListAdapter = new RouteSpecListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
-      //  RouteNormalListAdapter mSpectListAdapter = new RouteNormalListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity());
+        LineListAdapter mSpectListAdapter = new LineListAdapter(getActivity().getApplicationContext(),RouteFragment.this.getActivity(),LineType.SpecialRoute);
         mSpecList.setAdapter(mSpectListAdapter);
         mSpectListAdapter.notifyDataSetChanged();
         
-      
+    	mDeviceNameEditText = (EditText)listViews.get(mTempListIndex).findViewById(R.id.editText1);;
+    	mDeviceSNEditText=(EditText)listViews.get(mTempListIndex).findViewById(R.id.editText2);;
+    	mMeasureNameEditText=(EditText)listViews.get(mTempListIndex).findViewById(R.id.editText3);;
         
         RoutePageAdapter mPageAdapter = new RoutePageAdapter(listViews);
         viewPager.setAdapter(mPageAdapter);
@@ -162,7 +175,8 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		mFAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mFactorySpinner.setAdapter(mFAdapter);
 		mFactorySpinner.setOnItemSelectedListener(this);
-		mFactorySpinner.setOnTouchListener(this);
+	//	mFactorySpinner.setOnTouchListener(this);
+		if(mFactoryList.size()>0){	StrFactory = mFactoryList.get(0);}
 		
 		mSList = dao.getOrganizationList(OrganizationType.OrganizationGroup);
 		mSSpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner2);
@@ -170,7 +184,8 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		mSAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mSSpinner.setAdapter(mSAdapter);
 		mSSpinner.setOnItemSelectedListener(this);
-		mSSpinner.setOnTouchListener(this);
+		//mSSpinner.setOnTouchListener(this);
+		if(mSList.size()>0){StrDepartment = mSList.get(0);}
 		
 		mRoomList = dao.getOrganizationList(OrganizationType.OrganizationWorkShop);
 		mRoomSpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner3);
@@ -178,7 +193,15 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		mRAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mRoomSpinner.setAdapter(mRAdapter);
 		mRoomSpinner.setOnItemSelectedListener(this);
-		mRoomSpinner.setOnTouchListener(this);
+		//mRoomSpinner.setOnTouchListener(this);
+		if(mRoomList.size()>0){		StrWorkshop = mRoomList.get(0);}
+		
+		mTypeSpinner = (Spinner) listViews.get(mTempListIndex).findViewById(R.id.spinner4);
+		mTypeSpinner.setOnItemSelectedListener(this);
+	//	mTypeSpinner.setOnTouchListener(this);
+		String [] aList =this.getActivity().getResources().getStringArray(R.array.TempMeasureType);
+		StrDataType = aList[0];
+		
 	}
 	
 	private final int MSG_UPDATE_LISTVIEW =0;
@@ -226,8 +249,25 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.route_temp_measure:
+			
+			if(mDeviceNameEditText.getText()==null
+					||mDeviceSNEditText.getText()==null
+							||mMeasureNameEditText.getText()==null){
+				CommonAlterDialog	mdialog = new CommonAlterDialog(RouteFragment.this.getActivity(),"提示","请输入完整的信息!",null,null);
+				mdialog.show();
+				return;
+				
+			}
+			
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), TempRouteActivity.class);
+			intent.putExtra(CommonDef.TMPLineFactoryName, StrFactory);
+			intent.putExtra(CommonDef.TMPLineDepartmentName, StrDepartment);
+			intent.putExtra(CommonDef.TMPLineWorkshopName, StrWorkshop);
+			intent.putExtra(CommonDef.TMPLineDeviceName, mDeviceNameEditText.getText());
+			intent.putExtra(CommonDef.TMPLineDeviceSN, mDeviceSNEditText.getText());
+			intent.putExtra(CommonDef.TMPLineMeasureName, mMeasureNameEditText.getText());
+			intent.putExtra(CommonDef.TMPLineMeasureDataType, StrDataType);
 			getActivity().startActivity(intent);
 			break;
 
@@ -236,19 +276,29 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		}
 	}
 
+	
+	
+	
 	@Override
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.spinner1:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selected"+arg2, Toast.LENGTH_SHORT).show();
+			StrFactory = mFactorySpinner.getSelectedItem().toString();
+		//	Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selected"+arg2, Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.spinner2:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner2", Toast.LENGTH_SHORT).show();
+			StrDepartment=mSSpinner.getSelectedItem().toString();
+		//	Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner2", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.spinner3:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner3", Toast.LENGTH_SHORT).show();
+			StrWorkshop=mRoomSpinner.getSelectedItem().toString();
+		//	Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "Selectedspinner3", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.spinner4:
+			StrDataType=mTypeSpinner.getSelectedItem().toString();
+			
 			break;
 		default:
 			break;
@@ -261,23 +311,29 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		
 	}
 
-	@Override
-	public boolean onTouch(View arg0, MotionEvent arg1) {
-		// TODO Auto-generated method stub
-		switch (arg0.getId()) {
-		case R.id.spinner1:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner1", Toast.LENGTH_SHORT).show();
-			break;
-		case R.id.spinner2:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner2", Toast.LENGTH_SHORT).show();
-			break;
-		case R.id.spinner3:
-			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner3", Toast.LENGTH_SHORT).show();
-			break;
-		default:
-			break;
-		}
-		return false;
-	}
+//	@Override
+//	public boolean onTouch(View arg0, MotionEvent arg1) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+
+//	@Override
+//	public boolean onTouch(View arg0, MotionEvent arg1) {
+//		// TODO Auto-generated method stub
+//		switch (arg0.getId()) {
+//		case R.id.spinner1:
+//			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner1", Toast.LENGTH_SHORT).show();
+//			break;
+//		case R.id.spinner2:
+//			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner2", Toast.LENGTH_SHORT).show();
+//			break;
+//		case R.id.spinner3:
+//			Toast.makeText(RouteFragment.this.getActivity().getApplicationContext(), "test2spinner3", Toast.LENGTH_SHORT).show();
+//			break;
+//		default:
+//			break;
+//		}
+//		return false;
+//	}
 	
 }

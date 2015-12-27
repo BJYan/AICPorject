@@ -166,7 +166,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		fragmentsList = new ArrayList<Fragment>();
 		fragmentManager = getFragmentManager();
 		initViewAndData();
-		mAdapterList.getNewPartItemListDataByStatusArray(app.mDeviceIndex,StrSelectedItemDefine); 
+		mAdapterList.getNewPartItemListDataByStatusArray(app.getCurrentDeviceIndex(),StrSelectedItemDefine); 
 		
 		if(isRevertCheck){
 			mAdapterList.revertListViewData();
@@ -178,7 +178,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	void initViewAndData() {
 		app = ((myApplication) getApplication());
 		mStationIndex = app.mStationIndex;
-		mDeviceIndex = app.mDeviceIndex;
+		mDeviceIndex = app.getCurrentDeviceIndex();
 		Log.d("atest", " atest mStationIndex =  " + mStationIndex
 				+ ",mDeviceIndex=" + mDeviceIndex);
 		// 计划巡检还是特别巡检
@@ -407,12 +407,14 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		   case MSG_INIT_FRAGMENT:
 			   if(msg.arg1==Save_Current_Device_Data){
 				  if( !mAdapterList.gotoNextDeviceItem()){
+					  Log.d(TAG, "handleMessage 1");
 					  mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_Dalay_Finish), 3000);
 				  }else{
 					 // "gotoNextDevice"
 					  Intent intent = new Intent();
 					  intent.putExtra(CommonDef.GotoNextDevice, true);
 					  PartItemActivity.this.setResult(PartItemContact.PARTITEM_ISNOT_LASTDEVICE_RESULT,intent);
+					  Log.d(TAG, "handleMessage 2");
 					  finish();
 				  }
 					 
@@ -422,6 +424,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			  
 			   break;
 		   case MSG_Dalay_Finish:
+			   Log.d(TAG, "handleMessage MSG_Dalay_Finish");
 			   finish();
 			   break;
 		   case MSG_NEXT:
@@ -540,15 +543,11 @@ final int CAMERA_TYPE =1;
 		        	   
 		        		mPartItemIndex=0;						
 		        	    mAdapterList.setFinishDeviceCheckFlagAndSaveDataToSD();
-		        	   // mDeviceIndex++;
-		        	   //fragment.saveDataToFile();
 						Toast.makeText(getApplicationContext(),	"数据保存中", Toast.LENGTH_LONG).show();
-						
 						Message msg=new Message();
 						msg.what = MSG_INIT_FRAGMENT;
 						msg.arg1=Save_Current_Device_Data;//next Device
 						mHandler.sendMessage(msg);
-						
 						dialog.dismiss();
 		           } 
 		       }) 

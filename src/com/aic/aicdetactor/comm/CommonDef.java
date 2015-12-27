@@ -283,4 +283,15 @@ public class CommonDef {
 		public static final String Process ="Process";
 		public static final String Date ="Date";
 	}
+	
+	public static final String TMPLineFactoryName= "TMPLineFactoryName";
+	public static final String TMPLineDepartmentName= "TMPLineDepartmentName";
+	public static final String TMPLineWorkshopName= "TMPLineWorkshopName";
+	public static final String TMPLineDeviceName= "TMPLineDeviceName";
+	public static final String TMPLineDeviceSN= "TMPLineDeviceSN";
+	public static final String TMPLineMeasureName= "TMPLineMeasureName";
+	public static final String TMPLineMeasureDataType= "TMPLineMeasureDataType";
+	
+	
+	
 }
