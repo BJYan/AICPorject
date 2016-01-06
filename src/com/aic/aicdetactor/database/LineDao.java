@@ -749,7 +749,7 @@ public class LineDao {
 	}
 
 	/**
-	 * 修改工人登录密码，原的密码保持不变
+	 * 修改工人登录密码
 	 * @param name
 	 * @param pwd
 	 * @param newPwd
@@ -1121,6 +1121,7 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 	List<JugmentParms> mJugmentListParms=new   ArrayList<JugmentParms>();
 	List<String> guidList =getLineGuidByWorkerInfo(name,pwsd,cv);	
 
+	
 	for (int k = 0; k < guidList.size(); k++) {
 		MLog.Logd("luotest", " queryLogIn() search worker table " + k);
 		Cursor cursor2 = mDB.query(RouteTableName,
@@ -1201,6 +1202,9 @@ public List<JugmentParms> queryLineInfoByWorkerEx(String name,String pwsd,Conten
 		if (cursor2 != null) {
 			cursor2.close();
 		}
+	}
+	if(guidList.size()==0){
+		error=cv.getAsString("error");
 	}
 	MLog.Logd("luotest", "queryLogIn() end  error=" + error);
 	cv.put("error", error);

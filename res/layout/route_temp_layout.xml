@@ -60,6 +60,7 @@
                 android:layout_weight="1"
                 android:padding="8dip"/>
             <TextView 
+                android:id="@+id/tempvalue"
                 android:layout_height="32dip"
                 android:layout_width="wrap_content"
                 android:text="5.62"
@@ -112,6 +113,7 @@
                 android:padding="8dip"
                 android:visibility="invisible"/>
             <TextView 
+                android:id="@+id/tmp_zhuansuValue"
                 android:layout_height="32dip"
                 android:layout_width="wrap_content"
                 android:text="5.62"
@@ -346,18 +348,21 @@
                 	android:layout_weight="1"
                 	android:gravity="center"
                 	android:textSize="16dp"/>
-            </LinearLayout>
-            <LinearLayout 
+            </LinearLayout>           
+        </LinearLayout> 
+         <LinearLayout 
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
-                android:layout_marginTop="10dip">
+                android:layout_marginBottom="10dip"
+               >
                 <TextView 
-                    android:id="@+id/route_temp_save"
+                    android:id="@+id/route_temp_measure"
                     android:layout_height="38dip"
-                    android:layout_width="120dip"
-                    android:text="保存"
+                    android:layout_width="match_parent"
+                    android:text="测量"
+                    android:padding="10dip"
                     android:gravity="center"
                     android:background="@drawable/blue_button_selector"/>
                 <TextView 
@@ -366,9 +371,11 @@
                     android:layout_width="120dip"
                     android:text="谱图"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:background="@drawable/blue_button_selector"
                     android:layout_marginLeft="35dip"/>
-            </LinearLayout>
-        </LinearLayout>   
+            </LinearLayout>  
     </LinearLayout>
+    
+    
 </ScrollView>

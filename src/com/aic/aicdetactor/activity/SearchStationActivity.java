@@ -1,8 +1,8 @@
 package com.aic.aicdetactor.activity;
 
 import com.aic.aicdetactor.R;
-import com.aic.aicdetactor.adapter.SearchStationListAdapter;
 import com.aic.aicdetactor.adapter.StationListAdapter;
+import com.aic.aicdetactor.comm.LineType;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -27,7 +27,8 @@ public class SearchStationActivity extends StationActivity {
 		image.setVisibility(View.GONE);;
     	
 		setActionBar("本地查询",true);
-		mListViewAdapter = new SearchStationListAdapter(SearchStationActivity.this,this.getApplicationContext(),handler);
+		//mListViewAdapter = new SearchStationListAdapter(SearchStationActivity.this,this.getApplicationContext(),handler);
+		mListViewAdapter = new StationListAdapter(SearchStationActivity.this,this.getApplicationContext(),handler,LineType.AllRoute);
 		mListView.setAdapter(mListViewAdapter);
 	}
 	

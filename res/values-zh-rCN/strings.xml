@@ -232,4 +232,6 @@
     <string name="line_special_name">特殊巡检</string>
     <string name="line_temp_name">临时巡检</string>
     <string name="inpalce_manager">到位管理完成</string>
+    
+    <string name="enter_status">状况:</string>
 </resources>

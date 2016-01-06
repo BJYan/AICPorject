@@ -64,7 +64,7 @@ public class MeasureEnterReadFragment  extends MeasureBaseFragment{
 	final String TAG = "MeasureEnterReadFragment";
 	private PartItemListAdapter AdapterList;
 	String mAbnormalStr="";
-	private int SpinnerSelectedIndex=0;
+	private int SpinnerSelectedIndex=1;
 	
 	
 	@Override
@@ -136,8 +136,6 @@ public class MeasureEnterReadFragment  extends MeasureBaseFragment{
 			break;	
 		}
 	}
-	 private float mCheckedValue=0.0f;
-	
 
     public interface OnEnterReadListener{
     	
@@ -170,6 +168,39 @@ public class MeasureEnterReadFragment  extends MeasureBaseFragment{
     		adapter.saveData(mEditTextValue.getText().toString(),abnormalCode,abnormalId,0,0);
     	}
     }
+    
+    @Override
+	public boolean canSave() {
+    	String errStr="";
+    	String tipStr="";
+		// TODO Auto-generated method stub
+    	if("请选择状态".equals(mAbnormalStr)){
+    		errStr="请选择状态";
+    	}
+    	if(mEditTextValue.getText().toString().length()==0){
+    		if(mType==1){
+    			if(errStr.length()==0){
+    			tipStr="填写录入信息";
+    			}else{
+    				tipStr="和 填写录入信息";
+    			}
+    		}else if(mType==2){
+    			if(errStr.length()==0){
+    			tipStr="填写抄表信息";
+    			}else{
+    				tipStr="和 填写抄表信息";
+    			}
+    		}
+    	}
+    	if(errStr.length()>0||tipStr.length()>0){
+    		
+    		CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity(),"提示",errStr+tipStr,null,null);
+    			dialog.show();
+    			return false;
+		}
+		return true;
+	}
+    
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub

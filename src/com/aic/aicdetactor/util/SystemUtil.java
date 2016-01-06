@@ -25,6 +25,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.setting.Setting;
 
 import android.content.Context;
+import android.os.StatFs;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -401,4 +402,7 @@ public class  SystemUtil {
 		 timeOut = ZhouShu*1000*(CaiyangDian/(CaiyangPinLv>0?CaiyangPinLv:1))+(CaiyangDian/20 +2)*JianGe+1500;
 		 return timeOut;
 	 }
+	 
+	 
+	 
 }

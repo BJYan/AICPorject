@@ -157,6 +157,10 @@
 			android:layout_marginLeft="5dip"
 	        android:layout_marginTop="5dip"
 	        android:layout_marginBottom="5dip"></Switch>
+	    <RadioGroup 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:id="@+id/radiogroups">
 	    <RadioButton
 	        android:id="@+id/network_upload_type_rb1" 
 	        android:layout_height="wrap_content"
@@ -175,6 +179,7 @@
 	        android:layout_width="wrap_content"
 	        android:text="只要通讯连接就自动上传"
 	        android:layout_marginLeft="55dip" />
+	    </RadioGroup>
 	    <Button 
 	     	android:id="@+id/network_upload_button"
 	     	android:layout_height="38dip"

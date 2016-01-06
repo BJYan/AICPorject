@@ -61,6 +61,7 @@ import com.aic.aicdetactor.data.AbnomalGradeIdConstant;
 import com.aic.aicdetactor.data.KEY;
 import com.aic.aicdetactor.database.DBHelper;
 import com.aic.aicdetactor.database.LineDao;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.dialog.FlippingLoadingDialog;
 import com.aic.aicdetactor.fragment.SearchFragment.MyOnPageChangeListener;
 import com.aic.aicdetactor.setting.Setting;
@@ -428,9 +429,9 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		String TitileTipsStr="AIC 巡检仪";
 		if(mAnalysis.isValidate()){
 			
-			y_FengValue.setText("峰值:"+FengValue);
-			y_FengFengValue.setText("峰峰值:"+FengFengValue);
-			y_ValidValue.setText("有效值:"+ValidValue);
+			y_FengValue.setText(String.valueOf(FengValue));
+			y_FengFengValue.setText(String.valueOf(FengFengValue));
+			y_ValidValue.setText(String.valueOf(ValidValue));
 			
 			XetMax.setText(""+FengValue);
 			XetFengFeng.setText(""+FengFengValue);		
@@ -588,9 +589,20 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 		}
     	adapter.saveData(String.valueOf(mCheckValue),Abnormalcode,AbnormalId,CaiYangShu,CAiYangPinLv);
     }
-
+    @Override
+   	public boolean canSave() {
+   		// TODO Auto-generated method stub,
+    	if(!mIsMeasured){
+			CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity(),"提示","请进行测量",null,null);
+			dialog.show();
+			return false;
+		}
+   		return true;
+   	}
+    
     int CaiYangShu=0;
     int CAiYangPinLv=0;
+    boolean mIsMeasured=false;
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
@@ -607,6 +619,7 @@ public class MeasureVibrateFragment extends MeasureBaseFragment{
 				closeTimer();
 				startTimer();
 			}
+			mIsMeasured =true;
 			break;
 		}		
 	}

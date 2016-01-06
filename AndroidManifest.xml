@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aic.aicdetactor"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0.1.20160105" >
 
     <uses-sdk
         android:minSdkVersion="18"
@@ -208,12 +208,13 @@
             android:exported="false"
             android:name="net.micode.soundrecorder.RecorderService" >
         </service>
-        <service android:name="com.aic.aicdetactor.service.DataService"> 
+        <service android:name="com.aic.aicdetactor.service.DataService">        
         <intent-filter> 
                 <action android:name="com.demo.SERVICE_DEMO" /> 
                 <category android:name="android.intent.category.default" /> 
         </intent-filter> 
-</service>
+		</service>
+		 <service android:name="com.aic.aicdetactor.service.BLEService" android:enabled="true" />
     </application>
 
 </manifest>

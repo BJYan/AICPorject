@@ -79,7 +79,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -88,7 +88,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -97,7 +97,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -118,7 +118,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -127,7 +127,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -136,7 +136,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -182,7 +182,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -191,7 +191,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -200,7 +200,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -221,7 +221,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -230,7 +230,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -239,7 +239,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -285,7 +285,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -294,7 +294,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -303,7 +303,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -324,7 +324,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -333,7 +333,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"
@@ -342,7 +342,7 @@
 	    	        <EditText 
 	    	            android:layout_height="18dip"
 	    	            android:layout_width="38dip"
-	    	            android:text="1.85"
+	    	            android:text="0.00"
 	    	            android:background="@drawable/deepblue_border_edittext_shape"
 	    	            android:layout_marginTop="2dip"
 	    	            android:textColor="#000000"

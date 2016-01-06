@@ -24,5 +24,7 @@ public interface OnButtonListener {
 	 * 新增加媒体数据 例如 图片，音频 数据partItemData	 
 	 */
 	public void addNewMediaPartItem(ParamsPartItemFragment params,PartItemListAdapter object);
+	
+	public boolean canSave();
 
 }

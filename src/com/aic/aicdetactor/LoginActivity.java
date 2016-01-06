@@ -185,7 +185,7 @@ public class LoginActivity extends CommonActivity implements OnClickListener,
 				startActivity(intent);
 				finish();
 			}else{
-				showAlterDialog(context,"用户不存在或密码错误！",error.toString(),LoginActivity.this,LoginActivity.this);
+				showAlterDialog(context,"提示",error.toString(),LoginActivity.this,LoginActivity.this);
 				//Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();	
 			}
 		}

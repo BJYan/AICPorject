@@ -262,4 +262,6 @@
      <string name="tmp_measure_temp_type_name">温度</string>
     <string name="tmp_measure_zhuansu_type_name">转速</string>
     <string name="tmp_measure_vibrate_type_name">振动</string>
+    
+     <string name="enter_status">状况:</string>
 </resources>

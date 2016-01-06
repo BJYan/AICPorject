@@ -113,15 +113,12 @@ public class LineListAdapter extends BaseAdapter{
 					
 					
 					String filePath = nInfo.getAsString("FileName");
-					if("".endsWith(filePath)){
-						app.gIsDataChecked=false;
+					if("".endsWith(filePath)){						
 						String p=app.mJugmentListParms.get(position).T_Line.LinePath;
 						app.setCurGsonPath(p);
-					}else{
-						app.gIsDataChecked=true;
+					}else{						
 						app.setCurGsonPath(Setting.getUpLoadJsonPath()+filePath);
 					}
-					
 				}else{
 					Toast.makeText(mActivity.getApplicationContext(), nInfo.get("err").toString(), Toast.LENGTH_LONG).show();
 					return;
@@ -129,6 +126,7 @@ public class LineListAdapter extends BaseAdapter{
 			}else if(mLineType == LineType.SpecialRoute){
 				app.setCurGsonPath(mLineList.get(position).getPath());
 			}
+			app.resetFileName();
 			intent.setClass(context,StationActivity.class);
 			intent.putExtra(CommonDef.route_info.NAME,mLineList.get(position).getName());
 			app.setCurrentRouteIndex(position);
@@ -148,10 +146,10 @@ public class LineListAdapter extends BaseAdapter{
 	void initListData() {
 		//final int type =types;
 		MLog.Logd(TAG,"initListData()>>");
-		new Thread(new Runnable() {
+		//new Thread(new Runnable() {
 
-			@Override
-			public void run() {
+//			@Override
+		//	public void run() {
 				// TODO Auto-generated method stub
 					MLog.Logd(TAG,
 							"in init() 1 start "
@@ -219,8 +217,8 @@ public class LineListAdapter extends BaseAdapter{
 				
 				mHander.sendMessage(mHander.obtainMessage(MSG_UPDATE_LISTVIEW));
 				MLog.Logd(TAG,"initListData()<<");
-			}
-		}).start();
+	//		}
+	//	}).start();
 
 	}
 	

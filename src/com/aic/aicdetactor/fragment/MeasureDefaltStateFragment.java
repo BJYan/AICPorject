@@ -24,6 +24,7 @@ import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
 import com.aic.aicdetactor.data.KEY;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 
 /**
  * 预设项 07 对应的UI
@@ -41,7 +42,7 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 	private PartItemListAdapter AdapterList;
 	private int [] mCheckedIndex=null;
 	private String[] mOrigObseverList=null;
-	
+	final String  StrNormal ="正常";
 	
 	private myApplication app=null;
 	public MeasureDefaltStateFragment(PartItemListAdapter AdapterList){
@@ -76,7 +77,10 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
 		
 		
 		 ll = (LinearLayout)view.findViewById(R.id.lined);
-		mOrigObseverList=AdapterList.getCurOriPartItem().Extra_Information.split("\\/");		
+//		if(! AdapterList.getCurOriPartItemExtrnalInfo().contains(StrNormal)){
+//			AdapterList.getCurOriPartItem().Extra_Information=AdapterList.getCurOriPartItem().Extra_Information+"/"+StrNormal;
+//		}
+		mOrigObseverList=AdapterList.getCurOriPartItemExtrnalInfo().split("\\/");		
 		
 		mCheckedIndex = new int[mOrigObseverList.length];
 		for (int i = 0; i < mOrigObseverList.length; i++) {
@@ -168,40 +172,55 @@ public class MeasureDefaltStateFragment  extends MeasureBaseFragment{
                     + " must implement OnMeasureMeasureListener");
         }
     }
-
+    int AbnormalId=-1;
+	String AbnormalCode="";
+	@Override
+	public boolean canSave() {
+		// TODO Auto-generated method stub
+//		String value = getSaveData();
+//		if(value.length()==0){
+//			CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity(),"提示","请选择预设状况",null,null);
+//			dialog.show();
+//			return false;
+//		}
+		return true;
+	}
+	
+	String  getSaveData(){
+		String Value="";
+		for(int m=0;m<mCheckedIndex.length;m++){
+			if(mCheckedIndex[m]==1){						
+				Value = Value+"/"+mOrigObseverList[m].toString();
+				}
+			}
+		
+		if(Value.startsWith("/")){
+			Value=Value.substring(1);
+		}
+		//没选任何选项时,设置信息为normal
+		if(Value.equals(StrNormal)){
+			Value=this.getActivity().getString(R.string.normal);
+			AbnormalId=AbnormalConst.ZhengChang_Id;
+			AbnormalCode=AbnormalConst.ZhengChang_Code;
+		}else{
+			AbnormalCode="-1";
+			AbnormalId=-1;
+		}
+		return Value;
+	}
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		
 			//开始测量
-			if("".equals(Value)){
-				Value="Measurement";
-			}
+//			if("".equals(Value)){
+//				Value="Measurement";
+//			}
 			switch(measureOrSave){
 			case PartItemContact.SAVE_DATA:
 			{
-				int AbnormalId=-1;
-				String AbnormalCode="";
-				Value="";
-				for(int m=0;m<mCheckedIndex.length;m++){
-					if(mCheckedIndex[m]==1){						
-						Value = Value+"/"+mOrigObseverList[m].toString();
-						}
-					}
 				
-				if(Value.startsWith("/")){
-					Value=Value.substring(1);
-				}
-				//没选任何选项时,设置信息为normal
-				if(Value==""){
-					Value=this.getActivity().getString(R.string.normal);
-					AbnormalId=AbnormalConst.ZhengChang_Id;
-					AbnormalCode=AbnormalConst.ZhengChang_Code;
-				}else{
-					AbnormalCode="-1";
-					AbnormalId=-1;
-				}
-				adapter.saveData(Value,AbnormalCode,AbnormalId,0,0);
+				adapter.saveData(getSaveData(),AbnormalCode,AbnormalId,0,0);
 			}
 				break;
 			}	

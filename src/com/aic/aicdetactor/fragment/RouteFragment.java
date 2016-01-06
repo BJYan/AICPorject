@@ -250,23 +250,23 @@ public class RouteFragment extends Fragment implements OnClickListener,OnItemSel
 		switch (arg0.getId()) {
 		case R.id.route_temp_measure:
 			
-			if(mDeviceNameEditText.getText()==null
-					||mDeviceSNEditText.getText()==null
-							||mMeasureNameEditText.getText()==null){
-				CommonAlterDialog	mdialog = new CommonAlterDialog(RouteFragment.this.getActivity(),"提示","请输入完整的信息!",null,null);
-				mdialog.show();
-				return;
-				
-			}
+//			if(mDeviceNameEditText.getText().length()==0
+//					||mDeviceSNEditText.getText().length()==0
+//							||mMeasureNameEditText.getText().length()==0){
+//				CommonAlterDialog	mdialog = new CommonAlterDialog(RouteFragment.this.getActivity(),"提示","请输入完整的信息!",null,null);
+//				mdialog.show();
+//				return;
+//				
+//			}
 			
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), TempRouteActivity.class);
 			intent.putExtra(CommonDef.TMPLineFactoryName, StrFactory);
 			intent.putExtra(CommonDef.TMPLineDepartmentName, StrDepartment);
 			intent.putExtra(CommonDef.TMPLineWorkshopName, StrWorkshop);
-			intent.putExtra(CommonDef.TMPLineDeviceName, mDeviceNameEditText.getText());
-			intent.putExtra(CommonDef.TMPLineDeviceSN, mDeviceSNEditText.getText());
-			intent.putExtra(CommonDef.TMPLineMeasureName, mMeasureNameEditText.getText());
+			intent.putExtra(CommonDef.TMPLineDeviceName, mDeviceNameEditText.getText().toString());
+			intent.putExtra(CommonDef.TMPLineDeviceSN, mDeviceSNEditText.getText().toString());
+			intent.putExtra(CommonDef.TMPLineMeasureName, mMeasureNameEditText.getText().toString());
 			intent.putExtra(CommonDef.TMPLineMeasureDataType, StrDataType);
 			getActivity().startActivity(intent);
 			break;

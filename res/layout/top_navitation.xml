@@ -75,7 +75,44 @@
         android:text=""
         android:textSize="@dimen/normal_big_text_size" />      
     </LinearLayout>
+<LinearLayout
+     android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/line4"
+        android:visibility="gone"
+        >
+       
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        
+        android:text="类型:"
+        android:textSize="@dimen/normal_big_text_size" />   
+        <TextView
+        android:id="@+id/typename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text=""
+        android:textSize="@dimen/normal_big_text_size" />   
+        
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="进度:"
+        android:textSize="@dimen/normal_big_text_size" />   
+        <TextView
+        android:id="@+id/process"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="@dimen/normal_big_text_size" />   
+    </LinearLayout>
+    
 
+    
+    
     <LinearLayout 
         android:layout_height="38dip"
         android:layout_width="match_parent"

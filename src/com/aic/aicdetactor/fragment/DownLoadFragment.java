@@ -8,12 +8,14 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -32,6 +34,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TabHost;
@@ -53,6 +56,7 @@ import com.aic.aicdetactor.dialog.CommonDialog.CommonDialogBtnListener;
 import com.aic.aicdetactor.paramsdata.ExtranalBinaryInfo;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.MLog;
+import com.aic.aicdetactor.util.SpaceInfo;
 import com.aic.aicdetactor.util.SystemUtil;
 
 public class DownLoadFragment extends Fragment implements OnClickListener {
@@ -90,19 +94,21 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	private TextView mDownIPTextView = null;
 	
 	private ListView mDownLoadListView;
-	List<View> listViews;
-	TabHost tabHost;
-	ViewPager viewPager;
-	NetWorkSettingAdapter netWorkSettingAdapter;
+	private ListView mCanDownLoadListView;
+	private List<View> listViews;
+	private TabHost tabHost;
+	private ViewPager viewPager;
+	private NetWorkSettingAdapter netWorkSettingAdapter;
 	private Handler mHandler=null;
-	View networkView;
-	List<View> settingViewList;
-	LayoutInflater mInflater;
-	TextView devName;
-	SpinnerAdapter mDLLineAdapter=null;
-	LineDao mDao;
-	Switch uploadTypeSwitch;
-	 Button uploadBtn ;
+	private View networkView;
+	private List<View> settingViewList;
+	private LayoutInflater mInflater;
+	private TextView devName;
+	private SpinnerAdapter mDLLineAdapter=null;
+	private SpinnerAdapter mCanDLLineAdapter=null;
+	private LineDao mDao;
+	private Switch uploadTypeSwitch;
+	private Button uploadBtn ;
 	// CommonAlterDialog mdialog=null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -123,18 +129,20 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 				case Event.NetWork_Connecte_Timeout:
 				case Event.NetWork_MSG_Tips:
 				case Event.Server_No_Data:
+				case Event.TEMP_ROUTELINE_DOWNLOAD_MSG:
 					{
 						CommonAlterDialog			mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
 							mdialog.show();
 					}
-					break;
-				case  Event.LocalData_Init_Success:
-				{
-					CommonAlterDialog			mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
-						mdialog.show();
-				}	
 					initAllDownLoadRoutList();
 					break;
+//				case  Event.LocalData_Init_Success:
+//				{
+//					CommonAlterDialog			mdialog = new CommonAlterDialog(DownLoadFragment.this.getActivity(),"提示",(String)msg.obj,null,null);
+//						mdialog.show();
+//				}	
+//					initAllDownLoadRoutList();
+//					break;
 				case  Event.GetNewRouteLine_Message:
 					showOKCancel((String)msg.obj);
 					
@@ -166,6 +174,15 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 			}};
 	}
 	 
+	/**
+	 * 更新显示可以下载的计划线路信息的名称及日期
+	 */
+	void initCanDownLoadLineList(){
+		mCanDLLineAdapter =new SpinnerAdapter(DownLoadFragment.this.getActivity().getApplicationContext(),mDao.getAllDownLoadRouteInfo());
+		mCanDownLoadListView.setAdapter(mCanDLLineAdapter);
+		mCanDLLineAdapter.setListData(mDao.getAllDownLoadRouteInfo());
+		mCanDLLineAdapter.notifyDataSetChanged();
+	}
 
 	void initAllDownLoadRoutList(){
 		mDLLineAdapter = new SpinnerAdapter(DownLoadFragment.this.getActivity().getApplicationContext(),mDao.getAllDownLoadRouteInfo());
@@ -222,7 +239,10 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	    return networkView;
 	}
 
-
+	private EditText mUserNameEditText;
+	private EditText mOldPasswordEditText;
+	private EditText mNewPasswordEditText;
+	private EditText mConfirmPasswordEditText;
 	private void settingViewinit() {
 		settingViewList = new ArrayList<View>();
 		settingViewList.add(mInflater.inflate(R.layout.network_setting_item_machineinfo, null,false)); 
@@ -255,11 +275,12 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		devMac.setText(mPda_mac);		
 		devIP.setText(mStr_Up_Pda_ip);
 		
-		EditText countid = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_countid);
-		EditText oldPassword = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_old_password);
-		EditText newPassword = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_new_password);
-		EditText confirmPassword = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_confirm_password);
+		mUserNameEditText= (EditText) settingViewList.get(1).findViewById(R.id.network_setting_countid);
+		mOldPasswordEditText = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_old_password);
+		mNewPasswordEditText = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_new_password);
+		mConfirmPasswordEditText = (EditText) settingViewList.get(1).findViewById(R.id.network_setting_confirm_password);
 		Button savebtn = (Button) settingViewList.get(1).findViewById(R.id.network_setting_save);
+		savebtn.setOnClickListener(this);
  
 		Switch newplan = (Switch) settingViewList.get(2).findViewById(R.id.network_setting_newplan);
 		Switch newmsg = (Switch) settingViewList.get(2).findViewById(R.id.network_setting_newmsg);
@@ -273,9 +294,11 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		serverip[3] = (EditText) settingViewList.get(3).findViewById(R.id.network_setting_server_ip4);
 		EditText cardNum = (EditText) settingViewList.get(3).findViewById(R.id.network_setting_card_number);
 		Button serverSave = (Button) settingViewList.get(3).findViewById(R.id.network_setting_server_save);
-
+		SpaceInfo spaceinfo = new SpaceInfo(Environment.getExternalStorageDirectory().toString());
 		TextView totalStorage = (TextView) settingViewList.get(4).findViewById(R.id.network_setting_total_storage);
+		totalStorage.setText(String.valueOf(spaceinfo.getAllSpace()/1024/1024/1024)+"G");
 		TextView availableStorage = (TextView) settingViewList.get(4).findViewById(R.id.network_setting_available_storage);
+		availableStorage.setText(String.valueOf(spaceinfo.getAvaliableSpace()/1024/1024/1024)+"G");
 		Spinner checkResultNum = (Spinner) settingViewList.get(4).findViewById(R.id.network_setting_check_result_num);
 		Spinner checkResultPic = (Spinner) settingViewList.get(4).findViewById(R.id.network_setting_check_result_pic);
 		Spinner checkResultRecord = (Spinner) settingViewList.get(4).findViewById(R.id.network_setting_check_result_record);
@@ -378,6 +401,17 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		CheckBox deviceInfo = (CheckBox) listViews.get(0).findViewById(R.id.network_upload_data_type_cb5);
 		
 		uploadTypeSwitch = (Switch) listViews.get(0).findViewById(R.id.network_upload_type_switch);
+		
+		RadioGroup mNetTypeUploadDataRadioGroup =  (RadioGroup) listViews.get(0).findViewById(R.id.radiogroups);
+		mNetTypeUploadDataRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+			@Override
+			public void onCheckedChanged(RadioGroup arg0, int arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		final RadioButton uploadType_wifi = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb1);
 		final RadioButton uploadType_usb = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb2);
 		final RadioButton uploadType_both = (RadioButton) listViews.get(0).findViewById(R.id.network_upload_type_rb3);
@@ -405,6 +439,7 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 	
 	private void downloadInit() {
 		Button searchBtn = (Button) listViews.get(1).findViewById(R.id.network_download_searchbtn);
+		searchBtn.setOnClickListener(this);
 		final TextView mDown_Button = (TextView)listViews.get(1).findViewById(R.id.network_download_button);
         mDown_Button.setOnClickListener(this);
 		Switch downloadTypeSwitch = (Switch) listViews.get(1).findViewById(R.id.network_download_typeswitch);
@@ -419,6 +454,8 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		});
 		mDownLoadListView=(ListView) listViews.get(1).findViewById(R.id.hasdllistview);
 		initAllDownLoadRoutList();
+		mCanDownLoadListView=(ListView) listViews.get(1).findViewById(R.id.candownlistview);
+		
 	}
 	
 	
@@ -503,9 +540,65 @@ public class DownLoadFragment extends Fragment implements OnClickListener {
 		case R.id.network_setting_device_name:
 			showReNameDialog();
 			break;
-
+		case R.id.network_download_searchbtn:
+			break;
+		case R.id.network_setting_save:
+			modifyPassword();
+			
+			break;
 		default:
 			break;
+		}
+	}
+	
+	/**
+	 * 修改用户密码的逻辑
+	 */
+	private void modifyPassword(){
+		String Name=mUserNameEditText.getText().toString();
+		String pwd=mOldPasswordEditText.getText().toString();
+		String newPwd=mNewPasswordEditText.getText().toString();
+		String confignewPwd=mConfirmPasswordEditText.getText().toString();
+		String ErrorTips="";
+		if(Name.length()==0){
+			ErrorTips="用户名不能为空，请输入用户名!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+			return;
+			
+		}
+		
+		if(pwd.length()==0){
+			ErrorTips="旧密码不能为空，请输入旧密码!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		if(newPwd.length()==0){
+			ErrorTips="新密码不能为空，请输入新密码!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		if(confignewPwd.length()==0){
+			ErrorTips="确认新密码不能为空，请输入确认新密码!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		if(confignewPwd.length()!=newPwd.length() ||! newPwd.equals(confignewPwd)){
+			ErrorTips="新密码与确认新密码不一致!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		
+		ContentValues errorcv = new ContentValues();
+		if(!mDao.ModifyWorkerPwd(Name,pwd,newPwd,errorcv)){
+			ErrorTips=errorcv.get("error").toString();
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
+		}else{
+			ErrorTips="密码已经修改成功!";
+			Toast.makeText(getActivity(), ErrorTips, Toast.LENGTH_LONG).show();
 		}
 	}
 	

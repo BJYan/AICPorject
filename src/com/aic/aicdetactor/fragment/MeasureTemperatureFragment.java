@@ -439,24 +439,29 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
     	adapter.saveData(String.valueOf(mCheckedValue),abnormalCode,abnormalId,0,0);
     	}
     }
+    
+    boolean mbMeasured=false;
+    @Override
+   	public boolean canSave() {
+   		// TODO Auto-generated method stub,
+    	if(!mbMeasured	){
+			CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity(),"提示","请先测量",null,null);
+			dialog.show();
+			return false;
+		}
+   		return true;
+   	}
+    
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {
 		// TODO Auto-generated method stub
 		switch(measureOrSave){
-		case PartItemContact.SAVE_DATA:
-			if("请选择状态".equals(mAbnormalStr)
-					&& (adapter.getCurrentPartItemType()==checkUnit_Type.ENTERING
-	    			||adapter.getCurrentPartItemType()==checkUnit_Type.METER_READING)){
-			//	CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity().getApplicationContext(),"提示","请选择状态",null,null);
-			//	dialog.show();
-			}else{
-			savePartItemData(adapter);
-			}
+		case PartItemContact.SAVE_DATA:			
+			savePartItemData(adapter);			
 			break;
 		case PartItemContact.MEASURE_DATA:
 				getDataFromBLE();
-				//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
-			
+				mbMeasured=true;
 			break;
 		}
 		
@@ -477,7 +482,6 @@ public class MeasureTemperatureFragment  extends MeasureBaseFragment{
 			mTimer = new Timer();
 			mTimer.schedule(mTimerTask, 1000);
 			}
-		//mCallback.OnClick(CommonDef.DISABLE_MEASUREMENT_BUTTON,0,0,0);
 	}
 	
 	void closeTimer(){

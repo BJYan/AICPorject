@@ -65,6 +65,8 @@ public class PartItemListAdapter extends BaseAdapter {
 	 */
 	private DeviceItemJson mNewDeviceItem=null;
 	
+	private List<String>mOriginalExtranalInfoList=null;
+	
 	private DeviceItemJson mOriginalDeviceItem=null;
 	/**
 	 * 保留最后一次选择 运行 、停机 、备用后的partItem数据 ,
@@ -111,11 +113,11 @@ public class PartItemListAdapter extends BaseAdapter {
 				case Event.NetWork_MSG_Tips:
 				case Event.Server_No_Data:
 					{
-						Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
-								Toast.LENGTH_SHORT).show();
+//						Toast.makeText(mActivity.getApplicationContext(), msg.obj.toString(),
+//								Toast.LENGTH_SHORT).show();
 						
-//						CommonAlterDialog dialog = new CommonAlterDialog(mActivity,"提示",(String)msg.obj,null,null);
-//						dialog.show();
+						CommonAlterDialog dialog = new CommonAlterDialog(mActivity,"提示",(String)msg.obj,null,null);
+						dialog.show();
 					}
 					mStopSetDBStatus=true;
 				default:
@@ -212,16 +214,24 @@ public class PartItemListAdapter extends BaseAdapter {
 		return value;
 		
 	}
+	public String getCurOriPartItemExtrnalInfo(){
+		return mOriginalExtranalInfoList.get(mPartItemIndex);
+	}
 	/**
 	 * 获取原始数据，用于显示已测量的数据测试情况
 	 * 
 	 * @return
 	 */
-	public PartItemJsonUp getCurOriPartItem(){
+	private PartItemJsonUp getCurOriPartItem(){
 		mOriginalDeviceItem.PartItem.get(mPartItemIndex).printdata();
 		return mOriginalDeviceItem.PartItem.get(mPartItemIndex);
 	}
 	public void initListViewAndData(boolean bRefreshListView){
+		DeviceItemJson originalDevice =app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex);
+		mOriginalExtranalInfoList= new ArrayList<String>();
+		for(int i =0;i<originalDevice.PartItem.size();i++){
+			mOriginalExtranalInfoList.add(originalDevice.PartItem.get(i).Extra_Information);
+		}
 		mOriginalDeviceItem = new DeviceItemJson();
 		mOriginalDeviceItem.clone(app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex));
 		//mOriginalDeviceItem=(DeviceItemJson) app.mLineJsonData.StationInfo.get(app.mStationIndex).DeviceItem.get(mDeviceIndex).clone();
@@ -302,19 +312,14 @@ public class PartItemListAdapter extends BaseAdapter {
 		mNewDeviceItem.setRFChecked();
 		mNewDeviceItem.setDeviceChecked();
 		mNewDeviceItem.setEndDate();
-		if(app.isTest){
-			if(app.isSpecialLine()){
-				mNewDeviceItem.setIsOmissionCheck(0);
-			}else{
-				mNewDeviceItem.setIsOmissionCheck(1887);
-			}
-		}else{
-			if(app.isSpecialLine()){
-				mNewDeviceItem.setIsOmissionCheck(0);
-			}else{			
-			mNewDeviceItem.setIsOmissionCheck(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check);
-			}
+		mNewDeviceItem.calcCheckDuration();
+		
+		if(app.isSpecialLine()){
+			mNewDeviceItem.setIsOmissionCheck(0);
+		}else{			
+		mNewDeviceItem.setIsOmissionCheck(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.Is_Omission_Check);
 		}
+		
 		mPartItemIndex=0;
 		saveDeviceItemData();
 
@@ -470,6 +475,7 @@ public class PartItemListAdapter extends BaseAdapter {
 		mDevicePatItem.T_Item_Abnormal_Grade_Id=2;
 		mDevicePatItem.T_Item_Abnormal_Grade_Code="01";
 		mDevicePatItem.Item_Define=mNewDeviceItem.Item_Define;
+		mDevicePatItem.End_Check_Datetime=SystemUtil.getSystemTime(SystemUtil.TIME_FORMAT_YYMMDDHHMM);
 		mAddNewExtranalPartItemList.clear();
 		mAddNewExtranalPartItemList.add(mDevicePatItem);
 	}
@@ -502,16 +508,16 @@ public class PartItemListAdapter extends BaseAdapter {
 		//序列化并本地保存
 		String sonStr=JSON.toJSONString(app.mLineJsonData);		
 		try {
-			String fileGuid="";
+			String fileGuid=app.getNewFileName();
 			//文件要保存到数据库中的
-			if(app.gIsDataChecked){
-				fileGuid=getSaveDataFileName();
-				if("".equals(fileGuid)){
-					fileGuid=SystemUtil.createGUID();
-				}
-			}else{
-				fileGuid=SystemUtil.createGUID();
-			}
+//			if(app.gIsDataChecked){
+//				fileGuid=getSaveDataFileName();
+//				if("".equals(fileGuid)){
+//					fileGuid=SystemUtil.createGUID();
+//				}
+//			}else{
+//				fileGuid=SystemUtil.createGUID();
+//			}
 			app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid.File_Guid=fileGuid;
 			SystemUtil.writeFile(Setting.getUpLoadJsonPath()+fileGuid, sonStr);
 		} catch (IOException e) {
@@ -536,7 +542,7 @@ public class PartItemListAdapter extends BaseAdapter {
 	
 	
 	void setOtherDataIfNeeded(){
-		if(!app.gIsDataChecked){
+		//if(!app.gIsDataChecked){
 			//create device exit_data_guid and t_worker informations
 			for(StationInfoJson station:app.mLineJsonData.StationInfo){
 				for(DeviceItemJson device:station.DeviceItem){
@@ -549,7 +555,7 @@ public class PartItemListAdapter extends BaseAdapter {
 				}
 			}
 			
-		}
+		//}
 	}
 	/**
 	 * 修改upload数据表里对应uuid的状态，是否update.
@@ -557,8 +563,9 @@ public class PartItemListAdapter extends BaseAdapter {
 	 */
 	private void saveDataToDB(){
 		
-		mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,app.gIsDataChecked,true,true);
-		app.gIsDataChecked=true;
+	//	mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,app.gIsDataChecked,true,true);
+		mDao.insertUploadFile(app.mJugmentListParms.get(app.getCurrentRouteIndex()).m_RoutePeroid,false,true,true);
+	//	app.gIsDataChecked=true;
 		
 		
 		/**

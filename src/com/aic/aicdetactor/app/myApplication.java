@@ -12,6 +12,7 @@ import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.data.DownloadNormalRootData;
 import com.aic.aicdetactor.data.JugmentParms;
 import com.aic.aicdetactor.data.PartItemJsonUp;
+import com.aic.aicdetactor.service.BLEService;
 import com.aic.aicdetactor.setting.Setting;
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -21,19 +22,20 @@ public class myApplication extends Application
     private static final String TAG = "aicdetector";
     
     //当前巡检路线的序号
-    private int mRouteIndex = -1;
+    private int mRouteIndex = 0;
     //当前巡检路线下站点序号，序号指的是JSON站点数组的序号
-    public int mStationIndex =-1;
+    public int mStationIndex =0;
     //当前巡检路线下 巡检的设备数组的序号
-    private int mDeviceIndex = -1;
+    private int mDeviceIndex = 0;
     //当前巡检的PartItemData
-    public int mPartItemIndex = -1;
+    public int mPartItemIndex = 0;
     
     public boolean isTest=false;
     private boolean isSpecialLine=false;
     private LineType mRouteType;
     //如果为false，数据从原始数据表中获取，否则，从GetUploadJsonFile中获取
-    public boolean gIsDataChecked=false;
+    private boolean gIsDataChecked=false;
+    private String mNewFileName="";
     //顶层常规巡检还是特定巡检。
     private String gRouteClassName = "";
     //当前路线名称
@@ -68,7 +70,7 @@ public class myApplication extends Application
 	public List<JugmentParms> mJugmentListParms=null;
 	//通过NFC获取ID号 及打卡
 	private String mNFCCard="";
-	
+	public BLEService mBLEService;
 	public void setNFCId(String Id){
 		mNFCCard = Id;
 	}
@@ -83,6 +85,18 @@ public class myApplication extends Application
 		return mDeviceIndex;
 	}
 	
+	/**
+	 * 每次从路线里点击路线时，就生成一个新的文件名称为保存做准备
+	 */
+	public void resetFileName(){
+		mNewFileName="";
+	}
+	public String getNewFileName(){
+		if(mNewFileName.length()==0){
+			mNewFileName = SystemUtil.createGUID();
+		}
+		return mNewFileName;
+	}
 	public void setParItemIndex(int index,String Name){
 		mPartItemIndex = index;
 	}
@@ -178,7 +192,7 @@ public class myApplication extends Application
        
        int k =0;
        k++;
-       
+       mBLEService = new BLEService();
     }
     
     

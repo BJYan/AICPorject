@@ -44,4 +44,7 @@
 <dimen name="search_resule_bluetext_size">12sp</dimen>
 <dimen name="exlist_item_high_level2">42dip</dimen>
 <dimen name="exlist_item_high_level3">33dip</dimen>
+
+<dimen name="search_item_high_level3">40dip</dimen>
+<dimen name="fragment_layout_margin_top">10dip</dimen>
 </resources>

@@ -117,6 +117,10 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	private TextView mTextViewY = null;
 	private TextView mTextViewZ = null;
 	private TextView mTextViewCountDown = null;
+	
+	private TextView mTextViewType = null;
+	private TextView mTextViewProcess = null;
+	
 	//测试倒计时，用于待信号稳定
 	private final int mMaxSecond_StartMeasure = 30;
 	private static final int  REMOVELASTFRAGMENT =10086;
@@ -142,6 +146,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	FragmentTransaction fragmentTransaction;
 	
 	LinearLayout mParamsLineLayout;
+	private LinearLayout mTypsLineLayout;
 	Spinner mCaiYangDianSpinner;
 	Spinner mCaiYangPinLvSpinner;
 	int CaiYangDianIndex=0;
@@ -185,6 +190,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		TextView planNameTextView = (TextView) findViewById(R.id.routeName);
 		planNameTextView.setText(app.getCategoryTitle());
 		mParamsLineLayout = (LinearLayout)findViewById(R.id.paramsL);
+		mTypsLineLayout = (LinearLayout)findViewById(R.id.line4);
 		mCaiYangDianSpinner =(Spinner)findViewById(R.id.dianshu);
 		mCaiYangPinLvSpinner =(Spinner)findViewById(R.id.pinlv);
 		Resources res=getResources();
@@ -247,7 +253,6 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 						.get(mDeviceIndex).Name);
 		
 		mAdapterList = new PartItemListAdapter(PartItemActivity.this,mStationIndex,mDeviceIndex,mHandler);
-		
 
 		// 返回图标
 		ImageView imageView = (ImageView) findViewById(R.id.backImage);
@@ -261,6 +266,9 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			}
 
 		});
+		mTextViewType = (TextView)findViewById(R.id.typename);
+		
+		mTextViewProcess= (TextView)findViewById(R.id.process);
 		mButton_Next = (Button) findViewById(R.id.next);
 		mButton_Next.setOnClickListener(this);
 
@@ -280,6 +288,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 		bundle.putInt("type", type);
 		mButton_Measurement.setEnabled(true);
 		mParamsLineLayout.setVisibility(View.GONE);
+		mTypsLineLayout.setVisibility(View.VISIBLE);
 		  switch(type){
 		   case CommonDef.checkUnit_Type.ACCELERATION:
 		   case CommonDef.checkUnit_Type.SPEED:	
@@ -373,10 +382,12 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 			   fragmentTransaction.commit();
 			break;
 			   default:
-				   Toast.makeText(getApplicationContext(), "default Fragment type ="+type, Toast.LENGTH_LONG).show();
+				  // Toast.makeText(getApplicationContext(), "default Fragment type ="+type, Toast.LENGTH_LONG).show();
 				   
 				   break;
 		  }
+		  mTextViewType.setText(getPartItemTypeNameByCode(mAdapterList.getCurrentPartItemType()));
+		  mTextViewProcess.setText(String.valueOf(mPartItemIndex+1)+"/"+String.valueOf(mAdapterList.getCount()));
 		  
 		  controlButtonDisplayStatus(type);
 	}
@@ -400,7 +411,7 @@ public class PartItemActivity extends CommonActivity implements OnClickListener,
 	   private final int goto_next_Device=Status_Start+1;
 	   private final int Stay_Current_Device=Status_Start+2;
 	  
-   Handler mHandler = new Handler(){
+  private  Handler mHandler = new Handler(){
 	   @Override
 	    public void handleMessage(Message msg) {
 		   switch(msg.what){
@@ -577,8 +588,10 @@ final int CAMERA_TYPE =1;
 
 		case R.id.next://下一测试点
 		{
+			if(mFragmentCallBack.canSave()){
 			// 保存当前的device下的数据，并不是文件中的device，只是暂存，直到device下的partitem全部巡检完毕才真正的保存数据
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SAVE_PARTITEMDATA));
+			}
 			
 		}
 			break;		
@@ -848,5 +861,19 @@ final int CAMERA_TYPE =1;
 			}, "退出", "取消");
 			acceleChart.show();
 	}
-   
+    private   String getPartItemTypeNameByCode(int code){
+		//Resources res=Resources.getSystem();
+    	Resources res=getResources();
+		String[]codeList=res.getStringArray(R.array.check_data_code);
+		String[]typeList=res.getStringArray(R.array.check_data_type);
+		if(codeList.length==typeList.length){
+		for(int i=0;i<codeList.length;i++){
+			if(code == Integer.valueOf(codeList[i])){
+				return typeList[i];
+				
+			}
+		}
+		}
+		return "未知";
+	}
 }

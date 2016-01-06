@@ -1,5 +1,9 @@
 package com.aic.aicdetactor.comm;
 
+import com.aic.aicdetactor.R;
+
+import android.content.res.Resources;
+
 public class PartItemContact {
 
 	private final static int START= 10;
@@ -18,4 +22,6 @@ public class PartItemContact {
 	
 	public final static int MIME_TYPE_AUDIO=1;
 	public final static int MIME_TYPE_IMAGE=2;
+	
+	
 }

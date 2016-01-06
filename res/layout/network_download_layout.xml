@@ -40,6 +40,11 @@
 	        android:text="化产车间鼓冷特巡路线20150826"
 	        android:layout_gravity="center"
 	        android:layout_marginTop="5dip"/>
+	     <ListView 
+	        android:id="@+id/candownlistview"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="center"/>
 	    <Button 
 	        android:id="@+id/network_download_searchbtn"
 	        android:layout_height="38dip"

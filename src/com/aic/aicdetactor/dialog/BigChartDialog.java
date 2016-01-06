@@ -33,7 +33,7 @@ public class BigChartDialog extends Dialog{
 	
 	public void setChartView(View chartView){
 		ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, 
-				680);
+				ViewGroup.LayoutParams.MATCH_PARENT);
 		((LinearLayout) contentView).addView(chartView,lp);
 	}
 

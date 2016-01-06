@@ -352,6 +352,9 @@ public class BluetoothLeControl {
 			 download[2]=(byte) 0xd5;			
 		 }
 		 
+		 download[0]=frameHead;
+		 download[1]=commandLenth;
+		 
 		 mMaxTimeOutMSecond =SystemUtil.getReceiveBLEDataTimeOut(caiyangdian,caiyangpinlv,AxCount);
 //		 CRC32 crc = new CRC32();
 //		 crc.update(download, 0, 16);

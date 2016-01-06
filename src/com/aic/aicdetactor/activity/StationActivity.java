@@ -38,6 +38,7 @@ import com.aic.aicdetactor.R;
 import com.aic.aicdetactor.adapter.StationListAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
+import com.aic.aicdetactor.comm.LineType;
 import com.aic.aicdetactor.dialog.NFCDialog;
 import com.aic.aicdetactor.util.MLog;
 
@@ -84,8 +85,8 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 					default:
 						break;
 					}
-					String res = (String) msg.obj;
-					Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
+				//	String res = (String) msg.obj;
+					//Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
 				};
 			};
            showLoadingDialog("正在初始化数据…");
@@ -149,7 +150,7 @@ public class StationActivity extends CommonActivity implements OnClickListener{
 			this.registerForContextMenu(mListView);
 			mListDatas = new ArrayList<Map<String, String>>();
 			mListView.setGroupIndicator(null);
-			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),handler);
+			mListViewAdapter = new StationListAdapter(StationActivity.this,this.getApplicationContext(),handler,app.isSpecialLine()==true?LineType.SpecialRoute:LineType.NormalRoute);
 			mListView.setAdapter(mListViewAdapter);
 			
 

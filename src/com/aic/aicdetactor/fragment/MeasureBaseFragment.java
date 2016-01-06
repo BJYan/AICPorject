@@ -121,7 +121,7 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 	
 	//测量项名称
 	protected String getPartItemName(){
-		return mPartItemData.Check_Content + "\t\t\n类型："+mPartItemData.T_Measure_Type_Code +"\n\t"+PartItemIndex+"/"+app.gCurPartItemList.size();
+		return mPartItemData.Check_Content ;//+ "\t\t\n类型："+mPartItemData.T_Measure_Type_Code +"\n\t"+PartItemIndex+"/"+app.gCurPartItemList.size();
 	}
 	
 	
@@ -214,6 +214,7 @@ public abstract class MeasureBaseFragment extends Fragment implements OnButtonLi
 		   case CommonDef.checkUnit_Type.SPEED:	
 		   case CommonDef.checkUnit_Type.DISPLACEMENT:
 		   case CommonDef.checkUnit_Type.TEMPERATURE:
+		   case CommonDef.checkUnit_Type.ROTATION_RATE:
 			   connect=true;
 		}
 		return connect;

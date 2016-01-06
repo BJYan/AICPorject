@@ -1,7 +1,10 @@
 package com.aic.aicdetactor.data;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import android.util.Base64;
 
 import com.aic.aicdetactor.util.SystemUtil;
 import com.alibaba.fastjson.JSON;
@@ -159,10 +162,53 @@ public class DeviceItemJson implements Cloneable//:ICloneable
     	this.	Vendor	=	device.	Vendor	;
     	this.	PartItem	=	new ArrayList<PartItemJsonUp>();
     	for(int k=0;k<device.PartItem.size();k++){
-    		//PartItemJsonUp up= new PartItemJsonUp();
+    		PartItemJsonUp newpartitem= new PartItemJsonUp();
+    		PartItemJsonUp up =device.PartItem.get(k);
+    		newpartitem.Check_Content=up.Check_Content;
+    		newpartitem.T_Measure_Type_Id=up.T_Measure_Type_Id;
+    		newpartitem.T_Measure_Type_Code=up.T_Measure_Type_Code;
+    		newpartitem.Unit =up.Unit;
+    		newpartitem.Start_Stop_Flag=up.Start_Stop_Flag;
+    		newpartitem.Up_Limit=up.Up_Limit;
+    		newpartitem.Middle_Limit=up.Middle_Limit;
+    		newpartitem.Down_Limit=up.Down_Limit;
+    		newpartitem.Emissivity=up.Emissivity;
+    		newpartitem.Hint_Status=up.Hint_Status;
+    		newpartitem.Axle_Number=up.Axle_Number;
+    		newpartitem.Check_Mode=up.Check_Mode;
+    		newpartitem.Extra_Information =up.Extra_Information;
+    		newpartitem.T_Maintenance_Status_Id=up.T_Maintenance_Status_Id;
+    		newpartitem.Fault_Diagnosis=up.Fault_Diagnosis;
+    		newpartitem.Default_RPM=up.Default_RPM;
+    		newpartitem.Is_Normal=up.Is_Normal;
+    		newpartitem.Item_Define=up.Item_Define;
+    		newpartitem.Start_Check_Datetime=up.Start_Check_Datetime;
+    		newpartitem. End_Check_Datetime=up.End_Check_Datetime;
+    		newpartitem. Total_Check_Time=up.Total_Check_Time;
+    		newpartitem.SaveLab=up.SaveLab;
+    		newpartitem.RecordLab=up.RecordLab;
+    		newpartitem.SensorType=up.SensorType;
+    		newpartitem.VMSDir=up.VMSDir;
+    		newpartitem.SignalType=up.SignalType;
+    		newpartitem.SampleFre=up.SampleFre;
+    		newpartitem.SamplePoint=up.SamplePoint;
+    		newpartitem.RPM=up.RPM;
+    		newpartitem.Diagnose_Conclusion=up.Diagnose_Conclusion;
+    		newpartitem.Remarks=up.Remarks;
+    		newpartitem.Is_Timeout=up.Is_Timeout;
+    		newpartitem.T_Item_Abnormal_Grade_Id=up.T_Item_Abnormal_Grade_Id;
+    		newpartitem.T_Item_Abnormal_Grade_Code=up.T_Item_Abnormal_Grade_Code;
     		//up.Clone(device.PartItem.get(k));
-    		PartItemJsonUp	up=(PartItemJsonUp) device.PartItem.get(k).clone();
-    		this.	PartItem.add(up);
+//    		String planjson="";
+//			try {
+//				planjson = new String(Base64.decode(device.PartItem.toString(), Base64.DEFAULT),"utf-8");
+//			} catch (UnsupportedEncodingException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//    		PartItemJsonUp up = JSON.parseObject(planjson,PartItemJsonUp.class);
+    	//	PartItemJsonUp	up=(PartItemJsonUp) device.PartItem.get(k).clone();
+    		this.	PartItem.add(newpartitem);
     	}
     		;
 

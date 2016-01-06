@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.http.conn.ConnectTimeoutException;
@@ -138,7 +139,7 @@ public class Event {
 	 * @param activity
 	 * @param handler
 	 */
-	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler) {
+	public static void QueryCommand_Event(View view,final Activity activity,final Handler handler/*,final boolean bSearch,List<String>candlownLoadLineInfoList*/) {
 		final boolean isLocalDebug =false;
 		new Thread(new Runnable() {
 
@@ -187,6 +188,12 @@ public class Event {
 							
 							//zhengyangyong 2015-10-06
 							if(ci.Name.equals("DeliverNormalPlan")){ 
+//								if(bSearch){
+//									String name ="";
+//									if(candlownLoadLineInfoList!=null){
+//									candlownLoadLineInfoList.add(name);
+//									}
+//									}else{
 								boolean isSpecialLine = false;
 								DeliverNormalPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverNormalPlanRequestArgs.class);
 								//处理Base64之后的巡检计划
@@ -207,20 +214,34 @@ public class Event {
 								 boolean isFileExist= SystemUtil.isFileExist(filePath);
 							     int isExit =dao.isOriginalLineExist(Normaldata.T_Line.T_Line_Guid,Normaldata.T_Line.T_Line_Content_Guid,filePath);
 							     if(isExit==0){
-							    	 StrMessage="完全相同的 "+Normaldata.T_Line.Name+"，不需要更新";
+							    	 if(StrMessage.length()>0){
+							    		 StrMessage=StrMessage+"\n"+"完全相同的 "+Normaldata.T_Line.Name+"，不需要更新";
+							    	 }else{
+							    		 StrMessage="完全相同的 "+Normaldata.T_Line.Name+"，不需要更新";
+							    	 }
+							    	 continue;
 							     }else if(isExit==2){
 									 SystemUtil.writeFileToSD(filePath, planjson);
 									 dao.insertNormalLineInfo(Normaldata.T_Line.Name,filePath,Normaldata.T_Line.T_Line_Guid,
 											 Normaldata.getItemCounts(0,0,false,false),
 											 Normaldata.getItemCounts(0,0,false,true),Normaldata.getItemCounts(0,0,true,true),
 											 Normaldata.T_Worker,Normaldata.T_Turn,Normaldata.T_Period,Normaldata.T_Organization,isSpecialLine,Normaldata.T_Line.T_Line_Content_Guid);
+									 if(StrMessage.length()>0){
+										 StrMessage=StrMessage+"\n"+ "日常巡检 "+Normaldata.T_Line.Name+" 下载更新成功!";
+									 }else{
 									 StrMessage="日常巡检 "+Normaldata.T_Line.Name+" 下载更新成功!";
-									 Message msg = handler.obtainMessage(LocalData_Init_Success);
-									 msg.obj=StrMessage;
-									 handler.sendMessage(msg);
-									 return;
+									 }
+									 //Message msg = handler.obtainMessage(LocalData_Init_Success);
+									// msg.obj=StrMessage;
+									// handler.sendMessage(msg);
+									 continue;
 								 }else if(isExit==1){
-									 StrMessage="已有相同的日常巡检名 "+Normaldata.T_Line.Name +",是否要更新?";
+									 if(StrMessage.length()>0){
+										 StrMessage=StrMessage+"\n"+"已有相同的日常巡检名 "+Normaldata.T_Line.Name +",是否要更新?";
+									 }else{
+										 StrMessage="已有相同的日常巡检名 "+Normaldata.T_Line.Name +",是否要更新?";
+									 }
+									
 									 //先保存为临时文件，等用户选择是否覆盖，如果选择是的话，再更改文件
 									 filePath=filePath+"temp";
 									 SystemUtil.writeFileToSD(filePath, planjson);
@@ -231,8 +252,9 @@ public class Event {
 									 Message msg = handler.obtainMessage(GetNewRouteLine_Message);
 									 msg.obj=StrObj;
 									 handler.sendMessage(msg);
-									 return;
+									continue;
 								 }
+							//	}
 							}else if(ci.Name.equals("DeliverTempPlan")){
 								//ci.Data
 								DeliverTempPlanRequestArgs args = JSON.parseObject(ci.Data, DeliverTempPlanRequestArgs.class);
@@ -240,12 +262,16 @@ public class Event {
 								 planjson =  new String(Base64.decode(args.PlanData, Base64.DEFAULT),"utf-8");
 								//对着C#的临检计划建Class，写一个对应的Java类，然后完成JSON对象
 								 T_Temporary_Line tempdata=JSON.parseObject(planjson,T_Temporary_Line.class);
-								 StrMessage="临时路线 "+tempdata.Content+"更新成功!";								 
-								 Message msg = handler.obtainMessage(TEMP_ROUTELINE_DOWNLOAD_MSG);
-								 msg.obj=response.Info.Code;
-								 handler.sendMessage(msg);
-								 return;
-								 
+								 if(StrMessage.length()>0){
+									 StrMessage=StrMessage+"\n"+"临时路线 "+tempdata.Content+"更新成功!";
+								 }else{
+									 StrMessage="临时路线 "+tempdata.Content+"更新成功!";
+								 }
+																 
+								// Message msg = handler.obtainMessage(TEMP_ROUTELINE_DOWNLOAD_MSG);
+								// msg.obj=response.Info.Code;
+								// handler.sendMessage(msg);
+								 continue;
 							}else{
 								//其他消息：ClearAllPlan、ClearNormalPlan、ClearTempPlan。。。	
 								Log.i(TAG,"command Name :"+ci.Name);
@@ -273,7 +299,7 @@ public class Event {
 					e.printStackTrace();
 				}catch(ConnectException  e){
 					Message msg = handler.obtainMessage(NetWork_Connecte_Timeout);
-					msg.obj = "连接异常，不能连接到服务器";
+					msg.obj = "网络连接异常，请检查网络";
 					handler.sendMessage(msg);
 					e.printStackTrace();
 				}catch(Exception e){

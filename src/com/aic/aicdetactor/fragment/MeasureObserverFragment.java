@@ -23,6 +23,7 @@ import com.aic.aicdetactor.adapter.SpinnerAdapter;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.ParamsPartItemFragment;
 import com.aic.aicdetactor.comm.PartItemContact;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 
 /**
  * 观察项 10 对应的UI
@@ -97,7 +98,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		mSpinner= (Spinner)view.findViewById(R.id.spinner);
 		mStatusSpinner = (Spinner)view.findViewById(R.id.observerspinner);
 		
-		getPartItemStatusArray(AdapterList.getCurOriPartItem().Extra_Information);
+		getPartItemStatusArray(AdapterList.getCurOriPartItemExtrnalInfo());
 		mSpinnerAdapter = new SpinnerAdapter(this.getActivity().getApplicationContext(), mSpinnerDisplayDataList);
 		
 		mSpinner.setAdapter(mSpinnerAdapter);
@@ -153,7 +154,7 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
 		for(int k=0;k<StatusNameArray.length;k++){
 			int lenth=StatusNameArray[k].length()>2?StatusNameArray[k].length()-2:StatusNameArray[k].length();
 			mSpinnerDisplayDataList.add(StatusNameArray[k].substring(0, lenth));
-			mSpinnerAbornalCodeList.add(StatusNameArray[k].substring(StatusNameArray[k].length()-2,StatusNameArray[k].length()));
+			mSpinnerAbornalCodeList.add(StatusNameArray[k].substring(lenth,StatusNameArray[k].length()));
 		}
 		return mSpinnerDisplayDataList;
 		
@@ -210,6 +211,16 @@ public class MeasureObserverFragment extends MeasureBaseFragment{
         }
     }
 
+    @Override
+   	public boolean canSave() {
+   		// TODO Auto-generated method stub,
+    	if(mSelectValue.length()==0||mSpinner.getSelectedItemPosition()<=0){       
+       		CommonAlterDialog dialog = new CommonAlterDialog(this.getActivity(),"提示","请选择状态",null,null);
+       			dialog.show();
+       			return false;
+   		}
+   		return true;
+   	}
   
 	@Override
 	public void OnButtonDown(int buttonId, PartItemListAdapter adapter,String Value,int measureOrSave,int CaiYangDian,int CaiyangPinLv) {

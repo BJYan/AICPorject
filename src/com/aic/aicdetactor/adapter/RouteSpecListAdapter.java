@@ -170,9 +170,6 @@ public class RouteSpecListAdapter extends BaseAdapter{
 			switch(msg.what){
 			case MSG_UPDATE_LISTVIEW:
 				RouteSpecListAdapter.this.notifyDataSetChanged();
-		//	if (mListViewAdapter != null) {
-		//		mListViewAdapter.notifyDataSetChanged();
-		//	}
 			break;
 			}
 			super.handleMessage(msg);

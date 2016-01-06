@@ -8,7 +8,7 @@
 <string-array name="check_data_type">
 	<item>温度</item>
 	<item>录入</item>
-	<item>测量</item>	
+	<item>抄表</item>	
 	<item>加速度</item>
 	<item>速度</item>
 	<item>位移</item>	

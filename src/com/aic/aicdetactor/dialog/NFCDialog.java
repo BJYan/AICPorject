@@ -4,8 +4,10 @@ import com.aic.aicdetactor.R;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
 
 public class NFCDialog extends Dialog{
@@ -28,7 +30,14 @@ public class NFCDialog extends Dialog{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.dialog_nfc_layout);
 		Button cancel = (Button) findViewById(R.id.dialog_nfc_cancel_btn);
-		cancel.setOnClickListener(listener);
+	//	cancel.setOnClickListener(listener);
+		cancel.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				dismiss();
+			}});
 	}
 
 }

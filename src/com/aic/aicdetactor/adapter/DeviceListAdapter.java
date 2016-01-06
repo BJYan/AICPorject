@@ -8,6 +8,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -84,7 +85,71 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	public View getChildView(final int arg0, final int arg1, boolean arg2, View arg3, ViewGroup arg4) {
 		// TODO Auto-generated method stub
 				GroupViewHolder holder = null;
-
+			if(mLineType==LineType.AllRoute){
+				if (arg3 == null) {
+					arg3 = mInflater.inflate(R.layout.searchpartitem, null);
+					holder = new GroupViewHolder();
+					holder.NameText = (TextView) arg3
+							.findViewById(R.id.pathname);
+					holder.DeadLineText = (TextView) arg3
+							.findViewById(R.id.checkdate);
+					holder.StausText = (TextView) arg3
+							.findViewById(R.id.checkvalue);
+					holder.ProcessText = (TextView) arg3
+							.findViewById(R.id.unit);
+					arg3.setTag(holder);
+				} else {
+					holder = (GroupViewHolder) arg3.getTag();
+					
+				}
+				holder.NameText.setText(mChildrenList.get(mDeviceIndex).get(arg1).Check_Content);
+				holder.DeadLineText.setText(mChildrenList.get(mDeviceIndex).get(arg1).End_Check_Datetime);
+				if(mChildrenList.get(mDeviceIndex).get(arg1).T_Measure_Type_Code.equals("03")
+						||mChildrenList.get(mDeviceIndex).get(arg1).T_Measure_Type_Code.equals("04")
+						||mChildrenList.get(mDeviceIndex).get(arg1).T_Measure_Type_Code.equals("05")){
+					
+					double MAX = mChildrenList.get(mDeviceIndex).get(arg1).Up_Limit;
+			    	double MID = mChildrenList.get(mDeviceIndex).get(arg1).Middle_Limit;
+			    	double LOW = mChildrenList.get(mDeviceIndex).get(arg1).Down_Limit;
+			    	double mCheckValue=0.0f;
+			    	if(mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information.length()>0){
+			    	 mCheckValue = Double.parseDouble(mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information);
+			    	}
+			    	try{
+			    	if((mCheckValue < MAX) && (mCheckValue>=MID) ){
+			    		holder.StausText.setTextColor(Color.YELLOW);
+			    		
+			    	}else if((mCheckValue >= LOW) && (mCheckValue<MID)){
+			    		holder.StausText.setTextColor(Color.BLACK);
+			    	}else if(mCheckValue <LOW){
+			    		holder.StausText.setTextColor(Color.GRAY);
+			    	}else if(mCheckValue>=MAX){
+			    		holder.StausText.setTextColor(Color.RED);
+			    	}}catch(Exception e){
+			    		e.printStackTrace();
+			    	}
+			    	
+				}else if(mChildrenList.get(mDeviceIndex).get(arg1).T_Measure_Type_Code.equals("07")){
+					String value=mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information;
+					if(value.length()>0){
+						mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information = value.replace("/", "\r\n");
+					}
+				}else if(mChildrenList.get(mDeviceIndex).get(arg1).T_Measure_Type_Code.equals("10")){
+					String value=mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information;
+					String Result="";
+					if(value.length()>0){
+						String []list=value.split("\\/");
+						for(int i=0;i<list.length;i++){
+							list[i]=list[i].substring(0, list[i].length()-2);
+							Result = Result+"/"+list[i];
+						}
+						mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information = Result.replace("/", "\r\n");
+					}
+					holder.ProcessText.setVisibility(View.GONE);
+				}
+				holder.StausText.setText(mChildrenList.get(mDeviceIndex).get(arg1).Extra_Information);
+				holder.ProcessText.setText(mChildrenList.get(mDeviceIndex).get(arg1).Unit);
+			}else{
 				if (arg3 == null) {
 					arg3 = mInflater.inflate(R.layout.checkitem_thr_item, null);
 					holder = new GroupViewHolder();
@@ -161,6 +226,7 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 					
 				});
 				holder.NameText.setText(mChildrenList.get(mDeviceIndex).get(arg1).Check_Content);
+}
 			return arg3;
 	}
 
@@ -181,7 +247,6 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
 		return mDeviceList.size();
-		//return 1;
 	}
 
 	@Override
@@ -279,6 +344,15 @@ public class DeviceListAdapter  extends BaseExpandableListAdapter implements Com
 							mDeviceList.add(deviceInfo);
 							InitChidrenData(mStationIndex, i);
 						}
+				}else if(mLineType == LineType.AllRoute){
+					DeviceListInfoParams deviceInfo = new DeviceListInfoParams();							
+					deviceInfo.setName(app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					MLog.Logd(TAG,"name is"+app.mLineJsonData.StationInfo.get(mStationIndex).DeviceItem.get(i).Name);
+					deviceInfo.setDeadLine( "2018");
+				
+					deviceInfo.setProcess(app.mLineJsonData.getItemCounts(2, i, true,true)+ "/" + app.mLineJsonData.getItemCounts(2, i, false,true));
+					mDeviceList.add(deviceInfo);
+					InitChidrenData(mStationIndex, i);
 				}
 			}
 		} catch (Exception e) {

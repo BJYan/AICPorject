@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -23,9 +26,13 @@ import android.widget.TextView;
 
 import com.aic.aicdetactor.CommonActivity;
 import com.aic.aicdetactor.R;
+import com.aic.aicdetactor.Event.Event;
+import com.aic.aicdetactor.activity.PartItemActivity;
 import com.aic.aicdetactor.app.myApplication;
 import com.aic.aicdetactor.comm.CommonDef;
 import com.aic.aicdetactor.comm.LineType;
+import com.aic.aicdetactor.comm.PartItemContact;
+import com.aic.aicdetactor.dialog.CommonAlterDialog;
 import com.aic.aicdetactor.paramsdata.DeviceListInfoParams;
 import com.aic.aicdetactor.paramsdata.StationListInfoParams;
 import com.aic.aicdetactor.util.MLog;
@@ -45,16 +52,21 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	protected ArrayList<ArrayList<Map<String, String>>> mDeviceArrayDisplayDataList = null;
 	int secExlistItemHigh,thrExlistItemHigh;
     Handler mHandler;
-	public StationListAdapter(CommonActivity av, Context context,Handler handler) {
+	public StationListAdapter(CommonActivity av, Context context,Handler handler,LineType lineType) {
 		mContext = context;
 		mHandler= handler;
 		mInflater = LayoutInflater.from(mContext);
 		mActivity = av;
 		mStationList = new ArrayList<StationListInfoParams>();
 		app = ((myApplication) mActivity.getApplication());
-		this.mlineType =app.isSpecialLine()==true?LineType.SpecialRoute:LineType.NormalRoute;
-		thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
+		this.mlineType =lineType;//app.isSpecialLine()==true?LineType.SpecialRoute:LineType.NormalRoute;
 		secExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level2); 
+		if(mlineType==LineType.AllRoute){
+			thrExlistItemHigh =mActivity.getResources().getDimensionPixelSize(R.dimen.search_item_high_level3);
+		}else{
+			thrExlistItemHigh = av.getResources().getDimensionPixelSize(R.dimen.exlist_item_high_level3);
+		}
+		
 		InitJsonDataThread InitThread = new InitJsonDataThread();
 		InitThread.start();
 	}
@@ -74,7 +86,6 @@ public class StationListAdapter extends BaseExpandableListAdapter {
 	public ExpandableListView getExpandableListView(){
 		ExpandableListView ExListView = new ExpandableListView(mContext);
 		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		//ExListView.setPadding(30, 0, 0, 0);
 		ExListView.setLayoutParams(lp);
 		ExListView.setGroupIndicator(null);
 		return ExListView;
@@ -220,9 +231,9 @@ class InitJsonDataThread extends Thread{
 					
 					StationListInfoParams  stationInfo = new StationListInfoParams();
 					stationInfo.setName(app.mLineJsonData.StationInfo.get(i).Name);
-					if(!app.gIsDataChecked){
+					//if(!app.gIsDataChecked){
 						stationInfo.setDeadLine("2015");
-					}
+					//}
 					stationInfo.setProcess(app.mLineJsonData.getItemCounts(1, i, true,app.isSpecialLine())+ "/" + app.mLineJsonData.getItemCounts(1, i, false,app.isSpecialLine()));
 					mStationList.add(stationInfo);
 					try {
@@ -248,6 +259,46 @@ class InitJsonDataThread extends Thread{
 		}
 	}
 	
+private void initData(){
+	long g=System.currentTimeMillis();
+	MLog.Logd(TAG, " InitData()>> "+g);
+	try {
+		
+		if(app.getLineDataClassifyFromOneFile(mlineType)==null){
+			mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
+			return;
+		};
+		mStationList.clear();
+		mDeviceArrayDisplayDataList = new ArrayList<ArrayList<Map<String, String>>>();
+		for (int i = 0; i < app.mLineJsonData.StationInfo.size(); i++) {
+			
+			StationListInfoParams  stationInfo = new StationListInfoParams();
+			stationInfo.setName(app.mLineJsonData.StationInfo.get(i).Name);
+			//if(!app.gIsDataChecked){
+				stationInfo.setDeadLine("2015");
+			//}
+			stationInfo.setProcess(app.mLineJsonData.getItemCounts(1, i, true,app.isSpecialLine())+ "/" + app.mLineJsonData.getItemCounts(1, i, false,app.isSpecialLine()));
+			mStationList.add(stationInfo);
+			try {
+				ArrayList<Map<String, String>> deviceDisplayDataList = new ArrayList<Map<String, String>>();
+				for (int deviceIndex = 0; deviceIndex < app.mLineJsonData.StationInfo.get(i).DeviceItem.size(); deviceIndex++) {
+							Map<String, String> mapDevice = new HashMap<String, String>();
+							mapDevice.put(CommonDef.device_info.NAME,app.mLineJsonData.StationInfo.get(i).DeviceItem.get(deviceIndex).Name);
+							deviceDisplayDataList.add(mapDevice);	
+				}
+				mDeviceArrayDisplayDataList.add(deviceDisplayDataList);					
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	
+	MLog.Logd(TAG, " InitData()<< "+String.valueOf(System.currentTimeMillis()-g));
+
+}
 
 	@Override
 	public void notifyDataSetChanged() {
@@ -282,4 +333,18 @@ class InitJsonDataThread extends Thread{
 		return statusList;
 		
 	}
+	
+	private  Handler handler = new Handler(){
+		   @Override
+		    public void handleMessage(Message msg) {
+			   switch(msg.what){
+			   case 0:
+				   initData();
+				   mHandler.sendEmptyMessage(INIT_JSON_DATA_FINISHED);
+				   break;
+			  
+					
+			   }
+		   }
+	   };
 }
